@@ -5,34 +5,27 @@ from __future__ import absolute_import
 
 import numpy as np 
 import scipy.linalg.lapack as lp
-import itertools
 
 class Evaluator(object):
-	def __init__(
-		self, causal_status_prior,
-		imbalance_stats, imbalance_corr, imbalance_var_prior,
-		total_exp_stats, total_exp_corr, total_exp_var_prior,
-		cross_corr, cross_corr_prior
-	):
-		self.num_snps = np.shape(imbalance_stats)[0]
-		self.causal_status_prior = causal_status_prior
+	def __init__(self, fm):
+		self.num_snps = fm.num_snps
+		self.causal_status_prior = fm.causal_status_prior
 
-		self.imbalance_stats = imbalance_stats
-		self.total_exp_stats = total_exp_stats
-		# self.stats = np.concatenate(imbalance_stats, total_exp_stats)
+		self.imbalance_stats = fm.imbalance_stats
+		self.total_exp_stats = fm.total_exp_stats
 
-		self.imbalance_corr = imbalance_corr
-		self.total_exp_corr = total_exp_corr
-		self.cross_corr = cross_corr
+		self.imbalance_corr = fm.imbalance_corr
+		self.total_exp_corr = fm.total_exp_corr
+		self.cross_corr = fm.cross_corr
 
-		self.imbalance_var_prior = imbalance_var_prior
-		self.total_exp_var_prior = total_exp_var_prior
-		self.cross_cov_prior = cross_corr_prior * imbalance_var_prior * total_exp_var_prior
+		self.imbalance_var_prior = fm.imbalance_var_prior
+		self.total_exp_var_prior = fm.total_exp_var_prior
+		self.cross_cov_prior = fm.cross_corr_prior * fm.imbalance_var_prior * fm.total_exp_var_prior
 
 		# Pre-calculate values of $\Sigma_c^{-1}$
-		imbalance_inv_var = 1.0 / imbalance_var_prior
+		imbalance_inv_var = 1.0 / fm.imbalance_var_prior
 		cross_cov = self.cross_cov_prior
-		imbalance_schur = 1.0 / (total_exp_var_prior - cross_cov * imbalance_inv_var * cross_cov)
+		imbalance_schur = 1.0 / (fm.total_exp_var_prior - cross_cov * imbalance_inv_var * cross_cov)
 		self.inv_imbalance_prior = imbalance_inv_var + imbalance_schur * (imbalance_inv_var * cross_cov) ** 2 
 		self.inv_cov_prior = -1 * imbalance_schur * imbalance_inv_var * cross_cov
 		self.inv_total_exp_prior = imbalance_schur
@@ -122,58 +115,13 @@ class Evaluator(object):
 		self.cumu_sum += res
 		return res
 
-	def get_probs():
+	def get_probs(self):
 		probs = [(k, v / self.cumu_sum) for k, v in self.results.iteritems()]
 		probs.sort(key=lambda x: x[1], reverse=True)
 		return probs
 
-	def clear_all():
+	def reset(self):
 		self.results = {}
 		self.cumu_sum = 0.0
-
-
-def search_exhaustive(evaluator, max_causal):
-	m = evaluator.num_snps
-	for k in xrange(max_causal):
-		base = np.append(np.ones(k), np.zeros(m - k))
-		for c in itertools.permutations(base):
-			evaluator.eval(c)
-
-def search_shotgun(evaluator, num_iterations):
-	m = evaluator.num_snps
-	configuration = np.zeros(m)
-	for i in xrange(num_iterations):
-		neighbors = []
-		for val, ind in enumerate(configuration):
-			# Add causal variant
-			if val == 0:
-				neighbor = configuration.copy()
-				neighbor[ind] = 1
-				neighbors.append(neighbor)
-			# Remove causal variant
-			elif val == 1:
-				neighbor = configuration.copy()
-				neighbor[ind] = 0
-				neighbors.append(neighbor)
-			# Swap status with other variants
-			for val2, ind2 in enumerate(configuration, start=ind+1):
-				if val2 != val:
-					neighbor = configuration.copy()
-					neighbor[ind] = val2
-					neighbor[ind2] = val
-					neighbors.append(neighbor)
-
-		posteriors = []
-		for n in neighbors:
-			posteriors.append(evaluator.eval(n))
-		posteriors = np.array(posteriors)
-
-		dist = posteriors / np.sum(posteriors)
-		configuration = np.random.choice(neighbors, p=dist)
-
-
-
-
-
 
 

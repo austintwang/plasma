@@ -15,10 +15,13 @@ class FM_unchecked(object):
 	CROSS_CORR_PRIOR_DEFAULT = 0.8
 
 	def __init__(self, **kwargs):
-		self.num_snps = kwargs.get("num_snps", -1)
-		self.num_ppl = kwargs.get("num_ppl", -1)
+		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", -1)
+		self.num_snps_total_exp = kwarg.get("num_snps_total_exp", -1)
+		self.num_ppl_imbalance = kwargs.get("num_ppl_imbalance", -1)
+		self.num_ppl_total_exp = kwargs.get("num_ppl_total_exp", -1)
 
-		self.causal_status_prior = kwargs.get("causal_status_prior", 1.0 / self.num_snps)
+		self.causal_status_prior = kwargs.get("causal_status_prior", 
+			1.0 / max(self.num_snps_imbalance, self.num_snps_total_exp))
 
 		self.imbalance_var_prior = kwargs.get("imbalance_var_prior", IMBALANCE_VAR_PRIOR_DEFAULT)
 		self.total_exp_var_prior = kwargs.get("total_exp_var_prior", TOTAL_EXP_VAR_PRIOR_DEFAULT)
@@ -43,7 +46,10 @@ class FM_unchecked(object):
 		self.exp_B = kwargs.get("exp_B", None)
 
 		self.genotypes_A = kwargs.get("genotypes_A", None)
-		self.exp_B = kwargs.get("genotypes_B", None)
+		self.genotypes_B = kwargs.get("genotypes_B", None)
+
+		self._beta = None
+		self._mean = None
 
 		self._covdiag_phi = None
 		self._covdiag_beta = None
@@ -79,12 +85,12 @@ class FM_unchecked(object):
 			return
 
 		self._calc_imbalance()
-		self._calc_total_exp()
 
+		counts = self.exp_A + self.exp_B
 		self.imbalance_errors = (
-			2 / self.total_exp 
+			2 / counts
 			* (1 + np.cosh(self.imbalance)) 
-			* (1 + self.overdispersion * (self.total_exp - 1))
+			* (1 + self.overdispersion * (counts - 1))
 		)
 
 	def _calc_imbalance_stats(self):
@@ -98,7 +104,7 @@ class FM_unchecked(object):
 		phases = self.phases
 		phasesT = phases.T
 		weights = 1 / self.imbalance_errors
-		denominator = np.empty(self.num_ppl)
+		denominator = np.empty(self.num_ppl_imbalance)
 		for ph, ind in enumerate(phases):
 			denominator[ind] = ph.dot(weights).dot(ph)
 		phi = denominator * phasesT.dot(weights.dot(self.imbalance))
@@ -116,28 +122,43 @@ class FM_unchecked(object):
 		phases = self.phases
 		phasesT = phases.T
 		weight_matrix = np.diag(1 / imbalance_errors)
-		cov = phasesT.dot(weight_matrix).dot(phases)
+		cov = phasesT.dot(weight_matrix).dot(phases) / self.num_ppl_imbalance
 		covdiag = np.diag(cov)
 		self._covdiag_phi = covdiag
 		denominator = np.sqrt(np.outer(covdiag, covdiag))
 		self.imbalance_corr = cov / denominator
 
-	def _calc_total_exp_stats(self):
-		if self.total_exp_stats != None:
-			return
-
+	def _calc_beta(self):
 		self._calc_genotypes_comb()
 		self._calc_total_exp()
 
 		genotypes_comb = self.genotypes_comb
 		genotypes_combT = genotypes_comb.T
-		mean = np.sum(self.total_exp) / self.num_ppl
-		denominator = np.empty(self.num_ppl)
+		mean = np.sum(self.total_exp) / self.num_ppl_total_exp
+		denominator = np.empty(self.num_ppl_total_exp)
 		for ge, ind in enumerate(genotypes_comb):
 			denominator[ind] = ge.dot(ge)
-		beta = denominator * genotypes_combT.dot(self.total_exp - mean)
+		self._beta = denominator * genotypes_combT.dot(self.total_exp - mean)
+		self._mean = mean
+
+	def _calc_total_exp_error(self):
+		if self.std_error != None:
+			return
+
+		self._calc_beta()
+
+		residuals = self.genotypes_comb.dot(self._beta) - self._mean
+		self.std_error = residuals.dot(residuals) / (self.num_ppl_total_exp - 2)
+
+
+	def _calc_total_exp_stats(self):
+		if self.total_exp_stats != None:
+			return
+
+		self._calc_total_exp_errors()
+
 		varbeta = denominator * denominator * np.sum((phasesT * phasesT), axis=1) * self.std_error
-		self.total_exp_stats = beta / varbeta
+		self.total_exp_stats = self._beta / varbeta
 
 	def _calc_total_exp_corr(self):
 		if self.total_exp_stats != None:
@@ -147,7 +168,8 @@ class FM_unchecked(object):
 
 		genotypes_comb = self.genotypes_comb
 		genotypes_combT = genotypes_comb.T
-		cov = genotypes_combT.dot(genotypes_comb) - np.outer(np.sum(genotypes_combT, axis=1)) / self.num_ppl
+		cov = (genotypes_combT.dot(genotypes_comb) 
+			- np.outer(np.sum(genotypes_combT, axis=1)) / self.num_ppl_total_exp) / self.num_ppl_total_exp
 		covdiag = np.diag(cov)
 		self._covdiag_beta = covdiag
 		denominator = np.sqrt(np.outer(covdiag, covdiag))
@@ -163,9 +185,26 @@ class FM_unchecked(object):
 		self._calc_imbalance_corr()
 		self._calc_total_exp_corr()
 
-		imbalance_errors = self.imbalance_errors
+		if self.num_ppl_imbalance < self.num_ppl_total_exp:
+			diff = self.num_ppl_total_exp - self.num_ppl_imbalance
+			num = self.num_ppl_imbalance
+			imbalance_errors = np.concatenate(self.imbalance_errors, np.zeros(diff))
+			genotypes_comb = self.genotypes_comb
+			phases = np.concatenate(self.phases, np.zeros(diff, self.num_snps_imbalance))
+		elif self.num_ppl_imbalance > self.num_ppl_total_exp:
+			diff = self.num_ppl_imbalance - self.num_ppl_total_exp
+			num = self.num_ppl_total_exp
+			imbalance_errors = self.imbalance_errors
+			genotypes_comb = np.concatenate(self.genotypes_comb, np.zeros(diff, self.num_snps_total_exp))
+			phases = self.phases
+		else:
+			num = self.num_ppl_imbalance
+			imbalance_errors = self.imbalance_errors
+			genotypes_comb = self.genotypes_comb
+			phases = self.phases
+
 		half_weights = np.sqrt(np.diag(1 / imbalance_errors))
-		ccov = genotypes_combT.dot(half_weights).dot(phases)
+		ccov = genotypes_comb.T.dot(half_weights).dot(phases) / num
 		denominator = np.sqrt(np.outer(self._covdiag_phi, self._covdiag_beta))
 		self.cross_corr = ccov / denominator
 
@@ -179,14 +218,14 @@ class FM_unchecked(object):
 		self.evaluator = Evaluator(self)
 
 	def search_exhaustive(self, max_causal):
-		m = self.evaluator.num_snps
+		m = max(self.num_snps_imbalance, self.num_snps_total_exp)
 		for k in xrange(max_causal):
 			base = [0] * k + [1] * (m - k)
 			for c in itertools.permutations(base):
 				self.evaluator.eval(np.array(c))
 
 	def search_shotgun(self, num_iterations):
-		m = self.evaluator.num_snps
+		m = max(self.num_snps_imbalance, self.num_snps_total_exp)
 		configuration = np.zeros(m)
 		self.evaluator.eval(configuration)
 		for i in xrange(num_iterations):
@@ -219,7 +258,13 @@ class FM_unchecked(object):
 			configuration = np.random.choice(neighbors, p=dist)
 
 	def get_probs(self):
-		self.evaluator.get_probs()
+		return self.evaluator.results
+
+	def get_probs_sorted(self):
+		return self.evaluator.get_probs_sorted()
+
+	def get_ppas(self):
+		return self.evaluator.get_ppas()
 
 	def reset_mapping(self):
 		self.evaluator.reset()

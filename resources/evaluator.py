@@ -8,7 +8,9 @@ import scipy.linalg.lapack as lp
 
 class Evaluator(object):
 	def __init__(self, fm):
-		self.num_snps = fm.num_snps
+		self.num_snps_imbalance = fm.num_snps_imbalance
+		self.num_snps_total_exp = fm.num_snps_total_exp
+
 		self.causal_status_prior = fm.causal_status_prior
 
 		self.imbalance_stats = fm.imbalance_stats
@@ -64,49 +66,57 @@ class Evaluator(object):
 		if key in self.results:
 			return self.results[key]
 
+		configuration_imbalance = configuration[:self.num_snps_imbalance]
+		configuration_total_exp = configuration[:self.num_snps_total_exp]
+
+		num_causal_imbalance = np.count_nonzero(configuration_imbalance)
+		num_causal_total_exp = np.count_nonzero(configuration_total_exp)
 		num_causal = np.count_nonzero(configuration)
 		prior_prob = (self.causal_status_prior ** num_causal * 
 				(1 - 2 * self.causal_status_prior) ** (self.num_snps - num_causal))
 
-		indices = configuration.nonzero()
-		ind_2d = np.ix_(indices)
+		indices_imbalance = configuration_imbalance.nonzero()
+		indices_total_exp = configuration_total_exp.nonzero()
+		ind_2d_imbalance = np.ix_(indices_imbalance, indices_imbalance)
+		ind_2d_total_exp = np.ix_(indices_total_exp, indices_total_exp)
+		ind_2d_cross = np.ix_(indices_total_exp, indices_total_exp)
 
-		stats = np.concatenate(self.imbalance_stats[indices], self.total_exp_stats[indices])
-		cross_corr_ind = self.cross_corr[ind_2d]
+		stats = np.concatenate(self.imbalance_stats[indices_imbalance], self.total_exp_stats[indices_total_exp])
+		cross_corr_ind = self.cross_corr[ind_2d_cross]
 		corr = np.concatenate(
-			np.concatenate(self.imbalance_corr[ind_2d], cross_corr_ind, axis=0),
-			np.concatenate(cross_corr_ind.T, self.total_exp_corr[ind_2d], axis=0)
-			axis=1
+			np.concatenate(self.imbalance_corr[ind_2d_imbalance], cross_corr_ind.T, axis=1),
+			np.concatenate(cross_corr_ind, self.total_exp_corr[ind_2d_total_exp], axis=1)
+			axis=0
 		)
 
 		prior_cov = np.concatenate(
 			np.concatenate(
-				np.eye(num_causal) * self.imbalance_var_prior, 
-				np.eye(num_causal) * self.cross_cov_prior, 
-				axis=0
+				np.eye(num_causal_imbalance) * self.imbalance_var_prior, 
+				np.eye(num_causal_imbalance, num_causal_total_exp) * self.cross_cov_prior, 
+				axis=1
 			),
 			np.concatenate(
-				np.eye(num_causal) * self.cross_cov_prior, 
-				np.eye(num_causal) * self.total_exp_var_prior, 
-				axis=0
+				np.eye(num_causal_total_exp, num_causal_imbalance) * self.cross_cov_prior, 
+				np.eye(num_causal_total_exp) * self.total_exp_var_prior, 
+				axis=1
 			)
-			axis=1
+			axis=0
 		)
 		prior_cov_inv = np.concatenate(
 			np.concatenate(
-				np.eye(num_causal) * self.inv_imbalance_prior, 
-				np.eye(num_causal) * self.inv_cov_prior, 
-				axis=0
+				np.eye(num_causal_imbalance) * self.inv_imbalance_prior, 
+				np.eye(num_causal_imbalance, num_causal_total_exp) * self.inv_cov_prior, 
+				axis=1
 			),
 			np.concatenate(
-				np.eye(num_causal) * self.inv_cov_prior, 
-				np.eye(num_causal) * self.inv_total_exp_prior, 
-				axis=0
+				np.eye(num_causal_total_exp, num_causal_imbalance) * self.inv_cov_prior, 
+				np.eye(num_causal_total_exp) * self.inv_total_exp_prior, 
+				axis=1
 			)
-			axis=1
+			axis=0
 		)
 		
-		det = self._det(np.eye(2 * num_causal) + prior_cov * corr)
+		det = self._det(np.eye(num_causal_imbalance + num_causal_total_exp) + prior_cov * corr)
 		inv = self._inv(prior_cov_inv + corr)
 		bf = det ** -0.5 * np.exp(inv.dot(stats).dot(stats) / 2.0)
 		res = prior_prob * bf
@@ -115,10 +125,21 @@ class Evaluator(object):
 		self.cumu_sum += res
 		return res
 
-	def get_probs(self):
+	def get_probs_sorted(self):
 		probs = [(k, v / self.cumu_sum) for k, v in self.results.iteritems()]
 		probs.sort(key=lambda x: x[1], reverse=True)
 		return probs
+
+	def get_ppas(self):
+		m = max(self.num_snps_imbalance, self.num_snps_total_exp)
+		ppas = []
+		for i in xrange(m):
+			ppa = 0
+			for k, v in self.results.iteritems():
+				if k[i] == 1:
+					ppa += v
+			ppas.append(ppa / self.cumu_sum)
+		return ppas
 
 	def reset(self):
 		self.results = {}

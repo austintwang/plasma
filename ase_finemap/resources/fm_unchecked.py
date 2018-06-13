@@ -9,19 +9,18 @@ import itertools
 
 from .evaluator import Evaluator
 
-class FM_unchecked(object):
+class FmUnchecked(object):
 	IMBALANCE_VAR_PRIOR_DEFAULT = 0.1
 	TOTAL_EXP_VAR_PRIOR_DEFAULT = 0.1
-	CROSS_CORR_PRIOR_DEFAULT = 0.8
+	CROSS_CORR_PRIOR_DEFAULT = 1.0
 
 	def __init__(self, **kwargs):
-		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", -1)
-		self.num_snps_total_exp = kwarg.get("num_snps_total_exp", -1)
-		self.num_ppl_imbalance = kwargs.get("num_ppl_imbalance", -1)
-		self.num_ppl_total_exp = kwargs.get("num_ppl_total_exp", -1)
+		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)
+		self.num_snps_total_exp = kwarg.get("num_snps_total_exp", None)
+		self.num_ppl_imbalance = kwargs.get("num_ppl_imbalance", None)
+		self.num_ppl_total_exp = kwargs.get("num_ppl_total_exp", None)
 
-		self.causal_status_prior = kwargs.get("causal_status_prior", 
-			1.0 / max(self.num_snps_imbalance, self.num_snps_total_exp))
+		self.causal_status_prior = kwargs.get("causal_status_prior", None)
 
 		self.imbalance_var_prior = kwargs.get("imbalance_var_prior", IMBALANCE_VAR_PRIOR_DEFAULT)
 		self.total_exp_var_prior = kwargs.get("total_exp_var_prior", TOTAL_EXP_VAR_PRIOR_DEFAULT)
@@ -55,6 +54,12 @@ class FM_unchecked(object):
 		self._covdiag_beta = None
 
 		self.evaluator = None
+
+	def _calc_causal_status_prior(self):
+		if self.causal_status_prior != None:
+			return
+
+		self.causal_status_prior = 1.0 / max(self.num_snps_imbalance, self.num_snps_total_exp)
 
 	def _calc_imbalance(self):
 		if self.imbalance != None:
@@ -209,6 +214,7 @@ class FM_unchecked(object):
 		self.cross_corr = ccov / denominator
 
 	def initialize(self):
+		self._calc_causal_status_prior()
 		self._calc_imbalance_stats()
 		self._calc_total_exp_stats()
 		self._calc_imbalance_corr()
@@ -258,7 +264,7 @@ class FM_unchecked(object):
 			configuration = np.random.choice(neighbors, p=dist)
 
 	def get_probs(self):
-		return self.evaluator.results
+		return self.evaluator.get_probs()
 
 	def get_probs_sorted(self):
 		return self.evaluator.get_probs_sorted()

@@ -125,6 +125,12 @@ class Evaluator(object):
 		self.cumu_sum += res
 		return res
 
+	def get_probs(self):
+		probs = copy(self.results)
+		for k, v in probs.iteritems():
+			v = v / self.cumu_sum
+		return probs
+
 	def get_probs_sorted(self):
 		probs = [(k, v / self.cumu_sum) for k, v in self.results.iteritems()]
 		probs.sort(key=lambda x: x[1], reverse=True)

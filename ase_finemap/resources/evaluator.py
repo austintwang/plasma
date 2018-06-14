@@ -132,9 +132,26 @@ class Evaluator(object):
 		return probs
 
 	def get_probs_sorted(self):
-		probs = [(k, v / self.cumu_sum) for k, v in self.results.iteritems()]
+		probs = [(k, v / self.cumu_sum) for k, v in self.results.viewitems()]
 		probs.sort(key=lambda x: x[1], reverse=True)
 		return probs
+
+	def get_causal_set(self, confidence):
+		configs = sorted(self.results, key=self.results.get, reverse=True)
+		causal_set = [0] * max(self.num_snps_imbalance, self.num_snps_total_exp)
+		threshold = confidence * self.cumu_sum
+		conf_sum = 0
+		for c in configs:
+			causuality = self.results[configs]
+			if conf_sum + causuality <= threshold:
+				conf_sum += causuality
+				for val, ind in enumerate(c):
+					if val == 1:
+						causal_set[ind] = 1
+			else:
+				break
+
+		return causal_set
 
 	def get_ppas(self):
 		m = max(self.num_snps_imbalance, self.num_snps_total_exp)

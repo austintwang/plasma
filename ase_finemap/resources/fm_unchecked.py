@@ -269,6 +269,9 @@ class FmUnchecked(object):
 	def get_probs_sorted(self):
 		return self.evaluator.get_probs_sorted()
 
+	def get_causal_set(self):
+		return self.evaluator.get_causal_set()
+
 	def get_ppas(self):
 		return self.evaluator.get_ppas()
 

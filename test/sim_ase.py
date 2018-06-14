@@ -14,17 +14,18 @@ import scipy.stats as sps
 class SimAse(object):
 	def __init__(self, bm):
 		self.bm = bm
+		self.haplotypes = bm.haplotypes
 
 	def update(self):
 		self.num_snps = self.bm.sim_params["num_snps"]
 		self.num_ppl = self.bm.sim_params["num_ppl"]
 		self.var_effect_size = self.bm.sim_params["var_effect_size"]
 		self.overdispersion = self.bm.sim_params["overdispersion"]
-		self.exp_err_var = self.bm.sim_params["exp_err_var"]
+		self.prop_noise = self.bm.sim_params["prop_noise"]
 		self.baseline_exp = self.bm.sim_params["baseline_exp"]
 		self.num_causal = self.bm.sim_params["num_causal"]
-		self.genotypes_A = self.bm.sim_params["genotypes_A"]
-		self.genotypes_B = self.bm.sim_params["genotypes_B"]
+		# self.genotypes_A = self.bm.sim_params["genotypes_A"]
+		# self.genotypes_B = self.bm.sim_params["genotypes_B"]
 		self.ase_read_prop = self.bm.sim_params["ase_read_prop"]
 		self.overdispersion = self.bm.sim_params["overdispersion"]
 
@@ -58,6 +59,8 @@ class SimAse(object):
 	def _generate_effects(self):
 		self.causal_effects = npr.normal(0, np.sqrt(self.var_effect_size), self.num_causal)
 		causal_inds = npr.choice(self.num_snps, self.num_causal, replace=False)
+		self.causal_config = np.zeros(self.num_snps)
+		np.put(self.causal_set, causal_inds, 1)
 		self.causal_snps = np.zeros(self.num_snps)
 		np.put(self.causal_snps, causal_inds, self.causal_effects)
 
@@ -72,8 +75,11 @@ class SimAse(object):
 		counts_B_ideal = np.exp(self.exp_B)
 		counts_total_ideal = counts_A_ideal + counts_B_ideal
 		imbalance_ideal = self.exp_A - self.exp_B
+		self.total_exp_ideal = np.log(counts_total_ideal)
+		ideal_exp_var = np.var(self.total_exp_ideal)
+		total_var = ideal_exp_var / self.prop_noise
 
-		self.total_exp = npr.normal(np.log(counts_total_ideal), np.sqrt(self.exp_err_var))
+		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(total_var))
 		counts_total = np.exp(self.total_exp)
 		ase_counts = npr.binomial(counts_total, self.ase_read_prop)
 		betas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(imbalance_ideal)))
@@ -82,6 +88,7 @@ class SimAse(object):
 		self.counts_B = ase_counts - self.counts_A
 
 	def generate_data(self):
+		self.hap_A, self.hap_B = self.haplotypes.draw_haps()
 		self._generate_effects()
 		self._generate_genotypes()
 		self._generate_expression()

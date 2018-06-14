@@ -39,13 +39,13 @@ class FmUnchecked(object):
 
 		self.overdispersion = kwargs.get("overdispersion", None)
 		self.imbalance_errors = kwargs.get("imbalance_errors", None)
-		self.std_error = kwargs.get("std_error", None)
+		self.exp_error_var = kwargs.get("exp_error_var", None)
 
-		self.exp_A = kwargs.get("exp_A", None)
-		self.exp_B = kwargs.get("exp_B", None)
+		self.counts_A = kwargs.get("counts_A", None)
+		self.counts_B = kwargs.get("counts_B", None)
 
-		self.genotypes_A = kwargs.get("genotypes_A", None)
-		self.genotypes_B = kwargs.get("genotypes_B", None)
+		self.hap_A = kwargs.get("hap_A", None)
+		self.hap_B = kwargs.get("hap_B", None)
 
 		self._beta = None
 		self._mean = None
@@ -65,25 +65,25 @@ class FmUnchecked(object):
 		if self.imbalance != None:
 			return
 
-		self.imbalance = np.log(self.exp_A) - np.log(self.exp_B)
+		self.imbalance = np.log(self.counts_A) - np.log(self.counts_B)
 	
 	def _calc_phases(self):
 		if self.phases != None:
 			return
 
-		self.phases = self.genotypes_A - self.genotypes_B
+		self.phases = self.hap_A - self.hap_B
 
 	def _calc_total_exp(self):
 		if self.total_exp != None:
 			return
 
-		self.total_exp = np.log(self.exp_A) + np.log(self.exp_B)
+		self.total_exp = np.log(self.counts_A) + np.log(self.counts_B)
 
 	def _calc_genotypes_comb(self):
 		if self.genotypes_comb != None:
 			return
 
-		self.genotypes_comb = self.genotypes_A + self.genotypes_B
+		self.genotypes_comb = self.hap_A + self.hap_B
 
 	def _calc_imbalance_errors(self):
 		if self.imbalance_errors != None:
@@ -91,7 +91,7 @@ class FmUnchecked(object):
 
 		self._calc_imbalance()
 
-		counts = self.exp_A + self.exp_B
+		counts = self.counts_A + self.counts_B
 		self.imbalance_errors = (
 			2 / counts
 			* (1 + np.cosh(self.imbalance)) 
@@ -147,13 +147,13 @@ class FmUnchecked(object):
 		self._mean = mean
 
 	def _calc_total_exp_error(self):
-		if self.std_error != None:
+		if self.exp_error_var != None:
 			return
 
 		self._calc_beta()
 
 		residuals = self.genotypes_comb.dot(self._beta) - self._mean
-		self.std_error = residuals.dot(residuals) / (self.num_ppl_total_exp - 2)
+		self.exp_error_var = residuals.dot(residuals) / (self.num_ppl_total_exp - 2)
 
 
 	def _calc_total_exp_stats(self):
@@ -162,7 +162,7 @@ class FmUnchecked(object):
 
 		self._calc_total_exp_errors()
 
-		varbeta = denominator * denominator * np.sum((phasesT * phasesT), axis=1) * self.std_error
+		varbeta = denominator * denominator * np.sum((phasesT * phasesT), axis=1) * self.exp_error_var
 		self.total_exp_stats = self._beta / varbeta
 
 	def _calc_total_exp_corr(self):

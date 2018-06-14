@@ -93,8 +93,6 @@ class Finemap(FM_unchecked):
 				)
 			)
 
-
-
 	@staticmethod
 	def check_number(number, name):
 		self._check_number_type(number, name, numbers.Real)
@@ -109,7 +107,6 @@ class Finemap(FM_unchecked):
 		self._check_number_type(number, name, numbers.Integral)
 		self._check_number_bounds(number, name, 0, float("inf"))
 
-	
 	@staticmethod
 	def check_probability(number, name):
 		self._check_number_type(number, name, numbers.Real)
@@ -250,7 +247,7 @@ class Finemap(FM_unchecked):
 
 	def _calc_total_exp_error(self):
 		super(Finemap, self)._calc_total_exp_errors()
-		self.check_positive_number(self.std_error, "Total expression standard error")
+		self.check_positive_number(self.exp_error_var, "Total expression error variance")
 
 	def _calc_total_exp_stats(self):
 		super(Finemap, self)._calc_total_exp_stats()

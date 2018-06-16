@@ -6,7 +6,9 @@ from __future__ import absolute_import
 import numpy as np
 import os
 from datetime import datetime
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 from . import Finemap
 from . import SimAse
@@ -31,6 +33,8 @@ class Benchmark(object):
 		self.output_path = os.path.join(res_path, self.output_folder)
 
 		self.results = []
+		self.results_df = None
+		self.primary_var_vals = []
 		self.simulation = SimAse(self)
 	
 	def update_model_params(self):
@@ -62,6 +66,9 @@ class Benchmark(object):
 
 	@staticmethod
 	def output_result(result, out_dir, params):
+		title_var = self.params["primary_var_display"]
+		var_value = str(self.params[self.params["primary_var"]])
+
 		set_sizes_full = result["set_sizes_full"]
 		set_sizes_eqtl = result["set_sizes_eqtl"]
 		recall_rate_full = result["recall_rate_full"]
@@ -77,12 +84,70 @@ class Benchmark(object):
 		with open(os.path.join(out_dir, "causal_set_sizes_eqtl_only.txt"), "w") as csseqtl:
 			csseqtl.write("\n".join(str(i) for i in set_sizes_eqtl))
 
-		with open(os.path.join(out_dir, "recall_rates.txt"), "w") as rrfull:
-			rrfull.write("\n".join(str(i) for i in recall_rate_full))
-		
-		with open(os.path.join(out_dir, "recall_rates_eqtl_only.txt"), "w") as rreqtl:
-			rreqtl.write("\n".join(str(i) for i in recall_rate_eqtl))
+		with open(os.path.join(out_dir, "recall_rates.txt"), "w") as rr:
+			rr.write("Full:{:>15}\neQTL-only:{:>15}".format(recall_rate_full, recall_rate_eqtl))
 
+		sns.set(style="white")
+		sns.distplot(
+			set_sizes_full,
+			hist=False,
+			kde=True,
+			kde_kws={"linewidth": 3, "shade"=True},
+			label="Full"
+		)
+		sns.distplot(
+			set_sizes_eqtl,
+			hist=False,
+			kde=True,
+			kde_kws={"linewidth": 3, "shade"=True},
+			label="eQTL-Only"
+		)
+		plt.legend(prop={"size": 16}, title="Model")
+		plt.xlabel("Set Size")
+		plt.ylabel("Density")
+		plt.title("Distribution of Causal Set Sizes, {0} = {1}".format(title_var, var_value))
+		plt.savefig(os.path.join(out_dir, "Set_size_distribution.svg"))
+		plt.clf()		
+
+	def output_summary(self):
+		recall_full = [i["recall_rate_full"] for i in self.results]
+		recall_eqtl = [i["recall_rate_eqtl"] for i in self.results]
+		# sets_full = [i["set_sizes_full"] for i in self.results]
+		# sets_eqtl = [i["set_sizes_eqtl"] for i in self.results]
+
+		title_var = self.params["primary_var_display"]
+
+		sns.set(style="white")
+		sns.lmplot(self.primary_var_vals, recall_full)
+		sns.lmplot(self.primary_var_vals, recall_eqtl)
+		plt.legend(prop={"size": 16}, title="Model")
+		plt.xlabel(title_var)
+		plt.ylabel("Recall Rate")
+		plt.title("Recall Rates Across {0}".format(title_var))
+		plt.savefig(os.path.join(self.output_path, "recall_rates.svg"))
+		plt.clf()
+
+		dflst = []
+		for dct, ind in enumerate(self.results):
+			var_value = self.primary_var_vals[ind]
+			for i in dct["set_sizes_full"]:
+				dflst.append([i, var_value, "Full"])
+			for i in dct["set_sizes_eqtl"]:
+				dflst.append([i, var_value, "eQTL-Only"])
+		res_df = pd.Dataframe(dflst, columns=["Set Size", title_var, "Model"])
+		
+		sns.set(style="whitegrid")
+		sns.violinplot(
+			x=title_var,
+			y="Set Size",
+			hue="Model",
+			data=res_df,
+			split=True,
+			inner="quartile"
+		)
+		plt.title("Causal Set Sizes across {0}".format(title_var))
+		plt.savefig(os.path.join(self.output_path, "causal_sets.svg"))
+		plt.clf()
 
 	def test(self, **kwargs):
 		count_str = str(self.counter + 1).zfill(self.count_digits)
@@ -104,6 +169,7 @@ class Benchmark(object):
 			"recall_rate_full": [],
 			"recall_rate_eqtl": []
 		}
+		self.primary_var_vals.append(self.params[self.params["primary_var"]])
 
 		for _ in xrange(self.params["iterations"]):
 			self.simulation.generate_data()

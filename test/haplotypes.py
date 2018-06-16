@@ -9,7 +9,7 @@ import random
 
 class Haplotypes(object):
 	hap_path = os.path.join("haplotypes", "CEU.sampled_haplotypes")
-	NUM_PPL = 1000
+	NUM_SNPS= 1000
 	def __init__(self):
 		self.hap_files = os.listdir(hap_path)
 		self.haps = {}
@@ -19,8 +19,8 @@ class Haplotypes(object):
 					hapstr = hap.read()
 				hap_arr = np.ndarray(
 					[[int(j) for j in i.split("\t")] for i in hapstr.split("\n")]
-				)
-				if hap_arr.shape[0] == NUM_PPL:
+				).T
+				if hap_arr.shape[1] == NUM_SNPS:
 					self.haps[f] = hap_arr
 
 	def draw_haps(self):

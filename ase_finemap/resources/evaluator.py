@@ -85,7 +85,7 @@ class Evaluator(object):
 		cross_corr_ind = self.cross_corr[ind_2d_cross]
 		corr = np.concatenate(
 			np.concatenate(self.imbalance_corr[ind_2d_imbalance], cross_corr_ind.T, axis=1),
-			np.concatenate(cross_corr_ind, self.total_exp_corr[ind_2d_total_exp], axis=1)
+			np.concatenate(cross_corr_ind, self.total_exp_corr[ind_2d_total_exp], axis=1),
 			axis=0
 		)
 
@@ -99,7 +99,7 @@ class Evaluator(object):
 				np.eye(num_causal_total_exp, num_causal_imbalance) * self.cross_cov_prior, 
 				np.eye(num_causal_total_exp) * self.total_exp_var_prior, 
 				axis=1
-			)
+			),
 			axis=0
 		)
 		prior_cov_inv = np.concatenate(
@@ -112,7 +112,7 @@ class Evaluator(object):
 				np.eye(num_causal_total_exp, num_causal_imbalance) * self.inv_cov_prior, 
 				np.eye(num_causal_total_exp) * self.inv_total_exp_prior, 
 				axis=1
-			)
+			),
 			axis=0
 		)
 		

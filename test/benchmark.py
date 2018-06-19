@@ -15,10 +15,16 @@ from . import SimAse
 from . import Haplotypes
 
 class Benchmark(object):
+	dir_path = os.path.dirname(os.path.realpath(__file__))
 	res_path = os.path.join("results")
 	def __init__(self, params):
 		self.params = params
 		self.haplotypes = Haplotypes()
+
+		self.results = []
+		self.results_df = None
+		self.primary_var_vals = []
+		self.simulation = SimAse(self)
 
 		self.update_model_params()
 		self.update_sim_params()
@@ -30,22 +36,14 @@ class Benchmark(object):
 		self.count_digits = len(str(self.test_count))
 
 		self.output_folder = "_" + self.params["test_name"]
-		self.output_path = os.path.join(res_path, self.output_folder)
+		self.output_path = os.path.join(self.dir_path, self.res_path, self.output_folder)
 
-		self.results = []
-		self.results_df = None
-		self.primary_var_vals = []
-		self.simulation = SimAse(self)
-	
 	def update_model_params(self):
 		self.model_params = {
 			"num_snps_imbalance": self.params["num_snps"],
 			"num_snps_total_exp": self.params["num_snps"],
 			"num_ppl_imbalance": self.params["num_ppl"],
 			"num_ppl_total_exp": self.params["num_ppl"],
-			"causal_status_prior": self.params["causal_status_prior"],
-			"imbalance_var_prior": self.params["imbalance_var_prior"],
-			"total_exp_var_prior": self.params["total_exp_var_prior"],
 			"cross_corr_prior": self.params["cross_corr_prior"],
 			"overdispersion": self.params["overdispersion"]
 		}
@@ -57,10 +55,9 @@ class Benchmark(object):
 			"var_effect_size": self.params["var_effect_size"],
 			"overdispersion": self.params["overdispersion"],
 			"prop_noise": self.params["prop_noise"],
-			"baseline_exp": self.params["baseline_exp"]
-			"num_causal": self.params["num_causal"]
+			"baseline_exp": self.params["baseline_exp"],
+			"num_causal": self.params["num_causal"],
 			"ase_read_prop": self.params["ase_read_prop"]
-			"overdispersion": self.params["overdispersion"]
 		}
 		self.simulation.update()
 
@@ -92,14 +89,14 @@ class Benchmark(object):
 			set_sizes_full,
 			hist=False,
 			kde=True,
-			kde_kws={"linewidth": 3, "shade"=True},
+			kde_kws={"linewidth": 3, "shade":True},
 			label="Full"
 		)
 		sns.distplot(
 			set_sizes_eqtl,
 			hist=False,
 			kde=True,
-			kde_kws={"linewidth": 3, "shade"=True},
+			kde_kws={"linewidth": 3, "shade":True},
 			label="eQTL-Only"
 		)
 		plt.legend(prop={"size": 16}, title="Model")
@@ -171,7 +168,9 @@ class Benchmark(object):
 		}
 		self.primary_var_vals.append(self.params[self.params["primary_var"]])
 
-		for _ in xrange(self.params["iterations"]):
+		for itr in xrange(self.params["iterations"]):
+			print("\nIteration {0}".format(str(itr)))
+			print("Generating Simulation Data")
 			self.simulation.generate_data()
 			sim_result = {
 				"counts_A": self.simulation.counts_A,
@@ -180,14 +179,25 @@ class Benchmark(object):
 				"hap_A": self.simulation.hap_A,
 				"hap_B": self.simulation.hap_B
 			}
-			causal_config = self.simulation.causal_config()
+			causal_config = self.simulation.causal_config
+			print("Finished Generating Simulation Data")
 
-			model_inputs = copy(self.model_params).update(sim_result)
+			# print(sim_result["hap_A"].tolist()) ####
+			# print(sim_result["hap_B"].tolist()) ####
+
+			print("Initializing Full Model")
+			model_inputs = self.model_params.copy()
+			model_inputs.update(sim_result)
+			# print(model_inputs) ####
 			model_full = Finemap(**model_inputs)
+			model_full.initialize()
+			print("Finished Initializing Full Model")
+			print("Starting Search")
 			if self.params["search_mode"] == "exhaustive":
 				model_full.search_exhaustive(self.params["max_causal"])
 			elif self.params["search_mode"] == "shotgun":
 				model_full.search_shotgun(self.params["search_iterations"])
+			print("Finished Search Under Full Model")
 
 			causal_set = model_full.get_causal_set(params["confidence"])
 			assert all([i == 0 or i == 1 for i in causal_set])
@@ -201,14 +211,19 @@ class Benchmark(object):
 						recall = 0
 			result["recall_rate_full"].append(recall)
 
+			print("Initializing eQTL Model")
 			model_inputs_eqtl = copy(model_inputs).update(
 				{"imbalance": np.zeros(shape=0), "phases": np.zeros(shape=(0,0))}
 			)
+			print("Finished Initializing eQTL Model")
+			print("Starting Search Under eQTL Model")
 			model_eqtl = Finemap(**model_inputs_eqtl)
+			model_eqtl.initialize()
 			if self.params["search_mode"] == "exhaustive":
 				model_eqtl.search_exhaustive(self.params["max_causal"])
 			elif self.params["search_mode"] == "shotgun":
 				model_eqtl.search_shotgun(self.params["search_iterations"])
+			print("Finished Search Under eQTL Model")
 
 			causal_set_eqtl = model_eqtl.get_causal_set(params["confidence"])
 			assert all([i == 0 or i == 1 for i in causal_set_eqtl])
@@ -222,8 +237,10 @@ class Benchmark(object):
 						recall = 0
 			result["recall_rate_eqtl"].append(recall)
 
+		print("Writing Result")
 		self.output_result(result, test_path, self.params)
 		self.results.append(result)
+		print("Finished Writing Result")
 
 
 

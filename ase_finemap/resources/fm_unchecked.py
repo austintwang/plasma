@@ -10,21 +10,21 @@ import itertools
 from .evaluator import Evaluator
 
 class FmUnchecked(object):
-	IMBALANCE_VAR_PRIOR_DEFAULT = 0.1
-	TOTAL_EXP_VAR_PRIOR_DEFAULT = 0.1
+	IMBALANCE_VAR_PRIOR_DEFAULT = 10.0
+	TOTAL_EXP_VAR_PRIOR_DEFAULT = 10.0
 	CROSS_CORR_PRIOR_DEFAULT = 1.0
 
 	def __init__(self, **kwargs):
 		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)
-		self.num_snps_total_exp = kwarg.get("num_snps_total_exp", None)
+		self.num_snps_total_exp = kwargs.get("num_snps_total_exp", None)
 		self.num_ppl_imbalance = kwargs.get("num_ppl_imbalance", None)
 		self.num_ppl_total_exp = kwargs.get("num_ppl_total_exp", None)
 
 		self.causal_status_prior = kwargs.get("causal_status_prior", None)
 
-		self.imbalance_var_prior = kwargs.get("imbalance_var_prior", IMBALANCE_VAR_PRIOR_DEFAULT)
-		self.total_exp_var_prior = kwargs.get("total_exp_var_prior", TOTAL_EXP_VAR_PRIOR_DEFAULT)
-		self.cross_corr_prior = kwargs.get("cross_corr_prior", CROSS_CORR_PRIOR_DEFAULT)
+		self.imbalance_var_prior = kwargs.get("imbalance_var_prior", self.IMBALANCE_VAR_PRIOR_DEFAULT)
+		self.total_exp_var_prior = kwargs.get("total_exp_var_prior", self.TOTAL_EXP_VAR_PRIOR_DEFAULT)
+		self.cross_corr_prior = kwargs.get("cross_corr_prior", self.CROSS_CORR_PRIOR_DEFAULT)
 
 		self.imbalance_stats = kwargs.get("imbalance_stats", None)
 		self.imbalance_corr = kwargs.get("imbalance_corr", None)

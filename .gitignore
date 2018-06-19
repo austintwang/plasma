@@ -21,6 +21,8 @@
 *.tar
 *.zip
 
+*.pickle
+
 # Logs and databases #
 ######################
 *.log

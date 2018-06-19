@@ -10,7 +10,7 @@ import numbers
 
 from .resources import FmUnchecked
 
-class Finemap(FM_unchecked):
+class Finemap(FmUnchecked):
 	def __init__(self, **kwargs):
 		try:
 			super(Finemap, self).__init__(**kwargs)
@@ -69,7 +69,7 @@ class Finemap(FM_unchecked):
 	def _check_ndarray_dtype(matrix, name, min_type, empty):
 		if empty:
 			return
-		if not isinstance(matrix.dtype, min_type):
+		if not issubclass(matrix.dtype.type, min_type):
 			raise TypeError(
 				"{0} does not consist of instances of {1}\nConsists of type {2}:\n{3}".format(
 					name, 
@@ -93,43 +93,36 @@ class Finemap(FM_unchecked):
 				)
 			)
 
-	@staticmethod
-	def check_number(number, name):
+	def check_number(self, number, name):
 		self._check_number_type(number, name, numbers.Real)
 
-	@staticmethod
-	def check_positive_number(number, name):
+	def check_positive_number(self, number, name):
 		self._check_number_type(number, name, numbers.Real)
 		self._check_number_bounds(number, name, 0, float("inf"))
 
-	@staticmethod
-	def check_positive_int(number, name):
+	def check_positive_int(self, number, name):
 		self._check_number_type(number, name, numbers.Integral)
 		self._check_number_bounds(number, name, 0, float("inf"))
 
-	@staticmethod
-	def check_probability(number, name):
+	def check_probability(self, number, name):
 		self._check_number_type(number, name, numbers.Real)
 		self._check_number_bounds(number, name, 0, 1)
 
-	@staticmethod
-	def check_matrix(matrix, dimensions, name):
-		empty = (dimensions[0] * dimensions[1]) == 0
+	def check_matrix(self, matrix, dimensions, name):
+		empty = any(i == 0 for i in dimensions) 
 		self._check_ndarray(matrix, name)
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Real, empty)
 
-	@staticmethod
-	def check_matrix_positive(matrix, dimensions, name):
-		empty = (dimensions[0] * dimensions[1]) == 0
+	def check_matrix_positive(self, matrix, dimensions, name):
+		empty = any(i == 0 for i in dimensions) 
 		self._check_ndarray(matrix, name)
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Real, empty)
 		self._check_ndarray_bounds(matrix, name, 0, float("inf"), empty)
 
-	@staticmethod
-	def check_matrix_corr(matrix, dimensions, name):
-		empty = (dimensions[0] * dimensions[1]) == 0
+	def check_matrix_corr(self, matrix, dimensions, name):
+		empty = any(i == 0 for i in dimensions) 
 		self._check_ndarray(matrix, name)
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Real, empty)
@@ -151,25 +144,22 @@ class Finemap(FM_unchecked):
 				)
 			)
 
-	@staticmethod
-	def check_matrix_01(matrix, dimensions, name):
-		empty = (dimensions[0] * dimensions[1]) == 0
+	def check_matrix_01(self, matrix, dimensions, name):
+		empty = any(i == 0 for i in dimensions) 
 		self._check_ndarray(matrix, name)
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Integral, empty)
 		self._check_ndarray_bounds(matrix, name, 0, 1, empty)
 
-	@staticmethod
-	def check_matrix_012(matrix, dimensions, name):
-		empty = (dimensions[0] * dimensions[1]) == 0
+	def check_matrix_012(self, matrix, dimensions, name):
+		empty = any(i == 0 for i in dimensions) 
 		self._check_ndarray(matrix, name)
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Integral, empty)
 		self._check_ndarray_bounds(matrix, name, 0, 2, empty)
 
-	@staticmethod
-	def check_matrix_n101(matrix, dimensions, name):
-		empty = (dimensions[0] * dimensions[1]) == 0
+	def check_matrix_n101(self, matrix, dimensions, name):
+		empty = any(i == 0 for i in dimensions) 
 		self._check_ndarray(matrix, name)
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Integral, empty)
@@ -178,7 +168,10 @@ class Finemap(FM_unchecked):
 
 	def _calc_causal_status_prior(self):
 		super(Finemap, self)._calc_causal_status_prior()
-		self.check_probability(self.causal_status_prior, "Causal Status Prior")
+		self.check_probability(
+			self.causal_status_prior, 
+			"Prior probability of a causal configuration"
+		)
 
 	def _calc_imbalance(self):
 		super(Finemap, self)._calc_imbalance()
@@ -286,9 +279,9 @@ class Finemap(FM_unchecked):
 		self.check_positive_int(
 			self.num_ppl_total_exp, "Number of individuals for total expression data"
 		)
-		self.check_probability(
-			self.causal_status_prior, "Prior probability of a causal configuration"
-		)
+		# self.check_probability(
+		# 	self.causal_status_prior, "Prior probability of a causal configuration"
+		# )
 		self.check_positive_number(
 			self.imbalance_var_prior, "Prior variance for allelic imbalance"
 		)

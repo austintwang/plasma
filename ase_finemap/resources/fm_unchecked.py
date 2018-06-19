@@ -49,6 +49,7 @@ class FmUnchecked(object):
 
 		self._beta = None
 		self._mean = None
+		self._beta_normalizer = None
 
 		self._covdiag_phi = None
 		self._covdiag_beta = None
@@ -56,37 +57,39 @@ class FmUnchecked(object):
 		self.evaluator = None
 
 	def _calc_causal_status_prior(self):
-		if self.causal_status_prior != None:
+		if self.causal_status_prior is not None:
 			return
 
 		self.causal_status_prior = 1.0 / max(self.num_snps_imbalance, self.num_snps_total_exp)
 
 	def _calc_imbalance(self):
-		if self.imbalance != None:
+		if self.imbalance is not None:
 			return
 
 		self.imbalance = np.log(self.counts_A) - np.log(self.counts_B)
+		# print(self.imbalance) ####
 	
 	def _calc_phases(self):
-		if self.phases != None:
+		if self.phases is not None:
 			return
 
 		self.phases = self.hap_A - self.hap_B
 
 	def _calc_total_exp(self):
-		if self.total_exp != None:
+		if self.total_exp is not None:
 			return
 
 		self.total_exp = np.log(self.counts_A) + np.log(self.counts_B)
 
 	def _calc_genotypes_comb(self):
-		if self.genotypes_comb != None:
+		if self.genotypes_comb is not None:
 			return
 
 		self.genotypes_comb = self.hap_A + self.hap_B
+		# print(self.genotypes_comb) ####
 
 	def _calc_imbalance_errors(self):
-		if self.imbalance_errors != None:
+		if self.imbalance_errors is not None:
 			return
 
 		self._calc_imbalance()
@@ -97,9 +100,10 @@ class FmUnchecked(object):
 			* (1 + np.cosh(self.imbalance)) 
 			* (1 + self.overdispersion * (counts - 1))
 		)
+		# print(self.imbalance_errors) ####
 
 	def _calc_imbalance_stats(self):
-		if self.imbalance_stats != None:
+		if self.imbalance_stats is not None:
 			return
 
 		self._calc_imbalance_errors()
@@ -109,15 +113,18 @@ class FmUnchecked(object):
 		phases = self.phases
 		phasesT = phases.T
 		weights = 1 / self.imbalance_errors
-		denominator = np.empty(self.num_ppl_imbalance)
-		for ph, ind in enumerate(phases):
-			denominator[ind] = ph.dot(weights).dot(ph)
-		phi = denominator * phasesT.dot(weights.dot(self.imbalance))
-		varphi = denominator * denominator * np.sum((phasesT * phasesT), axis=1)
+		denominator = 1 / ((phasesT * weights) * phasesT).sum(1) 
+		# print(((phasesT * weights) * phasesT).sum(1)) ####
+		# print(denominator) ####
+		# denominator = np.empty(self.num_ppl_imbalance)
+		# for ph, ind in enumerate(phases):
+		# 	denominator[ind] = ph.dot(weights).dot(ph)
+		phi = denominator * np.matmul(phasesT, (weights * self.imbalance))
+		varphi = denominator * denominator * (phasesT * phasesT).sum(1) 
 		self.imbalance_stats = phi / varphi
 
 	def _calc_imbalance_corr(self):
-		if self.imbalance_corr != None:
+		if self.imbalance_corr is not None:
 			return
 
 		self._calc_imbalance_errors()
@@ -129,9 +136,12 @@ class FmUnchecked(object):
 		weight_matrix = np.diag(1 / imbalance_errors)
 		cov = phasesT.dot(weight_matrix).dot(phases) / self.num_ppl_imbalance
 		covdiag = np.diag(cov)
+		# print(covdiag) ####
 		self._covdiag_phi = covdiag
 		denominator = np.sqrt(np.outer(covdiag, covdiag))
 		self.imbalance_corr = cov / denominator
+		self.imbalance_corr = np.nan_to_num(self.imbalance_corr)
+		np.fill_diagonal(self.imbalance_corr, 1.0)
 
 	def _calc_beta(self):
 		self._calc_genotypes_comb()
@@ -140,14 +150,17 @@ class FmUnchecked(object):
 		genotypes_comb = self.genotypes_comb
 		genotypes_combT = genotypes_comb.T
 		mean = np.sum(self.total_exp) / self.num_ppl_total_exp
-		denominator = np.empty(self.num_ppl_total_exp)
-		for ge, ind in enumerate(genotypes_comb):
-			denominator[ind] = ge.dot(ge)
+		denominator = 1 / (genotypes_combT * genotypes_combT).sum(1)
+		# print(denominator) ####
+		# denominator = np.empty(self.num_ppl_total_exp)
+		# for ge, ind in enumerate(genotypes_comb):
+		# 	denominator[ind] = ge.dot(ge)
 		self._beta = denominator * genotypes_combT.dot(self.total_exp - mean)
 		self._mean = mean
+		self._beta_normalizer = denominator 
 
 	def _calc_total_exp_error(self):
-		if self.exp_error_var != None:
+		if self.exp_error_var is not None:
 			return
 
 		self._calc_beta()
@@ -157,31 +170,44 @@ class FmUnchecked(object):
 
 
 	def _calc_total_exp_stats(self):
-		if self.total_exp_stats != None:
+		if self.total_exp_stats is not None:
 			return
 
-		self._calc_total_exp_errors()
+		self._calc_genotypes_comb()
+		self._calc_beta()
+		self._calc_total_exp_error()
 
-		varbeta = denominator * denominator * np.sum((phasesT * phasesT), axis=1) * self.exp_error_var
+		genotypes_combT = self.genotypes_comb.T
+		denominator = self._beta_normalizer
+
+		varbeta = denominator * denominator * (
+			(genotypes_combT * genotypes_combT).sum(1) * self.exp_error_var
+		)
 		self.total_exp_stats = self._beta / varbeta
 
 	def _calc_total_exp_corr(self):
-		if self.total_exp_stats != None:
+		if self.total_exp_corr is not None:
 			return
 
 		self._calc_genotypes_comb()
 
 		genotypes_comb = self.genotypes_comb
+		# print(self.genotypes_comb) ####
 		genotypes_combT = genotypes_comb.T
-		cov = (genotypes_combT.dot(genotypes_comb) 
-			- np.outer(np.sum(genotypes_combT, axis=1)) / self.num_ppl_total_exp) / self.num_ppl_total_exp
+		means = np.sum(genotypes_combT, axis=1)
+		cov = (
+			(genotypes_combT.dot(genotypes_comb) 
+			- np.outer(means, means) / self.num_ppl_total_exp) / self.num_ppl_total_exp
+		)
 		covdiag = np.diag(cov)
 		self._covdiag_beta = covdiag
 		denominator = np.sqrt(np.outer(covdiag, covdiag))
 		self.total_exp_corr = cov / denominator
+		self.total_exp_corr = np.nan_to_num(self.total_exp_corr)
+		np.fill_diagonal(self.total_exp_corr, 1.0)
 
 	def _calc_cross_corr(self):
-		if self.cross_corr != None:
+		if self.cross_corr is not None:
 			return
 
 		self._calc_imbalance_errors()
@@ -212,6 +238,8 @@ class FmUnchecked(object):
 		ccov = genotypes_comb.T.dot(half_weights).dot(phases) / num
 		denominator = np.sqrt(np.outer(self._covdiag_phi, self._covdiag_beta))
 		self.cross_corr = ccov / denominator
+		self.cross_corr = np.nan_to_num(self.cross_corr)
+		# print(self.cross_corr) ####
 
 	def initialize(self):
 		self._calc_causal_status_prior()
@@ -236,8 +264,9 @@ class FmUnchecked(object):
 		self.evaluator.eval(configuration)
 		for i in xrange(num_iterations):
 			neighbors = []
-			for val, ind in enumerate(configuration):
+			for ind, val in enumerate(configuration):
 				# Add causal variant
+				# print(val, ind) ####
 				if val == 0:
 					neighbor = configuration.copy()
 					neighbor[ind] = 1
@@ -248,7 +277,7 @@ class FmUnchecked(object):
 					neighbor[ind] = 0
 					neighbors.append(neighbor)
 				# Swap status with other variants
-				for val2, ind2 in enumerate(configuration, start=ind+1):
+				for ind2, val2 in enumerate(configuration, start=ind+1):
 					if val2 != val:
 						neighbor = configuration.copy()
 						neighbor[ind] = val2

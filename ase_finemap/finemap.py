@@ -33,6 +33,7 @@ class Finemap(FmUnchecked):
 	@staticmethod
 	def _check_number_bounds(number, name, lower, upper):
 		if number < lower or number > upper:
+			print(number) ####
 			raise ValueError(
 				"{0} is not between {1} and {2}:\n{3}".format(
 					name, 
@@ -126,7 +127,6 @@ class Finemap(FmUnchecked):
 		self._check_ndarray(matrix, name)
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Real, empty)
-		self._check_ndarray_bounds(matrix, name, 0, float("inf"), empty)
 
 		if not np.allclose(matrix, matrix.T, atol=1e-8):
 			raise ValueError(
@@ -230,16 +230,16 @@ class Finemap(FmUnchecked):
 		)
 
 	def _calc_beta(self):
-		super(Finemap, self)._calc_imbalance_stats()
+		super(Finemap, self)._calc_beta()
 		self.check_matrix(
 			self._beta, 
-			(self.num_ppl_total_exp,), 
+			(self.num_snps_total_exp,), 
 			"Total expression effect size vector"
 		)
 		self.check_number(self._mean, "Total expression mean")
 
 	def _calc_total_exp_error(self):
-		super(Finemap, self)._calc_total_exp_errors()
+		super(Finemap, self)._calc_total_exp_error()
 		self.check_positive_number(self.exp_error_var, "Total expression error variance")
 
 	def _calc_total_exp_stats(self):
@@ -252,6 +252,7 @@ class Finemap(FmUnchecked):
 
 	def _calc_total_exp_corr(self):
 		super(Finemap, self)._calc_total_exp_corr()
+		# print(self.total_exp_corr) ####
 		self.check_matrix_corr(
 			self.total_exp_corr, 
 			(self.num_snps_total_exp, self.num_snps_total_exp), 

@@ -10,6 +10,7 @@ class Evaluator(object):
 	def __init__(self, fm):
 		self.num_snps_imbalance = fm.num_snps_imbalance
 		self.num_snps_total_exp = fm.num_snps_total_exp
+		self.num_snps = max(self.num_snps_imbalance, self.num_snps_total_exp)
 
 		self.causal_status_prior = fm.causal_status_prior
 
@@ -58,6 +59,7 @@ class Evaluator(object):
 		"""
 		l = np.linalg.cholesky(m)
 		l_inv = lp.dtrtri(l)
+		# print(l_inv) ####
 		return l_inv.T * l_inv 
 
 	def eval(self, configuration):
@@ -68,47 +70,57 @@ class Evaluator(object):
 
 		configuration_imbalance = configuration[:self.num_snps_imbalance]
 		configuration_total_exp = configuration[:self.num_snps_total_exp]
+		# print(configuration_imbalance) ####
+		# print(configuration_total_exp) ####
 
 		num_causal_imbalance = np.count_nonzero(configuration_imbalance)
 		num_causal_total_exp = np.count_nonzero(configuration_total_exp)
 		num_causal = np.count_nonzero(configuration)
-		prior_prob = (self.causal_status_prior ** num_causal * 
-				(1 - 2 * self.causal_status_prior) ** (self.num_snps - num_causal))
+		prior_prob = (
+			self.causal_status_prior ** num_causal * 
+			(1 - 2 * self.causal_status_prior) ** (self.num_snps - num_causal)
+		)
 
-		indices_imbalance = configuration_imbalance.nonzero()
-		indices_total_exp = configuration_total_exp.nonzero()
+		indices_imbalance = configuration_imbalance.nonzero()[0]
+		indices_total_exp = configuration_total_exp.nonzero()[0]
+		# print(indices_imbalance) ####
+		# print(indices_total_exp) ####
+
 		ind_2d_imbalance = np.ix_(indices_imbalance, indices_imbalance)
 		ind_2d_total_exp = np.ix_(indices_total_exp, indices_total_exp)
-		ind_2d_cross = np.ix_(indices_total_exp, indices_total_exp)
+		ind_2d_cross = np.ix_(indices_total_exp, indices_imbalance)
 
-		stats = np.concatenate(self.imbalance_stats[indices_imbalance], self.total_exp_stats[indices_total_exp])
+		# print(self.imbalance_stats[indices_imbalance]) ####
+		# print(self.total_exp_stats[indices_total_exp]) ####
+		
+		stats = np.append(self.imbalance_stats[indices_imbalance], self.total_exp_stats[indices_total_exp])
 		cross_corr_ind = self.cross_corr[ind_2d_cross]
-		corr = np.concatenate(
-			np.concatenate(self.imbalance_corr[ind_2d_imbalance], cross_corr_ind.T, axis=1),
-			np.concatenate(cross_corr_ind, self.total_exp_corr[ind_2d_total_exp], axis=1),
+		corr = np.append(
+			np.append(self.imbalance_corr[ind_2d_imbalance], cross_corr_ind.T, axis=1),
+			np.append(cross_corr_ind, self.total_exp_corr[ind_2d_total_exp], axis=1),
 			axis=0
 		)
 
-		prior_cov = np.concatenate(
-			np.concatenate(
+		prior_cov = np.append(
+			np.append(
 				np.eye(num_causal_imbalance) * self.imbalance_var_prior, 
 				np.eye(num_causal_imbalance, num_causal_total_exp) * self.cross_cov_prior, 
 				axis=1
 			),
-			np.concatenate(
+			np.append(
 				np.eye(num_causal_total_exp, num_causal_imbalance) * self.cross_cov_prior, 
 				np.eye(num_causal_total_exp) * self.total_exp_var_prior, 
 				axis=1
 			),
 			axis=0
 		)
-		prior_cov_inv = np.concatenate(
-			np.concatenate(
+		prior_cov_inv = np.append(
+			np.append(
 				np.eye(num_causal_imbalance) * self.inv_imbalance_prior, 
 				np.eye(num_causal_imbalance, num_causal_total_exp) * self.inv_cov_prior, 
 				axis=1
 			),
-			np.concatenate(
+			np.append(
 				np.eye(num_causal_total_exp, num_causal_imbalance) * self.inv_cov_prior, 
 				np.eye(num_causal_total_exp) * self.inv_total_exp_prior, 
 				axis=1
@@ -154,9 +166,9 @@ class Evaluator(object):
 		return causal_set
 
 	def get_ppas(self):
-		m = max(self.num_snps_imbalance, self.num_snps_total_exp)
+		# m = max(self.num_snps_imbalance, self.num_snps_total_exp)
 		ppas = []
-		for i in xrange(m):
+		for i in xrange(self.num_snps):
 			ppa = 0
 			for k, v in self.results.iteritems():
 				if k[i] == 1:

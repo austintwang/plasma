@@ -42,6 +42,7 @@ class Haplotypes(object):
 					[[int(j) for j in i.strip().split("\t")] for i in hapstr.strip().split("\n")]
 				).T
 				# print(hap_arr) ####
+				np.place(hap_arr, hap_arr==2, 0)
 				if hap_arr.shape[1] == self.NUM_SNPS:
 					self.haps[f] = hap_arr
 		with open(self.pickle_path, "wb") as hapfile:
@@ -58,6 +59,8 @@ class Haplotypes(object):
 		hapB = locus_haps[b_ind]
 		np.random.shuffle(hapA)
 		np.random.shuffle(hapB)
+		# print(a_ind) ####
+		# print(b_ind) ####
 		# # print(locus_haps) ####
 		# haps_shuffled = np.random.shuffle(locus_haps)
 		# # print(haps_shuffled) ####

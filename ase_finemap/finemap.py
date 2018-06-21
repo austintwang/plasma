@@ -122,6 +122,13 @@ class Finemap(FmUnchecked):
 		self._check_ndarray_dtype(matrix, name, numbers.Real, empty)
 		self._check_ndarray_bounds(matrix, name, 0, float("inf"), empty)
 
+	def check_matrix_positive_int(self, matrix, dimensions, name):
+		empty = any(i == 0 for i in dimensions) 
+		self._check_ndarray(matrix, name)
+		self._check_ndarray_dimensions(matrix, name, dimensions)
+		self._check_ndarray_dtype(matrix, name, numbers.Integral, empty)
+		self._check_ndarray_bounds(matrix, name, 0, float("inf"), empty)
+
 	def check_matrix_corr(self, matrix, dimensions, name):
 		empty = any(i == 0 for i in dimensions) 
 		self._check_ndarray(matrix, name)
@@ -165,6 +172,31 @@ class Finemap(FmUnchecked):
 		self._check_ndarray_dtype(matrix, name, numbers.Integral, empty)
 		self._check_ndarray_bounds(matrix, name, -1, 1, empty)
 
+	def _calc_counts(self):
+		super(Finemap, self)._calc_counts()
+		self.check_matrix_positive_int(
+			self.counts_A, 
+			(self.num_ppl_imbalance,), 
+			"Haplotype A Read Counts"
+		)
+		self.check_matrix_positive_int(
+			self.counts_B, 
+			(self.num_ppl_imbalance,), 
+			"Haplotype B Read Counts"
+		)
+
+	def _calc_haps(self):
+		super(Finemap, self)._calc_haps()
+		self.check_matrix_01(
+			self.hap_A, 
+			(self.num_ppl_total_exp, self.num_snps_total_exp,), 
+			"Haplotype A Genotype Data"
+		)
+		self.check_matrix_positive_int(
+			self.hap_B, 
+			(self.num_ppl_total_exp, self.num_snps_total_exp,), 
+			"Haplotype B Genotype Data"
+		)
 
 	def _calc_causal_status_prior(self):
 		super(Finemap, self)._calc_causal_status_prior()

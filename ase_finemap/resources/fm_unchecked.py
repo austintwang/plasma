@@ -12,7 +12,7 @@ from .evaluator import Evaluator
 class FmUnchecked(object):
 	IMBALANCE_VAR_PRIOR_DEFAULT = 10.0
 	TOTAL_EXP_VAR_PRIOR_DEFAULT = 10.0
-	CROSS_CORR_PRIOR_DEFAULT = 1.0
+	CROSS_CORR_PRIOR_DEFAULT = 0.8
 
 	def __init__(self, **kwargs):
 		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)
@@ -56,6 +56,12 @@ class FmUnchecked(object):
 
 		self.evaluator = None
 
+	def _calc_counts(self):
+		pass
+
+	def _calc_haps(self):
+		pass
+	
 	def _calc_causal_status_prior(self):
 		if self.causal_status_prior is not None:
 			return
@@ -66,6 +72,8 @@ class FmUnchecked(object):
 		if self.imbalance is not None:
 			return
 
+		self._calc_counts()
+
 		self.imbalance = np.log(self.counts_A) - np.log(self.counts_B)
 		# print(self.imbalance) ####
 	
@@ -73,17 +81,23 @@ class FmUnchecked(object):
 		if self.phases is not None:
 			return
 
+		self._calc_haps()
+
 		self.phases = self.hap_A - self.hap_B
 
 	def _calc_total_exp(self):
 		if self.total_exp is not None:
 			return
 
+		self._calc_counts()
+
 		self.total_exp = np.log(self.counts_A) + np.log(self.counts_B)
 
 	def _calc_genotypes_comb(self):
 		if self.genotypes_comb is not None:
 			return
+
+		self._calc_haps()
 
 		self.genotypes_comb = self.hap_A + self.hap_B
 		# print(self.genotypes_comb) ####
@@ -156,6 +170,7 @@ class FmUnchecked(object):
 		# for ge, ind in enumerate(genotypes_comb):
 		# 	denominator[ind] = ge.dot(ge)
 		self._beta = denominator * genotypes_combT.dot(self.total_exp - mean)
+		# print(self._beta) ####
 		self._mean = mean
 		self._beta_normalizer = denominator 
 
@@ -165,7 +180,9 @@ class FmUnchecked(object):
 
 		self._calc_beta()
 
-		residuals = self.genotypes_comb.dot(self._beta) - self._mean
+		residuals = self.genotypes_comb.dot(np.nan_to_num(self._beta)) - self._mean
+		# print(self._mean) ####
+		# print(residuals) ####
 		self.exp_error_var = residuals.dot(residuals) / (self.num_ppl_total_exp - 2)
 
 
@@ -183,7 +200,11 @@ class FmUnchecked(object):
 		varbeta = denominator * denominator * (
 			(genotypes_combT * genotypes_combT).sum(1) * self.exp_error_var
 		)
+		# print(self.exp_error_var) ####
+		# print(varbeta) ####
+		# print(self._beta) ####
 		self.total_exp_stats = self._beta / varbeta
+		# print(self.total_exp_stats) ####
 
 	def _calc_total_exp_corr(self):
 		if self.total_exp_corr is not None:

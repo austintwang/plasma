@@ -22,7 +22,6 @@ def dummy_test():
 		"baseline_exp": 4.0,
 		"num_causal": 1,
 		"ase_read_prop": 1.0,
-		"cross_corr_prior": 1.0,
 		"search_mode": "shotgun",
 		"search_iterations": 10000,
 		"primary_var": "var_effect_size",

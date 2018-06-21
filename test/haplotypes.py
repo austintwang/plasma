@@ -42,7 +42,7 @@ class Haplotypes(object):
 					[[int(j) for j in i.strip().split("\t")] for i in hapstr.strip().split("\n")]
 				).T
 				# print(hap_arr) ####
-				np.place(hap_arr, hap_arr==2, 0)
+				np.place(hap_arr, hap_arr>1, 0)
 				if hap_arr.shape[1] == self.NUM_SNPS:
 					self.haps[f] = hap_arr
 		with open(self.pickle_path, "wb") as hapfile:

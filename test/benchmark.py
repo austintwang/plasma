@@ -44,7 +44,6 @@ class Benchmark(object):
 			"num_snps_total_exp": self.params["num_snps"],
 			"num_ppl_imbalance": self.params["num_ppl"],
 			"num_ppl_total_exp": self.params["num_ppl"],
-			"cross_corr_prior": self.params["cross_corr_prior"],
 			"overdispersion": self.params["overdispersion"]
 		}
 

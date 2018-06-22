@@ -24,10 +24,13 @@ class Evaluator(object):
 
 		self.imbalance_var_prior = fm.imbalance_var_prior
 		self.total_exp_var_prior = fm.total_exp_var_prior
-		self.cross_cov_prior = fm.cross_corr_prior * fm.imbalance_var_prior * fm.total_exp_var_prior
-		print(self.imbalance_var_prior) ####
-		print(self.total_exp_var_prior) ####
-		print(self.cross_cov_prior) ####
+		self.cross_cov_prior = (
+			fm.cross_corr_prior 
+			* np.sqrt(fm.imbalance_var_prior * fm.total_exp_var_prior)
+		)
+		# print(self.imbalance_var_prior) ####
+		# print(self.total_exp_var_prior) ####
+		# print(self.cross_cov_prior) ####
 		
 		# print(fm.imbalance_var_prior * (1 - fm.cross_corr_prior ** 2)) ####
 		# print(fm.cross_corr_prior) ####
@@ -79,6 +82,7 @@ class Evaluator(object):
 		# np.linalg.cholesky(self.corr) ####
 		# print(all(np.diag(self.corr)==1)) ####
 		# vals, vects = np.linalg.eig(self.corr) ####
+		# print("eigs") ####
 		# print(list(vals)) ####
 		# print(self.total_exp_corr) ####
 		# np.linalg.cholesky(self.total_exp_corr) ####
@@ -88,6 +92,7 @@ class Evaluator(object):
 		self.det_term = np.eye(self.num_snps_combined) + np.matmul(self.prior_cov, self.corr)
 		self.inv_term = self.prior_cov_inv + self.corr
 		# print(self.det_term) ####
+		# np.linalg.cholesky(self.inv_term) ####
 
 		self.stats = np.append(self.imbalance_stats, self.total_exp_stats)
 
@@ -125,7 +130,10 @@ class Evaluator(object):
 		"""
 		Returns the determinant of a symmetric positive-definite matrix 
 		"""
-		print(m) ####
+		# print(m) ####
+		# vals, vects = np.linalg.eig(m) ####
+		# print("eigs") ####
+		# print(list(vals)) ####
 		l = np.linalg.cholesky(m)
 		prod_diag = l.diagonal().prod()
 		return prod_diag ** 2
@@ -135,11 +143,13 @@ class Evaluator(object):
 		"""
 		Returns the inverse of a symmetric positive-definite matrix
 		"""
+		# print(m) ####
 		l = np.linalg.cholesky(m)
 		# print(l) ####
-		l_inv = lp.dtrtri(l)
+		# print(np.linalg.inv(l)) ####
+		l_inv = lp.dtrtri(l, lower=1)[0]
 		# print(l_inv) ####
-		return l_inv.T * l_inv 
+		return np.matmul(l_inv.T, l_inv)
 
 	def eval(self, configuration, bias=1.0, prior=None):
 		key = tuple(configuration.tolist())
@@ -182,12 +192,33 @@ class Evaluator(object):
 		# print(det_term_subset) ####
 		# print(inv_term_subset) ####
 		# print(stats_subset) ####
-
-		det = self._det(det_term_subset)
-		inv = self._inv(inv_term_subset)
+		try: 
+			inv = self._inv(inv_term_subset)
+			# det = self._det(det_term_subset)
+			det = np.linalg.det(det_term_subset)
+		except np.linalg.linalg.LinAlgError as err: 
+			print(det_term_subset) ####
+			print(inv_term_subset) ####
+			print(stats_subset) ####
+			print(selection) ####
+			raise
+		# print(stats_subset) ####
+		# print(det) ####
+		# print(np.linalg.det(det_term_subset)) ####
+		# print(inv_term_subset) ####
+		# print(inv) ####
+		# print(np.linalg.inv(inv_term_subset)) ####
+		# print(det ** -0.5) ####
+		# print(inv.dot(stats_subset)) ####
+		# print(inv.dot(stats_subset).dot(stats_subset)) ####
+		# print(np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)) ####
 
 		bf = (det ** -0.5) * np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)
 		res = bf * prior / bias
+
+		# print(bf) ####
+		# print(res) ####
+		# print("") ####
 
 		self.results[key] = res
 		self.cumu_sum += res

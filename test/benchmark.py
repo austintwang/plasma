@@ -19,7 +19,7 @@ class Benchmark(object):
 	res_path = os.path.join("results")
 	def __init__(self, params):
 		self.params = params
-		self.haplotypes = Haplotypes()
+		self.haplotypes = Haplotypes(params)
 
 		self.results = []
 		self.results_df = None
@@ -168,7 +168,7 @@ class Benchmark(object):
 		self.primary_var_vals.append(self.params[self.params["primary_var"]])
 
 		for itr in xrange(self.params["iterations"]):
-			print("\nIteration {0}".format(str(itr)))
+			print("\nIteration {0}".format(str(itr + 1)))
 			print("Generating Simulation Data")
 			self.simulation.generate_data()
 			sim_result = {
@@ -179,6 +179,7 @@ class Benchmark(object):
 				"hap_B": self.simulation.hap_B
 			}
 			causal_config = self.simulation.causal_config
+			# print(causal_config) ####
 			print("Finished Generating Simulation Data")
 
 			# print(sim_result["hap_A"].tolist()) ####

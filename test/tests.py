@@ -15,13 +15,13 @@ from . import Haplotypes
 def dummy_test():
 	params = {
 		"num_snps": 1000,
-		"num_ppl": 50,
+		"num_ppl": 95,
 		"var_effect_size": 2.0,
 		"overdispersion": 0.05,
 		"prop_noise": 0.95,
 		"baseline_exp": 4.0,
 		"num_causal": 1,
-		"ase_read_prop": 1.0,
+		"ase_read_prop": 0.15,
 		"search_mode": "shotgun",
 		"search_iterations": 10000,
 		"primary_var": "var_effect_size",

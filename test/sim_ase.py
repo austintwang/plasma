@@ -72,6 +72,13 @@ class SimAse(object):
 		self.genotypes_comb = self.hap_A + self.hap_B
 		self.phases = self.hap_A - self.hap_B
 
+	# @staticmethod
+	# def _draw_bb(ase_counts, alphas, betas):
+	# 	counts = 0
+	# 	while counts == 0:
+	# 		counts = npr.binomial(ase_counts, npr.beta(alphas, betas))
+	# 	return counts
+	
 	def _generate_expression(self):
 		self.exp_A = self.hap_A.dot(self.causal_snps) + self.baseline_exp
 		self.exp_B = self.hap_B.dot(self.causal_snps) + self.baseline_exp
@@ -88,10 +95,33 @@ class SimAse(object):
 		# print(counts_total) ####
 		# print(self.ase_read_prop) ####
 		ase_counts = npr.binomial(counts_total, self.ase_read_prop)
+		print(np.mean(counts_total * self.ase_read_prop)) ####
 		betas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(imbalance_ideal)))
 		alphas = (1 / self.overdispersion - 1) * (1 - 1 / (1 + np.exp(imbalance_ideal)))
 		self.counts_A = npr.binomial(ase_counts, npr.beta(alphas, betas))
+		
+		zeros = np.nonzero(self.counts_A == 0)[0]
+		while zeros.size != 0:
+			np.put(
+				self.counts_A, 
+				zeros, 
+				npr.binomial(ase_counts[zeros], npr.beta(alphas[zeros], betas[zeros]))
+			)
+			zeros = np.nonzero(self.counts_A == 0)[0]
+			print(zeros.size) ####
+		
+		alls = np.nonzero(self.counts_A == ase_counts)[0]
+		while alls.size != 0:
+			np.put(
+				self.counts_A, 
+				alls, 
+				npr.binomial(ase_counts[alls], npr.beta(alphas[alls], betas[alls]))
+			)
+			alls = np.nonzero(self.counts_A == ase_counts)[0]
+			print(alls.size) ####
+
 		self.counts_B = ase_counts - self.counts_A
+		# print(self.counts_A) ####
 
 	def generate_data(self):
 		self.hap_A, self.hap_B = self.haplotypes.draw_haps()

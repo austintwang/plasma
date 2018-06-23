@@ -81,18 +81,40 @@ class Evaluator(object):
 		# print(self.cross_corr) ####
 		# np.linalg.cholesky(self.corr) ####
 		# print(all(np.diag(self.corr)==1)) ####
-		# vals, vects = np.linalg.eig(self.corr) ####
-		# print("eigs") ####
-		# print(list(vals)) ####
+		vals, vects = np.linalg.eig(self.corr) ####
+		print("eigs") ####
+		print(vals.real) ####
+		vals, vects = np.linalg.eig(self.imbalance_corr) ####
+		print("eigs imb") ####
+		print(vals.real) ####
+		vals, vects = np.linalg.eig(self.total_exp_corr) ####
+		print("eigs tot") ####
+		print(vals.real) ####
+		vals, vects = np.linalg.eig(self.cross_corr) ####
+		print("eigs cross") ####
+		print(vals.real) ####
+		# vals, vects = np.linalg.eig(self.prior_cov_inv) ####
+		# print("eigs2") ####
+		# print(vals.real) ####
 		# print(self.total_exp_corr) ####
 		# np.linalg.cholesky(self.total_exp_corr) ####
+		# np.linalg.cholesky(self.imbalance_corr) ####
 		# print(self.total_exp_corr) ####
+		# np.linalg.cholesky(self.corr) ####
+		# np.linalg.cholesky(self.prior_cov) ####
+		# np.linalg.cholesky(self.prior_cov_inv) ####
 
 
 		self.det_term = np.eye(self.num_snps_combined) + np.matmul(self.prior_cov, self.corr)
 		self.inv_term = self.prior_cov_inv + self.corr
 		# print(self.det_term) ####
 		# np.linalg.cholesky(self.inv_term) ####
+		# vals, vects = np.linalg.eig(self.prior_cov_inv * 1 + self.corr) ####
+		# print("eigs3") ####
+		# print(vals.real) ####
+		# print(np.nonzero(vals.real <= 0)[0]) ####
+
+		raise Exception ####
 
 		self.stats = np.append(self.imbalance_stats, self.total_exp_stats)
 
@@ -192,15 +214,17 @@ class Evaluator(object):
 		# print(det_term_subset) ####
 		# print(inv_term_subset) ####
 		# print(stats_subset) ####
+		det = np.linalg.det(det_term_subset)
 		try: 
 			inv = self._inv(inv_term_subset)
 			# det = self._det(det_term_subset)
-			det = np.linalg.det(det_term_subset)
 		except np.linalg.linalg.LinAlgError as err: 
-			print(det_term_subset) ####
+			# print(det_term_subset) ####
 			print(inv_term_subset) ####
 			print(stats_subset) ####
-			print(selection) ####
+			vals, vects = np.linalg.eig(inv_term_subset) ####
+			print(vals)
+			# print(selection) ####
 			raise
 		# print(stats_subset) ####
 		# print(det) ####
@@ -307,10 +331,10 @@ class Evaluator(object):
 		threshold = confidence * self.cumu_sum
 		conf_sum = 0
 		for c in configs:
-			causuality = self.results[configs]
+			causuality = self.results[c]
 			if conf_sum + causuality <= threshold:
 				conf_sum += causuality
-				for val, ind in enumerate(c):
+				for ind, val in enumerate(c):
 					if val == 1:
 						causal_set[ind] = 1
 			else:

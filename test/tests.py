@@ -14,21 +14,23 @@ from . import Haplotypes
 
 def dummy_test():
 	params = {
-		"num_snps": 1000,
+		"num_snps": 200,
 		"num_ppl": 95,
 		"var_effect_size": 2.0,
 		"overdispersion": 0.05,
-		"prop_noise": 0.95,
+		"prop_noise_eqtl": 0.95,
+		"prop_noise_ase": 0.5,
 		"baseline_exp": 4.0,
 		"num_causal": 1,
 		"ase_read_prop": 0.15,
 		"search_mode": "shotgun",
-		"search_iterations": 10000,
+		"search_iterations": 1000,
 		"primary_var": "var_effect_size",
 		"primary_var_display": "Variance of Simulated Effect Sizes",
 		"test_count": 4,
 		"test_name": "dummy_test",
-		"iterations": 10
+		"iterations": 10,
+		"confidence": 0.95
 	}
 	tests = [2.0, 5.0, 10.0, 20.0]
 	bm = Benchmark(params)

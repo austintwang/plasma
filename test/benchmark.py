@@ -53,15 +53,15 @@ class Benchmark(object):
 			"num_ppl": self.params["num_ppl"],
 			"var_effect_size": self.params["var_effect_size"],
 			"overdispersion": self.params["overdispersion"],
-			"prop_noise": self.params["prop_noise"],
+			"prop_noise_eqtl": self.params["prop_noise_eqtl"],
+			"prop_noise_ase": self.params["prop_noise_ase"],
 			"baseline_exp": self.params["baseline_exp"],
 			"num_causal": self.params["num_causal"],
 			"ase_read_prop": self.params["ase_read_prop"]
 		}
 		self.simulation.update()
 
-	@staticmethod
-	def output_result(result, out_dir, params):
+	def output_result(self, result, out_dir):
 		title_var = self.params["primary_var_display"]
 		var_value = str(self.params[self.params["primary_var"]])
 
@@ -70,7 +70,7 @@ class Benchmark(object):
 		recall_rate_full = result["recall_rate_full"]
 		recall_rate_eqtl = result["recall_rate_eqtl"]
 
-		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in params.viewitems())
+		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in self.params.viewitems())
 		with open(os.path.join(out_dir, "parameters.txt"), "w") as params_file:
 			params_file.write(params_str)
 
@@ -124,7 +124,7 @@ class Benchmark(object):
 		plt.clf()
 
 		dflst = []
-		for dct, ind in enumerate(self.results):
+		for ind, dct in enumerate(self.results):
 			var_value = self.primary_var_vals[ind]
 			for i in dct["set_sizes_full"]:
 				dflst.append([i, var_value, "Full"])
@@ -199,22 +199,27 @@ class Benchmark(object):
 				model_full.search_shotgun(self.params["search_iterations"])
 			print("Finished Search Under Full Model")
 
-			causal_set = model_full.get_causal_set(params["confidence"])
+			causal_set = model_full.get_causal_set(self.params["confidence"])
 			assert all([i == 0 or i == 1 for i in causal_set])
 			causal_set_size = sum(causal_set)
 			result["set_sizes_full"].append(causal_set_size)
 
 			recall = 1
-			for val, ind in enumerate(causal_config):
+			for ind, val in enumerate(causal_config):
 				if val == 1:
 					if causal_set[ind] != 1:
 						recall = 0
 			result["recall_rate_full"].append(recall)
 
 			print("Initializing eQTL Model")
-			model_inputs_eqtl = copy(model_inputs).update(
-				{"imbalance": np.zeros(shape=0), "phases": np.zeros(shape=(0,0))}
-			)
+			model_inputs_eqtl = model_inputs.copy()
+			model_inputs_eqtl.update({
+				"imbalance": np.zeros(shape=0), 
+				"phases": np.zeros(shape=(0,0)),
+				"imbalance_errors": np.zeros(shape=0),
+				"num_ppl_imbalance": 0,
+				"num_snps_imbalance": 0
+			})
 			print("Finished Initializing eQTL Model")
 			print("Starting Search Under eQTL Model")
 			model_eqtl = Finemap(**model_inputs_eqtl)
@@ -225,20 +230,20 @@ class Benchmark(object):
 				model_eqtl.search_shotgun(self.params["search_iterations"])
 			print("Finished Search Under eQTL Model")
 
-			causal_set_eqtl = model_eqtl.get_causal_set(params["confidence"])
+			causal_set_eqtl = model_eqtl.get_causal_set(self.params["confidence"])
 			assert all([i == 0 or i == 1 for i in causal_set_eqtl])
 			causal_set_eqtl_size = sum(causal_set_eqtl)
 			result["set_sizes_eqtl"].append(causal_set_eqtl_size)
 
 			recall = 1
-			for val, ind in enumerate(causal_config):
+			for ind, val in enumerate(causal_config):
 				if val == 1:
 					if causal_set_eqtl[ind] != 1:
 						recall = 0
 			result["recall_rate_eqtl"].append(recall)
 
 		print("Writing Result")
-		self.output_result(result, test_path, self.params)
+		self.output_result(result, test_path)
 		self.results.append(result)
 		print("Finished Writing Result")
 

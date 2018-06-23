@@ -25,7 +25,8 @@ class SimAse(object):
 		self.num_ppl = self.bm.sim_params["num_ppl"]
 		self.var_effect_size = self.bm.sim_params["var_effect_size"]
 		self.overdispersion = self.bm.sim_params["overdispersion"]
-		self.prop_noise = self.bm.sim_params["prop_noise"]
+		self.prop_noise_eqtl = self.bm.sim_params["prop_noise_eqtl"]
+		self.prop_noise_ase = self.bm.sim_params["prop_noise_ase"]
 		self.baseline_exp = self.bm.sim_params["baseline_exp"]
 		self.num_causal = self.bm.sim_params["num_causal"]
 		# self.genotypes_A = self.bm.sim_params["genotypes_A"]
@@ -88,39 +89,77 @@ class SimAse(object):
 		imbalance_ideal = self.exp_A - self.exp_B
 		self.total_exp_ideal = np.log(counts_total_ideal)
 		ideal_exp_var = np.var(self.total_exp_ideal)
-		total_var = ideal_exp_var / self.prop_noise
+		total_var = ideal_exp_var / self.prop_noise_eqtl
 
 		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(total_var))
+		# smalls = np.nonzero(self.total_exp < 0.69)[0]
+		# while smalls.size != 0:
+		# 	small_subs = npr.normal(self.total_exp_ideal[smalls], np.sqrt(total_var))
+		# 	np.put(
+		# 		self.total_exp,
+		# 		smalls,
+		# 		small_subs
+		# 	)
+
 		counts_total = np.exp(self.total_exp).astype(int)
 		# print(counts_total) ####
 		# print(self.ase_read_prop) ####
-		ase_counts = npr.binomial(counts_total, self.ase_read_prop)
-		print(np.mean(counts_total * self.ase_read_prop)) ####
+		
+		ase_counts = npr.binomial(
+			counts_total, 
+			self.ase_read_prop * (1 - self.prop_noise_ase)
+		)
+
+		trans_counts_exp = counts_total * self.ase_read_prop * self.prop_noise_ase
+		trans_counts_A = npr.poisson(trans_counts_exp / 2) + 1
+		trans_counts_B = npr.poisson(trans_counts_exp / 2) + 1
+		trans_counts = trans_counts_A + trans_counts_B
+
+		# lows = np.nonzero(ase_counts < 2)[0]
+		# while lows.size != 0:
+		# 	low_subs = npr.binomial(counts_total[lows], self.ase_read_prop)
+		# 	np.put(
+		# 		ase_counts,
+		# 		lows,
+		# 		low_subs
+		# 	)
+		# print(np.mean(counts_total * self.ase_read_prop)) ####
 		betas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(imbalance_ideal)))
 		alphas = (1 / self.overdispersion - 1) * (1 - 1 / (1 + np.exp(imbalance_ideal)))
-		self.counts_A = npr.binomial(ase_counts, npr.beta(alphas, betas))
+		counts_A_ase = npr.binomial(ase_counts, npr.beta(alphas, betas))
+		self.counts_A = counts_A_ase + trans_counts_A
 		
-		zeros = np.nonzero(self.counts_A == 0)[0]
-		while zeros.size != 0:
-			np.put(
-				self.counts_A, 
-				zeros, 
-				npr.binomial(ase_counts[zeros], npr.beta(alphas[zeros], betas[zeros]))
-			)
-			zeros = np.nonzero(self.counts_A == 0)[0]
-			print(zeros.size) ####
+		# zeros = np.nonzero(self.counts_A == 0)[0]
+		# while zeros.size != 0:
+		# 	zero_subs = npr.binomial(ase_counts[zeros], npr.beta(alphas[zeros], betas[zeros]))
+		# 	np.put(
+		# 		self.counts_A, 
+		# 		zeros, 
+		# 		zero_subs
+		# 	)
+		# 	zeros = np.nonzero(self.counts_A == 0)[0]
+		# 	print(zeros.size) ####
+		# 	print(ase_counts[zeros]) ####
+		# 	print(alphas[zeros]) ####
+		# 	print(betas[zeros]) ####
+		# 	print(zero_subs) ####
 		
-		alls = np.nonzero(self.counts_A == ase_counts)[0]
-		while alls.size != 0:
-			np.put(
-				self.counts_A, 
-				alls, 
-				npr.binomial(ase_counts[alls], npr.beta(alphas[alls], betas[alls]))
-			)
-			alls = np.nonzero(self.counts_A == ase_counts)[0]
-			print(alls.size) ####
+		# alls = np.nonzero(self.counts_A == ase_counts)[0]
+		# while alls.size != 0:
+		# 	all_subs = npr.binomial(ase_counts[alls], npr.beta(alphas[alls], betas[alls]))
+		# 	np.put(
+		# 		self.counts_A, 
+		# 		alls, 
+		# 		all_subs
+		# 	)
+		# 	alls = np.nonzero(self.counts_A == ase_counts)[0]
+		# 	print(alls.size) ####
+		# 	print(ase_counts[alls])
+		# 	print(alphas[alls]) ####
+		# 	print(betas[alls]) ####
+		# 	print(all_subs) ####
 
-		self.counts_B = ase_counts - self.counts_A
+		self.counts_B = ase_counts - counts_A_ase + trans_counts_B
 		# print(self.counts_A) ####
 
 	def generate_data(self):

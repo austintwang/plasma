@@ -10,9 +10,9 @@ import itertools
 from .evaluator import Evaluator
 
 class FmUnchecked(object):
-	IMBALANCE_VAR_PRIOR_DEFAULT = 10.0
-	TOTAL_EXP_VAR_PRIOR_DEFAULT = 10.0
-	CROSS_CORR_PRIOR_DEFAULT = 0.95
+	IMBALANCE_VAR_PRIOR_DEFAULT = 10
+	TOTAL_EXP_VAR_PRIOR_DEFAULT = 10
+	CROSS_CORR_PRIOR_DEFAULT = 0.0
 
 	def __init__(self, **kwargs):
 		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)
@@ -101,12 +101,15 @@ class FmUnchecked(object):
 
 		self.genotypes_comb = self.hap_A + self.hap_B
 		# print(self.genotypes_comb) ####
+		# with open("genotypes.txt", "w") as gen_debug: 
+		# 	np.savetxt(gen_debug, self.genotypes_comb) ####
 
 	def _calc_imbalance_errors(self):
 		if self.imbalance_errors is not None:
 			return
 
 		self._calc_imbalance()
+		self._calc_counts()
 
 		counts = self.counts_A + self.counts_B
 		self.imbalance_errors = (
@@ -233,6 +236,9 @@ class FmUnchecked(object):
 		self.total_exp_corr = np.nan_to_num(self.total_exp_corr)
 		np.fill_diagonal(self.total_exp_corr, 1.0)
 
+		# with open("corr_mat.txt", "w") as corr_debug:
+		# 	np.savetxt(corr_debug, self.total_exp_corr) ####
+
 	def _calc_cross_corr(self):
 		if self.cross_corr is not None:
 			return
@@ -243,18 +249,28 @@ class FmUnchecked(object):
 		self._calc_imbalance_corr()
 		self._calc_total_exp_corr()
 
-		if self.num_ppl_imbalance < self.num_ppl_total_exp:
+		if self.num_ppl_imbalance == 0:
+			self.cross_corr = np.zeros(shape=(self.num_snps_total_exp,0))
+			return
+
+		elif self.num_ppl_total_exp == 0:
+			self.cross_corr = np.zeros(shape=(0,self.num_snps_imbalance))
+			return
+
+		elif self.num_ppl_imbalance < self.num_ppl_total_exp:
 			diff = self.num_ppl_total_exp - self.num_ppl_imbalance
 			num = self.num_ppl_imbalance
 			imbalance_errors = np.concatenate(self.imbalance_errors, np.zeros(diff))
 			genotypes_comb = self.genotypes_comb
 			phases = np.concatenate(self.phases, np.zeros(diff, self.num_snps_imbalance))
+
 		elif self.num_ppl_imbalance > self.num_ppl_total_exp:
 			diff = self.num_ppl_imbalance - self.num_ppl_total_exp
 			num = self.num_ppl_total_exp
 			imbalance_errors = self.imbalance_errors
 			genotypes_comb = np.concatenate(self.genotypes_comb, np.zeros(diff, self.num_snps_total_exp))
 			phases = self.phases
+
 		else:
 			num = self.num_ppl_imbalance
 			imbalance_errors = self.imbalance_errors
@@ -330,8 +346,8 @@ class FmUnchecked(object):
 			configuration = neighbors[selection]
 			# print(configuration.shape) ####
 			# print(configuration) ####
-			# if i % 1 == 0: ####
-			# 	print(i) ####
+			if i % 100 == 0: ####
+				print(i) ####
 
 	def get_probs(self):
 		return self.evaluator.get_probs()
@@ -339,8 +355,8 @@ class FmUnchecked(object):
 	def get_probs_sorted(self):
 		return self.evaluator.get_probs_sorted()
 
-	def get_causal_set(self):
-		return self.evaluator.get_causal_set()
+	def get_causal_set(self, confidence):
+		return self.evaluator.get_causal_set(confidence)
 
 	def get_ppas(self):
 		return self.evaluator.get_ppas()

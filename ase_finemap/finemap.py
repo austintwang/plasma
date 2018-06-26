@@ -215,7 +215,7 @@ class Finemap(FmUnchecked):
 
 	def _calc_phases(self):
 		super(Finemap, self)._calc_phases()
-		self.check_matrix_n101(
+		self.check_matrix(
 			self.phases, 
 			(self.num_ppl_imbalance, self.num_snps_imbalance,), 
 			"Genotype phase matrix"
@@ -231,10 +231,19 @@ class Finemap(FmUnchecked):
 
 	def _calc_genotypes_comb(self):
 		super(Finemap, self)._calc_genotypes_comb()
-		self.check_matrix_012(
+		self.check_matrix(
 			self.genotypes_comb, 
 			(self.num_ppl_total_exp, self.num_snps_total_exp,), 
 			"Genotype allele count matrix"
+		)
+
+	def _calc_corr_shared(self):
+		super(Finemap, self)._calc_corr_shared()
+		snps = max(self.num_snps_imbalance, self.num_snps_total_exp)
+		self.check_matrix_corr(
+			self.corr_shared, 
+			(snps, snps), 
+			"Total expression correlation matrix"
 		)
 
 	def _calc_imbalance_errors(self):
@@ -270,9 +279,13 @@ class Finemap(FmUnchecked):
 		)
 		self.check_number(self._mean, "Total expression mean")
 
-	def _calc_total_exp_error(self):
-		super(Finemap, self)._calc_total_exp_error()
-		self.check_positive_number(self.exp_error_var, "Total expression error variance")
+	def _calc_total_exp_errors(self):
+		super(Finemap, self)._calc_total_exp_errors()
+		self.check_matrix(
+			self.exp_errors, 
+			(self.num_snps_total_exp,), 
+			"Total expression error variances"
+		)
 
 	def _calc_total_exp_stats(self):
 		super(Finemap, self)._calc_total_exp_stats()

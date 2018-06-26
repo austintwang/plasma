@@ -81,18 +81,18 @@ class Evaluator(object):
 		# print(self.cross_corr) ####
 		# np.linalg.cholesky(self.corr) ####
 		# print(all(np.diag(self.corr)==1)) ####
-		vals, vects = np.linalg.eig(self.corr) ####
-		print("eigs") ####
-		print(vals.real) ####
-		vals, vects = np.linalg.eig(self.imbalance_corr) ####
-		print("eigs imb") ####
-		print(vals.real) ####
-		vals, vects = np.linalg.eig(self.total_exp_corr) ####
-		print("eigs tot") ####
-		print(vals.real) ####
-		vals, vects = np.linalg.eig(self.cross_corr) ####
-		print("eigs cross") ####
-		print(vals.real) ####
+		# vals, vects = np.linalg.eig(self.corr) ####
+		# print("eigs") ####
+		# print(vals.real) ####
+		# vals, vects = np.linalg.eig(self.imbalance_corr) ####
+		# print("eigs imb") ####
+		# print(vals.real) ####
+		# vals, vects = np.linalg.eig(self.total_exp_corr) ####
+		# print("eigs tot") ####
+		# print(vals.real) ####
+		# vals, vects = np.linalg.eig(self.cross_corr) ####
+		# print("eigs cross") ####
+		# print(vals.real) ####
 		# vals, vects = np.linalg.eig(self.prior_cov_inv) ####
 		# print("eigs2") ####
 		# print(vals.real) ####
@@ -114,7 +114,7 @@ class Evaluator(object):
 		# print(vals.real) ####
 		# print(np.nonzero(vals.real <= 0)[0]) ####
 
-		raise Exception ####
+		# raise Exception ####
 
 		self.stats = np.append(self.imbalance_stats, self.total_exp_stats)
 
@@ -139,7 +139,7 @@ class Evaluator(object):
 
 		# Create structure for storing unnormalized results for each causal configuration
 		self.results = {}
-		self.cumu_sum = 0.0
+		# self.cumu_sum = 0.0
 
 		# # Calculate result for null configuration
 		# self.null_config = np.zeros(self.num_snps)
@@ -173,23 +173,23 @@ class Evaluator(object):
 		# print(l_inv) ####
 		return np.matmul(l_inv.T, l_inv)
 
-	def eval(self, configuration, bias=1.0, prior=None):
+	def eval(self, configuration, lbias=0.0, lprior=None):
 		key = tuple(configuration.tolist())
 
 		if key in self.results:
 			return self.results[key] 
 
-		if prior is None:
+		if lprior is None:
 			num_causal = np.count_nonzero(configuration)
-			prior = (
-				self.causal_status_prior ** num_causal
-				* (1 - 2 * self.causal_status_prior) ** (self.num_snps - num_causal)
+			lprior = (
+				np.log(self.causal_status_prior) * num_causal
+				+ np.log(1 - 2 * self.causal_status_prior) * (self.num_snps - num_causal)
 			)
 
 		if np.array_equal(configuration, self.null_config):
-			res = prior / bias
+			res = lprior - lbias
 			self.results[key] = res
-			self.cumu_sum += res
+			# self.cumu_sum += res
 			return res
 
 		configuration_bool = (configuration == 1)
@@ -214,7 +214,8 @@ class Evaluator(object):
 		# print(det_term_subset) ####
 		# print(inv_term_subset) ####
 		# print(stats_subset) ####
-		det = np.linalg.det(det_term_subset)
+		# det = np.linalg.det(det_term_subset)
+		# inv = lp.dpotri(inv_term_subset)[0]
 		try: 
 			inv = self._inv(inv_term_subset)
 			# det = self._det(det_term_subset)
@@ -237,15 +238,17 @@ class Evaluator(object):
 		# print(inv.dot(stats_subset).dot(stats_subset)) ####
 		# print(np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)) ####
 
-		bf = (det ** -0.5) * np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)
-		res = bf * prior / bias
+		ldet = np.linalg.slogdet(det_term_subset)[1]
+		lbf = ldet * -0.5 + (inv.dot(stats_subset).dot(stats_subset) / 2.0)
+
+		res = lbf + lprior - lbias
 
 		# print(bf) ####
 		# print(res) ####
 		# print("") ####
 
 		self.results[key] = res
-		self.cumu_sum += res
+		# self.cumu_sum += res
 		return res
 
 		# configuration_imbalance = configuration[:self.num_snps_imbalance]
@@ -316,22 +319,29 @@ class Evaluator(object):
 
 	def get_probs(self):
 		probs = copy(self.results)
-		for k, v in probs.iteritems():
-			v = v / self.cumu_sum
+		max_lbf = max(self.results.values())
+		scale = 25 - max_lbf
+		total = sum([np.exp(i + scale) for i in self.results.values()])
+		for k, v in probs.viewitems():
+			v = np.exp(v + scale) / total
 		return probs
 
 	def get_probs_sorted(self):
-		probs = [(k, v / self.cumu_sum) for k, v in self.results.viewitems()]
+		probs = self.get_probs().items()
 		probs.sort(key=lambda x: x[1], reverse=True)
 		return probs
 
 	def get_causal_set(self, confidence):
+		max_lbf = max(self.results.values())
+		scale = 25 - max_lbf
+		total = sum([exp(i + scale) for i in self.results.values()])
+		threshold = confidence * total
+
 		configs = sorted(self.results, key=self.results.get, reverse=True)
 		causal_set = [0] * max(self.num_snps_imbalance, self.num_snps_total_exp)
-		threshold = confidence * self.cumu_sum
 		conf_sum = 0
 		for c in configs:
-			causuality = self.results[c]
+			causuality = np.exp(self.results[c] + scale)
 			if conf_sum + causuality <= threshold:
 				conf_sum += causuality
 				for ind, val in enumerate(c):
@@ -347,7 +357,7 @@ class Evaluator(object):
 		ppas = []
 		for i in xrange(self.num_snps):
 			ppa = 0
-			for k, v in self.results.iteritems():
+			for k, v in self.get_probs().viewitems():
 				if k[i] == 1:
 					ppa += v
 			ppas.append(ppa / self.cumu_sum)
@@ -355,6 +365,6 @@ class Evaluator(object):
 
 	def reset(self):
 		self.results = {}
-		self.cumu_sum = 0.0
+		# self.cumu_sum = 0.0
 
 

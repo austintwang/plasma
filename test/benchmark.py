@@ -203,6 +203,7 @@ class Benchmark(object):
 			assert all([i == 0 or i == 1 for i in causal_set])
 			causal_set_size = sum(causal_set)
 			result["set_sizes_full"].append(causal_set_size)
+			print(causal_set_size) ####
 
 			recall = 1
 			for ind, val in enumerate(causal_config):
@@ -210,6 +211,7 @@ class Benchmark(object):
 					if causal_set[ind] != 1:
 						recall = 0
 			result["recall_rate_full"].append(recall)
+			print(recall) ####
 
 			print("Initializing eQTL Model")
 			model_inputs_eqtl = model_inputs.copy()
@@ -217,6 +219,7 @@ class Benchmark(object):
 				"imbalance": np.zeros(shape=0), 
 				"phases": np.zeros(shape=(0,0)),
 				"imbalance_errors": np.zeros(shape=0),
+				"imbalance_stats": np.zeros(shape=0),
 				"num_ppl_imbalance": 0,
 				"num_snps_imbalance": 0
 			})
@@ -234,6 +237,7 @@ class Benchmark(object):
 			assert all([i == 0 or i == 1 for i in causal_set_eqtl])
 			causal_set_eqtl_size = sum(causal_set_eqtl)
 			result["set_sizes_eqtl"].append(causal_set_eqtl_size)
+			print(causal_set_eqtl_size) ####
 
 			recall = 1
 			for ind, val in enumerate(causal_config):
@@ -241,6 +245,7 @@ class Benchmark(object):
 					if causal_set_eqtl[ind] != 1:
 						recall = 0
 			result["recall_rate_eqtl"].append(recall)
+			print(recall) ####
 
 		print("Writing Result")
 		self.output_result(result, test_path)

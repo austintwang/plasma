@@ -18,22 +18,22 @@ def dummy_test():
 		"num_ppl": 95,
 		"var_effect_size": 2.0,
 		"overdispersion": 0.05,
-		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.1,
+		"prop_noise_eqtl": 0.,
+		"prop_noise_ase": 0.5,
 		"baseline_exp": 4.0,
 		"num_causal": 1,
-		"ase_read_prop": 0.15,
+		"ase_read_prop": 0.25,
 		"search_mode": "exhaustive",
 		"max_causal": 1,
-		"search_iterations": 1000,
+		"search_iterations": 50,
 		"primary_var": "var_effect_size",
 		"primary_var_display": "Variance of Simulated Effect Sizes",
 		"test_count": 4,
 		"test_name": "dummy_test",
-		"iterations": 10,
+		"iterations": 1,
 		"confidence": 0.95
 	}
-	tests = [2.0, 5.0, 10.0, 20.0]
+	tests = [100.0,]
 	bm = Benchmark(params)
 	for t in tests:
 		bm.test(var_effect_size=t)

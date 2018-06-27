@@ -108,7 +108,7 @@ class Evaluator(object):
 		self.det_term = np.eye(self.num_snps_combined) + np.matmul(self.prior_cov, self.corr)
 		self.inv_term = self.prior_cov_inv + self.corr
 		# print(self.det_term) ####
-		# np.linalg.cholesky(self.inv_term) ####
+		# self.chol = np.linalg.cholesky(self.inv_term) ####
 		# vals, vects = np.linalg.eig(self.prior_cov_inv * 1 + self.corr) ####
 		# print("eigs3") ####
 		# print(vals.real) ####
@@ -146,6 +146,7 @@ class Evaluator(object):
 		# prior = (1 - 2 * self.causal_status_prior) ** self.num_snps
 		# self.results[tuple(null_config.tolist())] = float(prior)
 		# self.cumu_sum += float(prior)
+
 
 	@staticmethod
 	def _det(m):
@@ -195,9 +196,9 @@ class Evaluator(object):
 		configuration_bool = (configuration == 1)
 		selection = np.logical_and(configuration_bool[self.snp_map], self.valid_entries)
 		if not np.any(selection):
-			res = prior / bias
+			res = lprior - lbias
 			self.results[key] = res
-			self.cumu_sum += res
+			# self.cumu_sum += res
 			return res
 
 		selection_2d = np.ix_(selection, selection)
@@ -209,6 +210,13 @@ class Evaluator(object):
 		det_term_subset = self.det_term[selection_2d]
 		inv_term_subset = self.inv_term[selection_2d]
 		stats_subset = self.stats[selection]
+
+		# subchol = np.linalg.cholesky(inv_term_subset) ####
+		# assert(subchol == self.chol[selection_2d]) ####
+		# print(subchol) ####
+		# print(self.chol[selection_2d]) ####
+		# print(configuration) ####
+		# print("") ####
 
 		# print(self.inv_term) ####
 		# print(det_term_subset) ####
@@ -318,12 +326,14 @@ class Evaluator(object):
 
 
 	def get_probs(self):
-		probs = copy(self.results)
+		probs = self.results.copy()
 		max_lbf = max(self.results.values())
 		scale = 25 - max_lbf
 		total = sum([np.exp(i + scale) for i in self.results.values()])
 		for k, v in probs.viewitems():
-			v = np.exp(v + scale) / total
+			probs[k] = np.exp(v + scale) / total
+			# print(v) ####
+			# print(probs[k]) ####
 		return probs
 
 	def get_probs_sorted(self):
@@ -334,7 +344,7 @@ class Evaluator(object):
 	def get_causal_set(self, confidence):
 		max_lbf = max(self.results.values())
 		scale = 25 - max_lbf
-		total = sum([exp(i + scale) for i in self.results.values()])
+		total = sum([np.exp(i + scale) for i in self.results.values()])
 		threshold = confidence * total
 
 		configs = sorted(self.results, key=self.results.get, reverse=True)
@@ -342,12 +352,13 @@ class Evaluator(object):
 		conf_sum = 0
 		for c in configs:
 			causuality = np.exp(self.results[c] + scale)
-			if conf_sum + causuality <= threshold:
-				conf_sum += causuality
-				for ind, val in enumerate(c):
-					if val == 1:
-						causal_set[ind] = 1
-			else:
+			# print(causuality) ####
+			conf_sum += causuality
+			# print(conf_sum, causuality) ####
+			for ind, val in enumerate(c):
+				if val == 1:
+					causal_set[ind] = 1
+			if conf_sum >= threshold:
 				break
 
 		return causal_set

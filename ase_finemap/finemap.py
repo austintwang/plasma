@@ -187,14 +187,16 @@ class Finemap(FmUnchecked):
 
 	def _calc_haps(self):
 		super(Finemap, self)._calc_haps()
+		snps = max(self.num_snps_imbalance, self.num_snps_total_exp)
+		ppl = max(self.num_ppl_imbalance, self.num_ppl_total_exp)
 		self.check_matrix_01(
 			self.hap_A, 
-			(self.num_ppl_total_exp, self.num_snps_total_exp,), 
+			(ppl, snps,), 
 			"Haplotype A Genotype Data"
 		)
 		self.check_matrix_positive_int(
 			self.hap_B, 
-			(self.num_ppl_total_exp, self.num_snps_total_exp,), 
+			(ppl, snps,), 
 			"Haplotype B Genotype Data"
 		)
 
@@ -304,6 +306,13 @@ class Finemap(FmUnchecked):
 			"Total expression correlation matrix"
 		)
 
+	def _calc_corr_stats(self):
+		super(Finemap, self)._calc_corr_stats()
+		self.check_probability(
+			self.corr_stats, 
+			"Correlation between eQTL and ASE statistics"
+		)
+	
 	def _calc_cross_corr(self):
 		super(Finemap, self)._calc_cross_corr()
 		self.check_matrix(

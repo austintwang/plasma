@@ -161,9 +161,13 @@ class Benchmark(object):
 
 		result = {
 			"set_sizes_full": [],
+			"set_sizes_indep": [],
 			"set_sizes_eqtl": [],
+			"set_sizes_ase": [],
 			"recall_rate_full": [],
-			"recall_rate_eqtl": []
+			"recall_rate_indep": [],
+			"recall_rate_eqtl": [],
+			"recall_rate_ase": [],
 		}
 		self.primary_var_vals.append(self.params[self.params["primary_var"]])
 
@@ -184,6 +188,7 @@ class Benchmark(object):
 
 			# print(sim_result["hap_A"].tolist()) ####
 			# print(sim_result["hap_B"].tolist()) ####
+			null = tuple([0] * self.params["num_snps"]) ####
 
 			print("Initializing Full Model")
 			model_inputs = self.model_params.copy()
@@ -204,6 +209,8 @@ class Benchmark(object):
 			causal_set_size = sum(causal_set)
 			result["set_sizes_full"].append(causal_set_size)
 			print(causal_set_size) ####
+			print(model_full.get_probs()[tuple(causal_config)]) ####
+
 
 			recall = 1
 			for ind, val in enumerate(causal_config):
@@ -212,6 +219,43 @@ class Benchmark(object):
 						recall = 0
 			result["recall_rate_full"].append(recall)
 			print(recall) ####
+			# print(model_full.get_probs_sorted()[:10]) ####
+
+
+			print("Initializing Independent Model")
+			model_inputs_indep = model_inputs.copy()
+			model_inputs_indep.update({
+				"cross_corr_prior": 0.0, 
+				"corr_stats": 0.0,
+			})
+			print("Finished Initializing Independent Model")
+			print("Starting Search Under Independent Model")
+			model_indep = Finemap(**model_inputs_indep)
+			model_indep.initialize()
+			if self.params["search_mode"] == "exhaustive":
+				model_indep.search_exhaustive(self.params["max_causal"])
+			elif self.params["search_mode"] == "shotgun":
+				model_indep.search_shotgun(self.params["search_iterations"])
+			print("Finished Search Under Independent Model")
+
+			causal_set_indep = model_indep.get_causal_set(self.params["confidence"])
+			assert all([i == 0 or i == 1 for i in causal_set_indep])
+			causal_set_indep_size = sum(causal_set_indep)
+			result["set_sizes_indep"].append(causal_set_indep_size)
+			print(causal_set_indep_size) ####
+			# print(model_eqtl.get_probs_sorted()) ####
+			# model_eqtl.get_probs_sorted() ####
+			print(model_indep.get_probs()[tuple(causal_config)]) ####
+			print(model_indep.get_probs()[null]) ####
+
+			recall = 1
+			for ind, val in enumerate(causal_config):
+				if val == 1:
+					if causal_set_indep[ind] != 1:
+						recall = 0
+			result["recall_rate_indep"].append(recall)
+			print(recall) ####
+
 
 			print("Initializing eQTL Model")
 			model_inputs_eqtl = model_inputs.copy()
@@ -221,7 +265,8 @@ class Benchmark(object):
 				"imbalance_errors": np.zeros(shape=0),
 				"imbalance_stats": np.zeros(shape=0),
 				"num_ppl_imbalance": 0,
-				"num_snps_imbalance": 0
+				"num_snps_imbalance": 0,
+				"corr_stats": 0.0,
 			})
 			print("Finished Initializing eQTL Model")
 			print("Starting Search Under eQTL Model")
@@ -238,6 +283,10 @@ class Benchmark(object):
 			causal_set_eqtl_size = sum(causal_set_eqtl)
 			result["set_sizes_eqtl"].append(causal_set_eqtl_size)
 			print(causal_set_eqtl_size) ####
+			# print(model_eqtl.get_probs_sorted()) ####
+			# model_eqtl.get_probs_sorted() ####
+			print(model_eqtl.get_probs()[tuple(causal_config)]) ####
+			print(model_eqtl.get_probs()[tuple(null)]) ####
 
 			recall = 1
 			for ind, val in enumerate(causal_config):
@@ -245,6 +294,45 @@ class Benchmark(object):
 					if causal_set_eqtl[ind] != 1:
 						recall = 0
 			result["recall_rate_eqtl"].append(recall)
+			print(recall) ####
+
+			print("Initializing ASE Model")
+			model_inputs_ase = model_inputs.copy()
+			model_inputs_ase.update({
+				"total_exp": np.zeros(shape=0), 
+				"genotypes_comb": np.zeros(shape=(0,0)),
+				"total_exp_errors": np.zeros(shape=0),
+				"total_exp_stats": np.zeros(shape=0),
+				"num_ppl_total_exp": 0,
+				"num_snps_total_exp": 0,
+				"corr_stats": 0.0,
+			})
+			print("Finished Initializing ASE Model")
+			print("Starting Search Under ASE Model")
+			model_ase = Finemap(**model_inputs_ase)
+			model_ase.initialize()
+			if self.params["search_mode"] == "exhaustive":
+				model_ase.search_exhaustive(self.params["max_causal"])
+			elif self.params["search_mode"] == "shotgun":
+				model_ase.search_shotgun(self.params["search_iterations"])
+			print("Finished Search Under ASE Model")
+
+			causal_set_ase = model_ase.get_causal_set(self.params["confidence"])
+			assert all([i == 0 or i == 1 for i in causal_set_ase])
+			causal_set_ase_size = sum(causal_set_ase)
+			result["set_sizes_ase"].append(causal_set_ase_size)
+			print(causal_set_ase_size) ####
+			# print(model_eqtl.get_probs_sorted()) ####
+			# model_eqtl.get_probs_sorted() ####
+			print(model_ase.get_probs()[tuple(causal_config)]) ####
+			print(model_ase.get_probs()[tuple(null)]) ####
+
+			recall = 1
+			for ind, val in enumerate(causal_config):
+				if val == 1:
+					if causal_set_ase[ind] != 1:
+						recall = 0
+			result["recall_rate_ase"].append(recall)
 			print(recall) ####
 
 		print("Writing Result")

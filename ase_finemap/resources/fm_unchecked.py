@@ -10,9 +10,9 @@ import itertools
 from .evaluator import Evaluator
 
 class FmUnchecked(object):
-	IMBALANCE_VAR_PRIOR_DEFAULT = 10
-	TOTAL_EXP_VAR_PRIOR_DEFAULT = 10
-	CROSS_CORR_PRIOR_DEFAULT = 0.5
+	IMBALANCE_VAR_PRIOR_DEFAULT = 1000000
+	TOTAL_EXP_VAR_PRIOR_DEFAULT = 1000
+	CROSS_CORR_PRIOR_DEFAULT = 0.3
 
 	def __init__(self, **kwargs):
 		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)
@@ -30,6 +30,7 @@ class FmUnchecked(object):
 		self.imbalance_corr = kwargs.get("imbalance_corr", None)
 		self.total_exp_stats = kwargs.get("total_exp_stats", None)
 		self.total_exp_corr = kwargs.get("total_exp_corr", None)
+		self.corr_stats = kwargs.get("corr_stats", None)
 		self.corr_shared = kwargs.get("corr_shared", None)
 		self.cross_corr = kwargs.get("cross_corr", None)
 
@@ -47,6 +48,7 @@ class FmUnchecked(object):
 
 		self.hap_A = kwargs.get("hap_A", None)
 		self.hap_B = kwargs.get("hap_B", None)
+		self.hap_vars = kwargs.get("hap_vars", None)
 
 		self._beta = None
 		self._mean = None
@@ -54,6 +56,8 @@ class FmUnchecked(object):
 
 		self._covdiag_phi = None
 		self._covdiag_beta = None
+
+		self._haps_pooled = None
 
 		self.evaluator = None
 
@@ -69,6 +73,16 @@ class FmUnchecked(object):
 
 		self.causal_status_prior = 1.0 / max(self.num_snps_imbalance, self.num_snps_total_exp)
 
+	def _calc_hap_vars(self):
+		if self.hap_vars is not None:
+			return
+
+		self._calc_haps()
+
+		haps_pooled = np.append(self.hap_A, self.hap_B, axis=0)
+		self.hap_vars = np.var(haps_pooled, axis=0)
+
+
 	def _calc_imbalance(self):
 		if self.imbalance is not None:
 			return
@@ -83,11 +97,12 @@ class FmUnchecked(object):
 			return
 
 		self._calc_haps()
+		self._calc_hap_vars()
 
 		phases_raw = self.hap_A - self.hap_B
 		# means = np.mean(phases_raw, axis=0)
-		variances = np.var(phases_raw, axis=0)
-		self.phases = phases_raw / variances
+		# variances = np.var(phases_raw, axis=0)
+		self.phases = phases_raw / (self.hap_vars * 2)
 
 	def _calc_total_exp(self):
 		if self.total_exp is not None:
@@ -103,6 +118,7 @@ class FmUnchecked(object):
 			return
 
 		self._calc_haps()
+		self._calc_hap_vars()
 
 		# self.genotypes_comb = self.hap_A + self.hap_B
 		# print(self.genotypes_comb) ####
@@ -111,8 +127,8 @@ class FmUnchecked(object):
 
 		genotypes_raw = self.hap_A + self.hap_B
 		means = np.mean(genotypes_raw, axis=0)
-		variances = np.var(genotypes_raw, axis=0)
-		self.genotypes_comb = genotypes_raw / variances - means
+		# variances = np.var(genotypes_raw, axis=0)
+		self.genotypes_comb = genotypes_raw / (self.hap_vars * 2) - means
 
 	def _calc_corr_shared(self):
 		if self.corr_shared is not None:
@@ -152,7 +168,7 @@ class FmUnchecked(object):
 		counts = self.counts_A + self.counts_B
 		self.imbalance_errors = (
 			2 / counts
-			* (1 + np.cosh(self.imbalance)) 
+			* (1 + np.cosh(self.imbalance))
 			* (1 + self.overdispersion * (counts - 1))
 		)
 		# print(self.imbalance_errors) ####
@@ -178,14 +194,21 @@ class FmUnchecked(object):
 		# varphi = denominator * denominator * (phasesT * phasesT).sum(1)
 		# self.imbalance_stats = phi / varphi
 
+		# print(self.phases) ####
+		# print(self.imbalance) ####
+		# print(self.imbalance_errors) ####
 		phi = self.phases.T.dot(self.imbalance / self.imbalance_errors) / self.num_ppl_imbalance
-		residuals = (self.imbalance / self.imbalance_errors - (self.phases * phi).T).T
-		remaining_errors = np.sum(
-			residuals * residuals, 
-			axis=0
-		) / (self.num_ppl_imbalance - 2)
-		remaining_errors = 1 ####
-		self.imbalance_stats = phi / np.sqrt(remaining_errors / self.num_ppl_imbalance) 
+		# residuals = (self.imbalance / self.imbalance_errors - (self.phases * phi).T).T
+		# remaining_errors = np.sum(
+		# 	residuals * residuals, 
+		# 	axis=0
+		# ) / (self.num_ppl_imbalance - 2)
+		# print(phi) ####
+		# print(np.mean(phi)) ####
+		# print(remaining_errors) ####
+		# remaining_errors = 1 ####
+		# self.imbalance_stats = phi / np.sqrt(remaining_errors / self.num_ppl_imbalance) 
+		self.imbalance_stats = phi * np.sqrt(self.num_ppl_imbalance)
 
 	def _calc_imbalance_corr(self):
 		if self.imbalance_corr is not None:
@@ -277,9 +300,14 @@ class FmUnchecked(object):
 		# # print(varbeta) ####
 		# # print(self._beta) ####
 		# self.total_exp_stats = self._beta / varbeta
-		# # print(self.total_exp_stats) ####
 		
-		self.total_exp_stats = self._beta / np.sqrt(self.exp_errors / self.num_ppl_total_exp)
+		# self.total_exp_stats = self._beta / np.sqrt(self.exp_errors / self.num_ppl_total_exp)
+		self.total_exp_stats = self._beta * np.sqrt(self.num_ppl_total_exp)
+		# self.total_exp_stats = self._beta ####
+		print(self.total_exp_stats) ####
+		print(self._beta) ####
+		print(np.var(self.total_exp_stats)) ####
+		print(np.var(self._beta)) ####
 
 
 
@@ -315,6 +343,22 @@ class FmUnchecked(object):
 		# with open("corr_mat.txt", "w") as corr_debug:
 		# 	np.savetxt(corr_debug, self.total_exp_corr) ####
 
+	def _calc_corr_stats(self):
+		if self.corr_stats is not None:
+			return
+
+		num = min(self.num_snps_imbalance, self.num_snps_imbalance)
+		imbalance_stats = self.imbalance_stats[:num]
+		total_exp_stats = self.total_exp_stats[:num]
+		self.corr_stats = (
+			(
+				(imbalance_stats-np.mean(imbalance_stats))
+				.dot(total_exp_stats-np.mean(total_exp_stats)) 
+				/ num
+			)
+			/ np.sqrt(np.var(imbalance_stats) * np.var(total_exp_stats))
+		)
+
 	def _calc_cross_corr(self):
 		if self.cross_corr is not None:
 			return
@@ -326,6 +370,7 @@ class FmUnchecked(object):
 		self._calc_total_exp_stats()
 		self._calc_imbalance_corr()
 		self._calc_total_exp_corr()
+		self._calc_corr_stats()
 
 		# if self.num_ppl_imbalance == 0:
 		# 	self.cross_corr = np.zeros(shape=(self.num_snps_total_exp,0))
@@ -366,20 +411,20 @@ class FmUnchecked(object):
 
 		num = min(self.num_snps_imbalance, self.num_snps_imbalance)
 		corr_shared = self.corr_shared[:self.num_snps_total_exp, :self.num_snps_imbalance]
-		imbalance_stats = self.imbalance_stats[:num]
-		total_exp_stats = self.total_exp_stats[:num]
-		corr_stats = (
-			(
-				(imbalance_stats-np.mean(imbalance_stats))
-				.dot(total_exp_stats-np.mean(total_exp_stats)) 
-				/ num
-			)
-			/ np.sqrt(np.var(imbalance_stats) * np.var(total_exp_stats))
-		)
+		# imbalance_stats = self.imbalance_stats[:num]
+		# total_exp_stats = self.total_exp_stats[:num]
+		# corr_stats = (
+		# 	(
+		# 		(imbalance_stats-np.mean(imbalance_stats))
+		# 		.dot(total_exp_stats-np.mean(total_exp_stats)) 
+		# 		/ num
+		# 	)
+		# 	/ np.sqrt(np.var(imbalance_stats) * np.var(total_exp_stats))
+		# )
 		# if corr_stats >= 1:
 		# 	corr_stats = 0.99
 		# corr_stats = 0.0 ####
-		self.cross_corr = corr_shared * corr_stats
+		self.cross_corr = corr_shared * self.corr_stats
 
 		# print(corr_stats) ####
 		# print(np.var(imbalance_stats)) ####
@@ -406,10 +451,15 @@ class FmUnchecked(object):
 
 	def search_exhaustive(self, max_causal):
 		m = max(self.num_snps_imbalance, self.num_snps_total_exp)
-		for k in xrange(max_causal):
-			base = [0] * k + [1] * (m - k)
-			for c in itertools.permutations(base):
-				self.evaluator.eval(np.array(c))
+		configuration = np.zeros(m)
+		for k in xrange(max_causal + 1):
+			for c in itertools.combinations(xrange(m), k):
+				# print(c) ####
+				np.put(configuration, c, 1)
+				# print(configuration) ####
+				self.evaluator.eval(configuration)
+				configuration[:] = 0
+				# print(configuration) ####
 
 	def search_shotgun(self, num_iterations):
 		m = max(self.num_snps_imbalance, self.num_snps_total_exp)

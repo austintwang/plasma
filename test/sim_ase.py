@@ -89,9 +89,12 @@ class SimAse(object):
 		imbalance_ideal = self.exp_A - self.exp_B
 		self.total_exp_ideal = np.log(counts_total_ideal)
 		ideal_exp_var = np.var(self.total_exp_ideal)
-		total_var = ideal_exp_var / self.prop_noise_eqtl
+		# total_var = ideal_exp_var * (self.prop_noise_eqtl / (1 + self.prop_noise_eqtl))
+		noise_var = ideal_exp_var * (self.prop_noise_eqtl / (1 - self.prop_noise_eqtl))
 
-		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(total_var))
+		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(noise_var))
+		# print(self.total_exp_ideal) ####
+		# print(self.total_exp) ####
 		# smalls = np.nonzero(self.total_exp < 0.69)[0]
 		# while smalls.size != 0:
 		# 	small_subs = npr.normal(self.total_exp_ideal[smalls], np.sqrt(total_var))
@@ -102,7 +105,7 @@ class SimAse(object):
 		# 	)
 
 		counts_total = np.exp(self.total_exp).astype(int)
-		# print(counts_total) ####
+		print(counts_total) ####
 		# print(self.ase_read_prop) ####
 		
 		ase_counts = npr.binomial(

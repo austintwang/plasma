@@ -18,8 +18,8 @@ def dummy_test():
 		"num_ppl": 95,
 		"var_effect_size": 2.0,
 		"overdispersion": 0.05,
-		"prop_noise_eqtl": 0.,
-		"prop_noise_ase": 0.5,
+		"prop_noise_eqtl": 0.50,
+		"prop_noise_ase": 0.0,
 		"baseline_exp": 4.0,
 		"num_causal": 1,
 		"ase_read_prop": 0.25,
@@ -33,7 +33,7 @@ def dummy_test():
 		"iterations": 1,
 		"confidence": 0.95
 	}
-	tests = [100.0,]
+	tests = [25.0,]
 	bm = Benchmark(params)
 	for t in tests:
 		bm.test(var_effect_size=t)

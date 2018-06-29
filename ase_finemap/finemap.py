@@ -143,7 +143,7 @@ class Finemap(FmUnchecked):
 				)
 			) 
 
-		if not (np.diag(matrix) == 1).all():
+		if not (np.diag(matrix) == 1.0).all():
 			raise ValueError(
 				"Diagonal values of {0} are not all 1:\n{1}".format(
 					name,

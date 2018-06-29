@@ -68,6 +68,7 @@ class SimAse(object):
 		np.put(self.causal_config, causal_inds, 1)
 		self.causal_snps = np.zeros(self.num_snps)
 		np.put(self.causal_snps, causal_inds, self.causal_effects)
+		np.savetxt("causal_snps.txt", self.causal_snps) ####
 
 	def _generate_genotypes(self):
 		self.genotypes_comb = self.hap_A + self.hap_B
@@ -79,7 +80,7 @@ class SimAse(object):
 	# 	while counts == 0:
 	# 		counts = npr.binomial(ase_counts, npr.beta(alphas, betas))
 	# 	return counts
-	
+
 	def _generate_expression(self):
 		self.exp_A = self.hap_A.dot(self.causal_snps) + self.baseline_exp
 		self.exp_B = self.hap_B.dot(self.causal_snps) + self.baseline_exp
@@ -87,12 +88,15 @@ class SimAse(object):
 		counts_B_ideal = np.exp(self.exp_B)
 		counts_total_ideal = counts_A_ideal + counts_B_ideal
 		imbalance_ideal = self.exp_A - self.exp_B
+		np.savetxt("imbalance_ideal.txt", imbalance_ideal) ####
 		self.total_exp_ideal = np.log(counts_total_ideal)
+		np.savetxt("total_exp_ideal.txt", self.total_exp_ideal) ####
 		ideal_exp_var = np.var(self.total_exp_ideal)
 		# total_var = ideal_exp_var * (self.prop_noise_eqtl / (1 + self.prop_noise_eqtl))
 		noise_var = ideal_exp_var * (self.prop_noise_eqtl / (1 - self.prop_noise_eqtl))
 
 		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(noise_var))
+		np.savetxt("total_exp.txt", self.total_exp) ####
 		# print(self.total_exp_ideal) ####
 		# print(self.total_exp) ####
 		# smalls = np.nonzero(self.total_exp < 0.69)[0]
@@ -105,13 +109,15 @@ class SimAse(object):
 		# 	)
 
 		counts_total = np.exp(self.total_exp).astype(int)
-		print(counts_total) ####
+		# print(counts_total) ####
+		# counts_total = 100 ####
 		# print(self.ase_read_prop) ####
 		
 		ase_counts = npr.binomial(
 			counts_total, 
 			self.ase_read_prop * (1 - self.prop_noise_ase)
 		)
+		ase_counts = 100 ####
 
 		trans_counts_exp = counts_total * self.ase_read_prop * self.prop_noise_ase
 		trans_counts_A = npr.poisson(trans_counts_exp / 2) + 1
@@ -128,8 +134,19 @@ class SimAse(object):
 		# 	)
 		# print(np.mean(counts_total * self.ase_read_prop)) ####
 		betas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(imbalance_ideal)))
-		alphas = (1 / self.overdispersion - 1) * (1 - 1 / (1 + np.exp(imbalance_ideal)))
-		counts_A_ase = npr.binomial(ase_counts, npr.beta(alphas, betas))
+		alphas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(-imbalance_ideal)))
+		# print(alphas) ####
+		# print(betas) ####
+		# print(self.overdispersion) ####
+		@np.vectorize
+		def _bb(counts, alpha, beta):
+			p = npr.beta(alpha, beta, size=counts)
+			# print(p) ####
+			return np.sum(npr.binomial(1, p))
+
+		# counts_A_ase = npr.binomial(ase_counts, npr.beta(alphas, betas))
+		counts_A_ase = _bb(ase_counts, alphas, betas)
+
 		self.counts_A = counts_A_ase + trans_counts_A
 		
 		# zeros = np.nonzero(self.counts_A == 0)[0]
@@ -163,6 +180,8 @@ class SimAse(object):
 		# 	print(all_subs) ####
 
 		self.counts_B = ase_counts - counts_A_ase + trans_counts_B
+		np.savetxt("counts_A.txt", self.counts_A) ####
+		np.savetxt("counts_B.txt", self.counts_B) ####
 		# print(self.counts_A) ####
 
 	def generate_data(self):
@@ -170,3 +189,19 @@ class SimAse(object):
 		self._generate_effects()
 		self._generate_genotypes()
 		self._generate_expression()
+
+		alt_counts = (
+			(self.hap_A.T * (1 - self.hap_B.T) * self.counts_A).sum(1) 
+			+ (self.hap_B.T * (1 - self.hap_A.T) * self.counts_B).sum(1) ####
+		)
+		wt_counts = (
+			(self.hap_B.T * (1 - self.hap_A.T) * self.counts_A).sum(1) 
+			+ (self.hap_A.T * (1 - self.hap_B.T) * self.counts_B).sum(1) ####
+		)
+		totals = alt_counts + wt_counts ####
+		# print(alt_counts) ####
+		# print(totals) ####
+		# print(self.counts_A * (1 - self.counts_B)) ####
+		test = np.array([sps.binom_test(alt_counts[i], n=totals[i]) for i in xrange(self.num_snps)]) ####
+		np.savetxt("alt_counts.txt", alt_counts) ####
+		np.savetxt("binom_test.txt", test) ####

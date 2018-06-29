@@ -262,6 +262,7 @@ class Benchmark(object):
 			model_inputs_eqtl.update({
 				"imbalance": np.zeros(shape=0), 
 				"phases": np.zeros(shape=(0,0)),
+				"imbalance_corr": np.zeros(shape=(0,0)),
 				"imbalance_errors": np.zeros(shape=0),
 				"imbalance_stats": np.zeros(shape=0),
 				"num_ppl_imbalance": 0,
@@ -301,6 +302,7 @@ class Benchmark(object):
 			model_inputs_ase.update({
 				"total_exp": np.zeros(shape=0), 
 				"genotypes_comb": np.zeros(shape=(0,0)),
+				"total_exp_corr": np.zeros(shape=(0,0)),
 				"total_exp_errors": np.zeros(shape=0),
 				"total_exp_stats": np.zeros(shape=0),
 				"num_ppl_total_exp": 0,

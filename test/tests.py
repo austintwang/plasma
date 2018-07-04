@@ -3,12 +3,6 @@ from __future__ import division
 from __future__ import unicode_literals 
 from __future__ import absolute_import
 
-import numpy as np
-import os
-from datetime import datetime
-import seaborn as sns
-import pandas as pd
-
 from . import Benchmark
 from . import Haplotypes
 
@@ -18,8 +12,8 @@ def dummy_test():
 		"num_ppl": 95,
 		"var_effect_size": 2.0,
 		"overdispersion": 0.05,
-		"prop_noise_eqtl": 0.50,
-		"prop_noise_ase": 0.0,
+		"prop_noise_eqtl": 0.95,
+		"prop_noise_ase": 0.50,
 		"baseline_exp": 4.0,
 		"num_causal": 1,
 		"ase_read_prop": 0.25,

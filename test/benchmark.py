@@ -210,6 +210,7 @@ class Benchmark(object):
 			result["set_sizes_full"].append(causal_set_size)
 			print(causal_set_size) ####
 			print(model_full.get_probs()[tuple(causal_config)]) ####
+			print(model_full.get_probs()[null]) ####
 
 
 			recall = 1

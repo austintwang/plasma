@@ -10,8 +10,8 @@ import itertools
 from .evaluator import Evaluator
 
 class FmUnchecked(object):
-	IMBALANCE_VAR_PRIOR_DEFAULT = 200
-	TOTAL_EXP_VAR_PRIOR_DEFAULT = 2000
+	IMBALANCE_VAR_PRIOR_DEFAULT = 2000
+	TOTAL_EXP_VAR_PRIOR_DEFAULT = 200
 	CROSS_CORR_PRIOR_DEFAULT = 0.3
 
 	def __init__(self, **kwargs):
@@ -196,7 +196,9 @@ class FmUnchecked(object):
 		# denominator = np.empty(self.num_ppl_imbalance)
 		# for ph, ind in enumerate(phases):
 		# 	denominator[ind] = ph.dot(weights).dot(ph)
-		phi = denominator * np.matmul(phases.T, (weights * self.imbalance)) / self.num_ppl_imbalance
+		phi = denominator * np.matmul(phases.T, (weights * self.imbalance)) #/ self.num_ppl_imbalance
+		np.savetxt("imbalance_raw.txt",  np.matmul(phases.T, self.imbalance))
+		np.savetxt("imbalance_weighted.txt",  np.matmul(phases.T, (weights * self.imbalance)))
 		np.savetxt("imbalance.txt", self.imbalance) ####
 		np.savetxt("phases.txt", self.phases) ####
 		np.savetxt("phis.txt", phi) ####
@@ -207,9 +209,11 @@ class FmUnchecked(object):
 			residuals * residuals, 
 			axis=0
 		) / (self.num_ppl_imbalance - 2)
+		# np.savetxt("imbalance_errs.txt", remaining_errors) ####
 
 		# remaining_errors = 1 ####
-		varphi = denominator * denominator * (phases * phases).sum(0) * remaining_errors
+		varphi = denominator * denominator * (phases.T * weights * phases.T).sum(1) * remaining_errors
+		np.savetxt("varphi.txt", varphi) ####
 		self.imbalance_stats = phi / np.sqrt(varphi)
 		np.savetxt("imbalance_stats.txt", self.imbalance_stats) ####
 
@@ -404,6 +408,7 @@ class FmUnchecked(object):
 			)
 			/ np.sqrt(np.var(imbalance_stats) * np.var(total_exp_stats))
 		)
+		print(self.corr_stats) ####
 
 	def _calc_cross_corr(self):
 		if self.cross_corr is not None:
@@ -553,7 +558,7 @@ class FmUnchecked(object):
 			selection = np.random.choice(np.arange(len(neighbors)), p=dist)
 			configuration = neighbors[selection]
 			# print(configuration.shape) ####
-			print(configuration) ####
+			# print(configuration) ####
 			if i % 10 == 0: ####
 				print(i) ####
 

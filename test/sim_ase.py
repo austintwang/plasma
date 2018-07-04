@@ -190,18 +190,18 @@ class SimAse(object):
 		self._generate_genotypes()
 		self._generate_expression()
 
-		alt_counts = (
-			(self.hap_A.T * (1 - self.hap_B.T) * self.counts_A).sum(1) 
-			+ (self.hap_B.T * (1 - self.hap_A.T) * self.counts_B).sum(1) ####
-		)
-		wt_counts = (
-			(self.hap_B.T * (1 - self.hap_A.T) * self.counts_A).sum(1) 
-			+ (self.hap_A.T * (1 - self.hap_B.T) * self.counts_B).sum(1) ####
-		)
-		totals = alt_counts + wt_counts ####
-		# print(alt_counts) ####
-		# print(totals) ####
-		# print(self.counts_A * (1 - self.counts_B)) ####
-		test = np.array([sps.binom_test(alt_counts[i], n=totals[i]) for i in xrange(self.num_snps)]) ####
-		np.savetxt("alt_counts.txt", alt_counts) ####
-		np.savetxt("binom_test.txt", test) ####
+		# alt_counts = (
+		# 	(self.hap_A.T * (1 - self.hap_B.T) * self.counts_A).sum(1) 
+		# 	+ (self.hap_B.T * (1 - self.hap_A.T) * self.counts_B).sum(1) ####
+		# )
+		# wt_counts = (
+		# 	(self.hap_B.T * (1 - self.hap_A.T) * self.counts_A).sum(1) 
+		# 	+ (self.hap_A.T * (1 - self.hap_B.T) * self.counts_B).sum(1) ####
+		# )
+		# totals = alt_counts + wt_counts ####
+		# # print(alt_counts) ####
+		# # print(totals) ####
+		# # print(self.counts_A * (1 - self.counts_B)) ####
+		# test = np.array([sps.binom_test(alt_counts[i], n=totals[i]) for i in xrange(self.num_snps)]) ####
+		# np.savetxt("alt_counts.txt", alt_counts) ####
+		# np.savetxt("binom_test.txt", test) ####

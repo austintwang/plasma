@@ -12,7 +12,7 @@ from .evaluator import Evaluator
 class FmUnchecked(object):
 	IMBALANCE_VAR_PRIOR_DEFAULT = 2000
 	TOTAL_EXP_VAR_PRIOR_DEFAULT = 200
-	CROSS_CORR_PRIOR_DEFAULT = 0.3
+	CROSS_CORR_PRIOR_DEFAULT = 0.6
 
 	def __init__(self, **kwargs):
 		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)
@@ -176,6 +176,7 @@ class FmUnchecked(object):
 			* (1 + self.overdispersion * (counts - 1))
 		)
 		# print(self.imbalance_errors) ####
+		# print(np.mean(counts)) ####
 
 	def _calc_imbalance_stats(self):
 		if self.imbalance_stats is not None:

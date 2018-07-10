@@ -51,16 +51,16 @@ class Evaluator(object):
 		# print(self.total_exp_var_inv) ####
 		# print(self.cross_cov_inv) ####
 
-		self.prior_cov = np.block([
-			[
-				np.eye(self.num_snps_imbalance) * self.imbalance_var_prior, 
-				np.eye(self.num_snps_imbalance, self.num_snps_total_exp) * self.cross_cov_prior
-			],
-			[
-				np.eye(self.num_snps_total_exp, self.num_snps_imbalance) * self.cross_cov_prior, 
-				np.eye(self.num_snps_total_exp) * self.total_exp_var_prior,
-			]
-		])
+		# self.prior_cov = np.block([
+		# 	[
+		# 		np.eye(self.num_snps_imbalance) * self.imbalance_var_prior, 
+		# 		np.eye(self.num_snps_imbalance, self.num_snps_total_exp) * self.cross_cov_prior
+		# 	],
+		# 	[
+		# 		np.eye(self.num_snps_total_exp, self.num_snps_imbalance) * self.cross_cov_prior, 
+		# 		np.eye(self.num_snps_total_exp) * self.total_exp_var_prior,
+		# 	]
+		# ])
 
 		self.prior_cov_inv = np.block([
 			[
@@ -105,7 +105,7 @@ class Evaluator(object):
 		# np.linalg.cholesky(self.prior_cov_inv) ####
 
 
-		self.det_term = np.eye(self.num_snps_combined) + np.matmul(self.prior_cov, self.corr)
+		# self.det_term = np.eye(self.num_snps_combined) + np.matmul(self.prior_cov, self.corr)
 		self.inv_term = self.prior_cov_inv + self.corr
 		# print(self.det_term) ####
 		# self.chol = np.linalg.cholesky(self.inv_term) ####
@@ -148,31 +148,39 @@ class Evaluator(object):
 		# self.cumu_sum += float(prior)
 
 
-	@staticmethod
-	def _det(m):
-		"""
-		Returns the determinant of a symmetric positive-definite matrix 
-		"""
-		# print(m) ####
-		# vals, vects = np.linalg.eig(m) ####
-		# print("eigs") ####
-		# print(list(vals)) ####
-		l = np.linalg.cholesky(m)
-		prod_diag = l.diagonal().prod()
-		return prod_diag ** 2
+	# @staticmethod
+	# def _det(m):
+	# 	"""
+	# 	Returns the determinant of a symmetric positive-definite matrix 
+	# 	"""
+	# 	# print(m) ####
+	# 	# vals, vects = np.linalg.eig(m) ####
+	# 	# print("eigs") ####
+	# 	# print(list(vals)) ####
+	# 	l = np.linalg.cholesky(m)
+	# 	prod_diag = l.diagonal().prod()
+	# 	return prod_diag ** 2
+
+	# @staticmethod
+	# def _inv(m):
+	# 	"""
+	# 	Returns the inverse of a symmetric positive-definite matrix
+	# 	"""
+	# 	# print(m) ####
+	# 	l = np.linalg.cholesky(m)
+	# 	# print(l) ####
+	# 	# print(np.linalg.inv(l)) ####
+	# 	l_inv = lp.dtrtri(l, lower=1)[0]
+	# 	# print(l_inv) ####
+	# 	return np.matmul(l_inv.T, l_inv)
 
 	@staticmethod
-	def _inv(m):
-		"""
-		Returns the inverse of a symmetric positive-definite matrix
-		"""
-		# print(m) ####
-		l = np.linalg.cholesky(m)
-		# print(l) ####
-		# print(np.linalg.inv(l)) ####
-		l_inv = lp.dtrtri(l, lower=1)[0]
-		# print(l_inv) ####
-		return np.matmul(l_inv.T, l_inv)
+	def _eval_lmvn(cov, stats):
+		ltri = np.linalg.cholesky(cov)
+		ltri_inv = lp.dtrtri(l, lower=1)[0]
+		ldet = 2 * np.log(np.prod(np.diagonal(ltri)))
+		m = ltri_inv.dot(stats)
+		return (-ldet + m.dot(m)) / 2
 
 	def eval(self, configuration, lbias=0.0, lprior=None):
 		key = tuple(configuration.tolist())
@@ -224,17 +232,17 @@ class Evaluator(object):
 		# print(stats_subset) ####
 		# det = np.linalg.det(det_term_subset)
 		# inv = lp.dpotri(inv_term_subset)[0]
-		try: 
-			inv = self._inv(inv_term_subset)
-			# det = self._det(det_term_subset)
-		except np.linalg.linalg.LinAlgError as err: 
-			# print(det_term_subset) ####
-			print(inv_term_subset) ####
-			print(stats_subset) ####
-			vals, vects = np.linalg.eig(inv_term_subset) ####
-			print(vals)
-			# print(selection) ####
-			raise
+		# try: 
+		# 	inv = self._inv(inv_term_subset)
+		# 	# det = self._det(det_term_subset)
+		# except np.linalg.linalg.LinAlgError as err: 
+		# 	# print(det_term_subset) ####
+		# 	print(inv_term_subset) ####
+		# 	print(stats_subset) ####
+		# 	vals, vects = np.linalg.eig(inv_term_subset) ####
+		# 	print(vals)
+		# 	# print(selection) ####
+		# 	raise
 		# print(stats_subset) ####
 		# print(det) ####
 		# print(np.linalg.det(det_term_subset)) ####
@@ -246,8 +254,10 @@ class Evaluator(object):
 		# print(inv.dot(stats_subset).dot(stats_subset)) ####
 		# print(np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)) ####
 
-		ldet = np.linalg.slogdet(det_term_subset)[1]
-		lbf = ldet * -0.5 + (inv.dot(stats_subset).dot(stats_subset) / 2.0)
+		# ldet = np.linalg.slogdet(det_term_subset)[1]
+		# lbf = ldet * -0.5 + (inv.dot(stats_subset).dot(stats_subset) / 2.0)
+
+		lmvn = self._eval_lmvn(inv_term_subset, stats_subset)
 
 		res = lbf + lprior - lbias
 

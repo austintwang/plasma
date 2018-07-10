@@ -96,6 +96,7 @@ class SimAse(object):
 		noise_var = ideal_exp_var * (self.prop_noise_eqtl / (1 - self.prop_noise_eqtl))
 
 		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(noise_var))
+		# np.place(self.total_exp, self.total_exp < 0, 0.0)
 		np.savetxt("total_exp.txt", self.total_exp) ####
 		# print(self.total_exp_ideal) ####
 		# print(self.total_exp) ####
@@ -109,7 +110,7 @@ class SimAse(object):
 		# 	)
 
 		counts_total = np.exp(self.total_exp).astype(int)
-		# print(counts_total) ####
+		print(counts_total) ####
 		# counts_total = 100 ####
 		# print(self.ase_read_prop) ####
 		
@@ -117,7 +118,7 @@ class SimAse(object):
 			counts_total, 
 			self.ase_read_prop * (1 - self.prop_noise_ase)
 		)
-		ase_counts = 100 ####
+		# ase_counts = 100 ####
 
 		trans_counts_exp = counts_total * self.ase_read_prop * self.prop_noise_ase
 		trans_counts_A = npr.poisson(trans_counts_exp / 2) + 1

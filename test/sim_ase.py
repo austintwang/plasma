@@ -23,16 +23,20 @@ class SimAse(object):
 	def update(self):
 		self.num_snps = self.bm.sim_params["num_snps"]
 		self.num_ppl = self.bm.sim_params["num_ppl"]
-		self.var_effect_size = self.bm.sim_params["var_effect_size"]
+		# self.var_effect_size = self.bm.sim_params["var_effect_size"]
 		self.overdispersion = self.bm.sim_params["overdispersion"]
 		self.prop_noise_eqtl = self.bm.sim_params["prop_noise_eqtl"]
 		self.prop_noise_ase = self.bm.sim_params["prop_noise_ase"]
-		self.baseline_exp = self.bm.sim_params["baseline_exp"]
+		# self.baseline_exp = self.bm.sim_params["baseline_exp"]
 		self.num_causal = self.bm.sim_params["num_causal"]
 		# self.genotypes_A = self.bm.sim_params["genotypes_A"]
 		# self.genotypes_B = self.bm.sim_params["genotypes_B"]
-		self.ase_read_prop = self.bm.sim_params["ase_read_prop"]
+		# self.ase_read_prop = self.bm.sim_params["ase_read_prop"]
 		self.overdispersion = self.bm.sim_params["overdispersion"]
+
+		self.std_fraction = self.bm.sim_params["std_fraction"]
+		self.coverage = self.bm.sim_params["coverage"]
+		
 
 		# self.num_snps = self.bm.num_snps
 		# self.num_ppl = self.bm.num_ppl
@@ -62,7 +66,7 @@ class SimAse(object):
 	# 	self.genotypes_B = self._generate_haplotype_single()
 
 	def _generate_effects(self):
-		self.causal_effects = npr.normal(0, np.sqrt(self.var_effect_size), self.num_causal)
+		self.causal_effects = npr.normal(0, 1, self.num_causal)
 		causal_inds = npr.choice(self.num_snps, self.num_causal, replace=False)
 		self.causal_config = np.zeros(self.num_snps)
 		np.put(self.causal_config, causal_inds, 1)
@@ -82,22 +86,34 @@ class SimAse(object):
 	# 	return counts
 
 	def _generate_expression(self):
-		self.exp_A = self.hap_A.dot(self.causal_snps) + self.baseline_exp
-		self.exp_B = self.hap_B.dot(self.causal_snps) + self.baseline_exp
-		counts_A_ideal = np.exp(self.exp_A)
-		counts_B_ideal = np.exp(self.exp_B)
-		counts_total_ideal = counts_A_ideal + counts_B_ideal
-		imbalance_ideal = self.exp_A - self.exp_B
-		np.savetxt("imbalance_ideal.txt", imbalance_ideal) ####
-		self.total_exp_ideal = np.log(counts_total_ideal)
-		np.savetxt("total_exp_ideal.txt", self.total_exp_ideal) ####
+		self.exp_A = self.hap_A.dot(self.causal_snps)
+		self.exp_B = self.hap_B.dot(self.causal_snps)
+		# counts_A_ideal = np.exp(self.exp_A)
+		# counts_B_ideal = np.exp(self.exp_B)
+		# counts_total_ideal = counts_A_ideal + counts_B_ideal
+		self.imbalance_ideal = self.exp_A - self.exp_B
+		imbalance_var = np.var(self.imbalance_ideal)
+		imb_noise_var = imbalance_var * (self.prop_noise_ase / (1 - self.prop_noise_ase))
+		imb_total_var = imbalance_var + imb_noise_var
+		std_imbalance = np.log(self.std_fraction) - np.log(1-self.std_fraction)
+		self.imbalance = (
+			npr.normal(self.imbalance_ideal, np.sqrt(imb_noise_var)) 
+			* std_imbalance 
+			/ np.sqrt(imb_total_var)
+		)
+		# print(imb_noise_var / imb_total_var) ####
+		# np.savetxt("imbalance_ideal.txt", imbalance_ideal) ####
+		# self.total_exp_ideal = np.log(counts_total_ideal)
+		# np.savetxt("total_exp_ideal.txt", self.total_exp_ideal) ####
+		self.total_exp_ideal = self.exp_A + self.exp_B
 		ideal_exp_var = np.var(self.total_exp_ideal)
 		# total_var = ideal_exp_var * (self.prop_noise_eqtl / (1 + self.prop_noise_eqtl))
-		noise_var = ideal_exp_var * (self.prop_noise_eqtl / (1 - self.prop_noise_eqtl))
+		exp_noise_var = ideal_exp_var * (self.prop_noise_eqtl / (1 - self.prop_noise_eqtl))
 
-		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(noise_var))
+		self.total_exp = npr.normal(self.total_exp_ideal, np.sqrt(exp_noise_var))
+		# print(ideal_exp_var / np.var(self.total_exp)) ####
 		# np.place(self.total_exp, self.total_exp < 0, 0.0)
-		np.savetxt("total_exp.txt", self.total_exp) ####
+		# np.savetxt("total_exp.txt", self.total_exp) ####
 		# print(self.total_exp_ideal) ####
 		# print(self.total_exp) ####
 		# smalls = np.nonzero(self.total_exp < 0.69)[0]
@@ -109,21 +125,21 @@ class SimAse(object):
 		# 		small_subs
 		# 	)
 
-		counts_total = np.exp(self.total_exp).astype(int)
-		print(counts_total) ####
+		# counts_total = np.exp(self.total_exp).astype(int)
+		# print(counts_total) ####
 		# counts_total = 100 ####
 		# print(self.ase_read_prop) ####
 		
-		ase_counts = npr.binomial(
-			counts_total, 
-			self.ase_read_prop * (1 - self.prop_noise_ase)
-		)
+		# ase_counts = npr.binomial(
+		# 	counts_total, 
+		# 	self.ase_read_prop * (1 - self.prop_noise_ase)
+		# )
 		# ase_counts = 100 ####
 
-		trans_counts_exp = counts_total * self.ase_read_prop * self.prop_noise_ase
-		trans_counts_A = npr.poisson(trans_counts_exp / 2) + 1
-		trans_counts_B = npr.poisson(trans_counts_exp / 2) + 1
-		trans_counts = trans_counts_A + trans_counts_B
+		# trans_counts_exp = counts_total * self.ase_read_prop * self.prop_noise_ase
+		# trans_counts_A = npr.poisson(trans_counts_exp / 2) + 1
+		# trans_counts_B = npr.poisson(trans_counts_exp / 2) + 1
+		# trans_counts = trans_counts_A + trans_counts_B
 
 		# lows = np.nonzero(ase_counts < 2)[0]
 		# while lows.size != 0:
@@ -134,8 +150,8 @@ class SimAse(object):
 		# 		low_subs
 		# 	)
 		# print(np.mean(counts_total * self.ase_read_prop)) ####
-		betas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(imbalance_ideal)))
-		alphas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(-imbalance_ideal)))
+		betas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(self.imbalance)))
+		alphas = (1 / self.overdispersion - 1) * (1 / (1 + np.exp(-self.imbalance)))
 		# print(alphas) ####
 		# print(betas) ####
 		# print(self.overdispersion) ####
@@ -145,10 +161,12 @@ class SimAse(object):
 			# print(p) ####
 			return np.sum(npr.binomial(1, p))
 
-		# counts_A_ase = npr.binomial(ase_counts, npr.beta(alphas, betas))
-		counts_A_ase = _bb(ase_counts, alphas, betas)
+		# counts_A_as-e = npr.binomial(ase_counts, npr.beta(alphas, betas))
+		self.counts_A = _bb(self.coverage, alphas, betas)
+		self.counts_A[self.counts_A==0] = 1
+		self.counts_A[self.counts_A==self.coverage] = self.coverage - 1
 
-		self.counts_A = counts_A_ase + trans_counts_A
+		# self.counts_A = counts_A_ase + trans_counts_A
 		
 		# zeros = np.nonzero(self.counts_A == 0)[0]
 		# while zeros.size != 0:
@@ -180,9 +198,10 @@ class SimAse(object):
 		# 	print(betas[alls]) ####
 		# 	print(all_subs) ####
 
-		self.counts_B = ase_counts - counts_A_ase + trans_counts_B
-		np.savetxt("counts_A.txt", self.counts_A) ####
-		np.savetxt("counts_B.txt", self.counts_B) ####
+		# self.counts_B = ase_counts - counts_A_ase + trans_counts_B
+		self.counts_B = self.coverage - self.counts_A
+		# np.savetxt("counts_A.txt", self.counts_A) ####
+		# np.savetxt("counts_B.txt", self.counts_B) ####
 		# print(self.counts_A) ####
 
 	def generate_data(self):

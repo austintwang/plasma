@@ -14,7 +14,8 @@ from ase_finemap import Finemap
 # print("dfdfdf") ####
 from .haplotypes import Haplotypes
 from .sim_ase import SimAse
+from .eval_caviar import EvalCaviar, EvalCaviarASE
 # print("wiheoifwh") ####
-from .benchmark import Benchmark
+from .benchmark import Benchmark, Benchmark2d
 # print("woiehofwiehf") ####
 # print("ihseihfow") ####

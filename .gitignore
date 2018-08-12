@@ -21,8 +21,6 @@
 *.tar
 *.zip
 
-*.pickle
-
 # Logs and databases #
 ######################
 *.log
@@ -41,3 +39,7 @@ Thumbs.db
 
 ######################
 *.txt
+*.pickle
+/test/results
+/test/caviar
+/test/temp

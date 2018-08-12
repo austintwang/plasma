@@ -7,6 +7,7 @@ import numpy as np
 import scipy.linalg.lapack as lp
 
 class Evaluator(object):
+	
 	def __init__(self, fm):
 		self.num_snps_imbalance = fm.num_snps_imbalance
 		self.num_snps_total_exp = fm.num_snps_total_exp
@@ -24,8 +25,9 @@ class Evaluator(object):
 
 		self.imbalance_var_prior = fm.imbalance_var_prior
 		self.total_exp_var_prior = fm.total_exp_var_prior
+		self.cross_corr_prior = fm.cross_corr_prior
 		self.cross_cov_prior = (
-			fm.cross_corr_prior 
+			self.cross_corr_prior 
 			* np.sqrt(fm.imbalance_var_prior * fm.total_exp_var_prior)
 		)
 		# print(self.imbalance_var_prior) ####
@@ -122,6 +124,19 @@ class Evaluator(object):
 		# print(self.total_exp_stats) ####
 		# print(np.isfinite(self.imbalance_stats)) ####
 
+		if self.num_snps_imbalance == 0:
+			self.ldet_prior = np.log(self.total_exp_var_prior) * self.num_snps_total_exp
+		elif self.num_snps_total_exp == 0:
+			self.ldet_prior = np.log(self.imbalance_var_prior) * self.num_snps_imbalance
+		else:
+			self.ldet_prior = (
+				np.log(self.imbalance_var_prior)
+				+ np.log(self.total_exp_var_prior)
+				+ np.log(1 - self.cross_corr_prior ** 2)
+			) * self.num_snps_combined
+		# print(self.ldet_prior) ####
+		# print(self.cross_cov_prior) ####
+
 		self.valid_entries = np.append(
 			np.isfinite(self.imbalance_stats), 
 			np.isfinite(self.total_exp_stats)
@@ -175,12 +190,12 @@ class Evaluator(object):
 	# 	return np.matmul(l_inv.T, l_inv)
 
 	@staticmethod
-	def _eval_lmvn(cov, stats):
-		ltri = np.linalg.cholesky(cov)
-		ltri_inv = lp.dtrtri(l, lower=1)[0]
-		ldet = 2 * np.log(np.prod(np.diagonal(ltri)))
-		m = ltri_inv.dot(stats)
-		return (-ldet + m.dot(m)) / 2
+	def _lbf(cov_term, stats, ldet_prior):
+		ltri = np.linalg.cholesky(cov_term)
+		ldet_term = np.log(np.prod(np.diagonal(ltri)))
+		temp = np.asfortranarray(stats[:, np.newaxis])
+		lp.dtrtrs(ltri, temp, lower=1, overwrite_b=1)
+		return (ldet_term - ldet_prior + np.sum(temp ** 2)) / 2
 
 	def eval(self, configuration, lbias=0.0, lprior=None):
 		key = tuple(configuration.tolist())
@@ -215,9 +230,23 @@ class Evaluator(object):
 		# print(configuration_bool) ####
 		# print(list(selection)) ####
 
-		det_term_subset = self.det_term[selection_2d]
+		# det_term_subset = self.det_term[selection_2d]
 		inv_term_subset = self.inv_term[selection_2d]
 		stats_subset = self.stats[selection]
+
+		# print(self.prior_cov_inv[selection_2d]) ####
+		# print(np.linalg.inv(self.prior_cov[selection_2d])) ####
+		# if not np.allclose(self.prior_cov_inv[selection_2d] + 0.0, np.linalg.inv(self.prior_cov[selection_2d])): ####
+		# 	print(self.prior_cov_inv[selection_2d]) ####
+		# 	print(np.linalg.inv(self.prior_cov[selection_2d])) ####
+		# 	print(self.prior_cov[selection_2d]) ####
+		# 	print(self.imbalance_var_prior) ####
+		# 	print(self.total_exp_var_prior) ####
+		# 	print(self.cross_cov_prior) ####
+		# 	print(self.imbalance_var_inv) ####
+		# 	print(self.total_exp_var_inv) ####
+		# 	print(self.cross_cov_inv) ####
+		# 	raise Exception
 
 		# subchol = np.linalg.cholesky(inv_term_subset) ####
 		# assert(subchol == self.chol[selection_2d]) ####
@@ -232,6 +261,7 @@ class Evaluator(object):
 		# print(stats_subset) ####
 		# det = np.linalg.det(det_term_subset)
 		# inv = lp.dpotri(inv_term_subset)[0]
+		# inv = self._inv(inv_term_subset)
 		# try: 
 		# 	inv = self._inv(inv_term_subset)
 		# 	# det = self._det(det_term_subset)
@@ -254,10 +284,14 @@ class Evaluator(object):
 		# print(inv.dot(stats_subset).dot(stats_subset)) ####
 		# print(np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)) ####
 
+		# dist = inv.dot(stats_subset).dot(stats_subset)
 		# ldet = np.linalg.slogdet(det_term_subset)[1]
-		# lbf = ldet * -0.5 + (inv.dot(stats_subset).dot(stats_subset) / 2.0)
+		# lbf = ldet * -0.5 + (dist / 2.0)
+		# corr = np.log(1 + dist**4 + dist**3 / 4)
+		# print(corr) ####
 
-		lmvn = self._eval_lmvn(inv_term_subset, stats_subset)
+		# lmvn = self._eval_lmvn(inv_term_subset, stats_subset)
+		lbf = self._lbf(inv_term_subset, stats_subset, self.ldet_prior)
 
 		res = lbf + lprior - lbias
 
@@ -375,13 +409,15 @@ class Evaluator(object):
 
 	def get_ppas(self):
 		# m = max(self.num_snps_imbalance, self.num_snps_total_exp)
+		total = sum(i for i in self.get_probs().values())
+		print(total) ####
 		ppas = []
 		for i in xrange(self.num_snps):
 			ppa = 0
 			for k, v in self.get_probs().viewitems():
 				if k[i] == 1:
 					ppa += v
-			ppas.append(ppa / self.cumu_sum)
+			ppas.append(ppa / total)
 		return ppas
 
 	def reset(self):

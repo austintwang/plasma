@@ -11,8 +11,9 @@ from .evaluator import Evaluator
 
 class FmUnchecked(object):
 	IMBALANCE_VAR_PRIOR_DEFAULT = 2000
-	TOTAL_EXP_VAR_PRIOR_DEFAULT = 200
-	CROSS_CORR_PRIOR_DEFAULT = 0.6
+	TOTAL_EXP_VAR_PRIOR_DEFAULT = 26
+	CROSS_CORR_PRIOR_DEFAULT = 0.99
+	CAUSAL_STATUS_PRIOR_DEFAULT = 0.05
 
 	def __init__(self, **kwargs):
 		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)
@@ -20,7 +21,7 @@ class FmUnchecked(object):
 		self.num_ppl_imbalance = kwargs.get("num_ppl_imbalance", None)
 		self.num_ppl_total_exp = kwargs.get("num_ppl_total_exp", None)
 
-		self.causal_status_prior = kwargs.get("causal_status_prior", None)
+		self.causal_status_prior = kwargs.get("causal_status_prior", self.CAUSAL_STATUS_PRIOR_DEFAULT)
 
 		self.imbalance_var_prior = kwargs.get("imbalance_var_prior", self.IMBALANCE_VAR_PRIOR_DEFAULT)
 		self.total_exp_var_prior = kwargs.get("total_exp_var_prior", self.TOTAL_EXP_VAR_PRIOR_DEFAULT)
@@ -198,25 +199,33 @@ class FmUnchecked(object):
 		# for ph, ind in enumerate(phases):
 		# 	denominator[ind] = ph.dot(weights).dot(ph)
 		phi = denominator * np.matmul(phases.T, (weights * self.imbalance)) #/ self.num_ppl_imbalance
-		np.savetxt("imbalance_raw.txt",  np.matmul(phases.T, self.imbalance))
-		np.savetxt("imbalance_weighted.txt",  np.matmul(phases.T, (weights * self.imbalance)))
-		np.savetxt("imbalance.txt", self.imbalance) ####
-		np.savetxt("phases.txt", self.phases) ####
-		np.savetxt("phis.txt", phi) ####
+		# np.savetxt("imbalance_raw.txt",  np.matmul(phases.T, self.imbalance))
+		# np.savetxt("imbalance_weighted.txt",  np.matmul(phases.T, (weights * self.imbalance)))
+		# np.savetxt("imbalance.txt", self.imbalance) ####
+		# np.savetxt("phases.txt", self.phases) ####
+		# np.savetxt("phis.txt", phi) ####
 
 		sqrt_weights = np.sqrt(weights)
+		sum_weights = np.sum(weights)
+		sum_weights_sq = np.sum(weights ** 2)
+		sum_weights_sqrt = np.sum(sqrt_weights)
 		residuals = (sqrt_weights * self.imbalance - sqrt_weights * (self.phases * phi).T).T
-		remaining_errors = np.sum(
-			residuals * residuals, 
-			axis=0
-		) / (self.num_ppl_imbalance - 2)
+		# residuals = (self.imbalance - (self.phases * phi).T).T
+		remaining_errors = (
+			np.sum(
+				residuals * residuals - 1, 
+				axis=0
+			) 
+			# / (self.num_ppl_imbalance - 1)
+			/ (sum_weights)
+		)
 		# np.savetxt("imbalance_errs.txt", remaining_errors) ####
 
 		# remaining_errors = 1 ####
-		varphi = denominator * denominator * (phases.T * weights * phases.T).sum(1) * remaining_errors
-		np.savetxt("varphi.txt", varphi) ####
+		varphi = denominator * denominator * ((phases.T * weights**2 * phases.T).sum(1) * remaining_errors + (phases.T * weights * phases.T).sum(1))
+		# np.savetxt("varphi.txt", varphi) ####
 		self.imbalance_stats = phi / np.sqrt(varphi)
-		np.savetxt("imbalance_stats.txt", self.imbalance_stats) ####
+		# np.savetxt("imbalance_stats.txt", self.imbalance_stats) ####
 
 		# print(self.phases) ####
 		# print(self.imbalance) ####
@@ -265,7 +274,7 @@ class FmUnchecked(object):
 			np.corrcoef(self.hap_A.T * (1 / self.imbalance_errors))
 			+ np.corrcoef(self.hap_B.T * (1 / self.imbalance_errors))
 		) / 2
-		print(np.append(self.hap_A, self.hap_B)) ####
+		# print(np.append(self.hap_A, self.hap_B)) ####
 		self.imbalance_corr = np.corrcoef(
 			np.append(self.hap_A, self.hap_B, axis=0).T 
 			# * (1 / np.append(self.imbalance_errors, self.imbalance_errors))
@@ -289,9 +298,11 @@ class FmUnchecked(object):
 
 		genotypes_comb = self.genotypes_comb
 		# genotypes_combT = genotypes_comb.T
-		mean = np.sum(self.total_exp) / self.num_ppl_total_exp
-		denominator = 1 / (genotypes_comb * genotypes_comb).sum(0)
-		np.savetxt("eqtl_denom.txt", denominator) ####
+		genotype_means = np.mean(genotypes_comb, axis=0)
+		exp_mean = np.sum(self.total_exp) / self.num_ppl_total_exp
+		genotypes_ctrd = genotypes_comb - genotype_means
+		denominator = 1 / (genotypes_ctrd * genotypes_ctrd).sum(0)
+		# np.savetxt("eqtl_denom.txt", denominator) ####
 		# print((genotypes_combT * genotypes_combT).sum(1)) ####
 		# print(denominator) ####
 		# denominator = np.empty(self.num_ppl_total_exp)
@@ -302,11 +313,11 @@ class FmUnchecked(object):
 		# exp_std = 
 		# self._beta = self.genotypes_comb.T.dot(self.total_exp - self._mean) / self.num_ppl_total_exp
 		
-		self._beta = denominator * genotypes_comb.T.dot(self.total_exp - mean)
+		self._beta = denominator * genotypes_ctrd.T.dot(self.total_exp - exp_mean)
 		# print(genotypes_combT.dot(self.total_exp - mean)) ####
 		# print(self._beta) ####
 		# print(self._beta.shape) ####
-		self._mean = mean
+		self._mean = exp_mean
 		self._beta_normalizer = denominator 
 
 	def _calc_total_exp_errors(self):
@@ -323,7 +334,7 @@ class FmUnchecked(object):
 		self.exp_errors = np.sum(
 			residuals * residuals, 
 			axis=0
-		) / (self.num_ppl_total_exp - 2)
+		) / (self.num_ppl_total_exp - 1)
 		# print(self.exp_error_var) ####
 
 
@@ -335,7 +346,13 @@ class FmUnchecked(object):
 		self._calc_beta()
 		self._calc_total_exp_errors()
 
-		genotypes_combT = self.genotypes_comb.T
+		genotypes_comb = self.genotypes_comb
+		# genotypes_combT = genotypes_comb.T
+		genotype_means = np.mean(genotypes_comb, axis=0)
+		exp_mean = np.sum(self.total_exp) / self.num_ppl_total_exp
+		genotypes_ctrd = genotypes_comb - genotype_means
+
+		genotypes_combT = genotypes_ctrd.T
 		denominator = self._beta_normalizer
 
 		varbeta = denominator * denominator * (
@@ -353,10 +370,10 @@ class FmUnchecked(object):
 		# print(self.total_exp) ####
 		# print(self._beta) ####
 		# print(self.total_exp_stats) ####
-		np.savetxt("total_exp.txt", self.total_exp) ####
-		np.savetxt("genotypes_comb.txt", self.genotypes_comb) ####
-		np.savetxt("betas.txt", self._beta) ####
-		np.savetxt("total_exp_stats.txt", self.total_exp_stats) ####
+		# np.savetxt("total_exp.txt", self.total_exp) ####
+		# np.savetxt("genotypes_comb.txt", self.genotypes_comb) ####
+		# np.savetxt("betas.txt", self._beta) ####
+		# np.savetxt("total_exp_stats.txt", self.total_exp_stats) ####
 		# print(np.var(self.total_exp_stats)) ####
 		# print(np.var(self._beta)) ####
 
@@ -410,6 +427,8 @@ class FmUnchecked(object):
 			/ np.sqrt(np.var(imbalance_stats) * np.var(total_exp_stats))
 		)
 		print(self.corr_stats) ####
+		if self.corr_stats < 0:
+			self.corr_stats = 0.0
 
 	def _calc_cross_corr(self):
 		if self.cross_corr is not None:
@@ -501,10 +520,10 @@ class FmUnchecked(object):
 
 		self.evaluator = Evaluator(self)
 
-	def search_exhaustive(self, max_causal):
+	def search_exhaustive(self, min_causal, max_causal):
 		m = max(self.num_snps_imbalance, self.num_snps_total_exp)
 		configuration = np.zeros(m)
-		for k in xrange(max_causal + 1):
+		for k in xrange(min_causal, max_causal + 1):
 			for c in itertools.combinations(xrange(m), k):
 				# print(c) ####
 				np.put(configuration, c, 1)

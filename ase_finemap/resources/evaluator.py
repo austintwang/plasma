@@ -399,12 +399,15 @@ class Evaluator(object):
 			# print(causuality) ####
 			conf_sum += causuality
 			# print(conf_sum, causuality) ####
+			# print(conf_sum / threshold) ####
 			for ind, val in enumerate(c):
 				if val == 1:
 					causal_set[ind] = 1
 			if conf_sum >= threshold:
+				# print(conf_sum / threshold) ####
 				break
 
+		# print("------") ####
 		return causal_set
 
 	def get_ppas(self):

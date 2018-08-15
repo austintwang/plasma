@@ -209,6 +209,7 @@ class SimAse(object):
 		self._generate_effects()
 		self._generate_genotypes()
 		self._generate_expression()
+		return self.__dict__.copy()
 
 		# alt_counts = (
 		# 	(self.hap_A.T * (1 - self.hap_B.T) * self.counts_A).sum(1) 

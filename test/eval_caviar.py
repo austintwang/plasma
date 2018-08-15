@@ -26,7 +26,7 @@ class EvalCaviar(object):
 
 		self.var_prior = fm.imbalance_var_prior
 
-		self.rsids = ["{0:05d}".format(i) for i in range(self.num_snps)]
+		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
 		self.rsid_map = dict(zip(self.rsids, range(self.num_snps)))
 
 		self.output_name = ''.join(
@@ -39,37 +39,49 @@ class EvalCaviar(object):
 		self.z_path = os.path.join(self.output_path, "z.txt")
 		self.ld_path = os.path.join(self.output_path, "ld.txt")
 		self.set_path = os.path.join(self.output_path, self.output_name + "_set")
+		self.post_path = os.path.join(self.output_path, self.output_name + "_post")
 
 		self.params = [
 			self.caviar_path,
 			"-o", self.output_filename_base,
 			"-l", self.ld_path,
+			"-z", self.z_path,
 			"-r", str(confidence),
 			"-c", str(max_causal),
 			"-n", str(self.var_prior)
 		]
 
 		self.causal_set = np.zeros(self.num_snps)
+		self.post_probs = np.zeros(self.num_snps)
 
 		self.z_scores = self.total_exp_stats.tolist()
 		self.ld = self.corr.tolist()
 
 	def run(self):
 		with open(self.z_path, "w") as zfile:
-			zstr = "\n".join("\t".join(str(j) for j in i) for i in zip(self.rsids, self.z_scores))
+			zstr = "\n".join("\t".join(str(j) for j in i) for i in zip(self.rsids, self.z_scores)) + "\n"
 			zfile.write(zstr)
 
 		with open(self.ld_path, "w") as ldfile:
-			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld)
+			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
 			ldfile.write(ldstr)
 
-		subprocess.call(self.params)
+		out = subprocess.check_output(self.params)
+		# print(out) ####
+		# print(self.z_path) ####
 
 		with open(self.set_path) as setfile:
 			ids = setfile.read().splitlines()
 
 		for i in ids:
-			self.causal_set[self.rsid_map[int(i)]] = 1
+			self.causal_set[self.rsid_map[i]] = 1
+
+		with open(self.post_path) as postfile:
+			posts = [i.split("\t") for i in postfile.read().splitlines()]
+		postdict = {i[0]: i[2] for i in posts}
+
+		for r in self.rsids:
+			self.post_probs[self.rsid_map[r]] = postdict[r]
 
 		shutil.rmtree(self.output_path)
 
@@ -82,16 +94,16 @@ class EvalCaviarASE(object):
 		self.phases = fm.phases
 
 		self.phases_abs = np.absolute(self.phases)
-		self.ase = np.logical_and(
+		self.ase = np.logical_or(
 			self.imbalance >= 0.619, self.imbalance <= -0.619
 		)
 
-		self.phases_imb = self.phases_abs.T[self.ase].T
-		self.phases_bal = self.phases_abs.T[np.logical_not(self.ase)].T
+		self.phases_imb = self.phases_abs[self.ase]
+		self.phases_bal = self.phases_abs[np.logical_not(self.ase)]
 
-		self.hets_tot = np.mean(self.phases_abs)
-		self.hets_imb = np.mean(self.phases_imb)
-		self.hets_bal = np.mean(self.phases_bal)
+		self.hets_tot = np.mean(self.phases_abs, axis=0)
+		self.hets_imb = np.mean(self.phases_imb, axis=0)
+		self.hets_bal = np.mean(self.phases_bal, axis=0)
 
 		self.num_imb = np.sum(self.ase) * 2
 		self.num_bal = np.sum(1 - self.ase) * 2
@@ -102,11 +114,26 @@ class EvalCaviarASE(object):
 			* (self.num_bal + self.num_imb)
 			/ (self.num_bal * self.num_imb)
 		)
+		# print(self.hets_tot) ####
+		# print(self.num_bal) ####
+		# print(self.num_imb) ####
+		# print(self.ase_std) ####
 
 		self.ase_stats = (self.hets_imb - self.hets_bal) / self.ase_std
 
+		# print(self.ase_stats) ####
+		# print(self.total_exp_stats) ####
+		
 		self.stats_1 = (self.total_exp_stats + self.ase_stats) / np.sqrt(2)
 		self.stats_2 = (self.total_exp_stats - self.ase_stats) / np.sqrt(2)
+
+		# print(self.stats_1) ####
+		# print(self.stats_2) ####
+
+		# print(fm.imbalance_stats) ####
+
+		# raise Exception ####
+
 
 		means = np.mean(self.phases_abs, axis=0)
 		phases_centered = self.phases_abs - means
@@ -131,10 +158,10 @@ class EvalCaviarASE(object):
 		self.eval1.run()
 		self.eval2.run()
 
-		set1 = eval1.causal_set
-		set2 = eval2.causal_set
+		set1 = self.eval1.causal_set
+		set2 = self.eval2.causal_set
 
-		self.causal_set = min(set1, set2, key=np.size)
+		self.causal_set = min(set1, set2, key=np.sum)
 
 
 

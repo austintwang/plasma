@@ -53,12 +53,12 @@ def dummy_test_2d():
 		"test_count_primary": 2,
 		"test_count_secondary": 2,
 		"test_name": "dummy_test_2d",
-		"iterations": 5,
+		"iterations": 50,
 		"confidence": 0.95 
 	}
 	
-	ptests = [0.55, 0.95 ]
-	stests = [10, 1000]
+	ptests = [0.6, 0.8 ]
+	stests = [10, 100]
 	
 	bm = Benchmark2d(params)
 	for s in stests:
@@ -162,7 +162,7 @@ def fraction_vs_noise():
 
 if __name__ == "__main__":
 	# dummy_test()
-	# dummy_test_2d()
+	dummy_test_2d()
 	# confidence_test()
-	fraction_vs_coverage()
-	fraction_vs_noise()
+	# fraction_vs_coverage()
+	# fraction_vs_noise()

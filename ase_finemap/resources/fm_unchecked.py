@@ -13,7 +13,7 @@ class FmUnchecked(object):
 	IMBALANCE_VAR_PRIOR_DEFAULT = 2000
 	TOTAL_EXP_VAR_PRIOR_DEFAULT = 26
 	CROSS_CORR_PRIOR_DEFAULT = 0.99
-	CAUSAL_STATUS_PRIOR_DEFAULT = 0.05
+	CAUSAL_STATUS_PRIOR_DEFAULT = 1 / 125
 
 	def __init__(self, **kwargs):
 		self.num_snps_imbalance = kwargs.get("num_snps_imbalance", None)

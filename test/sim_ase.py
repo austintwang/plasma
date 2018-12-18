@@ -72,7 +72,7 @@ class SimAse(object):
 		np.put(self.causal_config, causal_inds, 1)
 		self.causal_snps = np.zeros(self.num_snps)
 		np.put(self.causal_snps, causal_inds, self.causal_effects)
-		np.savetxt("causal_snps.txt", self.causal_snps) ####
+		# np.savetxt("causal_snps.txt", self.causal_snps) ####
 
 	def _generate_genotypes(self):
 		self.genotypes_comb = self.hap_A + self.hap_B

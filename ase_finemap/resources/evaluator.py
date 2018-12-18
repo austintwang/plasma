@@ -125,15 +125,15 @@ class Evaluator(object):
 		# print(np.isfinite(self.imbalance_stats)) ####
 
 		if self.num_snps_imbalance == 0:
-			self.ldet_prior = np.log(self.total_exp_var_prior) * self.num_snps_total_exp
+			self.ldet_prior = np.log(self.total_exp_var_prior)
 		elif self.num_snps_total_exp == 0:
-			self.ldet_prior = np.log(self.imbalance_var_prior) * self.num_snps_imbalance
+			self.ldet_prior = np.log(self.imbalance_var_prior)
 		else:
 			self.ldet_prior = (
 				np.log(self.imbalance_var_prior)
 				+ np.log(self.total_exp_var_prior)
 				+ np.log(1 - self.cross_corr_prior ** 2)
-			) * self.num_snps_combined
+			)
 		# print(self.ldet_prior) ####
 		# print(self.cross_cov_prior) ####
 
@@ -192,10 +192,12 @@ class Evaluator(object):
 	@staticmethod
 	def _lbf(cov_term, stats, ldet_prior):
 		ltri = np.linalg.cholesky(cov_term)
-		ldet_term = np.log(np.prod(np.diagonal(ltri)))
+		ldet_term = np.log(np.prod(np.diagonal(ltri))) * 2
 		temp = np.asfortranarray(stats[:, np.newaxis])
 		lp.dtrtrs(ltri, temp, lower=1, overwrite_b=1)
-		return (ldet_term - ldet_prior + np.sum(temp ** 2)) / 2
+		# print(stats.size) ####
+		# print(temp ** 2) ####
+		return (-ldet_term - ldet_prior * stats.size + np.sum(temp ** 2)) / 2
 
 	def eval(self, configuration, lbias=0.0, lprior=None):
 		key = tuple(configuration.tolist())
@@ -295,6 +297,9 @@ class Evaluator(object):
 
 		res = lbf + lprior - lbias
 
+		# if res == np.nan: ####
+		# 	raise Exception ####
+
 		# print(bf) ####
 		# print(res) ####
 		# print("") ####
@@ -388,32 +393,158 @@ class Evaluator(object):
 	def get_causal_set(self, confidence):
 		max_lbf = max(self.results.values())
 		scale = 25 - max_lbf
-		total = sum([np.exp(i + scale) for i in self.results.values()])
+		# total = sum([np.exp(i + scale) for i in self.results.values()])
+		# threshold = confidence * total
+		# print(self.get_ppas()) ####
+		# configs = sorted(self.results, key=self.results.get, reverse=True)
+		# causal_set = [0] * self.num_snps
+		# conf_sum = 0
+		# for c in configs:
+		# 	causuality = np.exp(self.results[c] + scale)
+		# 	# print(causuality) ####
+		# 	conf_sum += causuality
+		# 	# print(conf_sum, causuality) ####
+		# 	# print(conf_sum / total) ####
+		# 	# print(c) ####
+		# 	for ind, val in enumerate(c):
+		# 		if val == 1:
+		# 			causal_set[ind] = 1
+		# 	if conf_sum >= threshold:
+		# 		# print(conf_sum / threshold) ####
+		# 		break
+		# confidence = 0 ####
+		# confidence = np.inf ####
+		
+		results_exp = {k: np.exp(v + scale) for k, v in self.results.viewitems()}
+		total = sum(results_exp.values())
 		threshold = confidence * total
 
-		configs = sorted(self.results, key=self.results.get, reverse=True)
-		causal_set = [0] * max(self.num_snps_imbalance, self.num_snps_total_exp)
-		conf_sum = 0
-		for c in configs:
-			causuality = np.exp(self.results[c] + scale)
-			# print(causuality) ####
-			conf_sum += causuality
-			# print(conf_sum, causuality) ####
-			# print(conf_sum / threshold) ####
-			for ind, val in enumerate(c):
-				if val == 1:
-					causal_set[ind] = 1
-			if conf_sum >= threshold:
-				# print(conf_sum / threshold) ####
-				break
+		causal_set = np.zeros(self.num_snps)
+		# causal_set = tuple([0] * self.num_snps)
+		conf_sum = results_exp.get(tuple(causal_set), 0.)
+
+		distances = {}
+		causal_extras = {}
+		for k in self.results.keys():
+			causals = set(ind for ind, val in enumerate(k) if val == 1)
+			distances.setdefault(sum(k), set()).add(k)
+			causal_extras[k] = causals
+		# print(distances) ####
+
+		while conf_sum < threshold:
+			dist_ones = distances[1]
+			neighbors = {}
+			for i in dist_ones:
+				# results_exp[i[0]] ####
+				# print(i) ####
+				# print(causal_extras[i]) ####
+				diff_snp = next(iter(causal_extras[i]))
+				neighbors.setdefault(diff_snp, 0)
+				neighbors[diff_snp] += results_exp[i]
+
+			max_snp = max(neighbors, key=neighbors.get)
+			causal_set[max_snp] = 1
+			conf_sum += neighbors[max_snp]
+
+			diffs = {}
+			for k, v in distances.viewitems():
+				diffs[k] = set() 
+				for i in v:
+					if i[max_snp] == 1:
+						diffs[k].add(i)
+						if k == 1:
+							causal_extras.pop(i)
+						else:
+							causal_extras[i].remove(max_snp)
+
+			for k, v in diffs.viewitems():
+				distances[k] -= v
+				if k > 1:
+					distances.setdefault(k-1, set())
+					distances[k-1] |= v
+
+		# print(causal_set) ####
+		return list(causal_set) 
+
+		# causal_set = [0] * self.num_snps
+		# conf_sum = 0
+		# sets_considered = {i: [] for i in xrange(self.num_snps)}
+		# sums_considered = {i: 0 for i in xrange(self.num_snps)}
+		# while conf_sum < threshold:
+		# 	for k, v in results_exp.viewitems():
+		# 		diffs = False
+		# 		addition = None
+		# 		ignore = False
+		# 		for ind, val in enumerate(k):
+		# 			if val > causal_set[ind]:
+		# 				if diffs:
+		# 					ignore = True
+		# 					break
+		# 				diffs = True
+		# 				addition = ind 
+		# 		if ignore:
+		# 			continue
+		# 		sets_considered[addition].append(k)
+		# 		sums_considered[addition] += v
+
+		# 	max_snp = max(sums_considered, key=sums_considered.get)
+		# 	causal_set[max_snp] = 1
+		# 	sets_used = sets_considered.pop(max_snp)
+		# 	# print(sets_used) ####
+		# 	conf_sum += sums_considered.pop(max_snp)
+
+		# 	for s in sets_used:
+		# 		results_exp.pop(s, None)
+		# 	for k in sets_considered.keys():
+		# 		sets_considered[k] = []
+		# 		sums_considered[k] = 0
+
+		# 	# print(conf_sum / total) ####
+		# 	# print(len(results_exp)) ####
+		# 	# print(sets_considered) ####
+		# 	# print(sums_considered) ####
+
+
+		# causal_set = [1] * self.num_snps
+		# conf_sum = total
+		
+		# sum_remaining = {k: 0 for k in xrange(self.num_snps)}
+		# configs_remaining = {k: set() for k in xrange(self.num_snps)}
+		# for k, v in results_exp.viewitems():
+		# 	for ind, val in enumerate(k):
+		# 		if val == 1:
+		# 			configs_remaining[ind].add(k)
+		# 			sum_remaining[ind] += v
+
+		# while conf_sum >= threshold:
+		# 	min_snp = min(sum_remaining, key=sum_remaining.get)
+		# 	sum_new = conf_sum - sum_remaining.pop(min_snp)
+		# 	if sum_new < threshold:
+		# 		break
+
+		# 	conf_sum = sum_new
+		# 	configs_min = configs_remaining.pop(min_snp)
+		# 	causal_set[min_snp] = 0
+
+		# 	for ind, val in configs_remaining.viewitems():
+		# 		configs_used = configs_min & val
+		# 		sum_used = 0
+		# 		for c in configs_used:
+		# 			sum_used += results_exp[c]
+				
+		# 		sum_remaining[ind] -= sum_used
+		# 		val -= configs_used
+
+			# print(conf_sum / total) ####
 
 		# print("------") ####
+		# raise Exception ####
 		return causal_set
 
 	def get_ppas(self):
 		# m = max(self.num_snps_imbalance, self.num_snps_total_exp)
 		total = sum(i for i in self.get_probs().values())
-		print(total) ####
+		# print(total) ####
 		ppas = []
 		for i in xrange(self.num_snps):
 			ppa = 0

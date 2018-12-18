@@ -34,17 +34,17 @@ def dummy_test():
 
 def dummy_test_2d():
 	params = {
-		"num_snps": 200,
+		"num_snps": 90,
 		"num_ppl": 95,
 		"overdispersion": 0.05,
 		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.50,
+		"prop_noise_ase": 0.6,
 		"std_fraction": None,
 		"num_causal": 1,
 		"coverage": None,
 		"search_mode": "exhaustive",
 		"min_causal": 1,
-		"max_causal": 1,
+		"max_causal": 2,
 		"primary_var": "std_fraction",
 		"primary_var_display": "Standard Allelic Fraction",
 		"secondary_var": "coverage",
@@ -54,7 +54,7 @@ def dummy_test_2d():
 		"test_count_secondary": 2,
 		"test_name": "dummy_test_2d",
 		"iterations": 50,
-		"confidence": 0.95 
+		"confidence": 0.95
 	}
 	
 	ptests = [0.6, 0.8 ]

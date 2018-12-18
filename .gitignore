@@ -40,6 +40,9 @@ Thumbs.db
 ######################
 *.txt
 *.pickle
+*.vcf
+*.bed
 /test/results
 /test/caviar
 /test/temp
+/test/data

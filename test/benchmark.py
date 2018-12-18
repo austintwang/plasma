@@ -22,6 +22,7 @@ def evaluate_bm(targs):
 	result = {}
 
 	num_ppl = bm.params["num_ppl"]
+	num_causal = bm.params["num_causal"]
 	eqtl_herit = 1 - bm.params["prop_noise_eqtl"]
 	ase_herit = 1 - bm.params["prop_noise_ase"]
 
@@ -68,18 +69,18 @@ def evaluate_bm(targs):
 	# ase_herit_adj = ase_herit ####
 
 	corr_stats = np.sqrt(
-		num_ppl**2 * eqtl_herit * ase_herit_adj
+		(num_ppl / num_causal)**2 * eqtl_herit * ase_herit_adj
 		/ (
-			(1 + eqtl_herit * (num_ppl - 1))
-			* (1 + ase_herit_adj * (num_ppl - 1))
+			(1 + eqtl_herit * (num_ppl / num_causal - 1))
+			* (1 + ase_herit_adj * (num_ppl / num_causal - 1))
 		)
 	)
 	# print(corr_stats) ####
 	iv = (
-		(num_ppl * ase_herit_adj / (1 - ase_herit_adj)) 
+		(num_ppl / num_causal * ase_herit_adj / (1 - ase_herit_adj)) 
 	)
 	xv = (
-		(num_ppl * eqtl_herit / (1 - eqtl_herit)) 
+		(num_ppl / num_causal * eqtl_herit / (1 - eqtl_herit)) 
 	)
 	# unbias = lambda x: x * np.log(
 	# 	1
@@ -87,9 +88,12 @@ def evaluate_bm(targs):
 	# 	+ x**2 * (3 * x + 1) / (3 * (x + 1)**2)
 	# 	+ x**3 * (2 * (2 * x + 1)**2 + 48 * (4 * x + 1)) / (192 * (x + 1)**3)
 	# )
-	unbias = lambda x: x
-	imbalance_var_prior = unbias(iv)
-	total_exp_var_prior = unbias(xv)
+	# unbias = lambda x: x * 40
+	# imbalance_var_prior = unbias(iv)
+	# total_exp_var_prior = unbias(xv)
+
+	imbalance_var_prior = 1 * iv
+	total_exp_var_prior = 1 * xv
 
 	print("\nIteration {0}".format(str(itr + 1)))
 	# print("Generating Simulation Data")
@@ -155,6 +159,8 @@ def evaluate_bm(targs):
 	# print(recall) ####
 	# print(model_full.get_probs_sorted()[:10]) ####
 
+	result["inclusions_full"] = bm._inclusion(model_full.get_ppas(), causal_config)
+	# print(model_full.get_probs()) ####
 
 	# print("Initializing Independent Model")
 	model_inputs_indep = model_inputs.copy()
@@ -194,6 +200,8 @@ def evaluate_bm(targs):
 	result["recall_indep"] = recall
 	# print(recall) ####
 
+	result["inclusions_indep"] = bm._inclusion(model_indep.get_ppas(), causal_config)
+
 
 	# print("Initializing eQTL Model")
 	model_inputs_eqtl = model_inputs.copy()
@@ -226,15 +234,13 @@ def evaluate_bm(targs):
 	result["set_sizes_eqtl"] = causal_set_eqtl_size
 	# print(causal_set_eqtl_size) ####
 	# print(model_eqtl.get_probs_sorted()) ####
-	# model_eqtl.get_probs_sorted() ####
+	# print(model_eqtl.get_probs_sorted()) ####
 	# print(model_eqtl.get_probs()[tuple(causal_config)]) ####
 	# print(model_eqtl.get_probs()[tuple(null)]) ####
-	# ppas = model_eqtl.get_ppas()
+	# ppas = model_eqtl.get_ppas() ####
 	# np.savetxt("ppas_eqtl.txt", np.array(ppas)) ####
 	# print(model_eqtl.total_exp_stats[causal_config == True][0]) ####
 	# eqtl_cstats.append(model_eqtl.total_exp_stats[causal_config == True][0]) ####
-
-	x = model_eqtl.imbalance_stats
 
 	recall = bm._recall(causal_set_eqtl, causal_config)
 	# for ind, val in enumerate(causal_config):
@@ -243,6 +249,10 @@ def evaluate_bm(targs):
 	# 			recall = 0
 	result["recall_eqtl"] = recall
 	# print(recall) ####
+	# ppa_eqtl = model_eqtl.get_ppas() ####
+
+	result["inclusions_eqtl"] = bm._inclusion(model_eqtl.get_ppas(), causal_config)
+
 
 	# print("Initializing ASE Model")
 	model_inputs_ase = model_inputs.copy()
@@ -289,6 +299,8 @@ def evaluate_bm(targs):
 	result["recall_ase"] = recall
 	# print(recall) ####
 
+	result["inclusions_ase"] = bm._inclusion(model_ase.get_ppas(), causal_config)
+
 	# if causal_set_ase_size == 181: ####
 	# 	ps = model_ase.get_probs_sorted()
 	# 	with open("null_ase.txt", "w") as null_ase:
@@ -307,6 +319,10 @@ def evaluate_bm(targs):
 	result["set_sizes_caviar"] = causal_set_caviar_size
 	recall = bm._recall(causal_set_caviar, causal_config)
 	result["recall_caviar"] = recall
+	# ppa_caviar = model_caviar.post_probs ####
+
+	result["inclusions_caviar"] = bm._inclusion(model_caviar.post_probs, causal_config)
+
 
 	model_caviar_ase = EvalCaviarASE(
 		model_full, 
@@ -319,6 +335,13 @@ def evaluate_bm(targs):
 	result["set_sizes_caviar_ase"] = causal_set_caviar_size_ase
 	recall = bm._recall(causal_set_caviar_ase, causal_config)
 	result["recall_caviar_ase"] = recall
+
+	result["inclusions_caviar_ase"] = bm._inclusion(model_caviar_ase.post_probs, causal_config)
+
+	# print(result["inclusions_caviar_ase"]) ####
+
+	# print("\n".join(str(i) for i in zip(ppa_eqtl, ppa_caviar))) ####
+	# raise Exception ####
 
 	return result
 
@@ -377,6 +400,7 @@ class Benchmark(object):
 	def output_result(self, result, out_dir):
 		title_var = self.params["primary_var_display"]
 		var_value = str(self.params[self.params["primary_var"]])
+		num_snps = self.params["num_snps"]
 
 		set_sizes_full = result["set_sizes_full"]
 		set_sizes_indep = result["set_sizes_indep"]
@@ -391,6 +415,13 @@ class Benchmark(object):
 		recall_rate_ase = result["recall_rate_ase"]
 		recall_rate_caviar = result["recall_rate_caviar"]
 		recall_rate_caviar_ase = result["recall_rate_caviar_ase"]
+
+		inclusion_rate_full = list(result["inclusion_rate_full"])
+		inclusion_rate_indep = list(result["inclusion_rate_indep"])
+		inclusion_rate_eqtl = list(result["inclusion_rate_eqtl"])
+		inclusion_rate_ase = list(result["inclusion_rate_ase"])
+		inclusion_rate_caviar = list(result["inclusion_rate_caviar"])
+		inclusion_rate_caviar_ase = list(result["inclusion_rate_caviar_ase"])
 
 		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in self.params.viewitems())
 		with open(os.path.join(out_dir, "parameters.txt"), "w") as params_file:
@@ -474,11 +505,42 @@ class Benchmark(object):
 			plt.xlabel("Set Size")
 			plt.ylabel("Density")
 			plt.title("Distribution of Causal Set Sizes, {0} = {1}".format(title_var, var_value))
-			plt.savefig(os.path.join(out_dir, "Set_size_distribution.svg"))
+			plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
 			plt.clf()
 		except Exception:
 			# raise ####
 			plt.clf()
+
+		inclusions_dict = {
+			"Number of Selected Markers": 6 * range(1, num_snps+1),
+			"Inclusion Rate": (
+				inclusion_rate_full 
+				+ inclusion_rate_indep 
+				+ inclusion_rate_eqtl 
+				+ inclusion_rate_ase
+				+ inclusion_rate_caviar
+				+ inclusion_rate_caviar_ase
+			),
+			"Model": (
+				num_snps * ["Full"]
+				+ num_snps * ["Independent Likelihoods"]
+				+ num_snps * ["eQTL-Only"]
+				+ num_snps * ["ASE-Only"]
+				+ num_snps * ["CAVIAR"]
+				+ num_snps * ["CAVIAR-ASE"]
+			)
+		}
+		# print(inclusions_dict) ####
+		# print(len(inclusion_rate_full)) ####
+		# print(num_snps) ####
+		inclusions_df = pd.DataFrame(inclusions_dict)
+
+		sns.set()
+		sns.lineplot(x="Number of Selected Markers", y="Inclusion Rate", hue="Model", data=inclusions_df)
+		plt.title("Inclusion Rate vs. Selection Size, {0} = {1}".format(title_var, var_value))
+		plt.savefig(os.path.join(out_dir, "inclusion.svg"))
+		plt.clf()
+
 
 	def output_summary(self):
 		recall_rate_full = [i["recall_rate_full"] for i in self.results]
@@ -494,7 +556,7 @@ class Benchmark(object):
 		num_trials = self.test_count
 
 		rec_dict = {
-			title_var: 4 * self.primary_var_vals,
+			title_var: 6 * self.primary_var_vals,
 			"Recall Rate": (
 				recall_rate_full 
 				+ recall_rate_indep 
@@ -503,7 +565,7 @@ class Benchmark(object):
 				+ recall_rate_caviar
 				+ recall_rate_caviar_ase
 			),
-			"Model Type": (
+			"Model": (
 				num_trials * ["Full"]
 				+ num_trials * ["Independent Likelihoods"]
 				+ num_trials * ["eQTL-Only"]
@@ -516,7 +578,7 @@ class Benchmark(object):
 		rec_df = pd.DataFrame(rec_dict)
 
 		sns.set(style="white")
-		sns.lmplot(title_var, "Recall Rate", rec_df, hue="Model Type")
+		sns.lmplot(title_var, "Recall Rate", rec_df, hue="Model")
 		# sns.lmplot(self.primary_var_vals, recall_full)
 		# sns.lmplot(self.primary_var_vals, recall_indep)
 		# sns.lmplot(self.primary_var_vals, recall_eqtl)
@@ -571,7 +633,12 @@ class Benchmark(object):
 					recall = 0
 		return recall
 
-
+	@staticmethod
+	def _inclusion(ppas, causal_config):
+		selections = np.flip(np.argsort(ppas))
+		causals = causal_config[selections]
+		inclusions = np.cumsum(causals) / np.sum(causal_config)
+		return inclusions
 	
 	def test(self, **kwargs):
 		# count_str = str(self.counter + 1).zfill(self.count_digits)
@@ -678,12 +745,15 @@ class Benchmark(object):
 		# raise ####
 		
 		# eqtl_cstats = [] ####
-		trials = multiprocessing.Pool(self.num_cpu - 1)
+		num_workers = self.num_cpu - 1
+		# num_workers = 1 ####
+		trials = multiprocessing.Pool(num_workers)
 		targ_list = [
 			(self, self.simulation.generate_data(), i,) 
 			for i in xrange(self.params["iterations"])
 		]
 		trial_results = trials.map(evaluate_bm, targ_list)
+		trials.close()
 		
 		# print(trial_results) ####
 		for i in trial_results:
@@ -915,6 +985,7 @@ class Benchmark(object):
 
 
 		# print(np.std(eqtl_cstats)) ####
+		# print(result["inclusions_caviar"]) ####
 		
 		print("Writing Result")
 		self.primary_var_vals.append(self.params[self.params["primary_var"]])
@@ -924,6 +995,12 @@ class Benchmark(object):
 		result["recall_rate_ase"] = np.mean(result["recall_ase"])
 		result["recall_rate_caviar"] = np.mean(result["recall_caviar"])
 		result["recall_rate_caviar_ase"] = np.mean(result["recall_caviar_ase"])
+		result["inclusion_rate_full"] = np.mean(result["inclusions_full"], axis=0)
+		result["inclusion_rate_indep"] = np.mean(result["inclusions_indep"], axis=0)
+		result["inclusion_rate_eqtl"] = np.mean(result["inclusions_eqtl"], axis=0)
+		result["inclusion_rate_ase"] = np.mean(result["inclusions_ase"], axis=0)
+		result["inclusion_rate_caviar"] = np.mean(result["inclusions_caviar"], axis=0)
+		result["inclusion_rate_caviar_ase"] = np.mean(result["inclusions_caviar_ase"], axis=0)
 		test_path = self.set_output_folder()
 		self.output_result(result, test_path)
 		self.results.append(result)
@@ -1102,7 +1179,7 @@ class Benchmark2d(Benchmark):
 		recall_rate_caviar = [i["recall_rate_caviar"] for i in self.results]
 		recall_rate_caviar_ase = [i["recall_rate_caviar_ase"] for i in self.results]
 
-		max_stat_ase_full = [np.mean(i["max_stat_ase_full"])for i in self.results]
+		max_stat_ase_full = [np.nanmean(i["max_stat_ase_full"])for i in self.results]
 		# max_stat_ase_indep = [np.mean(i["max_stat_ase_indep"]) for i in self.results]
 		# max_stat_ase_ase = [np.mean(i["max_stat_ase_ase"]) for i in self.results]
 

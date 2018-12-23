@@ -18,7 +18,7 @@ try:
 except ImportError:
 	import pickle
 
-LOCAL = True
+LOCAL = False
 
 def finalize(data, jobs_dir, hyperparams):
 	# print("owiehofwieof") ####

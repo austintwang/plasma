@@ -78,8 +78,10 @@ def finalize(data, jobs_dir, hyperparams):
 		pickle.dump(data, outfile)
 	return target_path
 
+def make_targets(chr_dir, bed_path, out_dir, margin, hyperparams):
+	chr_paths = [os.path.join(chr_dir, i) for i in os.listdir(chr_dir)]
+	jobs_dir = os.path.join(out_dir, "jobs")
 
-def make_targets(chr_paths, bed_path, jobs_dir, margin, hyperparams):
 	bed_info = []
 	bed_start = False
 	with open(bed_path) as bed_file:
@@ -241,221 +243,14 @@ def make_targets(chr_paths, bed_path, jobs_dir, margin, hyperparams):
 			print("Done building data")
 			break
 
-def plot(result, out_dir, name):
-	set_sizes_full = result["set_sizes_full"]
-	set_sizes_indep = result["set_sizes_indep"]
-	set_sizes_eqtl = result["set_sizes_eqtl"]
-	set_sizes_ase = result["set_sizes_ase"]
-	set_sizes_caviar_ase = result["set_sizes_caviar_ase"]
-
-	try:
-		sns.set(style="white")
-		sns.distplot(
-			set_sizes_full,
-			hist=False,
-			kde=True,
-			kde_kws={"linewidth": 3, "shade":True},
-			label="Full"
-		)
-		sns.distplot(
-			set_sizes_indep,
-			hist=False,
-			kde=True,
-			kde_kws={"linewidth": 3, "shade":True},
-			label="Independent Likelihoods"
-		)
-		sns.distplot(
-			set_sizes_eqtl,
-			hist=False,
-			kde=True,
-			kde_kws={"linewidth": 3, "shade":True},
-			label="eQTL-Only"
-		)
-		sns.distplot(
-			set_sizes_ase,
-			hist=False,
-			kde=True,
-			kde_kws={"linewidth": 3, "shade":True},
-			label="ASE-Only"
-		)
-		sns.distplot(
-			set_sizes_caviar_ase,
-			hist=False,
-			kde=True,
-			kde_kws={"linewidth": 3, "shade":True},
-			label="CAVIAR-ASE"
-		)
-		plt.xlim(0, None)
-		plt.legend(title="Model")
-		plt.xlabel("Set Size")
-		plt.ylabel("Density")
-		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
-		plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
-		plt.clf()
-	except Exception:
-		plt.clf()
-
-def interpret(targets, out_dir, jobs_dir, name):
-	summary = {
-		"set_sizes_full": [],
-		"set_sizes_indep": [],
-		"set_sizes_eqtl": [],
-		"set_sizes_ase": [],
-		"set_sizes_caviar_ase": []
-	}
-
-	for t in targets:
-		result_path = os.path.join(jobs_dir, t, "output.pickle")
-		with open(result_path, "wb") as result_file:
-			result = pickle.dump(result_file)
-
-		summary["set_sizes_full"].append(np.size(result["causal_set_full"])) 
-		summary["set_sizes_indep"].append(np.size(result["causal_set_indep"]))
-		summary["set_sizes_eqtl"].append(np.size(result["causal_set_eqtl"])) 
-		summary["set_sizes_ase"].append(np.size(result["causal_set_ase"])) 
-		summary["set_sizes_caviar_ase"].append(np.size(result["causal_set_caviar_ase"])) 
-
-	plot(summary, out_dir, name)
-
-	return summary
-
-def dispatch(target_dir, script_path):
-	stdout_path = os.path.join(target_dir, "stdout.txt")
-	stderr_path = os.path.join(target_dir, "stderr.txt")
-	# print("dispatch") ####
-
-	try:
-		args = ["qsub", "-e", stderr_path, "-o", stdout_path, "-v", "DATA_DIR=\""+target_dir+"\"", script_path]
-		# args = [script_path, target_dir] ####
-		# print(args) ####
-		job_info = subprocess.check_output(args)
-		# print(job_info) ####
-		if LOCAL:
-			job_id = job_info.rstrip()
-		else:
-			job_id = job_info.split()[2]
-
-		return job_id
-	except subprocess.CalledProcessError as e:
-		raise e
-		return False
-
-def poll(job_id):
-	args = ["qstat", "-f", job_id]
-	job_info = subprocess.check_output(args)
-	# print(job_info) ####
-	exit_code = None
-	lines = job_info.split("\n")
-	for l in lines:
-		stat = l.strip().split(" = ")
-		if stat[0] == "job_state":
-			state = stat[1]
-		if stat[0] == "exit_status":
-			exit_code = stat[1]
-
-	print(job_id, state, exit_code) ####
-	return state, exit_code
-
-
-	# if len(lines) > 2:
-	# 	header = [i.lower() for i in lines[0]]
-	# 	if LOCAL:
-	# 		state_idx = header.index("s")
-	# 	else:
-	# 		state_idx = header.index("state")
-	# 	job_state = lines[2][state_idx]
-	# 	# print(lines[2]) ####
-	# 	raise Exception ####
-	# 	return job_state
-	# raise Exception
-	# return None
-
-def delete(job_id):
-	args = ["qdel", job_id]
-
-def run(out_dir, margin, hyperparams, num_tasks, poll_freq, script_path, name):
-	jobs_dir = os.path.join(out_dir, "jobs")
-	targets = os.listdir(jobs_dir)
-
-	wait_pool = set(targets)
-	active_pool = {}
-	complete_pool = set()
-	fail_pool = set()
-	dead_pool = set()
-	# print(wait_pool) ####
-	try:
-		while (len(wait_pool) > 0) or (len(active_pool) > 0):
-			# print("woiehoifwe") ####
-			to_remove = set()
-			for k, v in active_pool.viewitems():
-				state, exit_code = poll(v)
-				# print(state) ####
-				if not LOCAL and "E" in state:
-					delete(v)
-					fail_pool.add(k)
-					to_remove.add(k)
-					# active_pool.pop(k)
-				elif exit_code and exit_code != 0:
-					# print(exit_code) ####
-					fail_pool.add(k)
-					to_remove.add(k)
-				elif "C" in state or state is None:
-					complete_pool.add(k)
-					to_remove.add(k)
-					# active_pool.pop(k)
-			for i in to_remove:
-				active_pool.pop(i)
-
-			vacant = num_tasks - len(active_pool)
-			for _ in xrange(vacant):
-				if len(wait_pool) == 0:
-					break
-				target = wait_pool.pop()
-				job_id = dispatch(target, script_path)
-				active_pool[target] = job_id
-
-			time.sleep(poll_freq)
-
-		while (len(fail_pool) > 0) or (len(active_pool) > 0):
-			to_remove = set()
-			for k, v in active_pool.viewitems():
-				state, exit_code = poll(v)
-				if not LOCAL and "E" in state:
-					delete(v)
-					dead_pool.add(k)
-					to_remove.add(k)
-				elif exit_code and exit_code != 0:
-					# print(exit_code) ####
-					dead_pool.add(k)
-					to_remove.add(k)
-				elif "C" in state or state is None:
-					complete_pool.add(k)
-					to_remove.add(k)
-
-			for i in to_remove:
-				active_pool.pop(i)
-
-			vacant = num_tasks - len(active_pool)
-			for _ in xrange(vacant):
-				if len(fail_pool) == 0:
-					break
-				target = fail_pool.pop()
-				job_id = dispatch(target, script_path)
-				active_pool[target] = job_id
-
-			time.sleep(poll_freq)
-
-	finally:
-		for v in active_pool.values():
-			delete(v)
-
-	return interpret(complete_pool, out_dir, jobs_dir, name)
 
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	# Test Run
+	chr_dir_test = os.path.join(curr_path, "test_data", "chrs")
+	bed_path_test = os.path.join(curr_path, "test_data", "test_22.bed")
 	out_dir = os.path.join(curr_path, "test_results")
 	script_path = os.path.join(curr_path, "job.py")
 	hyperparams = {
@@ -473,14 +268,11 @@ if __name__ == '__main__':
 	}
 
 	run(
+		chr_dir_test, 
+		bed_path_test, 
 		out_dir, 
 		30000, 
 		hyperparams, 
-		7, 
-		1, 
-		script_path, 
-		"test_run",
-		parse_input=False
 	)
 
 

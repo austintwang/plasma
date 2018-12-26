@@ -12,7 +12,7 @@ import os
 import sys
 import traceback
 
-print("hi", file=sys.stderr) ####
+# print("hi", file=sys.stderr) ####
 
 try:
 	import cpickle as pickle
@@ -58,11 +58,55 @@ def run_model(inputs, input_updates):
 	return causal_set, ppas, model
 
 
-def main(target_dir):
-	input_path = os.path.join(target_dir, "input.pickle")
+def main(target_dir, input_path, params_path):
+	# input_path = os.path.join(target_dir, "input.pickle")
 	with open(input_path, "rb") as input_file:
-		print(input_path) ####
+		# print(input_path) ####
 		inputs = pickle.load(input_file)
+
+	with open(params_path, "rb") as params_file:
+		# print(input_path) ####
+		params = pickle.load(params_file)
+
+	inputs.update(params)
+
+	select = np.logical_and(inputs["counts1"] >= 1, inputs["counts2"] >= 1) 
+
+	# num_ppl_raw = np.size(inputs["counts1"])
+	# max_ppl = hyperparams.get("max_ppl")
+	# if max_ppl and max_ppl < num_ppl_raw:
+	# 	threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl))
+	# 	np.random.shuffle(threshold)
+	# 	select = np.logical_and(select, threshold)
+	# 	inputs["num_ppl"] = max_ppl
+
+	inputs["num_snps_imbalance"] = len(inputs["hap1"])
+	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
+
+	inputs["hap1"] = np.stack(inputs["hap1"], axis=1)[select]
+	inputs["hap2"] = np.stack(inputs["hap2"], axis=1)[select]
+	inputs["counts1"] = inputs["counts1"][select]
+	inputs["counts2"] = inputs["counts2"][select]
+	inputs["counts_total"] = inputs["counts_total"][select]
+
+	num_ppl_raw = np.size(inputs["counts1"])
+	max_ppl = hyperparams.get("max_ppl")
+	if max_ppl and max_ppl < num_ppl_raw:
+		threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl)).astype(np.bool)
+		# print(threshold) ####
+		np.random.shuffle(threshold)
+		# print(threshold) ####
+		# print(np.size(inputs["counts1"])) ####
+		inputs["hap1"] = inputs["hap1"][threshold]
+		inputs["hap2"] = inputs["hap2"][threshold]
+		inputs["counts1"] = inputs["counts1"][threshold]
+		inputs["counts2"] = inputs["counts2"][threshold]
+		inputs["counts_total"] = inputs["counts_total"][threshold]
+		# print(np.size(inputs["counts1"])) ####
+
+	inputs["num_ppl"] = np.size(inputs["counts1"])
+	# print(inputs["num_ppl"]) ####
+	# print(max_ppl) ####
 
 	result = {}
 	num_ppl = inputs["num_ppl"]
@@ -204,11 +248,14 @@ if __name__ == '__main__':
 	# data_dir = sys.argv[0]
 	# print("woiehofwie") ####
 	# __package__ = "run"
-	# exit_code = 0
+	exit_code = 0
 	try:
 		# print(os.environ) ####
-		data_dir = os.environ["DATA_DIR"]
-		main(data_dir)
+		# data_dir = os.environ["DATA_DIR"]
+		target_dir = sys.argv[0]
+		input_path = sys.argv[1]
+		params_path = sys.argv[2]
+		main(target_dir, input_path, params_path)
 	except Exception as e:
 		# print("woiehofwie") ####
 		exit_code = 1
@@ -216,5 +263,5 @@ if __name__ == '__main__':
 		print(traceback.format_exc(), file=sys.stderr)
 		# raise e
 	finally:
-		# sys.exit(exit_code)
-		pass
+		sys.exit(exit_code)
+		# pass

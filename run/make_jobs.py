@@ -5,22 +5,14 @@ from __future__ import absolute_import
 
 import numpy as np
 import os
-import time
-import seaborn as sns
-import matplotlib.pyplot as plt
-import pandas as pd
-try:
-	import subprocess32 as subprocess
-except ImportError:
-	import subprocess
+import gzip
 try:
 	import cpickle as pickle
 except ImportError:
 	import pickle
 
-LOCAL = False
 
-def finalize(data, jobs_dir, hyperparams):
+def finalize(data, jobs_dir):
 	# print("owiehofwieof") ####
 	name = data["name"]
 	target_path = os.path.join(jobs_dir, name)
@@ -28,58 +20,58 @@ def finalize(data, jobs_dir, hyperparams):
 	if not os.path.isdir(target_path):
 		os.makedirs(target_path)
 
-	# print(data["counts_total"]) ####
+	# # print(data["counts_total"]) ####
 
-	select = np.logical_and(data["counts1"] >= 1, data["counts2"] >= 1) 
+	# select = np.logical_and(data["counts1"] >= 1, data["counts2"] >= 1) 
+
+	# # num_ppl_raw = np.size(data["counts1"])
+	# # max_ppl = hyperparams.get("max_ppl")
+	# # if max_ppl and max_ppl < num_ppl_raw:
+	# # 	threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl))
+	# # 	np.random.shuffle(threshold)
+	# # 	select = np.logical_and(select, threshold)
+	# # 	data["num_ppl"] = max_ppl
+
+	# data["num_snps_imbalance"] = len(data["hap1"])
+	# data["num_snps_total_exp"] = data["num_snps_imbalance"]
+
+	# data["hap1"] = np.stack(data["hap1"], axis=1)[select]
+	# data["hap2"] = np.stack(data["hap2"], axis=1)[select]
+	# data["counts1"] = data["counts1"][select]
+	# data["counts2"] = data["counts2"][select]
+	# data["counts_total"] = data["counts_total"][select]
 
 	# num_ppl_raw = np.size(data["counts1"])
 	# max_ppl = hyperparams.get("max_ppl")
 	# if max_ppl and max_ppl < num_ppl_raw:
-	# 	threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl))
+	# 	threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl)).astype(np.bool)
+	# 	# print(threshold) ####
 	# 	np.random.shuffle(threshold)
-	# 	select = np.logical_and(select, threshold)
-	# 	data["num_ppl"] = max_ppl
+	# 	# print(threshold) ####
+	# 	# print(np.size(data["counts1"])) ####
+	# 	data["hap1"] = data["hap1"][threshold]
+	# 	data["hap2"] = data["hap2"][threshold]
+	# 	data["counts1"] = data["counts1"][threshold]
+	# 	data["counts2"] = data["counts2"][threshold]
+	# 	data["counts_total"] = data["counts_total"][threshold]
+	# 	# print(np.size(data["counts1"])) ####
 
-	data["num_snps_imbalance"] = len(data["hap1"])
-	data["num_snps_total_exp"] = data["num_snps_imbalance"]
-
-	data["hap1"] = np.stack(data["hap1"], axis=1)[select]
-	data["hap2"] = np.stack(data["hap2"], axis=1)[select]
-	data["counts1"] = data["counts1"][select]
-	data["counts2"] = data["counts2"][select]
-	data["counts_total"] = data["counts_total"][select]
-
-	num_ppl_raw = np.size(data["counts1"])
-	max_ppl = hyperparams.get("max_ppl")
-	if max_ppl and max_ppl < num_ppl_raw:
-		threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl)).astype(np.bool)
-		# print(threshold) ####
-		np.random.shuffle(threshold)
-		# print(threshold) ####
-		# print(np.size(data["counts1"])) ####
-		data["hap1"] = data["hap1"][threshold]
-		data["hap2"] = data["hap2"][threshold]
-		data["counts1"] = data["counts1"][threshold]
-		data["counts2"] = data["counts2"][threshold]
-		data["counts_total"] = data["counts_total"][threshold]
-		# print(np.size(data["counts1"])) ####
-
-	data["num_ppl"] = np.size(data["counts1"])
-	# print(data["num_ppl"]) ####
-	# print(max_ppl) ####
+	# data["num_ppl"] = np.size(data["counts1"])
+	# # print(data["num_ppl"]) ####
+	# # print(max_ppl) ####
 
 
-	# print(data["counts_total"]) ####
-	# print(name) ####
+	# # print(data["counts_total"]) ####
+	# # print(name) ####
 	
-	data.update(hyperparams)
+	# data.update(hyperparams)
 
 	with open(out_path, "wb") as outfile:
 		pickle.dump(data, outfile)
 	return target_path
 
-def make_targets(chr_dir, bed_path, out_dir, margin, hyperparams):
-	chr_paths = [os.path.join(chr_dir, i) for i in os.listdir(chr_dir)]
+def make_targets(chr_paths, bed_path, out_dir, margin):
+	# chr_paths = [os.path.join(chr_dir, i) for i in os.listdir(chr_dir)]
 	jobs_dir = os.path.join(out_dir, "jobs")
 
 	bed_info = []
@@ -122,7 +114,13 @@ def make_targets(chr_dir, bed_path, out_dir, margin, hyperparams):
 		gt_sidx = None
 		as_sidx = None
 
-		with open(c) as c_file:
+		if c.endswith(".gz"):
+			file_open = gzip.open
+		else:
+			file_open = open
+
+		with file_open(c, "rb") as c_file:
+			print("c")
 			for line in c_file:
 				# print(max_active) ####
 				# print(active_ids) ####
@@ -179,7 +177,7 @@ def make_targets(chr_dir, bed_path, out_dir, margin, hyperparams):
 							remove_ids[k] = v
 					# print(remove_ids.keys()) ####
 					for k, v in remove_ids.viewitems():
-						path = finalize(v, jobs_dir, hyperparams)
+						path = finalize(v, jobs_dir)
 						active_ids.pop(k, None)
 						target_data[k] = path
 					while True:
@@ -248,33 +246,45 @@ def make_targets(chr_dir, bed_path, out_dir, margin, hyperparams):
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
-	# Test Run
-	chr_dir_test = os.path.join(curr_path, "test_data", "chrs")
-	bed_path_test = os.path.join(curr_path, "test_data", "test_22.bed")
-	out_dir = os.path.join(curr_path, "test_results")
-	script_path = os.path.join(curr_path, "job.py")
-	hyperparams = {
-		"overdispersion": 0.05,
-		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.50,
-		"std_fraction": 0.75,
-		"min_causal": 1,
-		"num_causal": 1,
-		"coverage": 100,
-		"search_mode": "exhaustive",
-		"max_causal": 1,
-		"confidence": 0.95, 
-		"max_ppl": 100
-	}
+	# # Test Run
+	# chr_dir_test = os.path.join(curr_path, "test_data", "chrs")
+	# chr_paths = [chr_dir_test + "KIRC.ALL.AS.chr22.vcf"]
+	# bed_path_test = os.path.join(curr_path, "test_data", "test_22.bed")
+	# out_dir = os.path.join(curr_path, "test_results")
+	# script_path = os.path.join(curr_path, "job.py")
+	# # hyperparams = {
+	# # 	"overdispersion": 0.05,
+	# # 	"prop_noise_eqtl": 0.95,
+	# # 	"prop_noise_ase": 0.50,
+	# # 	"std_fraction": 0.75,
+	# # 	"min_causal": 1,
+	# # 	"num_causal": 1,
+	# # 	"search_mode": "exhaustive",
+	# # 	"max_causal": 1,
+	# # 	"confidence": 0.95, 
+	# # 	"max_ppl": 100
+	# # }
 
-	run(
-		chr_dir_test, 
-		bed_path_test, 
+	# make_targets(
+	# 	chr_paths, 
+	# 	bed_path_test, 
+	# 	out_dir, 
+	# 	30000, 
+	# )
+
+	# Kidney Data
+	chr_dir = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASVCF"
+	chrs = ["KIRC.ALL.AS.chr{0}.vcf.gz".format(i + 1) for i in xrange(22)]
+	chr_paths = [os.path.join(chr_dir, i) for i in chrs]
+	bed_path = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASVCF/gencode.protein_coding.transcripts.bed"
+	out_dir = "/bcb/agusevlab/awang/job_data/kidney"
+
+	make_targets(
+		chr_paths, 
+		bed_path, 
 		out_dir, 
 		30000, 
-		hyperparams, 
 	)
-
 
 
 

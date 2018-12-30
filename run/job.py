@@ -58,7 +58,7 @@ def run_model(inputs, input_updates):
 	return causal_set, ppas, model
 
 
-def main(target_dir, input_path, params_path):
+def main(output_path, input_path, params_path):
 	# input_path = os.path.join(target_dir, "input.pickle")
 	with open(input_path, "rb") as input_file:
 		# print(input_path) ####
@@ -233,8 +233,8 @@ def main(target_dir, input_path, params_path):
 	result["causal_set_caviar_ase"] = model_caviar_ase.causal_set
 	result["ppas_ase"] = model_caviar_ase.post_probs
 
-	output_path = os.path.join(target_dir, "output.pickle")
-	with open(output_path, "wb") as output_file:
+	output_return = os.path.join(output_path, "output.pickle")
+	with open(output_return, "wb") as output_file:
 		pickle.dump(result, output_file)
 
 	# print(result) ####
@@ -252,10 +252,10 @@ if __name__ == '__main__':
 	try:
 		# print(os.environ) ####
 		# data_dir = os.environ["DATA_DIR"]
-		target_dir = sys.argv[0]
+		output_path = sys.argv[0]
 		input_path = sys.argv[1]
 		params_path = sys.argv[2]
-		main(target_dir, input_path, params_path)
+		main(output_path, input_path, params_path)
 	except Exception as e:
 		# print("woiehofwie") ####
 		exit_code = 1

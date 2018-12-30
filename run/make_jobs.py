@@ -6,6 +6,7 @@ from __future__ import absolute_import
 import numpy as np
 import os
 import gzip
+import sys
 try:
 	import cpickle as pickle
 except ImportError:
@@ -120,7 +121,7 @@ def make_targets(chr_paths, bed_path, out_dir, margin):
 			file_open = open
 
 		with file_open(c, "rb") as c_file:
-			print("c")
+			sys.stdout.write("{0}, {1}".format(max_active, c))
 			for line in c_file:
 				# print(max_active) ####
 				# print(active_ids) ####
@@ -238,8 +239,14 @@ def make_targets(chr_paths, bed_path, out_dir, margin):
 						finish = True
 						break
 		if finish:
-			print("Done building data")
+			# print("Done building data")
 			break
+
+	for k, v in active_ids.viewitems():
+		path = finalize(v, jobs_dir)
+		target_data[k] = path
+
+	print("Done")
 
 
 

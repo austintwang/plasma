@@ -231,7 +231,7 @@ def main(output_path, input_path, params_path):
 	)
 	model_caviar_ase.run()
 	result["causal_set_caviar_ase"] = model_caviar_ase.causal_set
-	result["ppas_ase"] = model_caviar_ase.post_probs
+	result["ppas_caviar_ase"] = model_caviar_ase.post_probs
 
 	if not os.path.exists(output_path):
 		os.makedirs(output_path)

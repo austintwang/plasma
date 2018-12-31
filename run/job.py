@@ -90,7 +90,7 @@ def main(output_path, input_path, params_path):
 	inputs["counts_total"] = inputs["counts_total"][select]
 
 	num_ppl_raw = np.size(inputs["counts1"])
-	max_ppl = hyperparams.get("max_ppl")
+	max_ppl = inputs.get("max_ppl")
 	if max_ppl and max_ppl < num_ppl_raw:
 		threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl)).astype(np.bool)
 		# print(threshold) ####

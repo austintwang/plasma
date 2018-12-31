@@ -19,7 +19,7 @@ except ImportError:
 # LOCAL = False
 
 def dispatch(s, target, output_path, input_path, params_path, script_path):
-	job_input_path = os.path.join(input_path, target)
+	job_input_path = os.path.join(input_path, target, "input.pickle")
 	job_output_path = os.path.join(output_path, target)
 
 	stdout_path = ":" + os.path.join(job_output_path, "stdout.txt")

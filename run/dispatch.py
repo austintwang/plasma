@@ -184,7 +184,7 @@ def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq,
 
 		finally:
 			for v in active_pool.values():
-				delete(v)
+				delete(s, v)
 
 
 
@@ -239,7 +239,7 @@ if __name__ == '__main__':
 		"max_ppl": 100
 	}
 
-	num_tasks = 500
+	num_tasks = 10
 	poll_freq = 10
 
 	run(

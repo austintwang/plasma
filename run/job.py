@@ -233,6 +233,9 @@ def main(output_path, input_path, params_path):
 	result["causal_set_caviar_ase"] = model_caviar_ase.causal_set
 	result["ppas_ase"] = model_caviar_ase.post_probs
 
+	if not os.path.exists(output_path):
+		os.makedirs(output_path)
+
 	output_return = os.path.join(output_path, "output.pickle")
 	with open(output_return, "wb") as output_file:
 		pickle.dump(result, output_file)

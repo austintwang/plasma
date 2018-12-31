@@ -22,8 +22,8 @@ def dispatch(s, target, output_path, input_path, params_path, script_path):
 	job_input_path = os.path.join(input_path, target)
 	job_output_path = os.path.join(output_path, target)
 
-	stdout_path = os.path.join(job_output_path, "stdout.txt")
-	stderr_path = os.path.join(job_output_path, "stderr.txt")
+	stdout_path = ":" + os.path.join(job_output_path, "stdout.txt")
+	stderr_path = ":" + os.path.join(job_output_path, "stderr.txt")
 
 	jt = s.createJobTemplate()
 	jt.remoteCommand = script_path

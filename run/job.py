@@ -255,9 +255,9 @@ if __name__ == '__main__':
 	try:
 		# print(os.environ) ####
 		# data_dir = os.environ["DATA_DIR"]
-		output_path = sys.argv[0]
-		input_path = sys.argv[1]
-		params_path = sys.argv[2]
+		output_path = sys.argv[1]
+		input_path = sys.argv[2]
+		params_path = sys.argv[3]
 		main(output_path, input_path, params_path)
 	except Exception as e:
 		# print("woiehofwie") ####

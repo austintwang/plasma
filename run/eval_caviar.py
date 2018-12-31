@@ -32,7 +32,7 @@ class EvalCaviar(object):
 			random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
 		)
 		self.output_path = os.path.join(self.temp_path, self.output_name)
-		os.mkdir(self.output_path)
+		os.makedirs(self.output_path)
 		self.output_filename_base = os.path.join(self.output_path, self.output_name)
 
 		self.z_path = os.path.join(self.output_path, "z.txt")

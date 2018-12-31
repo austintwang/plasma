@@ -30,7 +30,7 @@ def dispatch(s, target, output_path, input_path, params_path, script_path):
 	jt.args = [job_output_path, job_input_path, params_path]
 	jt.joinFiles = True
 	jt.outputPath = stdout_path
-	st.errorPath = stderr_path
+	jt.errorPath = stderr_path
 
 	job_id = s.runJob(jt)
 

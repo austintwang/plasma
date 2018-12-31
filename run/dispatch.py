@@ -99,8 +99,16 @@ def delete(s, job_id):
 	
 	# args = ["qdel", job_id]
 
-def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq, script_path):
-	with open(params_path, "wb") as params_file:
+def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq, script_path, params_name):
+	if not os.path.exists(output_path):
+		os.makedirs(output_path)
+
+	if not os.path.exists(params_path):
+		os.makedirs(params_path)
+
+	hyperparams_path = os.path.join(params_path, params_name)
+
+	with open(hyperparams_path, "wb") as params_file:
 		pickle.dump(hyperparams, params_file)
 
 	with drmaa.Session() as s:
@@ -214,7 +222,8 @@ if __name__ == '__main__':
 	# Kidney Data
 	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ_ASVCF/outs/1cv_all"
 	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ_ASVCF/jobs"
-	params_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ_ASVCF/params/1cv_all.pickle"
+	params_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ_ASVCF/params"
+	params_name = "1cv_all.pickle"
 	script_path = os.path.join(curr_path, "job.py")
 	hyperparams = {
 		"overdispersion": 0.05,
@@ -240,7 +249,8 @@ if __name__ == '__main__':
 		hyperparams, 
 		num_tasks, 
 		poll_freq, 
-		script_path
+		script_path,
+		params_name
 	)
 
 

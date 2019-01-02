@@ -5,7 +5,7 @@ from __future__ import division
 from __future__ import unicode_literals 
 from __future__ import absolute_import
 
-# print("hello") ####
+print("imp1") ####
 
 import numpy as np
 import os
@@ -13,11 +13,14 @@ import sys
 import traceback
 
 # print("hi", file=sys.stderr) ####
+print("imp2") ####
 
 try:
 	import cpickle as pickle
 except ImportError:
 	import pickle
+
+print("imp3") ####
 
 # print(__package__) ####
 if __name__ == '__main__' and __package__ is None:
@@ -25,6 +28,8 @@ if __name__ == '__main__' and __package__ is None:
 	from eval_caviar import EvalCaviarASE
 else:
 	from .eval_caviar import EvalCaviarASE
+
+print("imp4") ####
 
 # print(__package__) ####
 
@@ -38,6 +43,8 @@ try:
 except ImportError:
 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 	from ase_finemap import Finemap
+
+print("imp5") ####
 
 def run_model(inputs, input_updates):
 	model_inputs = inputs.copy()

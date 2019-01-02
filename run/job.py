@@ -274,9 +274,7 @@ if __name__ == '__main__':
 	except Exception as e:
 		# print("woiehofwie") ####
 		exit_code = 1
-		print(str(e), file=sys.stderr)
-		print(traceback.format_exc(), file=sys.stderr)
-		# raise e
+		raise e
 	finally:
 		sys.exit(exit_code)
 		# pass

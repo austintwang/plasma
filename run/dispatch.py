@@ -34,7 +34,7 @@ def dispatch(s, target, output_path, input_path, params_path, script_path):
 	jt = s.createJobTemplate()
 	jt.remoteCommand = script_path
 	jt.args = [job_output_path, job_input_path, params_path]
-	jt.joinFiles = True
+	# jt.joinFiles = True
 	jt.outputPath = stdout_path
 	jt.errorPath = stderr_path
 	jt.jobEnvironment = environ
@@ -244,7 +244,7 @@ if __name__ == '__main__':
 	}
 
 	num_tasks = 10
-	poll_freq = 10
+	poll_freq = 3
 
 	run(
 		output_path, 

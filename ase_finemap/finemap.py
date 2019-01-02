@@ -135,7 +135,7 @@ class Finemap(FmUnchecked):
 		self._check_ndarray_dimensions(matrix, name, dimensions)
 		self._check_ndarray_dtype(matrix, name, numbers.Real, empty)
 
-		if not np.allclose(matrix, matrix.T, atol=1e-8):
+		if not np.allclose(matrix, matrix.T, atol=1e-5):
 			raise ValueError(
 				"{0} is not symmetric:\n{1}".format(
 					name,

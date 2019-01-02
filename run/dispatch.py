@@ -25,13 +25,16 @@ def dispatch(s, target, output_path, input_path, params_path, script_path):
 	stdout_path = ":" + os.path.join(job_output_path, "stdout.txt")
 	stderr_path = ":" + os.path.join(job_output_path, "stderr.txt")
 
+	environ = os.environ
+	environ["SGE_O_SHELL"] = "/bcb/agusevlab/awang/python/bin/python"
+
 	jt = s.createJobTemplate()
 	jt.remoteCommand = script_path
 	jt.args = [job_output_path, job_input_path, params_path]
 	jt.joinFiles = True
 	jt.outputPath = stdout_path
 	jt.errorPath = stderr_path
-	jt.jobEnvironment = os.environ
+	jt.jobEnvironment = environ
 
 	job_id = s.runJob(jt)
 

@@ -7,7 +7,7 @@ import numpy as np
 import os
 import random
 try:
-	import cpickle as pickle
+	import cPickle as pickle
 except ImportError:
 	import pickle
 

@@ -152,7 +152,7 @@ def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq,
 					if len(wait_pool) == 0:
 						break
 					target = wait_pool.pop()
-					job_id = dispatch(s, target, output_path, input_path, params_path, script_path)
+					job_id = dispatch(s, target, output_path, input_path, hyperparams_path, script_path)
 					active_pool[target] = job_id
 
 				time.sleep(poll_freq)

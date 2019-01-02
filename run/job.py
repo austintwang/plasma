@@ -5,7 +5,7 @@ from __future__ import division
 from __future__ import unicode_literals 
 from __future__ import absolute_import
 
-print("imp1") ####
+# print("imp1") ####
 
 import numpy as np
 import os
@@ -13,14 +13,14 @@ import sys
 import traceback
 
 # print("hi", file=sys.stderr) ####
-print("imp2") ####
+# print("imp2") ####
 
 try:
 	import cpickle as pickle
 except ImportError:
 	import pickle
 
-print("imp3") ####
+# print("imp3") ####
 
 # print(__package__) ####
 if __name__ == '__main__' and __package__ is None:
@@ -29,7 +29,7 @@ if __name__ == '__main__' and __package__ is None:
 else:
 	from .eval_caviar import EvalCaviarASE
 
-print("imp4") ####
+# print("imp4") ####
 
 # print(__package__) ####
 
@@ -97,6 +97,11 @@ def main(output_path, input_path, params_path):
 	inputs["counts_total"] = inputs["counts_total"][select]
 
 	num_ppl_raw = np.size(inputs["counts1"])
+
+	if num_ppl_raw == 0:
+		print("Insufficient Read Counts")
+		return
+
 	max_ppl = inputs.get("max_ppl")
 	if max_ppl and max_ppl < num_ppl_raw:
 		threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl)).astype(np.bool)

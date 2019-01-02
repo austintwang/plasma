@@ -263,20 +263,27 @@ if __name__ == '__main__':
 	# data_dir = sys.argv[0]
 	# print("woiehofwie") ####
 	# __package__ = "run"
-	exit_code = 0
-	try:
-		# print(os.environ) ####
-		# data_dir = os.environ["DATA_DIR"]
-		output_path = sys.argv[1]
-		input_path = sys.argv[2]
-		params_path = sys.argv[3]
-		main(output_path, input_path, params_path)
-	except Exception:
-		print("woiehofwie") ####
-		exit_code = 1
-		t, v, tb = sys.exc_info()
-		raise t, v, tb
-		# raise e
-	finally:
-		sys.exit(exit_code)
-		# pass
+
+	output_path = sys.argv[1]
+	input_path = sys.argv[2]
+	params_path = sys.argv[3]
+	main(output_path, input_path, params_path)
+
+	
+	# exit_code = 0
+	# try:
+	# 	# print(os.environ) ####
+	# 	# data_dir = os.environ["DATA_DIR"]
+	# 	output_path = sys.argv[1]
+	# 	input_path = sys.argv[2]
+	# 	params_path = sys.argv[3]
+	# 	main(output_path, input_path, params_path)
+	# except Exception:
+	# 	print("woiehofwie") ####
+	# 	exit_code = 1
+	# 	t, v, tb = sys.exc_info()
+	# 	raise t, v, tb
+	# 	# raise e
+	# finally:
+	# 	sys.exit(exit_code)
+	# 	# pass

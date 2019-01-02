@@ -243,7 +243,7 @@ if __name__ == '__main__':
 		"max_ppl": 100
 	}
 
-	num_tasks = 10
+	num_tasks = 500
 	poll_freq = 3
 
 	run(

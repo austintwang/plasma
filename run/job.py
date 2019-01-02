@@ -44,7 +44,7 @@ except ImportError:
 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 	from ase_finemap import Finemap
 
-print("imp5") ####
+# print("imp5") ####
 
 def run_model(inputs, input_updates):
 	model_inputs = inputs.copy()

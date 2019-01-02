@@ -272,7 +272,7 @@ if __name__ == '__main__':
 		params_path = sys.argv[3]
 		main(output_path, input_path, params_path)
 	except Exception as e:
-		# print("woiehofwie") ####
+		print("woiehofwie") ####
 		exit_code = 1
 		raise e
 	finally:

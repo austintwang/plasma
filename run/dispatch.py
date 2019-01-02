@@ -22,6 +22,9 @@ def dispatch(s, target, output_path, input_path, params_path, script_path):
 	job_input_path = os.path.join(input_path, target, "input.pickle")
 	job_output_path = os.path.join(output_path, target)
 
+	if not os.path.exists(job_output_path):
+		os.makedirs(job_output_path)
+
 	stdout_path = ":" + os.path.join(job_output_path, "stdout.txt")
 	stderr_path = ":" + os.path.join(job_output_path, "stderr.txt")
 
@@ -104,9 +107,6 @@ def delete(s, job_id):
 	# args = ["qdel", job_id]
 
 def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq, script_path, params_name):
-	if not os.path.exists(output_path):
-		os.makedirs(output_path)
-
 	if not os.path.exists(params_path):
 		os.makedirs(params_path)
 

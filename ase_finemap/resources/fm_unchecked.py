@@ -287,6 +287,8 @@ class FmUnchecked(object):
 			self.imbalance_corr = self.imbalance_corr.copy()
 		# print(np.diag(self.imbalance_corr)) ####
 		# print(self.imbalance_corr) ####
+
+		self.imbalance_corr = np.nan_to_num(self.imbalance_corr)
 		
 
 	def _calc_beta(self):

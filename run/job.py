@@ -271,10 +271,12 @@ if __name__ == '__main__':
 		input_path = sys.argv[2]
 		params_path = sys.argv[3]
 		main(output_path, input_path, params_path)
-	except Exception as e:
+	except Exception:
 		print("woiehofwie") ####
 		exit_code = 1
-		raise e
+		t, v, tb = sys.exc_info()
+		raise t, v, tb
+		# raise e
 	finally:
 		sys.exit(exit_code)
 		# pass

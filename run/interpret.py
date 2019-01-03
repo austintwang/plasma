@@ -6,6 +6,8 @@ from __future__ import absolute_import
 import numpy as np
 import os
 import time
+import matplotlib
+matplotlib.use('Agg')
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd

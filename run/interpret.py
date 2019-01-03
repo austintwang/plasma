@@ -70,6 +70,9 @@ def plot_dist(result, out_dir, name):
 		plt.clf()
 
 def interpret(target_dir, out_dir, name):
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
 	targets = os.listdir(target_dir)
 
 	summary = {
@@ -84,7 +87,7 @@ def interpret(target_dir, out_dir, name):
 	for t in targets:
 		result_path = os.path.join(target_dir, t, "output.pickle")
 		if os.path.isfile(result_path):
-			with open(result_path, "wb") as result_file:
+			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
 		else:
 			failed_jobs.append(t)

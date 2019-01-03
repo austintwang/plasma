@@ -105,11 +105,11 @@ def interpret(target_dir, out_dir, name):
 			continue
 
 
-		summary["set_sizes_full"].append(np.size(result["causal_set_full"])) 
-		summary["set_sizes_indep"].append(np.size(result["causal_set_indep"]))
-		summary["set_sizes_eqtl"].append(np.size(result["causal_set_eqtl"])) 
-		summary["set_sizes_ase"].append(np.size(result["causal_set_ase"])) 
-		summary["set_sizes_caviar_ase"].append(np.size(result["causal_set_caviar_ase"])) 
+		summary["set_sizes_full"].append(np.count_nonzero(result["causal_set_full"])) 
+		summary["set_sizes_indep"].append(np.count_nonzero(result["causal_set_indep"]))
+		summary["set_sizes_eqtl"].append(np.count_nonzero(result["causal_set_eqtl"])) 
+		summary["set_sizes_ase"].append(np.count_nonzero(result["causal_set_ase"])) 
+		summary["set_sizes_caviar_ase"].append(np.count_nonzero(result["causal_set_caviar_ase"])) 
 
 	with open(os.path.join(out_dir, "failed_jobs.txt"), "w") as fail_out:
 		fail_out.write("\n".join(failed_jobs))

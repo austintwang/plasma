@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 try:
-	import cpickle as pickle
+	import cPickle as pickle
 except ImportError:
 	import pickle
 

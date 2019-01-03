@@ -98,7 +98,7 @@ def interpret(target_dir, out_dir, name):
 		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
-		except EOFError, IOError:
+		except (EOFError, IOError):
 			failed_jobs.append(t)
 			continue
 

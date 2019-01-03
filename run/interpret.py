@@ -85,14 +85,23 @@ def interpret(target_dir, out_dir, name):
 	failed_jobs = []
 
 	for t in targets:
-		print(t) ####
+		# print(t) ####
 		result_path = os.path.join(target_dir, t, "output.pickle")
-		if os.path.isfile(result_path):
+		
+		# if os.path.isfile(result_path):
+		# 	with open(result_path, "rb") as result_file:
+		# 		result = pickle.load(result_file)
+		# else:
+		# 	failed_jobs.append(t)
+		# 	continue
+
+		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
-		else:
+		except EOFError, FileNotFoundError:
 			failed_jobs.append(t)
 			continue
+
 
 		summary["set_sizes_full"].append(np.size(result["causal_set_full"])) 
 		summary["set_sizes_indep"].append(np.size(result["causal_set_indep"]))

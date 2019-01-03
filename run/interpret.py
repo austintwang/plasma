@@ -85,6 +85,7 @@ def interpret(target_dir, out_dir, name):
 	failed_jobs = []
 
 	for t in targets:
+		print(t) ####
 		result_path = os.path.join(target_dir, t, "output.pickle")
 		if os.path.isfile(result_path):
 			with open(result_path, "rb") as result_file:

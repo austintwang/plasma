@@ -87,7 +87,7 @@ def interpret(target_dir, out_dir, name):
 	for t in targets:
 		# print(t) ####
 		result_path = os.path.join(target_dir, t, "output.pickle")
-		
+
 		# if os.path.isfile(result_path):
 		# 	with open(result_path, "rb") as result_file:
 		# 		result = pickle.load(result_file)
@@ -98,7 +98,7 @@ def interpret(target_dir, out_dir, name):
 		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
-		except EOFError, FileNotFoundError:
+		except EOFError, IOError:
 			failed_jobs.append(t)
 			continue
 

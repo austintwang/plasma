@@ -45,7 +45,7 @@ def make_targets(script_path, chr_info, bed_path, out_dir, margin):
 		joblist = []
 		for k, v in chr_info.viewitems():
 			job_id = dispatch(s, script_path, v, bed_path, out_dir, margin, k)
-			jobs.append(joblist)
+			joblist.append(job_id)
 
 		s.synchronize(joblist, drmaa.Session.TIMEOUT_WAIT_FOREVER, True)
 

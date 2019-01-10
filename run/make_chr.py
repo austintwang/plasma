@@ -90,7 +90,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 			# 		continue
 			# 	bed_start = True
 			if line.startswith("chr{0}".format(chr_num)):
-				entry = line.split()[0:4]
+				entry = line.split()[0:5]
 				bed_info.append(entry)
 
 	target_data = [

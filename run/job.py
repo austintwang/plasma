@@ -64,9 +64,29 @@ def run_model(inputs, input_updates):
 
 	return causal_set, ppas, model
 
+def get_ldsr_data(inputs, causal_set, ppas):
+	cset_bool = causal_set == 1
 
-def main(output_path, input_path, params_path):
+	markers = inputs["snp_ids"][cset_bool]
+	positions = inputs["snp_pos"][cset_bool]
+	ends = positions + 1
+	ppas_cset = ppas[cset_bool]
+	gene = inputs["name"]
+
+	data = {}
+	for ind, val in enumerate(markers):
+		data[val] = {"start": positions[ind], "end": ends[ind], "ppa": ppas_cset[ind], "gene": gene}
+
+	return data
+
+def main(output_path, input_path, params_path, selection_path):
 	# input_path = os.path.join(target_dir, "input.pickle")
+	if selection_path == "all":
+		selection = False
+	else:
+		with open(selection_path, "rb") as selection_file:
+			selection = pickle.load(selection_file)
+
 	with open(input_path, "rb") as input_file:
 		# print(input_path) ####
 		inputs = pickle.load(input_file)
@@ -77,7 +97,10 @@ def main(output_path, input_path, params_path):
 
 	inputs.update(params)
 
+	in_selection = np.array([i in selection for i in inputs["sample_names"]])
 	select = np.logical_and(inputs["counts1"] >= 1, inputs["counts2"] >= 1) 
+	if selection:
+		select = np.logical_and(select, in_selection)
 
 	# num_ppl_raw = np.size(inputs["counts1"])
 	# max_ppl = hyperparams.get("max_ppl")
@@ -90,8 +113,8 @@ def main(output_path, input_path, params_path):
 	inputs["num_snps_imbalance"] = len(inputs["hap1"])
 	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
-	inputs["hap1"] = np.stack(inputs["hap1"], axis=1)[select]
-	inputs["hap2"] = np.stack(inputs["hap2"], axis=1)[select]
+	inputs["hap1"] = inputs["hap1"][select]
+	inputs["hap2"] = inputs["hap2"][select]
 	inputs["counts1"] = inputs["counts1"][select]
 	inputs["counts2"] = inputs["counts2"][select]
 	inputs["counts_total"] = inputs["counts_total"][select]
@@ -189,12 +212,19 @@ def main(output_path, input_path, params_path):
 	# print(num_ppl) ####
 	# raise Exception ####
 
+	if inputs["model_flavors"] == "all":
+		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
+	else:
+		model_flavors = inputs["model_flavors"]
+
 	updates_full = {
 		"corr_stats": corr_stats,
 		"imbalance_var_prior": imbalance_var_prior,
 		"total_exp_var_prior": total_exp_var_prior
 	}
-	result["causal_set_full"], result["ppas_full"], model_full = run_model(inputs, updates_full)
+	if "full" in model_flavors:
+		result["causal_set_full"], result["ppas_full"], model_full = run_model(inputs, updates_full)
+		result["ldsr_data_full"] = get_ldsr_data(inputs, result["causal_set_full"], result["ppas_full"])
 
 	updates_indep = {
 		"cross_corr_prior": 0.0, 
@@ -202,7 +232,9 @@ def main(output_path, input_path, params_path):
 		"imbalance_var_prior": imbalance_var_prior,
 		"total_exp_var_prior": total_exp_var_prior
 	}
-	result["causal_set_indep"], result["ppas_indep"], model_indep = run_model(inputs, updates_indep)
+	if "indep" in model_flavors:
+		result["causal_set_indep"], result["ppas_indep"], model_indep = run_model(inputs, updates_indep)
+		result["ldsr_data_indep"] = get_ldsr_data(inputs, result["causal_set_indep"], result["ppas_indep"])
 
 	updates_eqtl = {
 		"counts_A": np.zeros(shape=0),
@@ -219,7 +251,9 @@ def main(output_path, input_path, params_path):
 		"total_exp_var_prior": total_exp_var_prior,
 		"cross_corr_prior": 0.0,
 	}
-	result["causal_set_eqtl"], result["ppas_eqtl"], model_eqtl = run_model(inputs, updates_eqtl)
+	if "eqtl" in model_flavors:
+		result["causal_set_eqtl"], result["ppas_eqtl"], model_eqtl = run_model(inputs, updates_eqtl)
+		result["ldsr_data_eqtl"] = get_ldsr_data(inputs, result["causal_set_eqtl"], result["ppas_eqtl"])
 
 	updates_ase = {
 		"total_exp": np.zeros(shape=0), 
@@ -234,16 +268,26 @@ def main(output_path, input_path, params_path):
 		"total_exp_var_prior": total_exp_var_prior,
 		"cross_corr_prior": 0.0,
 	}
-	result["causal_set_ase"], result["ppas_ase"], model_ase = run_model(inputs, updates_ase)
+	if "ase" in model_flavors:
+		result["causal_set_ase"], result["ppas_ase"], model_ase = run_model(inputs, updates_ase)
+		result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
 
-	model_caviar_ase = EvalCaviarASE(
-		model_full, 
-		inputs["confidence"], 
-		inputs["max_causal"]
-	)
-	model_caviar_ase.run()
-	result["causal_set_caviar_ase"] = model_caviar_ase.causal_set
-	result["ppas_caviar_ase"] = model_caviar_ase.post_probs
+	if "acav" in model_flavors:
+		model_inputs_dummy = inputs.copy()
+		model_inputs_dummy.update(updates_full)
+		model_dummy = Finemap(**model_inputs_dummy)
+		model_dummy.initialize()
+		model_caviar_ase = EvalCaviarASE(
+			model_full, 
+			inputs["confidence"], 
+			inputs["max_causal"]
+		)
+		model_caviar_ase.run()
+		result["causal_set_caviar_ase"] = model_caviar_ase.causal_set
+		result["ppas_caviar_ase"] = model_caviar_ase.post_probs
+		result["ldsr_data_caviar_ase"] = get_ldsr_data(
+			inputs, result["causal_set_caviar_ase"], result["ppas_caviar_ase"]
+		)
 
 	if not os.path.exists(output_path):
 		os.makedirs(output_path)
@@ -267,7 +311,8 @@ if __name__ == '__main__':
 	output_path = sys.argv[1]
 	input_path = sys.argv[2]
 	params_path = sys.argv[3]
-	main(output_path, input_path, params_path)
+	selection_path = sys.argv[4]
+	main(output_path, input_path, params_path, selection_path)
 
 	
 	# exit_code = 0

@@ -18,7 +18,7 @@ except ImportError:
 
 # LOCAL = False
 
-def dispatch(s, target, output_path, input_path, params_path, script_path):
+def dispatch(s, target, output_path, input_path, params_path, script_path, selection_path):
 	job_input_path = os.path.join(input_path, target, "input.pickle")
 	job_output_path = os.path.join(output_path, target)
 
@@ -33,7 +33,7 @@ def dispatch(s, target, output_path, input_path, params_path, script_path):
 
 	jt = s.createJobTemplate()
 	jt.remoteCommand = script_path
-	jt.args = [job_output_path, job_input_path, params_path]
+	jt.args = [job_output_path, job_input_path, params_path, selection_path]
 	# jt.joinFiles = True
 	jt.outputPath = stdout_path
 	jt.errorPath = stderr_path
@@ -106,7 +106,7 @@ def delete(s, job_id):
 	
 	# args = ["qdel", job_id]
 
-def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq, script_path, params_name):
+def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq, script_path, selection_path, list_path, params_name):
 	if not os.path.exists(params_path):
 		os.makedirs(params_path)
 
@@ -115,9 +115,13 @@ def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq,
 	with open(hyperparams_path, "wb") as params_file:
 		pickle.dump(hyperparams, params_file)
 
-	with drmaa.Session() as s:
+	if list_path == "all":
 		targets = os.listdir(input_path)
+	else:
+		with open(list_path, "rb") as list_file:
+			targets = pickle.load(list_file)
 
+	with drmaa.Session() as s:
 		wait_pool = set(targets)
 		active_pool = {}
 		complete_pool = set()
@@ -152,7 +156,15 @@ def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq,
 					if len(wait_pool) == 0:
 						break
 					target = wait_pool.pop()
-					job_id = dispatch(s, target, output_path, input_path, hyperparams_path, script_path)
+					job_id = dispatch(
+						s, 
+						target, 
+						output_path, 
+						input_path, 
+						hyperparams_path, 
+						script_path, 
+						selection_path
+					)
 					active_pool[target] = job_id
 
 				time.sleep(poll_freq)
@@ -181,7 +193,15 @@ def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq,
 					if len(fail_pool) == 0:
 						break
 					target = fail_pool.pop()
-					job_id = dispatch(s, target, output_path, input_path, params_path, script_path)
+					job_id = dispatch(
+						s, 
+						target, 
+						output_path, 
+						input_path, 
+						params_path, 
+						script_path, 
+						selection_path
+					)
 					active_pool[target] = job_id
 
 				time.sleep(poll_freq)
@@ -220,6 +240,7 @@ if __name__ == '__main__':
 	# 	1, 
 	# 	script_path, 
 	# 	"test_run",
+
 	# 	parse_input=False
 	# )
 
@@ -229,6 +250,8 @@ if __name__ == '__main__':
 	params_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ_ASVCF/params"
 	params_name = "1cv_all.pickle"
 	script_path = os.path.join(curr_path, "job.py")
+	selection_path = "all"
+	list_path = "all"
 	hyperparams = {
 		"overdispersion": 0.05,
 		"prop_noise_eqtl": 0.95,
@@ -243,7 +266,7 @@ if __name__ == '__main__':
 		"max_ppl": 100
 	}
 
-	num_tasks = 500
+	num_tasks = 50
 	poll_freq = 3
 
 	run(
@@ -254,6 +277,8 @@ if __name__ == '__main__':
 		num_tasks, 
 		poll_freq, 
 		script_path,
+		selection_path,
+		list_path,
 		params_name
 	)
 

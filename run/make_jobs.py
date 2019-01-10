@@ -85,7 +85,7 @@ if __name__ == '__main__':
 	# chrs = ["KIRC.ALL.AS.chr{0}.vcf.gz".format(i + 1) for i in xrange(22)]
 	# chr_paths = [os.path.join(chr_dir, i) for i in chrs]
 	chr_info = {
-		i: os.path.join(chr_dir, "KIRC.ALL.AS.chr{0}.vcf.gz".format(i + 1)) for i in xrange(22)
+		i + 1: os.path.join(chr_dir, "KIRC.ALL.AS.chr{0}.vcf.gz".format(i + 1)) for i in xrange(22)
 	}
 	bed_path = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASVCF/gencode.protein_coding.transcripts.bed"
 	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ"

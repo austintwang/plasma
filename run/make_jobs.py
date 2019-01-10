@@ -14,7 +14,7 @@ import drmaa
 # except ImportError:
 # 	import pickle
 
-def dispatch(s, chr_path, bed_path, out_dir, margin, chr_num):
+def dispatch(s, script_path, chr_path, bed_path, out_dir, margin, chr_num):
 	stdout_path = ":" + os.path.join(out_dir, "job_reports", "{0}_stdout.txt".format(chr_num))
 	stderr_path = ":" + os.path.join(out_dir, "job_reports", "{0}_stderr.txt".format(chr_num))
 
@@ -34,7 +34,7 @@ def dispatch(s, chr_path, bed_path, out_dir, margin, chr_num):
 
 	return job_id
 
-def make_targets(chr_info, bed_path, out_dir, margin):
+def make_targets(script_path, chr_info, bed_path, out_dir, margin):
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	reports_path = os.path.join(out_dir, "job_reports")
@@ -44,7 +44,7 @@ def make_targets(chr_info, bed_path, out_dir, margin):
 	with drmaa.Session() as s:
 		joblist = []
 		for k, v in chr_info.viewitems():
-			job_id = dispatch(s, v, bed_path, out_dir, margin, k)
+			job_id = dispatch(s, script_path, v, bed_path, out_dir, margin, k)
 			jobs.append(joblist)
 
 		s.synchronize(joblist, drmaa.Session.TIMEOUT_WAIT_FOREVER, True)
@@ -52,6 +52,7 @@ def make_targets(chr_info, bed_path, out_dir, margin):
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
+	script_path = os.path.join(curr_path, "make_chr.py")
 
 	# # Test Run
 	# chr_dir_test = os.path.join(curr_path, "test_data", "chrs")
@@ -90,6 +91,7 @@ if __name__ == '__main__':
 	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ"
 
 	make_targets(
+		script_path,
 		chr_info, 
 		bed_path, 
 		out_dir, 

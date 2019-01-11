@@ -27,20 +27,20 @@ if __name__ == '__main__':
 
 	# Kidney Data, Tumor
 	in_path_tumor_01 = os.path.join(in_dir, "KIRC.T.FDR001.genes")
-	out_path_tumor_01 = os.path.join(out_dir, "tumor_fdr001")
+	out_path_tumor_01 = os.path.join(out_dir, "tumor_fdr001.pickle")
 
 	in_path_tumor_5 = os.path.join(in_dir, "KIRC.T.FDR05.genes")
-	out_path_tumor_5 = os.path.join(out_dir, "tumor_fdr05")
+	out_path_tumor_5 = os.path.join(out_dir, "tumor_fdr05.pickle")
 
 	make_list(in_path_tumor_01, out_path_tumor_01)
 	make_list(in_path_tumor_5, out_path_tumor_5)
 
 	# Kidney Data, Normal
 	in_path_normal_01 = os.path.join(in_dir, "KIRC.N.FDR001.genes")
-	out_path_normal_01 = os.path.join(out_dir, "normal_fdr001")
+	out_path_normal_01 = os.path.join(out_dir, "normal_fdr001.pickle")
 
 	in_path_normal_5 = os.path.join(in_dir, "KIRC.N.FDR05.genes")
-	out_path_normal_5 = os.path.join(out_dir, "normal_fdr05")
+	out_path_normal_5 = os.path.join(out_dir, "normal_fdr05.pickle")
 
 	make_list(in_path_normal_01, out_path_normal_01)
 	make_list(in_path_normal_5, out_path_normal_5)

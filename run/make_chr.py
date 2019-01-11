@@ -179,6 +179,8 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 				# print(pos) ####
 				if cols[id_idx] == ".":
 					snp_id = "{0}.{1}".format(chr_num, pos)
+				else:
+					snp_id = cols[id_idx]
 
 				fmt_str = cols[fmt_idx]
 				fmt = fmt_str.split(":")

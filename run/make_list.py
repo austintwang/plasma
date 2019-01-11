@@ -22,6 +22,8 @@ def make_list(in_path, out_path):
 if __name__ == '__main__':
 	in_dir = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASSOC"
 	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists"
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
 
 	# Kidney Data, Tumor
 	in_path_tumor_01 = os.path.join(in_dir, "KIRC.T.FDR001.genes")

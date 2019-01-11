@@ -12,7 +12,7 @@ try:
 except ImportError:
 	import pickle
 
-make_list(in_path, out_path):
+def make_list(in_path, out_path):
 	with open(in_path) as in_file:
 		gene_list = [line.rstrip() for line in in_file]
 

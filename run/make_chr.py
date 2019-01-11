@@ -133,7 +133,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 		file_open = open
 
 	with file_open(chr_path, "rb") as c_file:
-		sys.stdout.write("{0}, {1}".format(max_active, chr_path))
+		# sys.stdout.write("{0}, {1}".format(max_active, chr_path))
 		for line in c_file:
 			# print(max_active) ####
 			# print(active_ids) ####

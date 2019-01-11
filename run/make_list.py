@@ -20,16 +20,25 @@ make_list(in_path, out_path):
 		pickle.dump(gene_list, out_file)
 
 if __name__ == '__main__':
-	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ_ASVCF/gene_lists"
+	in_dir = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASSOC"
+	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists"
 
 	# Kidney Data, Tumor
-	in_path_tumor_01 = ""
-	out_path_tumor_01 = os.path.join(out_dir, "")
+	in_path_tumor_01 = os.path.join(in_dir, "KIRC.T.FDR001.genes")
+	out_path_tumor_01 = os.path.join(out_dir, "tumor_fdr001")
 
-	in_path_tumor_5 = ""
-	out_path_tumor_5 = os.path.join(out_dir, "")
+	in_path_tumor_5 = os.path.join(in_dir, "KIRC.T.FDR05.genes")
+	out_path_tumor_5 = os.path.join(out_dir, "tumor_fdr05")
 
 	make_list(in_path_tumor_01, out_path_tumor_01)
 	make_list(in_path_tumor_5, out_path_tumor_5)
 
 	# Kidney Data, Normal
+	in_path_normal_01 = os.path.join(in_dir, "KIRC.N.FDR001.genes")
+	out_path_normal_01 = os.path.join(out_dir, "normal_fdr001")
+
+	in_path_normal_5 = os.path.join(in_dir, "KIRC.N.FDR05.genes")
+	out_path_normal_5 = os.path.join(out_dir, "normal_fdr05")
+
+	make_list(in_path_normal_01, out_path_normal_01)
+	make_list(in_path_normal_5, out_path_normal_5)

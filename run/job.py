@@ -65,12 +65,12 @@ def run_model(inputs, input_updates):
 	return causal_set, ppas, model
 
 def get_ldsr_data(inputs, causal_set, ppas):
-	cset_bool = causal_set == 1
+	cset_bool = (np.array(causal_set) == 1)
 
 	markers = inputs["snp_ids"][cset_bool]
 	positions = inputs["snp_pos"][cset_bool]
 	ends = positions + 1
-	ppas_cset = ppas[cset_bool]
+	ppas_cset = np.array(ppas)[cset_bool]
 	gene = inputs["name"]
 
 	data = {}

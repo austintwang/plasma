@@ -268,7 +268,7 @@ if __name__ == '__main__':
 
 	# Normal
 	list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
-	selection_path = "bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
+	selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
 
 	# Normal, all samples
 	hyperparams["max_ppl"] = None
@@ -323,7 +323,7 @@ if __name__ == '__main__':
 
 	# Tumor
 	list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
-	selection_path = "bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
+	selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
 	# Tumor, all samples
 	hyperparams["max_ppl"] = None

@@ -61,7 +61,7 @@ def plot_dist(result, out_dir, name):
 				set_sizes_full,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
+				kde_kws={"linewidth": 2, "shade":True},
 				label="Full"
 			)
 		except Exception:
@@ -73,7 +73,7 @@ def plot_dist(result, out_dir, name):
 				set_sizes_indep,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
+				kde_kws={"linewidth": 2, "shade":True},
 				label="Independent Likelihoods"
 			)
 		except Exception:
@@ -85,7 +85,7 @@ def plot_dist(result, out_dir, name):
 				set_sizes_eqtl,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
+				kde_kws={"linewidth": 2, "shade":True},
 				label="eQTL-Only"
 			)
 		except Exception:
@@ -97,7 +97,7 @@ def plot_dist(result, out_dir, name):
 				set_sizes_ase,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
+				kde_kws={"linewidth": 2, "shade":True},
 				label="ASE-Only"
 			)
 		except Exception:
@@ -109,7 +109,7 @@ def plot_dist(result, out_dir, name):
 				set_sizes_caviar_ase,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
+				kde_kws={"linewidth": 2, "shade":True},
 				label="CAVIAR-ASE"
 			)
 		except Exception:
@@ -333,7 +333,7 @@ if __name__ == '__main__':
 
 	# Normal, across sample sizes
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
-	name = "Kidney RNA-Seq"
+	name = "Kidney RNA-Seq, Normal Samples"
 	model_flavors = set(["full", "eqtl", "acav"])
 	summaries = [normal_all, normal_50, normal_10]
 	primary_var_vals = [90, 50, 10]
@@ -348,32 +348,42 @@ if __name__ == '__main__':
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
 	name = "Kidney RNA-Seq\nAll Tumor Samples"
 
-	interpret(target_dir, out_dir, name)
+	tumor_all = interpret(target_dir, out_dir, name)
 
 	# Tumor, 200 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
 	name = "Kidney RNA-Seq\n200 Tumor Samples"
 
-	interpret(target_dir, out_dir, name)
+	tumor_200 = interpret(target_dir, out_dir, name)
 
 	# Tumor, 100 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
 	name = "Kidney RNA-Seq\n100 Tumor Samples"
 
-	interpret(target_dir, out_dir, name)
+	tumor_100 = interpret(target_dir, out_dir, name)
 
 	# Tumor, 50 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
 	name = "Kidney RNA-Seq\n50 Tumor Samples"
 
-	interpret(target_dir, out_dir, name)
+	tumor_50 = interpret(target_dir, out_dir, name)
 
 	# Tumor, 10 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
 	name = "Kidney RNA-Seq\n10 Tumor Samples"
 
-	interpret(target_dir, out_dir, name)
+	tumor_10 = interpret(target_dir, out_dir, name)
+
+	# Tumor, across sample sizes
+	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
+	name = "Kidney RNA-Seq, Tumor Samples"
+	model_flavors = set(["full", "eqtl", "acav"])
+	summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
+	primary_var_vals = [500, 200, 100, 50, 10]
+	primary_var_name = "Sample Size"
+
+	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)

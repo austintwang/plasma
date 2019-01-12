@@ -17,7 +17,7 @@ try:
 except ImportError:
 	import pickle
 
-def write_thresholds(summary, out_dir, total_jobs):
+def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	thresholds_list = []
 	if "full" in model_flavors:
 		thresholds_list.append("Full Model")
@@ -248,7 +248,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 	with open(os.path.join(out_dir, "failed_jobs.txt"), "w") as fail_out:
 		fail_out.write("\n".join(failed_jobs))
 	
-	write_thresholds(summary, out_dir, successes)
+	write_thresholds(summary, out_dir, successes, model_flavors)
 	plot_dist(summary, out_dir, name)
 
 	return summary

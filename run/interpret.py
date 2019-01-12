@@ -315,21 +315,21 @@ if __name__ == '__main__':
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
 	name = "Kidney RNA-Seq\nAll Normal Samples"
 
-	normal_all = interpret(target_dir, out_dir, name)
+	normal_all = interpret(target_dir, out_dir, name, "all")
 
 	# Normal, 50 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
 	name = "Kidney RNA-Seq\n50 Normal Samples"
 
-	normal_50 = interpret(target_dir, out_dir, name)
+	normal_50 = interpret(target_dir, out_dir, name, "all")
 
 	# Normal, 10 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
 	name = "Kidney RNA-Seq\n10 Normal Samples"
 
-	normal_10 = interpret(target_dir, out_dir, name)
+	normal_10 = interpret(target_dir, out_dir, name, "all")
 
 	# Normal, across sample sizes
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
@@ -348,35 +348,35 @@ if __name__ == '__main__':
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
 	name = "Kidney RNA-Seq\nAll Tumor Samples"
 
-	tumor_all = interpret(target_dir, out_dir, name)
+	tumor_all = interpret(target_dir, out_dir, name, "all")
 
 	# Tumor, 200 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
 	name = "Kidney RNA-Seq\n200 Tumor Samples"
 
-	tumor_200 = interpret(target_dir, out_dir, name)
+	tumor_200 = interpret(target_dir, out_dir, name, "all")
 
 	# Tumor, 100 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
 	name = "Kidney RNA-Seq\n100 Tumor Samples"
 
-	tumor_100 = interpret(target_dir, out_dir, name)
+	tumor_100 = interpret(target_dir, out_dir, name, "all")
 
 	# Tumor, 50 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
 	name = "Kidney RNA-Seq\n50 Tumor Samples"
 
-	tumor_50 = interpret(target_dir, out_dir, name)
+	tumor_50 = interpret(target_dir, out_dir, name, "all")
 
 	# Tumor, 10 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
 	name = "Kidney RNA-Seq\n10 Tumor Samples"
 
-	tumor_10 = interpret(target_dir, out_dir, name)
+	tumor_10 = interpret(target_dir, out_dir, name, "all")
 
 	# Tumor, across sample sizes
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"

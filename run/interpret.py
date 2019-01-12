@@ -51,7 +51,7 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	with open(out_path, "w") as out_file:
 		out_file.write(thresholds_str)
 
-def plot_dist(result, out_dir, name):
+def plot_dist(result, out_dir, name, model_flavors):
 	sns.set(style="white")
 
 	if "full" in model_flavors:
@@ -249,7 +249,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		fail_out.write("\n".join(failed_jobs))
 	
 	write_thresholds(summary, out_dir, successes, model_flavors)
-	plot_dist(summary, out_dir, name)
+	plot_dist(summary, out_dir, name, model_flavors)
 
 	return summary
 

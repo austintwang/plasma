@@ -79,7 +79,16 @@ def make_bed(input_path, output_path, model_flavors):
 				else:
 					bed_data_all["acav"][k] = v
 
-
+	if "full" in model_flavors:
+		write_bed(bed_data_all["full"], os.path.join(output_path, "ldsr_full.bed")):
+	if "indep" in model_flavors:
+		write_bed(bed_data_all["indep"], os.path.join(output_path, "ldsr_indep.bed")):
+	if "eqtl" in model_flavors:
+		write_bed(bed_data_all["eqtl"], os.path.join(output_path, "ldsr_eqtl.bed")):
+	if "ase" in model_flavors:
+		write_bed(bed_data_all["ase"], os.path.join(output_path, "ldsr_ase.bed")):
+	if "acav" in model_flavors:
+		write_bed(bed_data_all["acav"], os.path.join(output_path, "ldsr_acav.bed")):
 
 
 

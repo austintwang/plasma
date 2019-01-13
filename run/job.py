@@ -67,6 +67,7 @@ def run_model(inputs, input_updates):
 def get_ldsr_data(inputs, causal_set, ppas):
 	cset_bool = (np.array(causal_set) == 1)
 
+	chrs = inputs["chr"][cset_bool]
 	markers = inputs["snp_ids"][cset_bool]
 	positions = inputs["snp_pos"][cset_bool]
 	ends = positions + 1
@@ -75,7 +76,13 @@ def get_ldsr_data(inputs, causal_set, ppas):
 
 	data = {}
 	for ind, val in enumerate(markers):
-		data[val] = {"start": positions[ind], "end": ends[ind], "ppa": ppas_cset[ind], "gene": gene}
+		data[val] = {
+			"chr": chrs[ind]
+			"start": positions[ind], 
+			"end": ends[ind], 
+			"ppa": ppas_cset[ind], 
+			"gene": gene
+		}	
 
 	return data
 

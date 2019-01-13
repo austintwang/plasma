@@ -47,8 +47,8 @@ def make_bed(input_path, output_path, model_flavors):
 		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
-			except (EOFError, IOError):
-				continue
+		except (EOFError, IOError):
+			continue
 
 		if "full" in model_flavors:
 			for k, v in result["ldsr_data_full"].viewitems():

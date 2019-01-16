@@ -14,7 +14,7 @@ except ImportError:
 
 def write_bed(bed_data, output_name):
 	keys_sorted = sorted(bed_data.keys(), key=lambda x: bed_data[x]["start"])
-	keys_sorted.sort(bed_data.keys(), key=lambda x: int(bed_data[x]["chr"]))
+	keys_sorted.sort(key=lambda x: int(bed_data[x]["chr"]))
 	bed_list = [
 		"chr{0}\t{1}\t{2}\t{3}\t{4}".format(i["chr"], i["start"], i["end"], i["ppa"], i["gene"]) 
 		for i in keys_sorted

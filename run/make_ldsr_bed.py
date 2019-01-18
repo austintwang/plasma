@@ -16,7 +16,13 @@ def write_bed(bed_data, output_name):
 	keys_sorted = sorted(bed_data.keys(), key=lambda x: bed_data[x]["start"])
 	keys_sorted.sort(key=lambda x: int(bed_data[x]["chr"]))
 	bed_list = [
-		"chr{0}\t{1}\t{2}\t{3}\t{4}".format(i["chr"], i["start"], i["end"], i["ppa"], i["gene"]) 
+		"chr{0}\t{1}\t{2}\t{3}\t{4}".format(
+			bed_data[i]["chr"], 
+			bed_data[i]["start"], 
+			bed_data[i]["end"], 
+			bed_data[i]["ppa"], 
+			bed_data[i]["gene"]
+		) 
 		for i in keys_sorted
 	]
 	with open(output_name, "w") as outfile:

@@ -16,10 +16,11 @@ def write_bed(bed_data, output_name):
 	keys_sorted = sorted(bed_data.keys(), key=lambda x: bed_data[x]["start"])
 	keys_sorted.sort(key=lambda x: int(bed_data[x]["chr"]))
 	bed_list = [
-		"chr{0}\t{1}\t{2}\t{3}\t{4}".format(
+		"chr{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
 			bed_data[i]["chr"], 
 			bed_data[i]["start"], 
 			bed_data[i]["end"], 
+			i, 
 			bed_data[i]["ppa"], 
 			bed_data[i]["gene"]
 		) 

@@ -241,6 +241,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 					job_out = stdout_file.readlines()
 				if "Insufficient Read Counts\n" in job_out:
 					insufficient_data_jobs.append(t)
+					continue
 				else:
 					failed_jobs.append(t)
 					continue

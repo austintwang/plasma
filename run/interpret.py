@@ -127,7 +127,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric):
 		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
 		plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
 	elif metric == "prop":
-		plt.xlabel("Set Size (Proportion of Total Markers)")
+		plt.xlabel("Set Size Proportion")
 		plt.ylabel("Density")
 		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
 		plt.savefig(os.path.join(out_dir, "set_prop_distribution.svg"))

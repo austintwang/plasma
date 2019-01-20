@@ -127,7 +127,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric):
 		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
 		plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
 	elif metric == "prop":
-		plt.xlabel("Set Size Proportion")
+		plt.xlabel("Set Size (Proportion of Total Markers)")
 		plt.ylabel("Density")
 		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
 		plt.savefig(os.path.join(out_dir, "set_prop_distribution.svg"))
@@ -165,7 +165,7 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 			for skey, sval in series["{0}_caviar_ase".format(kwd)].viewitems():
 				for i in sval:
 					dflst.append([i, skey, "CAVIAR-ASE"])
-	res_df = pd.DataFrame(dflst, columns=["Set Size", primary_var_name, "Model"])
+	res_df = pd.DataFrame(dflst, columns=["label", primary_var_name, "Model"])
 
 	title = "Causal Set Sizes Across {0}:\n{1}".format(primary_var_name, name)
 	

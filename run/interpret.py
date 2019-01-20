@@ -51,11 +51,16 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	with open(out_path, "w") as out_file:
 		out_file.write(thresholds_str)
 
-def plot_dist(result, out_dir, name, model_flavors):
+def plot_dist(result, out_dir, name, model_flavors, metric):
+	if metric == "size":
+		kwd = "set_sizes"
+	elif metric == "prop":
+		kwd = "set_props"
+
 	sns.set(style="white")
 
 	if "full" in model_flavors:
-		set_sizes_full = result["set_sizes_full"]
+		set_sizes_full = result["{0}_full".format(kwd)]
 		try:
 			sns.distplot(
 				set_sizes_full,
@@ -67,7 +72,7 @@ def plot_dist(result, out_dir, name, model_flavors):
 		except Exception:
 			pass
 	if "indep" in model_flavors:
-		set_sizes_indep = result["set_sizes_indep"]
+		set_sizes_indep = result["{0}_indep".format(kwd)]
 		try:
 			sns.distplot(
 				set_sizes_indep,
@@ -79,7 +84,7 @@ def plot_dist(result, out_dir, name, model_flavors):
 		except Exception:
 			pass
 	if "eqtl" in model_flavors:
-		set_sizes_eqtl = result["set_sizes_eqtl"]
+		set_sizes_eqtl = result["{0}_eqtl".format(kwd)]
 		try:
 			sns.distplot(
 				set_sizes_eqtl,
@@ -91,7 +96,7 @@ def plot_dist(result, out_dir, name, model_flavors):
 		except Exception:
 			pass
 	if "ase" in model_flavors:
-		set_sizes_ase = result["set_sizes_ase"]
+		set_sizes_ase = result["{0}_ase".format(kwd)]
 		try:
 			sns.distplot(
 				set_sizes_ase,
@@ -103,7 +108,7 @@ def plot_dist(result, out_dir, name, model_flavors):
 		except Exception:
 			pass
 	if "acav" in model_flavors:
-		set_sizes_caviar_ase = result["set_sizes_caviar_ase"]
+		set_sizes_caviar_ase = result["{0}_caviar_ase".format(kwd)]
 		try:
 			sns.distplot(
 				set_sizes_caviar_ase,
@@ -116,33 +121,48 @@ def plot_dist(result, out_dir, name, model_flavors):
 			pass
 	plt.xlim(0, None)
 	plt.legend(title="Model")
-	plt.xlabel("Set Size")
-	plt.ylabel("Density")
-	plt.title("Distribution of Causal Set Sizes: {0}".format(name))
-	plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
+	if metric == "size":
+		plt.xlabel("Set Size")
+		plt.ylabel("Density")
+		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
+		plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
+	elif metric == "prop":
+		plt.xlabel("Set Size (Proportion of Total Markers)")
+		plt.ylabel("Density")
+		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
+		plt.savefig(os.path.join(out_dir, "set_prop_distribution.svg"))
 	plt.clf()
 
-def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors):
+def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, metric):
+	if metric == "size":
+		kwd = "all_sizes"
+		label = "Set Size"
+		filename = "causal_set_sizes"
+	elif metric == "prop":
+		kwd = "all_props"
+		label = "Set Size (Proportion of Markers)"
+		filename = "causal_set_props"
+
 	dflst = []
 	for key, val in series.viewitems():
 		if "full" in model_flavors:
-			for skey, sval in series["all_sizes_full"].viewitems():
+			for skey, sval in series["{0}_full".format(kwd)].viewitems():
 				for i in sval:
 					dflst.append([i, skey, "Full"])
 		if "indep" in model_flavors:
-			for skey, sval in series["all_sizes_indep"].viewitems():
+			for skey, sval in series["{0}_indep".format(kwd)].viewitems():
 				for i in sval:
 					dflst.append([i, skey, "Independent Likelihoods"])
 		if "eqtl" in model_flavors:
-			for skey, sval in series["all_sizes_eqtl"].viewitems():
+			for skey, sval in series["{0}_eqtl".format(kwd)].viewitems():
 				for i in sval:
 					dflst.append([i, skey, "eQTL-Only"])
 		if "ase" in model_flavors:
-			for skey, sval in series["all_sizes_ase"].viewitems():
+			for skey, sval in series["{0}_ase".format(kwd)].viewitems():
 				for i in sval:
 					dflst.append([i, skey, "ASE-Only"])
 		if "acav" in model_flavors:
-			for skey, sval in series["all_sizes_caviar_ase"].viewitems():
+			for skey, sval in series["{0}_caviar_ase".format(kwd)].viewitems():
 				for i in sval:
 					dflst.append([i, skey, "CAVIAR-ASE"])
 	res_df = pd.DataFrame(dflst, columns=["Set Size", primary_var_name, "Model"])
@@ -152,24 +172,24 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	sns.set(style="whitegrid")
 	sns.violinplot(
 		x=primary_var_name,
-		y="Set Size",
+		y=label,
 		hue="Model",
 		data=res_df,
 		order=primary_var_vals
 	)
 	plt.title(title)
-	plt.savefig(os.path.join(out_dir, "causal_sets_violin.svg"))
+	plt.savefig(os.path.join(out_dir, "{0}_violin.svg".format(filename)))
 	plt.clf()
 
 	sns.barplot(
 		x=primary_var_name, 
-		y="Set Size",
+		y=label,
 		hue="Model",
 		data=res_df,
 		order=primary_var_vals
 	)
 	plt.title(title)
-	plt.savefig(os.path.join(out_dir, "causal_sets_bar.svg"))
+	plt.savefig(os.path.join(out_dir, "{0}_bar.svg".format(filename)))
 	plt.clf()
 
 def interpret(target_dir, out_dir, name, model_flavors):
@@ -184,61 +204,87 @@ def interpret(target_dir, out_dir, name, model_flavors):
 	summary = {}
 	if "full" in model_flavors:
 		summary["set_sizes_full"] = []
-		summary["thresholds_full"] = {5: 0, 10: 0, 15: 0, 20: 0}
+		summary["set_props_full"] = []
+		summary["thresholds_full"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 	if "indep" in model_flavors:
 		summary["set_sizes_indep"] = []
-		summary["thresholds_indep"] = {5: 0, 10: 0, 15: 0, 20: 0}
+		summary["set_props_indep"] = []
+		summary["thresholds_indep"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 	if "eqtl" in model_flavors:
 		summary["set_sizes_eqtl"] = []
-		summary["thresholds_eqtl"] = {5: 0, 10: 0, 15: 0, 20: 0}
+		summary["set_props_eqtl"] = []
+		summary["thresholds_eqtl"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 	if "ase" in model_flavors:
 		summary["set_sizes_ase"] = []
-		summary["thresholds_ase"] = {5: 0, 10: 0, 15: 0, 20: 0}
+		summary["set_props_ase"] = []
+		summary["thresholds_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 	if "acav" in model_flavors:
 		summary["set_sizes_caviar_ase"] = []
-		summary["thresholds_caviar_ase"] = {5: 0, 10: 0, 15: 0, 20: 0}
+		summary["set_props_caviar_ase"] = []
+		summary["thresholds_caviar_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 
 	failed_jobs = []
+	insufficient_data_jobs = []
 	successes = 0
 
 	for t in targets:
 		# print(t) ####
 		result_path = os.path.join(target_dir, t, "output.pickle")
+		stdout_path = os.path.join(target_dir, t, "stdout.txt")
 
 		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
 		except (EOFError, IOError):
-			failed_jobs.append(t)
-			continue
-
+			try:
+				with open(stdout_path, "r") as stdout_file:
+					job_out = stdout_file.readlines()
+				if "Insufficient Read Counts\n" in job_out:
+					insufficient_data_jobs.append(t)
+				else:
+					failed_jobs.append(t)
+					continue
+			except (EOFError, IOError):
+				failed_jobs.append(t)
+				continue
+		
 		if "full" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_full"])
+			set_prop = set_size / np.shape(result["causal_set_full"])[0]
 			summary["set_sizes_full"].append(set_size)
+			summary["set_props_full"].append(set_prop)
 			for k, v in summary["thresholds_full"].viewitems():
 				if set_size <= k:
 					v += 1
 		if "indep" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_indep"])
+			set_prop = set_size / np.shape(result["causal_set_indep"])[0]
 			summary["set_sizes_indep"].append(set_size)
+			summary["set_props_indep"].append(set_prop)
 			for k, v in summary["thresholds_indep"].viewitems():
 				if set_size <= k:
 					v += 1
 		if "eqtl" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_eqtl"])
+			set_prop = set_size / np.shape(result["causal_set_eqtl"])[0]
 			summary["set_sizes_eqtl"].append(set_size)
+			summary["set_props_eqtl"].append(set_prop)
 			for k, v in summary["thresholds_eqtl"].viewitems():
 				if set_size <= k:
 					v += 1
 		if "ase" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_ase"])
+			set_prop = set_size / np.shape(result["causal_set_ase"])[0]
 			summary["set_sizes_ase"].append(set_size)
+			summary["set_props_ase"].append(set_prop)
 			for k, v in summary["thresholds_ase"].viewitems():
 				if set_size <= k:
 					v += 1
 		if "acav" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_caviar_ase"])
+			set_prop = set_size / np.shape(result["causal_set_caviar_ase"])[0]
 			summary["set_sizes_caviar_ase"].append(set_size)
+			summary["set_props_caviar_ase"].append(set_prop)
 			for k, v in summary["thresholds_caviar_ase"].viewitems():
 				if set_size <= k:
 					v += 1
@@ -249,7 +295,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		fail_out.write("\n".join(failed_jobs))
 	
 	write_thresholds(summary, out_dir, successes, model_flavors)
-	plot_dist(summary, out_dir, name, model_flavors)
+	plot_dist(summary, out_dir, name, model_flavors, "size")
+	plot_dist(summary, out_dir, name, model_flavors, "prop")
 
 	return summary
 
@@ -264,48 +311,49 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 	if "full" in model_flavors:
 		series["avg_sets_full"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_full"] = {}
-		series["counts_full"] = {i: 0 for i in primary_var_vals}
+		series["all_props_full"] = {}
 	if "indep" in model_flavors:
 		series["avg_sets_indep"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_indep"] = {}
-		series["counts_indep"] = {i: 0 for i in primary_var_vals}
+		series["all_props_indep"] = {}
 	if "eqtl" in model_flavors:
 		series["avg_sets_eqtl"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_eqtl"] = {}
-		series["counts_eqtl"] = {i: 0 for i in primary_var_vals}
+		series["all_props_eqtl"] = {}
 	if "ase" in model_flavors:
 		series["avg_sets_ase"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_ase"] = {}
-		series["counts_ase"] = {i: 0 for i in primary_var_vals}
+		series["all_props_ase"] = {}
 	if "acav" in model_flavors:
 		series["avg_sets_caviar_ase"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_caviar_ase"] = {}
-		series["counts_caviar_ase"] = {i: 0 for i in primary_var_vals}
+		series["all_props_caviar_ase"] = {}
 
 	for ind, val in enumerate(summaries):
 		var_val = primary_var_vals[ind]
 		if "full" in model_flavors:
 			series["avg_sets_full"][var_val] = np.mean(val["set_sizes_full"])
 			series["all_sizes_full"][var_val] = val["set_sizes_full"]
-			series["counts_full"][var_val] = len(val["set_sizes_full"])
+			series["all_props_full"][var_val] = val["set_props_full"]
 		if "indep" in model_flavors:
 			series["avg_sets_indep"][var_val] = np.mean(val["set_sizes_indep"])
 			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
-			series["counts_indep"][var_val] = len(val["set_sizes_indep"])
+			series["all_props_indep"][var_val] = val["set_props_indep"]
 		if "eqtl" in model_flavors:
 			series["avg_sets_eqtl"][var_val] = np.mean(val["set_sizes_eqtl"])
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
-			series["counts_eqtl"][var_val] = len(val["set_sizes_eqtl"])
+			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
 		if "ase" in model_flavors:
 			series["avg_sets_ase"][var_val] = np.mean(val["set_sizes_ase"])
 			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
-			series["counts_ase"][var_val] = len(val["set_sizes_ase"])
+			series["all_props_ase"][var_val] = val["set_props_ase"]
 		if "acav" in model_flavors:
 			series["avg_sets_caviar_ase"][var_val] = np.mean(val["set_sizes_caviar_ase"])
 			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
-			series["counts_caviar_ase"][var_val] = len(val["set_sizes_caviar_ase"])
+			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
 
-	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors)
+	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "size")
+	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "prop")
 
 if __name__ == '__main__':
 	# Normal

@@ -294,6 +294,9 @@ def interpret(target_dir, out_dir, name, model_flavors):
 
 	with open(os.path.join(out_dir, "failed_jobs.txt"), "w") as fail_out:
 		fail_out.write("\n".join(failed_jobs))
+
+	with open(os.path.join(out_dir, "insufficient_data_jobs.txt"), "w") as insufficient_out:
+		insufficient_out.write("\n".join(insufficient_data_jobs))
 	
 	write_thresholds(summary, out_dir, successes, model_flavors)
 	plot_dist(summary, out_dir, name, model_flavors, "size")

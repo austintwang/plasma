@@ -66,9 +66,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_full,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True},
-				label="Full",
-				cumulative=cumu
+				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				label="Full"
 			)
 		except Exception:
 			pass
@@ -79,9 +78,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_indep,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True},
-				label="Independent Likelihoods",
-				cumulative=cumu
+				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				label="Independent Likelihoods"			
 			)
 		except Exception:
 			pass
@@ -92,9 +90,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_eqtl,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True},
-				label="eQTL-Only",
-				cumulative=cumu
+				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				label="eQTL-Only"			
 			)
 		except Exception:
 			pass
@@ -105,9 +102,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_ase,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True},
-				label="ASE-Only",
-				cumulative=cumu
+				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				label="ASE-Only"			
 			)
 		except Exception:
 			pass
@@ -118,9 +114,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_caviar_ase,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True},
-				label="CAVIAR-ASE",
-				cumulative=cumu
+				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				label="CAVIAR-ASE"			
 			)
 		except Exception:
 			pass

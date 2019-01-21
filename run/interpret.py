@@ -51,7 +51,7 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	with open(out_path, "w") as out_file:
 		out_file.write(thresholds_str)
 
-def plot_dist(result, out_dir, name, model_flavors, metric):
+def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if metric == "size":
 		kwd = "set_sizes"
 	elif metric == "prop":
@@ -67,7 +67,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":True},
-				label="Full"
+				label="Full",
+				cumulative=cumu
 			)
 		except Exception:
 			pass
@@ -79,7 +80,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":True},
-				label="Independent Likelihoods"
+				label="Independent Likelihoods",
+				cumulative=cumu
 			)
 		except Exception:
 			pass
@@ -91,7 +93,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":True},
-				label="eQTL-Only"
+				label="eQTL-Only",
+				cumulative=cumu
 			)
 		except Exception:
 			pass
@@ -103,7 +106,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":True},
-				label="ASE-Only"
+				label="ASE-Only",
+				cumulative=cumu
 			)
 		except Exception:
 			pass
@@ -115,22 +119,29 @@ def plot_dist(result, out_dir, name, model_flavors, metric):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":True},
-				label="CAVIAR-ASE"
+				label="CAVIAR-ASE",
+				cumulative=cumu
 			)
 		except Exception:
 			pass
 	plt.xlim(0, None)
 	plt.legend(title="Model")
+	if cumu:
+		cumu_kwd = "Cumulative "
+		cumu_fname = "_cumu"
+	else:
+		cumu_kwd = ""
+		cumu_fname = ""
 	if metric == "size":
 		plt.xlabel("Set Size")
 		plt.ylabel("Density")
-		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
-		plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
+		plt.title("{0}Distribution of Causal Set Sizes: {1}".format(cumu_kwd, name))
+		plt.savefig(os.path.join(out_dir, "set_size_distribution{0}.svg".format(cumu_fname)))
 	elif metric == "prop":
 		plt.xlabel("Set Size (Proportion of Total Markers)")
 		plt.ylabel("Density")
-		plt.title("Distribution of Causal Set Sizes: {0}".format(name))
-		plt.savefig(os.path.join(out_dir, "set_prop_distribution.svg"))
+		plt.title("{0}Distribution of Causal Set Sizes: {1}".format(cumu_kwd, name))
+		plt.savefig(os.path.join(out_dir, "set_prop_distribution{0}.svg".format(cumu_fname)))
 	plt.clf()
 
 def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, metric):
@@ -299,8 +310,10 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		insufficient_out.write("\n".join(insufficient_data_jobs))
 	
 	write_thresholds(summary, out_dir, successes, model_flavors)
-	plot_dist(summary, out_dir, name, model_flavors, "size")
-	plot_dist(summary, out_dir, name, model_flavors, "prop")
+	plot_dist(summary, out_dir, name, model_flavors, "size", False)
+	plot_dist(summary, out_dir, name, model_flavors, "prop", False)
+	plot_dist(summary, out_dir, name, model_flavors, "size", True)
+	plot_dist(summary, out_dir, name, model_flavors, "prop", True)
 
 	return summary
 

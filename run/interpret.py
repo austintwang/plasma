@@ -61,6 +61,16 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 
 	if "full" in model_flavors:
 		set_sizes_full = result["{0}_full".format(kwd)]
+		sns.distplot(
+			set_sizes_full,
+			hist=False,
+			kde=True,
+			kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+			label="Full"
+		)
+
+	if "full" in model_flavors:
+		set_sizes_full = result["{0}_full".format(kwd)]
 		try:
 			sns.distplot(
 				set_sizes_full,

@@ -270,41 +270,41 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			set_prop = set_size / np.shape(result["causal_set_full"])[0]
 			summary["set_sizes_full"].append(set_size)
 			summary["set_props_full"].append(set_prop)
-			for k, v in summary["thresholds_full"].viewitems():
+			for k in summary["thresholds_full"].keys():
 				if set_size <= k:
-					v += 1
+					summary["thresholds_full"][k] += 1
 		if "indep" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_indep"])
 			set_prop = set_size / np.shape(result["causal_set_indep"])[0]
 			summary["set_sizes_indep"].append(set_size)
 			summary["set_props_indep"].append(set_prop)
-			for k, v in summary["thresholds_indep"].viewitems():
+			for k in summary["thresholds_indep"].keys():
 				if set_size <= k:
-					v += 1
+					summary["thresholds_indep"][k] += 1
 		if "eqtl" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_eqtl"])
 			set_prop = set_size / np.shape(result["causal_set_eqtl"])[0]
 			summary["set_sizes_eqtl"].append(set_size)
 			summary["set_props_eqtl"].append(set_prop)
-			for k, v in summary["thresholds_eqtl"].viewitems():
+			for k in summary["thresholds_eqtl"].keys():
 				if set_size <= k:
-					v += 1
+					summary["thresholds_eqtl"][k] += 1
 		if "ase" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_ase"])
 			set_prop = set_size / np.shape(result["causal_set_ase"])[0]
 			summary["set_sizes_ase"].append(set_size)
 			summary["set_props_ase"].append(set_prop)
-			for k, v in summary["thresholds_ase"].viewitems():
+			for k in summary["thresholds_ase"].keys():
 				if set_size <= k:
-					v += 1
+					summary["thresholds_ase"][k] += 1
 		if "acav" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_caviar_ase"])
 			set_prop = set_size / np.shape(result["causal_set_caviar_ase"])[0]
 			summary["set_sizes_caviar_ase"].append(set_size)
 			summary["set_props_caviar_ase"].append(set_prop)
-			for k, v in summary["thresholds_caviar_ase"].viewitems():
+			for k in summary["thresholds_caviar_ase"].keys():
 				if set_size <= k:
-					v += 1
+					summary["thresholds_caviar_ase"][k] += 1
 
 		successes += 1
 

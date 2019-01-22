@@ -57,7 +57,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	elif metric == "prop":
 		kwd = "set_props"
 
-	sns.set(style="white")
+	sns.set(style="white", font="Roboto")
 
 	# if "full" in model_flavors:
 	# 	set_sizes_full = result["{0}_full".format(kwd)]
@@ -185,7 +185,7 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 
 	title = "Causal Set Sizes Across {0}:\n{1}".format(primary_var_name, name)
 	
-	sns.set(style="whitegrid")
+	sns.set(style="whitegrid", font="Roboto")
 	sns.violinplot(
 		x=primary_var_name,
 		y=label,

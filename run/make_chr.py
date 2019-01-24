@@ -96,12 +96,12 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 	ppl_names = vcf_reader.samples
 	num_ppl = len(ppl_names)
 
-	print(next(vcf_reader)) ####
+	# print(next(vcf_reader)) ####
 
 	for record in vcf_reader.fetch("chr{0}".format(chr_num)):
 		chr_num = record.CHROM[3:]
 		# print(chr_num) ####
-		print(record) ####
+		# print(record) ####
 		pos = int(record.POS) + 1
 		# print(pos) ####
 		if record.ID == ".":

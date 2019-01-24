@@ -48,17 +48,17 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 				entry = line.split()[0:5]
 				bed_info.append(entry)
 
-	margin = int(margin)
-	tss = int(i[4])
-	snps_begin = tss - margin
-	snps_end = tss + margin
-	gene_begin = int(i[1])
-	gene_end = int(i[2])
-	abs_begin = min(snps_begin, gene_begin)
-	abs_end = max(snps_end, gene_end)
+	for i in bed_info:
+		margin = int(margin)
+		tss = int(i[4])
+		snps_begin = tss - margin
+		snps_end = tss + margin
+		gene_begin = int(i[1])
+		gene_end = int(i[2])
+		abs_begin = min(snps_begin, gene_begin)
+		abs_end = max(snps_end, gene_end)
 
-	target_data = [
-		{
+		job_info = {
 			"chr": str(chr_num),
 			"tss": int(i[4]),
 			"snps_begin": snps_begin,
@@ -75,8 +75,9 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 			"counts1": None,
 			"counts2": None,
 			"counts_total": None,
-		} for i in bed_info
-	]
+		}
+		target_data.append(job_info)
+		
 	# print(target_data) ####
 	target_data.sort(key=lambda x: x["abs_begin"])
 

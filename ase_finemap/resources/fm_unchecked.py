@@ -596,5 +596,8 @@ class FmUnchecked(object):
 	def get_ppas(self):
 		return self.evaluator.get_ppas()
 
+	def get_size_probs(self):
+		return self.evaluator.get_size_probs()
+
 	def reset_mapping(self):
 		self.evaluator.reset()

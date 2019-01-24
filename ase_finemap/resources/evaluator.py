@@ -554,6 +554,13 @@ class Evaluator(object):
 			ppas.append(ppa / total)
 		return ppas
 
+	def get_size_probs(self):
+		size_probs = np.zeros(self.num_snps)
+		for k, v in self.get_probs().viewitems():
+			num_snps = np.sum(k)
+			size_probs[num_snps] += v
+		return size_probs
+
 	def reset(self):
 		self.results = {}
 		# self.cumu_sum = 0.0

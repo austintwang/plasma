@@ -61,8 +61,9 @@ def run_model(inputs, input_updates):
 
 	causal_set = model.get_causal_set(inputs["confidence"])
 	ppas = model.get_ppas()
+	size_probs = model.get_size_probs()
 
-	return causal_set, ppas, model
+	return causal_set, ppas, size_probs, model
 
 def get_ldsr_data(inputs, causal_set, ppas):
 	cset_bool = (np.array(causal_set) == 1)
@@ -156,10 +157,11 @@ def main(output_path, input_path, params_path, selection_path):
 	eqtl_herit = 1 - inputs["prop_noise_eqtl"]
 	ase_herit = 1 - inputs["prop_noise_ase"]
 
-	coverage = inputs["coverage"]
+	coverage = np.mean(inputs["counts1"] + inputs["counts2"])
 	overdispersion = inputs["overdispersion"]
-	std_fraction = inputs["std_fraction"]
-	ase_inherent_var = (np.log(std_fraction) - np.log(1-std_fraction))**2
+	# std_fraction = inputs["std_fraction"]
+	# ase_inherent_var = (np.log(std_fraction) - np.log(1-std_fraction))**2
+	ase_inherent_var = np.var(np.log(inputs["counts1"]) - np.log(1-inputs["counts2"]))
 	ase_count_var = (
 		2 / coverage
 		* (
@@ -230,7 +232,7 @@ def main(output_path, input_path, params_path, selection_path):
 		"total_exp_var_prior": total_exp_var_prior
 	}
 	if "full" in model_flavors:
-		result["causal_set_full"], result["ppas_full"], model_full = run_model(inputs, updates_full)
+		result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(inputs, updates_full)
 		result["ldsr_data_full"] = get_ldsr_data(inputs, result["causal_set_full"], result["ppas_full"])
 
 	updates_indep = {
@@ -240,7 +242,7 @@ def main(output_path, input_path, params_path, selection_path):
 		"total_exp_var_prior": total_exp_var_prior
 	}
 	if "indep" in model_flavors:
-		result["causal_set_indep"], result["ppas_indep"], model_indep = run_model(inputs, updates_indep)
+		result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"], model_indep = run_model(inputs, updates_indep)
 		result["ldsr_data_indep"] = get_ldsr_data(inputs, result["causal_set_indep"], result["ppas_indep"])
 
 	updates_eqtl = {
@@ -259,7 +261,7 @@ def main(output_path, input_path, params_path, selection_path):
 		"cross_corr_prior": 0.0,
 	}
 	if "eqtl" in model_flavors:
-		result["causal_set_eqtl"], result["ppas_eqtl"], model_eqtl = run_model(inputs, updates_eqtl)
+		result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"], model_eqtl = run_model(inputs, updates_eqtl)
 		result["ldsr_data_eqtl"] = get_ldsr_data(inputs, result["causal_set_eqtl"], result["ppas_eqtl"])
 
 	updates_ase = {
@@ -276,7 +278,7 @@ def main(output_path, input_path, params_path, selection_path):
 		"cross_corr_prior": 0.0,
 	}
 	if "ase" in model_flavors:
-		result["causal_set_ase"], result["ppas_ase"], model_ase = run_model(inputs, updates_ase)
+		result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"], model_ase = run_model(inputs, updates_ase)
 		result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
 
 	if "acav" in model_flavors:

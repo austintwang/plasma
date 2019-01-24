@@ -17,11 +17,16 @@ except ImportError:
 
 
 def finalize(data, jobs_dir):
-	# print("owiehofwieof") ####
 	data["snp_ids"] = np.array(data["snp_ids"])
 	data["snp_pos"] = np.array(data["snp_pos"])
-	data["hap1"] = np.stack(data["hap1"], axis=1)
-	data["hap2"] = np.stack(data["hap2"], axis=1)
+	if len(data["hap1"]) == 0:
+		data["hap1"] = np.empty([data["num_ppl"], 0])
+	else:
+		data["hap1"] = np.stack(data["hap1"], axis=1)
+	if len(data["hap2"]) == 0:
+		data["hap2"] = np.empty([data["num_ppl"], 0])
+	else:
+		data["hap2"] = np.stack(data["hap2"], axis=1)
 
 	name = data["name"]
 	target_path = os.path.join(jobs_dir, name)
@@ -129,6 +134,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 			active_ids[max_active]["counts2"] = np.zeros(num_ppl)
 			active_ids[max_active]["counts_total"] = np.zeros(num_ppl)
 			active_ids[max_active]["sample_names"] = ppl_names
+			active_ids[max_active]["num_ppl"] = num_ppl
 			# max_active += 1
 
 		hap1_all = np.empty(num_ppl) 

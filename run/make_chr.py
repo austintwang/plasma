@@ -133,7 +133,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 		counts2 = np.zeros(num_ppl)
 		counts_total = np.zeros(num_ppl)
 
-		for sample in record.samples:
+		for ind, sample in enumerate(record.samples):
 			gen_data = sample["GT"]
 			read_data = sample["AS"]
 

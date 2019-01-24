@@ -159,13 +159,13 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 				v["snp_pos"].append(pos)
 				v["hap1"].append(hap1_all)
 				v["hap2"].append(hap2_all)
-			if v["gene_begin"] <= pos < v["snps_end"]:
+			if v["gene_begin"] <= pos < v["gene_end"]:
 				v["counts1"] += counts1
 				v["counts2"] += counts2
 				v["counts_total"] += counts_total
 
 		# print(max_active, target_final) ####
-		if max_active == target_final and len(active_ids) == 0:
+		if (max_active == target_final) and (len(active_ids) == 0):
 			break
 
 	for k, v in active_ids.viewitems():

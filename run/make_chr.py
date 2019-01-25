@@ -49,7 +49,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 			# 	if not line.startswith("chr"):
 			# 		continue
 			# 	bed_start = True
-			if line.startswith("chr{0}".format(chr_num)):
+			if line.startswith("chr{0}\t".format(chr_num)):
 				entry = line.split()[0:5]
 				bed_info.append(entry)
 
@@ -156,10 +156,10 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 			ref_reads = int(read_data[0])
 			alt_reads = int(read_data[1])
 			counts_total[ind] += ref_reads + alt_reads
-			if hap1 == 0 and hap2 == 1:
+			if (hap1 == 0) and (hap2 == 1):
 				counts1[ind] += ref_reads
 				counts2[ind] += alt_reads
-			elif hap1 == 1 and hap2 == 0:
+			elif (hap1 == 1) and (hap2 == 0):
 				counts2[ind] += ref_reads
 				counts1[ind] += alt_reads
 

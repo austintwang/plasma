@@ -87,6 +87,14 @@ def get_ldsr_data(inputs, causal_set, ppas):
 
 	return data
 
+def write_output(output_path, result):
+	if not os.path.exists(output_path):
+		os.makedirs(output_path)
+
+	output_return = os.path.join(output_path, "output.pickle")
+	with open(output_return, "wb") as output_file:
+		pickle.dump(result, output_file)
+
 def main(output_path, input_path, params_path, selection_path):
 	# input_path = os.path.join(target_dir, "input.pickle")
 	if selection_path == "all":
@@ -151,13 +159,21 @@ def main(output_path, input_path, params_path, selection_path):
 
 	inputs["num_ppl"] = np.size(inputs["counts1"])
 
-	if num_ppl == 0:
-		print("Insufficient Read Counts")
+	result = {}
+
+	if inputs["num_ppl"] == 0:
+		result["data_error"] = "Insufficient Read Counts"
+		write_output(output_path, result)
 		return
+
+	if inputs["hap1"].size == 0:
+		result["data_error"] = "Insufficient Markers"
+		write_output(output_path, result)
+		return
+
 	# print(inputs["num_ppl"]) ####
 	# print(max_ppl) ####
 
-	result = {}
 	num_ppl = inputs["num_ppl"]
 	num_causal = inputs["num_causal"]
 	eqtl_herit = 1 - inputs["prop_noise_eqtl"]
@@ -320,12 +336,7 @@ def main(output_path, input_path, params_path, selection_path):
 			inputs, result["causal_set_caviar_ase"], result["ppas_caviar_ase"]
 		)
 
-	if not os.path.exists(output_path):
-		os.makedirs(output_path)
-
-	output_return = os.path.join(output_path, "output.pickle")
-	with open(output_return, "wb") as output_file:
-		pickle.dump(result, output_file)
+	write_output(output_path, result)
 
 	# print(result) ####
 	# print(sum(result["causal_set_eqtl"])) ####

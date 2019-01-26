@@ -182,6 +182,7 @@ def main(output_path, input_path, params_path, selection_path):
 		2 / counts
 		* (1 + np.cosh(imbalance_adj))
 		* (1 + overdispersion * (counts - 1))
+	)
 
 	ase_count_var = (
 		2 / coverage

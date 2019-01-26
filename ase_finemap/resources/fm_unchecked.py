@@ -186,9 +186,10 @@ class FmUnchecked(object):
 		self._calc_imbalance()
 		self._calc_counts()
 
+		imbalance_raw = np.log(self.counts_A) - np.log(self.counts_B)
 		counts = self.counts_A + self.counts_B
 		imbalance_adj = (
-			self.imbalance
+			imbalance_raw
 			/ (
 				1
 				+ 1 / counts

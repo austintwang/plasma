@@ -557,7 +557,7 @@ class Evaluator(object):
 	def get_size_probs(self):
 		size_probs = np.zeros(self.num_snps)
 		for k, v in self.get_probs().viewitems():
-			num_snps = np.sum(k)
+			num_snps = np.count_nonzero(k)
 			size_probs[num_snps] += v
 		return size_probs
 

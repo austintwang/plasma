@@ -91,7 +91,7 @@ class FmUnchecked(object):
 		self._calc_counts()
 
 		imbalance_raw = np.log(self.counts_A) - np.log(self.counts_B)
-		print(imbalance_raw) ####
+		# print(imbalance_raw) ####
 		counts = self.counts_A + self.counts_B
 		imbalance_adj = (
 			imbalance_raw
@@ -101,7 +101,7 @@ class FmUnchecked(object):
 				* (1 + self.overdispersion * (counts - 1))
 			)
 		)
-		print(imbalance_adj) ####
+		# print(imbalance_adj) ####
 
 		self.imbalance = (
 			imbalance_adj
@@ -109,7 +109,7 @@ class FmUnchecked(object):
 			* np.sinh(imbalance_raw)
 			* (1 + self.overdispersion * (counts - 1))
 		)
-		print(self.imbalance) ####
+		# print(self.imbalance) ####
 	
 	def _calc_phases(self):
 		if self.phases is not None:
@@ -229,6 +229,7 @@ class FmUnchecked(object):
 		# for ph, ind in enumerate(phases):
 		# 	denominator[ind] = ph.dot(weights).dot(ph)
 		phi = denominator * np.matmul(phases.T, (weights * self.imbalance)) #/ self.num_ppl_imbalance
+		print(phi) ####
 		# np.savetxt("imbalance_raw.txt",  np.matmul(phases.T, self.imbalance))
 		# np.savetxt("imbalance_weighted.txt",  np.matmul(phases.T, (weights * self.imbalance)))
 		# np.savetxt("imbalance.txt", self.imbalance) ####
@@ -272,6 +273,7 @@ class FmUnchecked(object):
 		# remaining_errors = 1 ####
 		# self.imbalance_stats = phi / np.sqrt(remaining_errors / self.num_ppl_imbalance) 
 		# self.imbalance_stats = phi * np.sqrt(self.num_ppl_imbalance)
+		print(self.imbalance_stats) ####
 
 	def _calc_imbalance_corr(self):
 		if self.imbalance_corr is not None:

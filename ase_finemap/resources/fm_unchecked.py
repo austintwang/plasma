@@ -187,6 +187,7 @@ class FmUnchecked(object):
 		self._calc_counts()
 
 		imbalance_raw = np.log(self.counts_A) - np.log(self.counts_B)
+		print(imbalance_raw) ####
 		counts = self.counts_A + self.counts_B
 		imbalance_adj = (
 			imbalance_raw
@@ -196,13 +197,14 @@ class FmUnchecked(object):
 				* (1 + self.overdispersion * (counts - 1))
 			)
 		)
+		print(imbalance_adj) ####
 
 		self.imbalance_errors = (
 			2 / counts
 			* (1 + np.cosh(imbalance_adj))
 			* (1 + self.overdispersion * (counts - 1))
 		)
-		# print(self.imbalance_errors) ####
+		print(self.imbalance_errors) ####
 		# print(np.mean(counts)) ####
 
 	def _calc_imbalance_stats(self):

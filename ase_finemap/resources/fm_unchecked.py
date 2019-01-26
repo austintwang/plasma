@@ -460,7 +460,7 @@ class FmUnchecked(object):
 			)
 			/ np.sqrt(np.var(imbalance_stats) * np.var(total_exp_stats))
 		)
-		print(self.corr_stats) ####
+		# print(self.corr_stats) ####
 		if self.corr_stats < 0:
 			self.corr_stats = 0.0
 

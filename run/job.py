@@ -306,6 +306,7 @@ def main(output_path, input_path, params_path, selection_path):
 	if "ase" in model_flavors:
 		result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"], model_ase = run_model(inputs, updates_ase)
 		result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
+		print(result["causal_set_ase"]) ####
 
 	if "acav" in model_flavors:
 		model_inputs_dummy = inputs.copy()

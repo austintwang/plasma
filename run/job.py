@@ -183,9 +183,10 @@ def main(output_path, input_path, params_path, selection_path):
 	overdispersion = inputs["overdispersion"]
 	# std_fraction = inputs["std_fraction"]
 	# ase_inherent_var = (np.log(std_fraction) - np.log(1-std_fraction))**2
-	imbalance = np.log(inputs["counts1"]) - np.log(1-inputs["counts2"])
+	imbalance = np.log(inputs["counts1"]) - np.log(inputs["counts2"])
 	ase_inherent_var = np.var(imbalance)
 	counts = np.mean(inputs["counts1"] + inputs["counts2"])
+	# print(ase_inherent_var) ####
 
 	ase_count_var = (
 		2 / coverage

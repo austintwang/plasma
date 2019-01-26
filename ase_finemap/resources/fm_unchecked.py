@@ -229,7 +229,7 @@ class FmUnchecked(object):
 		# for ph, ind in enumerate(phases):
 		# 	denominator[ind] = ph.dot(weights).dot(ph)
 		phi = denominator * np.matmul(phases.T, (weights * self.imbalance)) #/ self.num_ppl_imbalance
-		print(phi) ####
+		# print(phi) ####
 		# np.savetxt("imbalance_raw.txt",  np.matmul(phases.T, self.imbalance))
 		# np.savetxt("imbalance_weighted.txt",  np.matmul(phases.T, (weights * self.imbalance)))
 		# np.savetxt("imbalance.txt", self.imbalance) ####
@@ -273,7 +273,7 @@ class FmUnchecked(object):
 		# remaining_errors = 1 ####
 		# self.imbalance_stats = phi / np.sqrt(remaining_errors / self.num_ppl_imbalance) 
 		# self.imbalance_stats = phi * np.sqrt(self.num_ppl_imbalance)
-		print(self.imbalance_stats) ####
+		# print(self.imbalance_stats) ####
 
 	def _calc_imbalance_corr(self):
 		if self.imbalance_corr is not None:

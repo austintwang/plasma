@@ -105,33 +105,27 @@ def main(output_path, input_path, params_path, selection_path):
 
 	inputs.update(params)
 
-	in_selection = np.array([i in selection for i in inputs["sample_names"]])
-	select = np.logical_and(inputs["counts1"] >= 1, inputs["counts2"] >= 1) 
-	if selection:
-		select = np.logical_and(select, in_selection)
-
-	# num_ppl_raw = np.size(inputs["counts1"])
-	# max_ppl = hyperparams.get("max_ppl")
-	# if max_ppl and max_ppl < num_ppl_raw:
-	# 	threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl))
-	# 	np.random.shuffle(threshold)
-	# 	select = np.logical_and(select, threshold)
-	# 	inputs["num_ppl"] = max_ppl
-
 	inputs["num_snps_imbalance"] = len(inputs["hap1"])
 	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
-	inputs["hap1"] = inputs["hap1"][select]
-	inputs["hap2"] = inputs["hap2"][select]
-	inputs["counts1"] = inputs["counts1"][select]
-	inputs["counts2"] = inputs["counts2"][select]
-	inputs["counts_total"] = inputs["counts_total"][select]
+	if selection:
+		select = np.array([i in selection for i in inputs["sample_names"]])
 
-	num_ppl_raw = np.size(inputs["counts1"])
+		# num_ppl_raw = np.size(inputs["counts1"])
+		# max_ppl = hyperparams.get("max_ppl")
+		# if max_ppl and max_ppl < num_ppl_raw:
+		# 	threshold = np.array([1] * max_ppl + [0] * (num_ppl_raw - max_ppl))
+		# 	np.random.shuffle(threshold)
+		# 	select = np.logical_and(select, threshold)
+		# 	inputs["num_ppl"] = max_ppl
 
-	if num_ppl_raw == 0:
-		print("Insufficient Read Counts")
-		return
+		inputs["hap1"] = inputs["hap1"][select]
+		inputs["hap2"] = inputs["hap2"][select]
+		inputs["counts1"] = inputs["counts1"][select]
+		inputs["counts2"] = inputs["counts2"][select]
+		inputs["counts_total"] = inputs["counts_total"][select]
+
+	# num_ppl_raw = np.size(inputs["counts1"])
 
 	max_ppl = inputs.get("max_ppl")
 	if max_ppl and max_ppl < num_ppl_raw:
@@ -147,7 +141,19 @@ def main(output_path, input_path, params_path, selection_path):
 		inputs["counts_total"] = inputs["counts_total"][threshold]
 		# print(np.size(inputs["counts1"])) ####
 
+	select_counts = np.logical_and(inputs["counts1"] >= 1, inputs["counts2"] >= 1) 
+	
+	inputs["hap1"] = inputs["hap1"][select_counts]
+	inputs["hap2"] = inputs["hap2"][select_counts]
+	inputs["counts1"] = inputs["counts1"][select_counts]
+	inputs["counts2"] = inputs["counts2"][select_counts]
+	inputs["counts_total"] = inputs["counts_total"][select_counts]
+
 	inputs["num_ppl"] = np.size(inputs["counts1"])
+
+	if num_ppl == 0:
+		print("Insufficient Read Counts")
+		return
 	# print(inputs["num_ppl"]) ####
 	# print(max_ppl) ####
 
@@ -161,7 +167,22 @@ def main(output_path, input_path, params_path, selection_path):
 	overdispersion = inputs["overdispersion"]
 	# std_fraction = inputs["std_fraction"]
 	# ase_inherent_var = (np.log(std_fraction) - np.log(1-std_fraction))**2
-	ase_inherent_var = np.var(np.log(inputs["counts1"]) - np.log(1-inputs["counts2"]))
+	imbalance_raw = np.log(inputs["counts1"]) - np.log(1-inputs["counts2"])
+	counts = inputs["counts1"] + inputs["counts2"]
+	imbalance_adj = (
+		imbalance_raw
+		/ (
+			1
+			+ 1 / counts
+			* (1 + overdispersion * (counts - 1))
+		)
+	)
+
+	ase_inherent_var = (
+		2 / counts
+		* (1 + np.cosh(imbalance_adj))
+		* (1 + overdispersion * (counts - 1))
+
 	ase_count_var = (
 		2 / coverage
 		* (

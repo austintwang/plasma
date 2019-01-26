@@ -254,10 +254,8 @@ if __name__ == '__main__':
 		"overdispersion": 0.05,
 		"prop_noise_eqtl": 0.95,
 		"prop_noise_ase": 0.50,
-		"std_fraction": 0.75,
 		"min_causal": 1,
-		"num_causal": 1,
-		"coverage": 100,
+		"num_causal": 1.1,
 		"search_mode": "exhaustive",
 		"max_causal": 1,
 		"confidence": 0.95, 
@@ -267,172 +265,172 @@ if __name__ == '__main__':
 	num_tasks = 100
 	poll_freq = 5
 
-	# # Normal
-	# list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
-	# selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
+	# Normal
+	list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
+	selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
 
-	# # Normal, all samples
-	# hyperparams["max_ppl"] = None
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
+	# Normal, all samples
+	hyperparams["max_ppl"] = None
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
-	# # Normal, 50 samples
-	# hyperparams["max_ppl"] = 50
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
+	# Normal, 50 samples
+	hyperparams["max_ppl"] = 50
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
-	# # Normal, 10 samples
-	# hyperparams["max_ppl"] = 10
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
+	# Normal, 10 samples
+	hyperparams["max_ppl"] = 10
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
-	# # Tumor
-	# list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
-	# selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
+	# Tumor
+	list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
-	# # Tumor, all samples
-	# hyperparams["max_ppl"] = None
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
+	# Tumor, all samples
+	hyperparams["max_ppl"] = None
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
-	# # Tumor, 200 samples
-	# hyperparams["max_ppl"] = 200
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
+	# Tumor, 200 samples
+	hyperparams["max_ppl"] = 200
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
-	# # Tumor, 100 samples
-	# hyperparams["max_ppl"] = 100
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
+	# Tumor, 100 samples
+	hyperparams["max_ppl"] = 100
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
-	# # Tumor, 50 samples
-	# hyperparams["max_ppl"] = 50
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
+	# Tumor, 50 samples
+	hyperparams["max_ppl"] = 50
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
-	# # Tumor, 100 samples
-	# hyperparams["max_ppl"] = 10
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
+	# Tumor, 100 samples
+	hyperparams["max_ppl"] = 10
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	params_name
-	# )
+	run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path,
+		selection_path,
+		list_path,
+		params_name
+	)
 
 
-	# Kidney Data, multiple CV
-	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
-	params_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/params"
-	params_name = "1cv_all.pickle"
-	script_path = os.path.join(curr_path, "job.py")
+	# # Kidney Data, multiple CV
+	# input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
+	# params_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/params"
+	# params_name = "1cv_all.pickle"
+	# script_path = os.path.join(curr_path, "job.py")
 
-	hyperparams = {
-		"overdispersion": 0.05,
-		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.50,
-		"std_fraction": 0.75,
-		"min_causal": 1,
-		"num_causal": 1,
-		"coverage": 100,
-		"search_mode": "shotgun",
-		"max_causal": 6,
-		"confidence": 0.95, 
-		"model_flavors": "all"
-	}
+	# hyperparams = {
+	# 	"overdispersion": 0.05,
+	# 	"prop_noise_eqtl": 0.95,
+	# 	"prop_noise_ase": 0.50,
+	# 	"std_fraction": 0.75,
+	# 	"min_causal": 1,
+	# 	"num_causal": 1,
+	# 	"coverage": 100,
+	# 	"search_mode": "shotgun",
+	# 	"max_causal": 6,
+	# 	"confidence": 0.95, 
+	# 	"model_flavors": "all"
+	# }
 
-	num_tasks = 100
-	poll_freq = 5
+	# num_tasks = 100
+	# poll_freq = 5
 
 

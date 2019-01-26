@@ -90,7 +90,23 @@ class FmUnchecked(object):
 
 		self._calc_counts()
 
-		self.imbalance = np.log(self.counts_A) - np.log(self.counts_B)
+		imbalance_raw = np.log(self.counts_A) - np.log(self.counts_B)
+		counts = self.counts_A + self.counts_B
+		imbalance_adj = (
+			imbalance_raw
+			/ (
+				1
+				+ 1 / counts
+				* (1 + self.overdispersion * (counts - 1))
+			)
+		)
+
+		self.imbalance = (
+			imbalance_adj
+			+ 1 / counts
+			* np.sinh(imbalance_raw)
+			* (1 + self.overdispersion * (counts - 1))
+		)
 		# print(self.imbalance) ####
 	
 	def _calc_phases(self):
@@ -171,9 +187,18 @@ class FmUnchecked(object):
 		self._calc_counts()
 
 		counts = self.counts_A + self.counts_B
+		imbalance_adj = (
+			self.imbalance
+			/ (
+				1
+				+ 1 / counts
+				* (1 + self.overdispersion * (counts - 1))
+			)
+		)
+
 		self.imbalance_errors = (
 			2 / counts
-			* (1 + np.cosh(self.imbalance))
+			* (1 + np.cosh(imbalance_adj))
 			* (1 + self.overdispersion * (counts - 1))
 		)
 		# print(self.imbalance_errors) ####

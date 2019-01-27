@@ -51,6 +51,31 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	with open(out_path, "w") as out_file:
 		out_file.write(thresholds_str)
 
+def write_size_probs(summary, out_dir, total_jobs, model_flavors):
+	size_probs_list = []
+	if "full" in model_flavors:
+		size_probs_list.append("Full Model")
+		size_probs_list.append("\t".join(summary["size_probs_full"] / total_jobs))
+		size_probs_list.append("")
+	if "indep" in model_flavors:
+		size_probs_list.append("Independent Likelihoods")
+		size_probs_list.append("\t".join(summary["size_probs_indep"] / total_jobs))
+		size_probs_list.append("")
+	if "eqtl" in model_flavors:
+		size_probs_list.append("eQTL-Only")
+		size_probs_list.append("\t".join(summary["size_probs_eqtl"] / total_jobs))
+		size_probs_list.append("")
+	if "ase" in model_flavors:
+		size_probs_list.append("ASE-Only")
+		size_probs_list.append("\t".join(summary["size_probs_ase"] / total_jobs))
+		size_probs_list.append("")
+
+	size_probs_str = "\n".join(size_probs_list)
+	out_path = os.path.join(out_dir, "causal_set_size_probabilities")
+
+	with open(out_path, "w") as out_file:
+		out_file.write(size_probs_str)
+
 def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if metric == "size":
 		kwd = "set_sizes"
@@ -76,7 +101,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_full,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
 				label="Full"
 			)
 		except Exception:
@@ -88,7 +113,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_indep,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
 				label="Independent Likelihoods"			
 			)
 		except Exception:
@@ -100,7 +125,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_eqtl,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
 				label="eQTL-Only"			
 			)
 		except Exception:
@@ -112,7 +137,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_ase,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
 				label="ASE-Only"			
 			)
 		except Exception:
@@ -124,7 +149,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				set_sizes_caviar_ase,
 				hist=False,
 				kde=True,
-				kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
+				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
 				label="CAVIAR-ASE"			
 			)
 		except Exception:
@@ -222,18 +247,22 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		summary["set_sizes_full"] = []
 		summary["set_props_full"] = []
 		summary["thresholds_full"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
+		summary["size_probs_full"] = np.zeros(6)
 	if "indep" in model_flavors:
 		summary["set_sizes_indep"] = []
 		summary["set_props_indep"] = []
 		summary["thresholds_indep"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
+		summary["size_probs_indep"] = np.zeros(6)
 	if "eqtl" in model_flavors:
 		summary["set_sizes_eqtl"] = []
 		summary["set_props_eqtl"] = []
 		summary["thresholds_eqtl"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
+		summary["size_probs_eqtl"] = np.zeros(6)
 	if "ase" in model_flavors:
 		summary["set_sizes_ase"] = []
 		summary["set_props_ase"] = []
 		summary["thresholds_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
+		summary["size_probs_ase"] = np.zeros(6)
 	if "acav" in model_flavors:
 		summary["set_sizes_caviar_ase"] = []
 		summary["set_props_caviar_ase"] = []
@@ -241,6 +270,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 
 	failed_jobs = []
 	insufficient_data_jobs = []
+	insufficient_snps_jobs = []
 	successes = 0
 
 	for t in targets:
@@ -251,19 +281,15 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
-		except (EOFError, IOError):
-			try:
-				with open(stdout_path, "r") as stdout_file:
-					job_out = stdout_file.readlines()
-				if "Insufficient Read Counts\n" in job_out:
+				if result.get("data_error", "") == "Insufficient Read Counts":
 					insufficient_data_jobs.append(t)
 					continue
-				else:
-					failed_jobs.append(t)
+				if result.get("data_error", "") == "Insufficient Markers":
+					insufficient_snps_jobs.append(t)
 					continue
-			except (EOFError, IOError):
-				failed_jobs.append(t)
-				continue
+		except (EOFError, IOError):
+			failed_jobs.append(t)
+			continue
 		
 		if "full" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_full"])
@@ -273,6 +299,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_full"].keys():
 				if set_size <= k:
 					summary["thresholds_full"][k] += 1
+			size_probs = result["size_probs_full"][:6]
+			summary["size_probs_full"] += size_probs
 		if "indep" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_indep"])
 			set_prop = set_size / np.shape(result["causal_set_indep"])[0]
@@ -281,6 +309,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_indep"].keys():
 				if set_size <= k:
 					summary["thresholds_indep"][k] += 1
+			size_probs = result["size_probs_indep"][:6]
+			summary["size_probs_indep"] += size_probs
 		if "eqtl" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_eqtl"])
 			set_prop = set_size / np.shape(result["causal_set_eqtl"])[0]
@@ -289,6 +319,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_eqtl"].keys():
 				if set_size <= k:
 					summary["thresholds_eqtl"][k] += 1
+			size_probs = result["size_probs_eqtl"][:6]
+			summary["size_probs_eqtl"] += size_probs
 		if "ase" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_ase"])
 			set_prop = set_size / np.shape(result["causal_set_ase"])[0]
@@ -297,6 +329,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_ase"].keys():
 				if set_size <= k:
 					summary["thresholds_ase"][k] += 1
+			size_probs = result["size_probs_ase"][:6]
+			summary["size_probs_ase"] += size_probs
 		if "acav" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_caviar_ase"])
 			set_prop = set_size / np.shape(result["causal_set_caviar_ase"])[0]
@@ -311,10 +345,14 @@ def interpret(target_dir, out_dir, name, model_flavors):
 	with open(os.path.join(out_dir, "failed_jobs.txt"), "w") as fail_out:
 		fail_out.write("\n".join(failed_jobs))
 
-	with open(os.path.join(out_dir, "insufficient_data_jobs.txt"), "w") as insufficient_out:
+	with open(os.path.join(out_dir, "insufficient_data_jobs.txt"), "w") as insufficient_data_out:
 		insufficient_out.write("\n".join(insufficient_data_jobs))
+
+	with open(os.path.join(out_dir, "insufficient_snps_jobs.txt"), "w") as insufficient_snps_out:
+		insufficient_out.write("\n".join(insufficient_snps_jobs))
 	
 	write_thresholds(summary, out_dir, successes, model_flavors)
+	write_size_probs(summary, out_dir, successes, model_flavors)
 	plot_dist(summary, out_dir, name, model_flavors, "size", False)
 	plot_dist(summary, out_dir, name, model_flavors, "prop", False)
 	plot_dist(summary, out_dir, name, model_flavors, "size", True)
@@ -457,3 +495,10 @@ if __name__ == '__main__':
 	primary_var_name = "Sample Size"
 
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+
+	# Tumor, low heritability, all samples
+	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
+	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
+	name = "Kidney RNA-Seq\nAll Tumor Samples"
+
+	tumor_low_herit = interpret(target_dir, out_dir, name, "all")

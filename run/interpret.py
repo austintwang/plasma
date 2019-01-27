@@ -299,7 +299,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_full"].keys():
 				if set_size <= k:
 					summary["thresholds_full"][k] += 1
-			size_probs = result["size_probs_full"][:6]
+			size_probs = np.resize(result["size_probs_full"], 6)
 			summary["size_probs_full"] += size_probs
 		if "indep" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_indep"])
@@ -309,7 +309,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_indep"].keys():
 				if set_size <= k:
 					summary["thresholds_indep"][k] += 1
-			size_probs = result["size_probs_indep"][:6]
+			size_probs = np.resize(result["size_probs_indep"], 6)
 			summary["size_probs_indep"] += size_probs
 		if "eqtl" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_eqtl"])
@@ -319,7 +319,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_eqtl"].keys():
 				if set_size <= k:
 					summary["thresholds_eqtl"][k] += 1
-			size_probs = result["size_probs_eqtl"][:6]
+			size_probs = np.resize(result["size_probs_eqtl"], 6)
 			summary["size_probs_eqtl"] += size_probs
 		if "ase" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_ase"])
@@ -329,7 +329,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			for k in summary["thresholds_ase"].keys():
 				if set_size <= k:
 					summary["thresholds_ase"][k] += 1
-			size_probs = result["size_probs_ase"][:6]
+			size_probs = np.resize(result["size_probs_ase"], 6)
 			summary["size_probs_ase"] += size_probs
 		if "acav" in model_flavors:
 			set_size = np.count_nonzero(result["causal_set_caviar_ase"])

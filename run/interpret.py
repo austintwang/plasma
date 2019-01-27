@@ -346,10 +346,10 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		fail_out.write("\n".join(failed_jobs))
 
 	with open(os.path.join(out_dir, "insufficient_data_jobs.txt"), "w") as insufficient_data_out:
-		insufficient_out.write("\n".join(insufficient_data_jobs))
+		insufficient_data_out.write("\n".join(insufficient_data_jobs))
 
 	with open(os.path.join(out_dir, "insufficient_snps_jobs.txt"), "w") as insufficient_snps_out:
-		insufficient_out.write("\n".join(insufficient_snps_jobs))
+		insufficient_snps_out.write("\n".join(insufficient_snps_jobs))
 	
 	write_thresholds(summary, out_dir, successes, model_flavors)
 	write_size_probs(summary, out_dir, successes, model_flavors)

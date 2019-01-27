@@ -55,19 +55,19 @@ def write_size_probs(summary, out_dir, total_jobs, model_flavors):
 	size_probs_list = []
 	if "full" in model_flavors:
 		size_probs_list.append("Full Model")
-		size_probs_list.append("\t".join(summary["size_probs_full"] / total_jobs))
+		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_full"] / total_jobs))
 		size_probs_list.append("")
 	if "indep" in model_flavors:
 		size_probs_list.append("Independent Likelihoods")
-		size_probs_list.append("\t".join(summary["size_probs_indep"] / total_jobs))
+		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_indep"] / total_jobs))
 		size_probs_list.append("")
 	if "eqtl" in model_flavors:
 		size_probs_list.append("eQTL-Only")
-		size_probs_list.append("\t".join(summary["size_probs_eqtl"] / total_jobs))
+		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_eqtl"] / total_jobs))
 		size_probs_list.append("")
 	if "ase" in model_flavors:
 		size_probs_list.append("ASE-Only")
-		size_probs_list.append("\t".join(summary["size_probs_ase"] / total_jobs))
+		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_ase"] / total_jobs))
 		size_probs_list.append("")
 
 	size_probs_str = "\n".join(size_probs_list)

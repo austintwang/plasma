@@ -133,7 +133,7 @@ def main(output_path, input_path, params_path, selection_path):
 		inputs["counts2"] = inputs["counts2"][select]
 		inputs["counts_total"] = inputs["counts_total"][select]
 
-	# num_ppl_raw = np.size(inputs["counts1"])
+	num_ppl_raw = np.size(inputs["counts1"])
 
 	max_ppl = inputs.get("max_ppl")
 	if max_ppl and max_ppl < num_ppl_raw:

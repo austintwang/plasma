@@ -393,6 +393,9 @@ class Evaluator(object):
 		# total = sum([np.exp(i + scale) for i in self.results.values()])
 		for k, v in self.results.viewitems():
 			lprob = v - total_lpost
+			if lprob > 0: ####
+				print(v, total_lpost, np.exp(lprob)) ####
+				raise Exception ####
 			probs[k] = np.exp(lprob)
 			# print(v) ####
 			# print(probs[k]) ####

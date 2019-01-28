@@ -445,6 +445,7 @@ class Evaluator(object):
 			distances.setdefault(sum(k), set()).add(k)
 			causal_extras[k] = causals
 		# print(distances) ####
+		print(conf_sum) ####
 
 		while conf_sum < confidence:
 			dist_ones = distances[1]

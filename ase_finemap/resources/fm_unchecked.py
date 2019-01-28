@@ -579,7 +579,7 @@ class FmUnchecked(object):
 			lposts = []
 			for c in configs:
 				record_prob = np.count_nonzero(c) >= min_causal
-				lpost.append(self.evaluator.eval(c), save_result=record_prob)
+				lposts.append(self.evaluator.eval(c), save_result=record_prob)
 			lposts = np.array(lposts)
 			lpostmax = np.max(lposts)
 			posts = np.exp(lposts - lpostmax)

@@ -566,19 +566,47 @@ class FmUnchecked(object):
 				configuration[:] = 0
 				# print(configuration) ####
 
-	def search_shotgun(self, num_iterations):
+	def search_shotgun(self, min_causal, max_causal, prob_threshold, streak_threshold, num_iterations):
 		m = max(self.num_snps_imbalance, self.num_snps_total_exp)
-		configuration = np.zeros(m)
+		configs = [np.zeros(m)]
 		# print(m) ####
-		self.evaluator.eval(configuration)
+		# self.evaluator.eval(configuration)
 		# print([(i, j) for i, j in enumerate(configuration, start=999)]) ####
+		lprob_threshold = np.log(prob_threshold)
+		cumu_lposts = None
+		streak = 0
 		for i in xrange(num_iterations):
+			lposts = []
+			for c in configs:
+				record_prob = np.count_nonzero(c) >= min_causal
+				lpost.append(self.evaluator.eval(c), save_result=record_prob)
+			lposts = np.array(lposts)
+			lpostmax = np.max(lposts)
+			posts = np.exp(lposts - lpostmax)
+			dist = posts / np.sum(posts)
+			selection = np.random.choice(np.arange(len(neighbors)), p=dist)
+			configuration = neighbors[selection]
+
+			sel_lpost = lposts[selection]
+			if cumu_lposts is None:
+				cumu_lposts = sel_lpost
+			else:
+				cumu_lposts += np.log(1 + np.exp(sel_lpost - cumu_lposts))
+
+			if sel_lpost - cumu_lposts >= lprob_threshold:
+				streak += 1
+			else:
+				streak = 0
+
+			if streak >= streak_threshold:
+				break
+
+			num_causal = np.count_nonzero(configuration)
 			neighbors = []
 			for ind in xrange(m):
 				val = configuration[ind]
 				# Add causal variant
-				# print(val, ind) ####
-				if val == 0:
+				if (val == 0) and (num_causal < max_causal):
 					neighbor = configuration.copy()
 					neighbor[ind] = 1
 					neighbors.append(neighbor)
@@ -590,31 +618,11 @@ class FmUnchecked(object):
 				# Swap status with other variants
 				for ind2 in xrange(ind+1, m):
 					val2 = configuration[ind2]
-					# if ind2 == 1000:
-					# 	print(val2) ####
-					# 	print() ####
 					if val2 != val:
 						neighbor = configuration.copy()
 						neighbor[ind] = val2
 						neighbor[ind2] = val
 						neighbors.append(neighbor)
-
-			lpost = []
-			for n in neighbors:
-				lpost.append(self.evaluator.eval(n))
-			lpost = np.array(lpost)
-			# print(posteriors) ####
-			lpostmax = np.max(lpost)
-			posts = np.exp(lpost - lpostmax)
-			dist = posts / np.sum(posts)
-			# print(neighbors) ####
-			# print(dist) ####
-			selection = np.random.choice(np.arange(len(neighbors)), p=dist)
-			configuration = neighbors[selection]
-			# print(configuration.shape) ####
-			# print(configuration) ####
-			if i % 10 == 0: ####
-				print(i) ####
 
 	def get_probs(self):
 		return self.evaluator.get_probs()

@@ -57,7 +57,13 @@ def run_model(inputs, input_updates):
 	if inputs["search_mode"] == "exhaustive":
 		model.search_exhaustive(inputs["min_causal"], inputs["max_causal"])
 	elif inputs["search_mode"] == "shotgun":
-		model.search_shotgun(inputs["search_iterations"])
+		model.search_shotgun(
+			inputs["min_causal"], 
+			inputs["max_causal"], 
+			inputs["prob_threshold"], 
+			inputs["streak_threshold"], 
+			inputs["search_iterations"]
+		)
 
 	causal_set = model.get_causal_set(inputs["confidence"])
 	ppas = model.get_ppas()

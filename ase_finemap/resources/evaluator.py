@@ -154,6 +154,8 @@ class Evaluator(object):
 
 		# Create structure for storing unnormalized results for each causal configuration
 		self.results = {}
+		self.results_unsaved = {}
+		self.cumu_lposts = None
 		# self.cumu_sum = 0.0
 
 		# # Calculate result for null configuration
@@ -199,11 +201,13 @@ class Evaluator(object):
 		# print(temp ** 2) ####
 		return (-ldet_term - ldet_prior * stats.size + np.sum(temp ** 2)) / 2
 
-	def eval(self, configuration, lbias=0.0, lprior=None):
+	def eval(self, configuration, lbias=0.0, lprior=None, save_result=True):
 		key = tuple(configuration.tolist())
 
 		if key in self.results:
 			return self.results[key] 
+		elif key in self.results_unsaved:
+			return self.results_unsaved[key] 
 
 		if lprior is None:
 			num_causal = np.count_nonzero(configuration)
@@ -304,7 +308,14 @@ class Evaluator(object):
 		# print(res) ####
 		# print("") ####
 
-		self.results[key] = res
+		if save_result:
+			self.results[key] = res
+			if self.cumu_lposts is None:
+				self.cumu_lposts = res
+			else:
+				self.cumu_lposts += np.log(1 + np.exp(res - self.cumu_lposts))
+		else:
+			self.results_unsaved[key] = res
 		# self.cumu_sum += res
 		return res
 
@@ -375,12 +386,14 @@ class Evaluator(object):
 
 
 	def get_probs(self):
-		probs = self.results.copy()
-		max_lbf = max(self.results.values())
-		scale = 25 - max_lbf
-		total = sum([np.exp(i + scale) for i in self.results.values()])
-		for k, v in probs.viewitems():
-			probs[k] = np.exp(v + scale) / total
+		probs = {}
+		total_lpost = self.cumu_lposts
+		# max_lbf = max(self.results.values())
+		# scale = 25 - max_lbf
+		# total = sum([np.exp(i + scale) for i in self.results.values()])
+		for k, v in self.results.viewitems():
+			lprob = v - total_lpost
+			probs[k] = np.exp(lprob)
 			# print(v) ####
 			# print(probs[k]) ####
 		return probs
@@ -391,8 +404,8 @@ class Evaluator(object):
 		return probs
 
 	def get_causal_set(self, confidence):
-		max_lbf = max(self.results.values())
-		scale = 25 - max_lbf
+		# max_lbf = max(self.results.values())
+		# scale = 25 - max_lbf
 		# total = sum([np.exp(i + scale) for i in self.results.values()])
 		# threshold = confidence * total
 		# print(self.get_ppas()) ####
@@ -415,9 +428,11 @@ class Evaluator(object):
 		# confidence = 0 ####
 		# confidence = np.inf ####
 		
-		results_exp = {k: np.exp(v + scale) for k, v in self.results.viewitems()}
-		total = sum(results_exp.values())
-		threshold = confidence * total
+		# results_exp = {k: np.exp(v + scale) for k, v in self.results.viewitems()}
+		# total = sum(results_exp.values())
+		# threshold = confidence * total
+
+		results_exp = self.get_probs()
 
 		causal_set = np.zeros(self.num_snps)
 		# causal_set = tuple([0] * self.num_snps)
@@ -431,7 +446,7 @@ class Evaluator(object):
 			causal_extras[k] = causals
 		# print(distances) ####
 
-		while conf_sum < threshold:
+		while conf_sum < confidence:
 			dist_ones = distances[1]
 			neighbors = {}
 			for i in dist_ones:

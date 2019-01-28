@@ -460,6 +460,7 @@ class Evaluator(object):
 			max_snp = max(neighbors, key=neighbors.get)
 			causal_set[max_snp] = 1
 			conf_sum += neighbors[max_snp]
+			print(conf_sum) ####
 
 			diffs = {}
 			for k, v in distances.viewitems():
@@ -558,7 +559,7 @@ class Evaluator(object):
 
 	def get_ppas(self):
 		# m = max(self.num_snps_imbalance, self.num_snps_total_exp)
-		total = sum(i for i in self.get_probs().values())
+		# total = sum(i for i in self.get_probs().values())
 		# print(total) ####
 		ppas = []
 		for i in xrange(self.num_snps):
@@ -566,7 +567,7 @@ class Evaluator(object):
 			for k, v in self.get_probs().viewitems():
 				if k[i] == 1:
 					ppa += v
-			ppas.append(ppa / total)
+			ppas.append(ppa)
 		return ppas
 
 	def get_size_probs(self):

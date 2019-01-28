@@ -584,8 +584,8 @@ class FmUnchecked(object):
 			lpostmax = np.max(lposts)
 			posts = np.exp(lposts - lpostmax)
 			dist = posts / np.sum(posts)
-			selection = np.random.choice(np.arange(len(neighbors)), p=dist)
-			configuration = neighbors[selection]
+			selection = np.random.choice(np.arange(len(configs)), p=dist)
+			configuration = configs[selection]
 
 			sel_lpost = lposts[selection]
 			if cumu_lposts is None:
@@ -602,19 +602,19 @@ class FmUnchecked(object):
 				break
 
 			num_causal = np.count_nonzero(configuration)
-			neighbors = []
+			configs = []
 			for ind in xrange(m):
 				val = configuration[ind]
 				# Add causal variant
 				if (val == 0) and (num_causal < max_causal):
 					neighbor = configuration.copy()
 					neighbor[ind] = 1
-					neighbors.append(neighbor)
+					configs.append(neighbor)
 				# Remove causal variant
 				elif val == 1:
 					neighbor = configuration.copy()
 					neighbor[ind] = 0
-					neighbors.append(neighbor)
+					configs.append(neighbor)
 				# Swap status with other variants
 				for ind2 in xrange(ind+1, m):
 					val2 = configuration[ind2]
@@ -622,7 +622,7 @@ class FmUnchecked(object):
 						neighbor = configuration.copy()
 						neighbor[ind] = val2
 						neighbor[ind2] = val
-						neighbors.append(neighbor)
+						configs.append(neighbor)
 
 	def get_probs(self):
 		return self.evaluator.get_probs()

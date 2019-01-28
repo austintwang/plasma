@@ -579,7 +579,7 @@ class FmUnchecked(object):
 			lposts = []
 			for c in configs:
 				record_prob = np.count_nonzero(c) >= min_causal
-				in_results = (c in self.evaluator.results)
+				in_results = (tuple(c) in self.evaluator.results)
 				sel_lpost = self.evaluator.eval(c, save_result=record_prob)
 				lposts.append(sel_lpost)
 				cumu_lposts = self.evaluator.cumu_lposts

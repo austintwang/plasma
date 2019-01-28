@@ -246,6 +246,8 @@ def main(output_path, input_path, params_path, selection_path):
 	inputs["num_snps_imbalance"] = np.shape(inputs["hap_A"])[1]
 	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
+	inputs["causal_status_prior"] = 1 / inputs["num_snps_imbalance"]
+
 	# print(np.shape(inputs["hap_A"])) ####
 	# print(np.shape(inputs["hap_B"])) ####
 	# print(np.shape(inputs["counts_A"])) ####

@@ -572,11 +572,12 @@ class FmUnchecked(object):
 		# print(m) ####
 		# self.evaluator.eval(configuration)
 		# print([(i, j) for i, j in enumerate(configuration, start=999)]) ####
-		lprob_threshold = np.log(prob_threshold)
+		# lprob_threshold = np.log(prob_threshold)
 		cumu_lposts = None
 		streak = 0
 		for i in xrange(num_iterations):
 			lposts = []
+			before_cumu_lposts = self.evaluator.cumu_lposts
 			for c in configs:
 				record_prob = np.count_nonzero(c) >= min_causal
 				in_results = (tuple(c) in self.evaluator.results)
@@ -584,13 +585,27 @@ class FmUnchecked(object):
 				lposts.append(sel_lpost)
 				cumu_lposts = self.evaluator.cumu_lposts
 				if not record_prob:
-					streak += 1
+					continue
 				elif in_results:
 					streak += 1
 				elif sel_lpost - cumu_lposts >= lprob_threshold:
 					streak += 1
 				else:
 					streak = 0
+			after_cumu_lposts = self.evaluator.cumu_lposts
+			if before_cumu_lposts:
+				diff_cumu_posts = np.exp(after_cumu_lposts) - np.exp(before_cumu_lposts)
+			else:
+				diff_cumu_posts = np.exp(after_cumu_lposts)
+
+			if diff_cumu_posts <= prob_threshold:
+				streak += 1
+			else:
+				streak = 0
+
+			if streak >= streak_threshold:
+				break
+
 			lposts = np.array(lposts)
 			lpostmax = np.max(lposts)
 			posts = np.exp(lposts - lpostmax)
@@ -608,9 +623,6 @@ class FmUnchecked(object):
 			# 	streak += 1
 			# else:
 			# 	streak = 0
-
-			if streak >= streak_threshold:
-				break
 
 			num_causal = np.count_nonzero(configuration)
 			configs = []

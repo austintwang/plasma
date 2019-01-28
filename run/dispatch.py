@@ -463,6 +463,9 @@ if __name__ == '__main__':
 		"min_causal": 1,
 		"num_causal": 1,
 		"search_mode": "shotgun",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": 100000, 
 		"max_causal": 6,
 		"confidence": 0.95, 
 		"model_flavors": set(["full", "indep", "eqtl", "ase"])

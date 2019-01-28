@@ -583,15 +583,15 @@ class FmUnchecked(object):
 				in_results = (tuple(c) in self.evaluator.results)
 				sel_lpost = self.evaluator.eval(c, save_result=record_prob)
 				lposts.append(sel_lpost)
-				cumu_lposts = self.evaluator.cumu_lposts
-				if not record_prob:
-					continue
-				elif in_results:
-					streak += 1
-				elif sel_lpost - cumu_lposts >= lprob_threshold:
-					streak += 1
-				else:
-					streak = 0
+				# cumu_lposts = self.evaluator.cumu_lposts
+				# if not record_prob:
+				# 	continue
+				# elif in_results:
+				# 	streak += 1
+				# elif sel_lpost - cumu_lposts >= lprob_threshold:
+				# 	streak += 1
+				# else:
+				# 	streak = 0
 			after_cumu_lposts = self.evaluator.cumu_lposts
 			if not after_cumu_lposts:
 				diff_cumu_posts = 0

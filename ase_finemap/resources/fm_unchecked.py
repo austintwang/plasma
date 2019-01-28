@@ -593,7 +593,9 @@ class FmUnchecked(object):
 				else:
 					streak = 0
 			after_cumu_lposts = self.evaluator.cumu_lposts
-			if before_cumu_lposts:
+			if not after_cumu_lposts:
+				diff_cumu_posts = 0
+			elif before_cumu_lposts:
 				diff_cumu_posts = np.exp(after_cumu_lposts) - np.exp(before_cumu_lposts)
 			else:
 				diff_cumu_posts = np.exp(after_cumu_lposts)

@@ -394,9 +394,9 @@ class Evaluator(object):
 		# total = sum([np.exp(i + scale) for i in self.results.values()])
 		for k, v in self.results.viewitems():
 			lprob = v - total_lpost
-			if lprob > 0: ####
-				print(v, total_lpost, np.exp(lprob)) ####
-				raise Exception ####
+			# if lprob > 0: ####
+			# 	print(v, total_lpost, np.exp(lprob)) ####
+			# 	raise Exception ####
 			probs[k] = np.exp(lprob)
 			# print(v) ####
 			# print(probs[k]) ####
@@ -449,7 +449,7 @@ class Evaluator(object):
 			distances.setdefault(sum(k), set()).add(k)
 			causal_extras[k] = causals
 		# print(distances) ####
-		print(conf_sum) ####
+		# print(conf_sum) ####
 
 		while conf_sum < confidence:
 			dist_ones = distances[1]
@@ -465,7 +465,7 @@ class Evaluator(object):
 			max_snp = max(neighbors, key=neighbors.get)
 			causal_set[max_snp] = 1
 			conf_sum += neighbors[max_snp]
-			print(conf_sum) ####
+			# print(conf_sum) ####
 
 			diffs = {}
 			for k, v in distances.viewitems():

@@ -218,95 +218,96 @@ class Evaluator(object):
 
 		if np.array_equal(configuration, self.null_config):
 			res = lprior - lbias
-			self.results[key] = res
-			# self.cumu_sum += res
-			return res
+			# self.results[key] = res
+			# # self.cumu_sum += res
+			# return res
 
-		configuration_bool = (configuration == 1)
-		selection = np.logical_and(configuration_bool[self.snp_map], self.valid_entries)
-		if not np.any(selection):
-			res = lprior - lbias
-			self.results[key] = res
-			# self.cumu_sum += res
-			return res
+		else:
+			configuration_bool = (configuration == 1)
+			selection = np.logical_and(configuration_bool[self.snp_map], self.valid_entries)
+			if not np.any(selection):
+				res = lprior - lbias
+				self.results[key] = res
+				# self.cumu_sum += res
+				return res
 
-		selection_2d = np.ix_(selection, selection)
+			selection_2d = np.ix_(selection, selection)
 
-		# print(configuration) ####
-		# print(configuration_bool) ####
-		# print(list(selection)) ####
+			# print(configuration) ####
+			# print(configuration_bool) ####
+			# print(list(selection)) ####
 
-		# det_term_subset = self.det_term[selection_2d]
-		inv_term_subset = self.inv_term[selection_2d]
-		stats_subset = self.stats[selection]
+			# det_term_subset = self.det_term[selection_2d]
+			inv_term_subset = self.inv_term[selection_2d]
+			stats_subset = self.stats[selection]
 
-		# print(self.prior_cov_inv[selection_2d]) ####
-		# print(np.linalg.inv(self.prior_cov[selection_2d])) ####
-		# if not np.allclose(self.prior_cov_inv[selection_2d] + 0.0, np.linalg.inv(self.prior_cov[selection_2d])): ####
-		# 	print(self.prior_cov_inv[selection_2d]) ####
-		# 	print(np.linalg.inv(self.prior_cov[selection_2d])) ####
-		# 	print(self.prior_cov[selection_2d]) ####
-		# 	print(self.imbalance_var_prior) ####
-		# 	print(self.total_exp_var_prior) ####
-		# 	print(self.cross_cov_prior) ####
-		# 	print(self.imbalance_var_inv) ####
-		# 	print(self.total_exp_var_inv) ####
-		# 	print(self.cross_cov_inv) ####
-		# 	raise Exception
+			# print(self.prior_cov_inv[selection_2d]) ####
+			# print(np.linalg.inv(self.prior_cov[selection_2d])) ####
+			# if not np.allclose(self.prior_cov_inv[selection_2d] + 0.0, np.linalg.inv(self.prior_cov[selection_2d])): ####
+			# 	print(self.prior_cov_inv[selection_2d]) ####
+			# 	print(np.linalg.inv(self.prior_cov[selection_2d])) ####
+			# 	print(self.prior_cov[selection_2d]) ####
+			# 	print(self.imbalance_var_prior) ####
+			# 	print(self.total_exp_var_prior) ####
+			# 	print(self.cross_cov_prior) ####
+			# 	print(self.imbalance_var_inv) ####
+			# 	print(self.total_exp_var_inv) ####
+			# 	print(self.cross_cov_inv) ####
+			# 	raise Exception
 
-		# subchol = np.linalg.cholesky(inv_term_subset) ####
-		# assert(subchol == self.chol[selection_2d]) ####
-		# print(subchol) ####
-		# print(self.chol[selection_2d]) ####
-		# print(configuration) ####
-		# print("") ####
+			# subchol = np.linalg.cholesky(inv_term_subset) ####
+			# assert(subchol == self.chol[selection_2d]) ####
+			# print(subchol) ####
+			# print(self.chol[selection_2d]) ####
+			# print(configuration) ####
+			# print("") ####
 
-		# print(self.inv_term) ####
-		# print(det_term_subset) ####
-		# print(inv_term_subset) ####
-		# print(stats_subset) ####
-		# det = np.linalg.det(det_term_subset)
-		# inv = lp.dpotri(inv_term_subset)[0]
-		# inv = self._inv(inv_term_subset)
-		# try: 
-		# 	inv = self._inv(inv_term_subset)
-		# 	# det = self._det(det_term_subset)
-		# except np.linalg.linalg.LinAlgError as err: 
-		# 	# print(det_term_subset) ####
-		# 	print(inv_term_subset) ####
-		# 	print(stats_subset) ####
-		# 	vals, vects = np.linalg.eig(inv_term_subset) ####
-		# 	print(vals)
-		# 	# print(selection) ####
-		# 	raise
-		# print(stats_subset) ####
-		# print(det) ####
-		# print(np.linalg.det(det_term_subset)) ####
-		# print(inv_term_subset) ####
-		# print(inv) ####
-		# print(np.linalg.inv(inv_term_subset)) ####
-		# print(det ** -0.5) ####
-		# print(inv.dot(stats_subset)) ####
-		# print(inv.dot(stats_subset).dot(stats_subset)) ####
-		# print(np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)) ####
+			# print(self.inv_term) ####
+			# print(det_term_subset) ####
+			# print(inv_term_subset) ####
+			# print(stats_subset) ####
+			# det = np.linalg.det(det_term_subset)
+			# inv = lp.dpotri(inv_term_subset)[0]
+			# inv = self._inv(inv_term_subset)
+			# try: 
+			# 	inv = self._inv(inv_term_subset)
+			# 	# det = self._det(det_term_subset)
+			# except np.linalg.linalg.LinAlgError as err: 
+			# 	# print(det_term_subset) ####
+			# 	print(inv_term_subset) ####
+			# 	print(stats_subset) ####
+			# 	vals, vects = np.linalg.eig(inv_term_subset) ####
+			# 	print(vals)
+			# 	# print(selection) ####
+			# 	raise
+			# print(stats_subset) ####
+			# print(det) ####
+			# print(np.linalg.det(det_term_subset)) ####
+			# print(inv_term_subset) ####
+			# print(inv) ####
+			# print(np.linalg.inv(inv_term_subset)) ####
+			# print(det ** -0.5) ####
+			# print(inv.dot(stats_subset)) ####
+			# print(inv.dot(stats_subset).dot(stats_subset)) ####
+			# print(np.exp(inv.dot(stats_subset).dot(stats_subset) / 2.0)) ####
 
-		# dist = inv.dot(stats_subset).dot(stats_subset)
-		# ldet = np.linalg.slogdet(det_term_subset)[1]
-		# lbf = ldet * -0.5 + (dist / 2.0)
-		# corr = np.log(1 + dist**4 + dist**3 / 4)
-		# print(corr) ####
+			# dist = inv.dot(stats_subset).dot(stats_subset)
+			# ldet = np.linalg.slogdet(det_term_subset)[1]
+			# lbf = ldet * -0.5 + (dist / 2.0)
+			# corr = np.log(1 + dist**4 + dist**3 / 4)
+			# print(corr) ####
 
-		# lmvn = self._eval_lmvn(inv_term_subset, stats_subset)
-		lbf = self._lbf(inv_term_subset, stats_subset, self.ldet_prior)
+			# lmvn = self._eval_lmvn(inv_term_subset, stats_subset)
+			lbf = self._lbf(inv_term_subset, stats_subset, self.ldet_prior)
 
-		res = lbf + lprior - lbias
+			res = lbf + lprior - lbias
 
-		# if res == np.nan: ####
-		# 	raise Exception ####
+			# if res == np.nan: ####
+			# 	raise Exception ####
 
-		# print(bf) ####
-		# print(res) ####
-		# print("") ####
+			# print(bf) ####
+			# print(res) ####
+			# print("") ####
 
 		if save_result:
 			self.results[key] = res

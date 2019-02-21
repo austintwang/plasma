@@ -25,8 +25,8 @@ class SimAse(object):
 		self.num_ppl = self.bm.sim_params["num_ppl"]
 		# self.var_effect_size = self.bm.sim_params["var_effect_size"]
 		self.overdispersion = self.bm.sim_params["overdispersion"]
-		self.prop_noise_eqtl = self.bm.sim_params["prop_noise_eqtl"]
-		self.prop_noise_ase = self.bm.sim_params["prop_noise_ase"]
+		self.prop_noise_eqtl = 1 - self.bm.sim_params["herit_eqtl"]
+		self.prop_noise_ase = 1 - self.bm.sim_params["herit_ase"]
 		# self.baseline_exp = self.bm.sim_params["baseline_exp"]
 		self.num_causal = self.bm.sim_params["num_causal"]
 		# self.genotypes_A = self.bm.sim_params["genotypes_A"]
@@ -162,9 +162,9 @@ class SimAse(object):
 			return np.sum(npr.binomial(1, p))
 
 		# counts_A_as-e = npr.binomial(ase_counts, npr.beta(alphas, betas))
-		self.counts_A = _bb(self.coverage, alphas, betas)
-		self.counts_A[self.counts_A==0] = 1
-		self.counts_A[self.counts_A==self.coverage] = self.coverage - 1
+		noised_coverage = npr.poisson(self.coverage, self.num_ppl)
+		self.counts_A = _bb(noised_coverage, alphas, betas)
+		# self.counts_A[self.counts_A==self.coverage] = self.coverage - 1
 
 		# self.counts_A = counts_A_ase + trans_counts_A
 		
@@ -199,7 +199,9 @@ class SimAse(object):
 		# 	print(all_subs) ####
 
 		# self.counts_B = ase_counts - counts_A_ase + trans_counts_B
-		self.counts_B = self.coverage - self.counts_A
+		self.counts_B = noised_coverage - self.counts_A
+		self.counts_A[self.counts_A==0] = 1
+		self.counts_B[self.counts_B==0] = 1
 		# np.savetxt("counts_A.txt", self.counts_A) ####
 		# np.savetxt("counts_B.txt", self.counts_B) ####
 		# print(self.counts_A) ####

@@ -82,7 +82,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	elif metric == "prop":
 		kwd = "set_props"
 
-	sns.set(style="white", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto")
 
 	# if "full" in model_flavors:
 	# 	set_sizes_full = result["{0}_full".format(kwd)]
@@ -154,7 +154,10 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 			)
 		except Exception:
 			pass
-	plt.xlim(0, None)
+	if metric == "prop":
+		plt.xlim(0, 1)
+	elif metric == "size":
+		plt.xlim(0, None)
 	plt.legend(title="Model")
 	if cumu:
 		cumu_kwd = "Cumulative "
@@ -233,6 +236,45 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	plt.savefig(os.path.join(out_dir, "{0}_bar.svg".format(filename)))
 	plt.clf()
 
+def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors):
+	dflst = []
+	for key, val in series.viewitems():
+		if "full" in model_flavors:
+			for skey, sval in series["recall_full"].viewitems():
+				for i in sval:
+					dflst.append([i, skey, "Full"])
+		if "indep" in model_flavors:
+			for skey, sval in series["recall_indep"].viewitems():
+				for i in sval:
+					dflst.append([i, skey, "Independent Likelihoods"])
+		if "eqtl" in model_flavors:
+			for skey, sval in series["recall_eqtl"].viewitems():
+				for i in sval:
+					dflst.append([i, skey, "eQTL-Only"])
+		if "ase" in model_flavors:
+			for skey, sval in series["recall_ase"].viewitems():
+				for i in sval:
+					dflst.append([i, skey, "ASE-Only"])
+		if "acav" in model_flavors:
+			for skey, sval in series["recall_caviar_ase"].viewitems():
+				for i in sval:
+					dflst.append([i, skey, "CAVIAR-ASE"])
+	res_df = pd.DataFrame(dflst, columns=["Recall Rate", primary_var_name, "Model"])
+
+	title = "Recall Rates Across {0}:\n{1}".format(primary_var_name, name)
+	
+	sns.set(style="whitegrid", font="Roboto")
+	sns.lineplot(
+		x=primary_var_name,
+		y="Recall Rate",
+		hue="Model",
+		data=res_df,
+		sort=True
+	)
+	plt.title(title)
+	plt.savefig(os.path.join(out_dir, "recall.svg"))
+	plt.clf()
+
 def interpret(target_dir, out_dir, name, model_flavors):
 	if model_flavors == "all":
 		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
@@ -244,26 +286,36 @@ def interpret(target_dir, out_dir, name, model_flavors):
 
 	summary = {}
 	if "full" in model_flavors:
+		summary["causal_sets_full"] = []
+		summary["ppas_full"] = []
 		summary["set_sizes_full"] = []
 		summary["set_props_full"] = []
 		summary["thresholds_full"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_full"] = np.zeros(6)
 	if "indep" in model_flavors:
+		summary["causal_sets_indep"] = []
+		summary["ppas_indep"] = []
 		summary["set_sizes_indep"] = []
 		summary["set_props_indep"] = []
 		summary["thresholds_indep"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_indep"] = np.zeros(6)
 	if "eqtl" in model_flavors:
+		summary["causal_sets_eqtl"] = []
+		summary["ppas_eqtl"] = []
 		summary["set_sizes_eqtl"] = []
 		summary["set_props_eqtl"] = []
 		summary["thresholds_eqtl"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_eqtl"] = np.zeros(6)
 	if "ase" in model_flavors:
+		summary["causal_sets_ase"] = []
+		summary["ppas_ase"] = []
 		summary["set_sizes_ase"] = []
 		summary["set_props_ase"] = []
 		summary["thresholds_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_ase"] = np.zeros(6)
 	if "acav" in model_flavors:
+		summary["causal_sets_caviar_ase"] = []
+		summary["ppas_caviar_ase"] = []
 		summary["set_sizes_caviar_ase"] = []
 		summary["set_props_caviar_ase"] = []
 		summary["thresholds_caviar_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
@@ -292,6 +344,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			continue
 		
 		if "full" in model_flavors:
+			summary["causal_sets_full"].append(result["causal_set_full"])
+			summary["ppas_full"].append(result["ppas_full"])
 			set_size = np.count_nonzero(result["causal_set_full"])
 			set_prop = set_size / np.shape(result["causal_set_full"])[0]
 			summary["set_sizes_full"].append(set_size)
@@ -302,6 +356,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			size_probs = np.resize(result["size_probs_full"], 6)
 			summary["size_probs_full"] += size_probs
 		if "indep" in model_flavors:
+			summary["causal_sets_indep"].append(result["causal_set_indep"])
+			summary["ppas_indep"].append(result["ppas_indep"])
 			set_size = np.count_nonzero(result["causal_set_indep"])
 			set_prop = set_size / np.shape(result["causal_set_indep"])[0]
 			summary["set_sizes_indep"].append(set_size)
@@ -312,6 +368,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			size_probs = np.resize(result["size_probs_indep"], 6)
 			summary["size_probs_indep"] += size_probs
 		if "eqtl" in model_flavors:
+			summary["causal_sets_eqtl"].append(result["causal_set_eqtl"])
+			summary["ppas_eqtl"].append(result["ppas_eqtl"])
 			set_size = np.count_nonzero(result["causal_set_eqtl"])
 			set_prop = set_size / np.shape(result["causal_set_eqtl"])[0]
 			summary["set_sizes_eqtl"].append(set_size)
@@ -322,6 +380,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			size_probs = np.resize(result["size_probs_eqtl"], 6)
 			summary["size_probs_eqtl"] += size_probs
 		if "ase" in model_flavors:
+			summary["causal_sets_ase"].append(result["causal_set_ase"])
+			summary["ppas_ase"].append(result["ppas_ase"])
 			set_size = np.count_nonzero(result["causal_set_ase"])
 			set_prop = set_size / np.shape(result["causal_set_ase"])[0]
 			summary["set_sizes_ase"].append(set_size)
@@ -332,6 +392,8 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			size_probs = np.resize(result["size_probs_ase"], 6)
 			summary["size_probs_ase"] += size_probs
 		if "acav" in model_flavors:
+			summary["causal_sets_caviar_ase"].append(result["causal_set_caviar_ase"])
+			summary["ppas_caviar_ase"].append(result["ppas_caviar_ase"])
 			set_size = np.count_nonzero(result["causal_set_caviar_ase"])
 			set_prop = set_size / np.shape(result["causal_set_caviar_ase"])[0]
 			summary["set_sizes_caviar_ase"].append(set_size)
@@ -372,22 +434,33 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 		series["avg_sets_full"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_full"] = {}
 		series["all_props_full"] = {}
+		series["recall_full"] = {}
 	if "indep" in model_flavors:
 		series["avg_sets_indep"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_indep"] = {}
 		series["all_props_indep"] = {}
+		series["recall_indep"] = {}
 	if "eqtl" in model_flavors:
 		series["avg_sets_eqtl"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_eqtl"] = {}
 		series["all_props_eqtl"] = {}
+		series["recall_eqtl"] = {}
 	if "ase" in model_flavors:
 		series["avg_sets_ase"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_ase"] = {}
 		series["all_props_ase"] = {}
+		series["recall_ase"] = {}
 	if "acav" in model_flavors:
 		series["avg_sets_caviar_ase"] = {i: 0 for i in primary_var_vals}
 		series["all_sizes_caviar_ase"] = {}
 		series["all_props_caviar_ase"] = {}
+		series["recall_caviar_ase"] = {}
+
+	sig_snps = []
+	num_sigs = []
+	for i in summaries[0]:
+		sig_snps.append(set([ind for ind, val in enumerate(i["ppas_eqtl"]) if ind >= 0.1]))
+		num_sigs.append(len(sig_snps))
 
 	for ind, val in enumerate(summaries):
 		var_val = primary_var_vals[ind]
@@ -395,22 +468,58 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["avg_sets_full"][var_val] = np.mean(val["set_sizes_full"])
 			series["all_sizes_full"][var_val] = val["set_sizes_full"]
 			series["all_props_full"][var_val] = val["set_props_full"]
+			series["recall_full"][var_val] = []
+			if num_sigs > 0:
+				for sind, sval in enumerate(val["causal_sets_full"]):
+					sigs = sig_snps[sind]
+					num = num_sigs[sind]
+					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
+					recall = sum([int(i in sigs) for i in cset]) / num
+					series["recall_full"][var_val].append(recall)
 		if "indep" in model_flavors:
 			series["avg_sets_indep"][var_val] = np.mean(val["set_sizes_indep"])
 			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
 			series["all_props_indep"][var_val] = val["set_props_indep"]
+			if num_sigs > 0:
+				for sind, sval in enumerate(val["causal_sets_indep"]):
+					sigs = sig_snps[sind]
+					num = num_sigs[sind]
+					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
+					recall = sum([int(i in sigs) for i in cset]) / num
+					series["recall_indep"][var_val].append(recall)
 		if "eqtl" in model_flavors:
 			series["avg_sets_eqtl"][var_val] = np.mean(val["set_sizes_eqtl"])
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
 			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
+			if num_sigs > 0:
+				for sind, sval in enumerate(val["causal_sets_eqtl"]):
+					sigs = sig_snps[sind]
+					num = num_sigs[sind]
+					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
+					recall = sum([int(i in sigs) for i in cset]) / num
+					series["recall_eqtl"][var_val].append(recall)
 		if "ase" in model_flavors:
 			series["avg_sets_ase"][var_val] = np.mean(val["set_sizes_ase"])
 			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
 			series["all_props_ase"][var_val] = val["set_props_ase"]
+			if num_sigs > 0:
+				for sind, sval in enumerate(val["causal_sets_ase"]):
+					sigs = sig_snps[sind]
+					num = num_sigs[sind]
+					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
+					recall = sum([int(i in sigs) for i in cset]) / num
+					series["recall_ase"][var_val].append(recall)
 		if "acav" in model_flavors:
 			series["avg_sets_caviar_ase"][var_val] = np.mean(val["set_sizes_caviar_ase"])
 			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
 			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
+			if num_sigs > 0:
+				for sind, sval in enumerate(val["causal_sets_caviar_ase"]):
+					sigs = sig_snps[sind]
+					num = num_sigs[sind]
+					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
+					recall = sum([int(i in sigs) for i in cset]) / num
+					series["recall_caviar_ase"][var_val].append(recall)
 
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "size")
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "prop")
@@ -442,7 +551,7 @@ if __name__ == '__main__':
 	# Normal, across sample sizes
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
 	name = "Kidney RNA-Seq, Normal Samples"
-	model_flavors = set(["full", "eqtl", "acav"])
+	model_flavors = set(["indep", "eqtl", "acav"])
 	summaries = [normal_all, normal_50, normal_10]
 	primary_var_vals = [90, 50, 10]
 	primary_var_name = "Sample Size"
@@ -489,7 +598,7 @@ if __name__ == '__main__':
 	# Tumor, across sample sizes
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
 	name = "Kidney RNA-Seq, Tumor Samples"
-	model_flavors = set(["full", "eqtl", "acav"])
+	model_flavors = set(["indep", "eqtl", "acav"])
 	summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
 	primary_var_vals = [500, 200, 100, 50, 10]
 	primary_var_name = "Sample Size"

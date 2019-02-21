@@ -7,6 +7,8 @@ import numpy as np
 import os
 from datetime import datetime
 import multiprocessing
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -21,10 +23,15 @@ def evaluate_bm(targs):
 
 	result = {}
 
+	model_flavors = bm.params["model_flavors"]
+	
 	num_ppl = bm.params["num_ppl"]
-	num_causal = bm.params["num_causal"]
-	eqtl_herit = 1 - bm.params["prop_noise_eqtl"]
-	ase_herit = 1 - bm.params["prop_noise_ase"]
+	if bm.params.get("num_causal", False):
+		num_causal = bm.params["max_causal"]
+	else:
+		num_causal = bm.params["num_causal"]
+	eqtl_herit = bm.params["herit_eqtl"]
+	ase_herit = bm.params["herit_ase"]
 
 	coverage = bm.params["coverage"]
 	overdispersion = bm.params["overdispersion"]
@@ -119,187 +126,193 @@ def evaluate_bm(targs):
 	# print(sim_result["hap_A"].tolist()) ####
 	# print(sim_result["hap_B"].tolist()) ####
 	# null = tuple([0] * bm.params["num_snps"]) ####
+	# print(sim_result["counts_A"]) ####
 
-	# print("Initializing Full Model")
 	model_inputs = bm.model_params.copy()
 	model_inputs.update(sim_result)
-	model_inputs.update({
-		"corr_stats": corr_stats,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior
-	})
-	# print(model_inputs) ####
-	model_full = Finemap(**model_inputs)
-	model_full.initialize()
-	# print("Finished Initializing Full Model")
-	# print("Starting Search")
-	if bm.params["search_mode"] == "exhaustive":
-		model_full.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
-	elif bm.params["search_mode"] == "shotgun":
-		model_full.search_shotgun(bm.params["search_iterations"])
-	# print("Finished Search Under Full Model")
+	if "full" in model_flavors:
+		# print("Initializing Full Model")
+		model_inputs_full = model_inputs.copy()
+		model_inputs_full.update({
+			"corr_stats": corr_stats,
+			"imbalance_var_prior": imbalance_var_prior,
+			"total_exp_var_prior": total_exp_var_prior
+		})
+		# print(model_inputs) ####
+		# print(model_inputs_full["counts_A"]) ####
+		model_full = Finemap(**model_inputs_full)
+		model_full.initialize()
+		# print("Finished Initializing Full Model")
+		# print("Starting Search")
+		if bm.params["search_mode"] == "exhaustive":
+			model_full.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
+		elif bm.params["search_mode"] == "shotgun":
+			model_full.search_shotgun(bm.params["search_iterations"])
+		# print("Finished Search Under Full Model")
 
-	causal_set = model_full.get_causal_set(bm.params["confidence"])
-	assert all([i == 0 or i == 1 for i in causal_set])
-	causal_set_size = sum(causal_set)
-	result["set_sizes_full"] = causal_set_size
-	# print(causal_set_size) ####
-	# print(model_full.get_probs()[tuple(causal_config)]) ####
-	# print(model_full.get_probs()[null]) ####
-	x = model_full.imbalance_stats
-	result["max_stat_ase_full"] = abs(max(x.min(), x.max(), key=abs) )
+		causal_set = model_full.get_causal_set(bm.params["confidence"])
+		assert all([i == 0 or i == 1 for i in causal_set])
+		causal_set_size = sum(causal_set)
+		result["set_sizes_full"] = causal_set_size
+		# print(causal_set_size) ####
+		# print(model_full.get_probs()[tuple(causal_config)]) ####
+		# print(model_full.get_probs()[null]) ####
+		x = model_full.imbalance_stats
+		result["max_stat_ase_full"] = abs(max(x.min(), x.max(), key=abs) )
 
+		recall = bm._recall(causal_set, causal_config)
+		# for ind, val in enumerate(causal_config):
+		# 	if val == 1:
+		# 		if causal_set[ind] != 1:
+		# 			recall = 0
+		result["recall_full"] = recall
+		# print(recall) ####
+		# print(model_full.get_probs_sorted()[:10]) ####
 
-	recall = bm._recall(causal_set, causal_config)
-	# for ind, val in enumerate(causal_config):
-	# 	if val == 1:
-	# 		if causal_set[ind] != 1:
-	# 			recall = 0
-	result["recall_full"] = recall
-	# print(recall) ####
-	# print(model_full.get_probs_sorted()[:10]) ####
+		result["inclusions_full"] = bm._inclusion(model_full.get_ppas(), causal_config)
+		# print(model_full.get_probs()) ####
 
-	result["inclusions_full"] = bm._inclusion(model_full.get_ppas(), causal_config)
-	# print(model_full.get_probs()) ####
+	if "indep" in model_flavors:
+		# print("Initializing Independent Model")
+		model_inputs_indep = model_inputs.copy()
+		model_inputs_indep.update({
+			"cross_corr_prior": 0.0, 
+			"corr_stats": 0.0,
+			"imbalance_var_prior": imbalance_var_prior,
+			"total_exp_var_prior": total_exp_var_prior
+		})
+		# print("Finished Initializing Independent Model")
+		# print("Starting Search Under Independent Model")
+		# print(model_inputs_indep["counts_A"]) ####
+		model_indep = Finemap(**model_inputs_indep)
+		model_indep.initialize()
+		if bm.params["search_mode"] == "exhaustive":
+			model_indep.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
+		elif bm.params["search_mode"] == "shotgun":
+			model_indep.search_shotgun(bm.params["search_iterations"])
+		# print("Finished Search Under Independent Model")
 
-	# print("Initializing Independent Model")
-	model_inputs_indep = model_inputs.copy()
-	model_inputs_indep.update({
-		"cross_corr_prior": 0.0, 
-		"corr_stats": 0.0,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior
-	})
-	# print("Finished Initializing Independent Model")
-	# print("Starting Search Under Independent Model")
-	model_indep = Finemap(**model_inputs_indep)
-	model_indep.initialize()
-	if bm.params["search_mode"] == "exhaustive":
-		model_indep.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
-	elif bm.params["search_mode"] == "shotgun":
-		model_indep.search_shotgun(bm.params["search_iterations"])
-	# print("Finished Search Under Independent Model")
+		causal_set_indep = model_indep.get_causal_set(bm.params["confidence"])
+		# assert all([i == 0 or i == 1 for i in causal_set_indep])
+		causal_set_indep_size = sum(causal_set_indep)
+		result["set_sizes_indep"] = causal_set_indep_size
+		# print(causal_set_indep_size) ####
+		# print(model_eqtl.get_probs_sorted()) ####
+		# model_eqtl.get_probs_sorted() ####
+		# print(model_indep.get_probs()[tuple(causal_config)]) ####
+		# print(model_indep.get_probs()[null]) ####
+		x = model_indep.imbalance_stats
+		result["max_stat_ase_indep"] = abs(max(x.min(), x.max(), key=abs)) 
 
-	causal_set_indep = model_indep.get_causal_set(bm.params["confidence"])
-	assert all([i == 0 or i == 1 for i in causal_set_indep])
-	causal_set_indep_size = sum(causal_set_indep)
-	result["set_sizes_indep"] = causal_set_indep_size
-	# print(causal_set_indep_size) ####
-	# print(model_eqtl.get_probs_sorted()) ####
-	# model_eqtl.get_probs_sorted() ####
-	# print(model_indep.get_probs()[tuple(causal_config)]) ####
-	# print(model_indep.get_probs()[null]) ####
-	x = model_indep.imbalance_stats
-	result["max_stat_ase_indep"] = abs(max(x.min(), x.max(), key=abs)) 
+		recall = bm._recall(causal_set_indep, causal_config)
+		# for ind, val in enumerate(causal_config):
+		# 	if val == 1:
+		# 		if causal_set_indep[ind] != 1:
+		# 			recall = 0
+		result["recall_indep"] = recall
+		# print(recall) ####
 
-	recall = bm._recall(causal_set_indep, causal_config)
-	# for ind, val in enumerate(causal_config):
-	# 	if val == 1:
-	# 		if causal_set_indep[ind] != 1:
-	# 			recall = 0
-	result["recall_indep"] = recall
-	# print(recall) ####
-
-	result["inclusions_indep"] = bm._inclusion(model_indep.get_ppas(), causal_config)
-
-
-	# print("Initializing eQTL Model")
-	model_inputs_eqtl = model_inputs.copy()
-	model_inputs_eqtl.update({
-		"imbalance": np.zeros(shape=0), 
-		"phases": np.zeros(shape=(0,0)),
-		"imbalance_corr": np.zeros(shape=(0,0)),
-		"imbalance_errors": np.zeros(shape=0),
-		"imbalance_stats": np.zeros(shape=0),
-		"num_ppl_imbalance": 0,
-		"num_snps_imbalance": 0,
-		"corr_stats": 0.0,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior,
-		"cross_corr_prior": 0.0,
-	})
-	# print("Finished Initializing eQTL Model")
-	# print("Starting Search Under eQTL Model")
-	model_eqtl = Finemap(**model_inputs_eqtl)
-	model_eqtl.initialize()
-	if bm.params["search_mode"] == "exhaustive":
-		model_eqtl.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
-	elif bm.params["search_mode"] == "shotgun":
-		model_eqtl.search_shotgun(bm.params["search_iterations"])
-	# print("Finished Search Under eQTL Model")
-
-	causal_set_eqtl = model_eqtl.get_causal_set(bm.params["confidence"])
-	assert all([i == 0 or i == 1 for i in causal_set_eqtl])
-	causal_set_eqtl_size = sum(causal_set_eqtl)
-	result["set_sizes_eqtl"] = causal_set_eqtl_size
-	# print(causal_set_eqtl_size) ####
-	# print(model_eqtl.get_probs_sorted()) ####
-	# print(model_eqtl.get_probs_sorted()) ####
-	# print(model_eqtl.get_probs()[tuple(causal_config)]) ####
-	# print(model_eqtl.get_probs()[tuple(null)]) ####
-	# ppas = model_eqtl.get_ppas() ####
-	# np.savetxt("ppas_eqtl.txt", np.array(ppas)) ####
-	# print(model_eqtl.total_exp_stats[causal_config == True][0]) ####
-	# eqtl_cstats.append(model_eqtl.total_exp_stats[causal_config == True][0]) ####
-
-	recall = bm._recall(causal_set_eqtl, causal_config)
-	# for ind, val in enumerate(causal_config):
-	# 	if val == 1:
-	# 		if causal_set_eqtl[ind] != 1:
-	# 			recall = 0
-	result["recall_eqtl"] = recall
-	# print(recall) ####
-	# ppa_eqtl = model_eqtl.get_ppas() ####
-
-	result["inclusions_eqtl"] = bm._inclusion(model_eqtl.get_ppas(), causal_config)
+		result["inclusions_indep"] = bm._inclusion(model_indep.get_ppas(), causal_config)
 
 
-	# print("Initializing ASE Model")
-	model_inputs_ase = model_inputs.copy()
-	model_inputs_ase.update({
-		"total_exp": np.zeros(shape=0), 
-		"genotypes_comb": np.zeros(shape=(0,0)),
-		"total_exp_corr": np.zeros(shape=(0,0)),
-		"total_exp_errors": np.zeros(shape=0),
-		"total_exp_stats": np.zeros(shape=0),
-		"num_ppl_total_exp": 0,
-		"num_snps_total_exp": 0,
-		"corr_stats": 0.0,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior,
-		"cross_corr_prior": 0.0,
-	})
-	# print("Finished Initializing ASE Model")
-	# print("Starting Search Under ASE Model")
-	model_ase = Finemap(**model_inputs_ase)
-	model_ase.initialize()
-	if bm.params["search_mode"] == "exhaustive":
-		model_ase.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
-	elif bm.params["search_mode"] == "shotgun":
-		model_ase.search_shotgun(bm.params["search_iterations"])
-	# print("Finished Search Under ASE Model")
+	if "eqtl" in model_flavors:
+		# print("Initializing eQTL Model")
+		model_inputs_eqtl = model_inputs.copy()
+		model_inputs_eqtl.update({
+			"imbalance": np.zeros(shape=0), 
+			"phases": np.zeros(shape=(0,0)),
+			"imbalance_corr": np.zeros(shape=(0,0)),
+			"imbalance_errors": np.zeros(shape=0),
+			"imbalance_stats": np.zeros(shape=0),
+			"num_ppl_imbalance": 0,
+			"num_snps_imbalance": 0,
+			"corr_stats": 0.0,
+			"imbalance_var_prior": imbalance_var_prior,
+			"total_exp_var_prior": total_exp_var_prior,
+			"cross_corr_prior": 0.0,
+		})
+		# print("Finished Initializing eQTL Model")
+		# print("Starting Search Under eQTL Model")
+		model_eqtl = Finemap(**model_inputs_eqtl)
+		model_eqtl.initialize()
+		if bm.params["search_mode"] == "exhaustive":
+			model_eqtl.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
+		elif bm.params["search_mode"] == "shotgun":
+			model_eqtl.search_shotgun(bm.params["search_iterations"])
+		# print("Finished Search Under eQTL Model")
 
-	causal_set_ase = model_ase.get_causal_set(bm.params["confidence"])
-	assert all([i == 0 or i == 1 for i in causal_set_ase])
-	causal_set_ase_size = sum(causal_set_ase)
-	result["set_sizes_ase"] = causal_set_ase_size
-	# print(causal_set_ase_size) ####
-	# print(model_eqtl.get_probs_sorted()) ####
-	# model_eqtl.get_probs_sorted() ####
-	# print(model_ase.get_probs()[tuple(causal_config)]) ####
-	# print(model_ase.get_probs()[tuple(null)]) ####
-	x = model_ase.imbalance_stats
-	result["max_stat_ase_ase"] = abs(max(x.min(), x.max(), key=abs)) 
+		causal_set_eqtl = model_eqtl.get_causal_set(bm.params["confidence"])
+		assert all([i == 0 or i == 1 for i in causal_set_eqtl])
+		causal_set_eqtl_size = sum(causal_set_eqtl)
+		result["set_sizes_eqtl"] = causal_set_eqtl_size
+		# print(causal_set_eqtl_size) ####
+		# print(model_eqtl.get_probs_sorted()) ####
+		# print(model_eqtl.get_probs_sorted()) ####
+		# print(model_eqtl.get_probs()[tuple(causal_config)]) ####
+		# print(model_eqtl.get_probs()[tuple(null)]) ####
+		# ppas = model_eqtl.get_ppas() ####
+		# np.savetxt("ppas_eqtl.txt", np.array(ppas)) ####
+		# print(model_eqtl.total_exp_stats[causal_config == True][0]) ####
+		# eqtl_cstats.append(model_eqtl.total_exp_stats[causal_config == True][0]) ####
 
-	recall = bm._recall(causal_set_ase, causal_config)
-	# for ind, val in enumerate(causal_config):
-	# 	if val == 1:
-	# 		if causal_set_ase[ind] != 1:
-	# 			recall = 0
-	result["recall_ase"] = recall
-	# print(recall) ####
+		recall = bm._recall(causal_set_eqtl, causal_config)
+		# for ind, val in enumerate(causal_config):
+		# 	if val == 1:
+		# 		if causal_set_eqtl[ind] != 1:
+		# 			recall = 0
+		result["recall_eqtl"] = recall
+		# print(recall) ####
+		# ppa_eqtl = model_eqtl.get_ppas() ####
 
-	result["inclusions_ase"] = bm._inclusion(model_ase.get_ppas(), causal_config)
+		result["inclusions_eqtl"] = bm._inclusion(model_eqtl.get_ppas(), causal_config)
+
+	if "ase" in model_flavors:
+		# print("Initializing ASE Model")
+		model_inputs_ase = model_inputs.copy()
+		model_inputs_ase.update({
+			"total_exp": np.zeros(shape=0), 
+			"genotypes_comb": np.zeros(shape=(0,0)),
+			"total_exp_corr": np.zeros(shape=(0,0)),
+			"total_exp_errors": np.zeros(shape=0),
+			"total_exp_stats": np.zeros(shape=0),
+			"num_ppl_total_exp": 0,
+			"num_snps_total_exp": 0,
+			"corr_stats": 0.0,
+			"imbalance_var_prior": imbalance_var_prior,
+			"total_exp_var_prior": total_exp_var_prior,
+			"cross_corr_prior": 0.0,
+		})
+		# print("Finished Initializing ASE Model")
+		# print("Starting Search Under ASE Model")
+		model_ase = Finemap(**model_inputs_ase)
+		model_ase.initialize()
+		if bm.params["search_mode"] == "exhaustive":
+			model_ase.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
+		elif bm.params["search_mode"] == "shotgun":
+			model_ase.search_shotgun(bm.params["search_iterations"])
+		# print("Finished Search Under ASE Model")
+
+		causal_set_ase = model_ase.get_causal_set(bm.params["confidence"])
+		assert all([i == 0 or i == 1 for i in causal_set_ase])
+		causal_set_ase_size = sum(causal_set_ase)
+		result["set_sizes_ase"] = causal_set_ase_size
+		# print(causal_set_ase_size) ####
+		# print(model_eqtl.get_probs_sorted()) ####
+		# model_eqtl.get_probs_sorted() ####
+		# print(model_ase.get_probs()[tuple(causal_config)]) ####
+		# print(model_ase.get_probs()[tuple(null)]) ####
+		x = model_ase.imbalance_stats
+		result["max_stat_ase_ase"] = abs(max(x.min(), x.max(), key=abs)) 
+
+		recall = bm._recall(causal_set_ase, causal_config)
+		# for ind, val in enumerate(causal_config):
+		# 	if val == 1:
+		# 		if causal_set_ase[ind] != 1:
+		# 			recall = 0
+		result["recall_ase"] = recall
+		# print(recall) ####
+
+		result["inclusions_ase"] = bm._inclusion(model_ase.get_ppas(), causal_config)
 
 	# if causal_set_ase_size == 181: ####
 	# 	ps = model_ase.get_probs_sorted()
@@ -308,35 +321,65 @@ def evaluate_bm(targs):
 	# 	# np.savetxt("null_ase.txt", np.array(model_ase.get_probs_sorted()))
 	# 	raise Exception
 
-	model_caviar = EvalCaviar(
-		model_full, 
-		bm.params["confidence"], 
-		bm.params["max_causal"]
-	)
-	model_caviar.run()
-	causal_set_caviar = model_caviar.causal_set
-	causal_set_caviar_size = sum(causal_set_caviar)
-	result["set_sizes_caviar"] = causal_set_caviar_size
-	recall = bm._recall(causal_set_caviar, causal_config)
-	result["recall_caviar"] = recall
-	# ppa_caviar = model_caviar.post_probs ####
+	if "cav" in model_flavors:
+		model_inputs_dummy = model_inputs.copy()
+		model_inputs_dummy.update({
+			"imbalance": np.zeros(shape=0), 
+			"phases": np.zeros(shape=(0,0)),
+			"imbalance_corr": np.zeros(shape=(0,0)),
+			"imbalance_errors": np.zeros(shape=0),
+			"imbalance_stats": np.zeros(shape=0),
+			"num_ppl_imbalance": 0,
+			"num_snps_imbalance": 0,
+			"corr_stats": 0.0,
+			"imbalance_var_prior": imbalance_var_prior,
+			"total_exp_var_prior": total_exp_var_prior,
+			"cross_corr_prior": 0.0,
+		})
+		# print("Finished Initializing eQTL Model")
+		# print("Starting Search Under eQTL Model")
+		model_dummy = Finemap(**model_inputs_dummy)
+		model_dummy.initialize()
+		model_caviar = EvalCaviar(
+			model_dummy, 
+			bm.params["confidence"], 
+			bm.params["max_causal"]
+		)
+		model_caviar.run()
+		causal_set_caviar = model_caviar.causal_set
+		causal_set_caviar_size = sum(causal_set_caviar)
+		result["set_sizes_caviar"] = causal_set_caviar_size
+		recall = bm._recall(causal_set_caviar, causal_config)
+		result["recall_caviar"] = recall
+		# ppa_caviar = model_caviar.post_probs ####
 
-	result["inclusions_caviar"] = bm._inclusion(model_caviar.post_probs, causal_config)
+		result["inclusions_caviar"] = bm._inclusion(model_caviar.post_probs, causal_config)
 
+	if "acav" in model_flavors:
+		model_inputs_dummy = model_inputs.copy()
+		model_inputs_indep.update({
+			"cross_corr_prior": 0.0, 
+			"corr_stats": 0.0,
+			"imbalance_var_prior": imbalance_var_prior,
+			"total_exp_var_prior": total_exp_var_prior
+		})
+		# print("Finished Initializing eQTL Model")
+		# print("Starting Search Under eQTL Model")
+		model_dummy = Finemap(**model_inputs_dummy)
+		model_dummy.initialize()
+		model_caviar_ase = EvalCaviarASE(
+			model_dummy, 
+			bm.params["confidence"], 
+			bm.params["max_causal"]
+		)
+		model_caviar_ase.run()
+		causal_set_caviar_ase = model_caviar_ase.causal_set
+		causal_set_caviar_size_ase = sum(causal_set_caviar_ase)
+		result["set_sizes_caviar_ase"] = causal_set_caviar_size_ase
+		recall = bm._recall(causal_set_caviar_ase, causal_config)
+		result["recall_caviar_ase"] = recall
 
-	model_caviar_ase = EvalCaviarASE(
-		model_full, 
-		bm.params["confidence"], 
-		bm.params["max_causal"]
-	)
-	model_caviar_ase.run()
-	causal_set_caviar_ase = model_caviar_ase.causal_set
-	causal_set_caviar_size_ase = sum(causal_set_caviar_ase)
-	result["set_sizes_caviar_ase"] = causal_set_caviar_size_ase
-	recall = bm._recall(causal_set_caviar_ase, causal_config)
-	result["recall_caviar_ase"] = recall
-
-	result["inclusions_caviar_ase"] = bm._inclusion(model_caviar_ase.post_probs, causal_config)
+		result["inclusions_caviar_ase"] = bm._inclusion(model_caviar_ase.post_probs, causal_config)
 
 	# print(result["inclusions_caviar_ase"]) ####
 
@@ -362,14 +405,18 @@ class Benchmark(object):
 		self.update_model_params()
 		self.update_sim_params()
 
-		self.time = datetime.now()
-		self.timestamp = self.time.strftime("%y%m%d%H%M%f")
+		# self.time = datetime.now()
+		# self.timestamp = self.time.strftime("%y%m%d%H%M%f")
 		self.counter = 0
 		self.test_count = self.params["test_count"]
 		self.count_digits = len(str(self.test_count))
 
-		self.output_folder = self.timestamp + "_" + self.params["test_name"]
-		self.output_path = os.path.join(self.dir_path, self.res_path, self.output_folder)
+		# self.output_folder = self.timestamp + "_" + self.params["test_name"]
+		# self.output_path = os.path.join(self.dir_path, self.res_path, self.output_folder)
+
+		self.output_folder = self.params["test_name"]
+		self.test_path = self.params["test_path"]
+		self.output_path = os.path.join(self.test_path, self.output_folder)
 
 	def update_model_params(self):
 		self.model_params = {
@@ -386,8 +433,8 @@ class Benchmark(object):
 			"num_ppl": self.params["num_ppl"],
 			# "var_effect_size": self.params["var_effect_size"],
 			"overdispersion": self.params["overdispersion"],
-			"prop_noise_eqtl": self.params["prop_noise_eqtl"],
-			"prop_noise_ase": self.params["prop_noise_ase"],
+			"herit_eqtl": self.params["herit_eqtl"],
+			"herit_ase": self.params["herit_ase"],
 			# "baseline_exp": self.params["baseline_exp"],
 			"num_causal": self.params["num_causal"],
 			# "ase_read_prop": self.params["ase_read_prop"],
@@ -398,144 +445,245 @@ class Benchmark(object):
 
 
 	def output_result(self, result, out_dir):
+		if self.params["model_flavors"] == "all":
+			model_flavors = set(["full", "indep", "eqtl", "ase", "cav", "acav"])
+		else:
+			model_flavors = self.params["model_flavors"]
+
 		title_var = self.params["primary_var_display"]
 		var_value = str(self.params[self.params["primary_var"]])
 		num_snps = self.params["num_snps"]
 
-		set_sizes_full = result["set_sizes_full"]
-		set_sizes_indep = result["set_sizes_indep"]
-		set_sizes_eqtl = result["set_sizes_eqtl"]
-		set_sizes_ase = result["set_sizes_ase"]
-		set_sizes_caviar = result["set_sizes_caviar"]
-		set_sizes_caviar_ase = result["set_sizes_caviar_ase"]
+		recall_list = []
 
-		recall_rate_full = result["recall_rate_full"]
-		recall_rate_indep = result["recall_rate_indep"]
-		recall_rate_eqtl = result["recall_rate_eqtl"]
-		recall_rate_ase = result["recall_rate_ase"]
-		recall_rate_caviar = result["recall_rate_caviar"]
-		recall_rate_caviar_ase = result["recall_rate_caviar_ase"]
+		if "full" in model_flavors:
+			set_sizes_full = result["set_sizes_full"]
+			recall_rate_full = result["recall_rate_full"]
+			inclusion_rate_full = list(result["inclusion_rate_full"])
+			recall_list.append("Joint-Correlated:{:>15}\n".format(recall_rate_full))
+			with open(os.path.join(out_dir, "causal_set_sizes.txt"), "w") as cssfull:
+				cssfull.write("\n".join(str(i) for i in set_sizes_full))
 
-		inclusion_rate_full = list(result["inclusion_rate_full"])
-		inclusion_rate_indep = list(result["inclusion_rate_indep"])
-		inclusion_rate_eqtl = list(result["inclusion_rate_eqtl"])
-		inclusion_rate_ase = list(result["inclusion_rate_ase"])
-		inclusion_rate_caviar = list(result["inclusion_rate_caviar"])
-		inclusion_rate_caviar_ase = list(result["inclusion_rate_caviar_ase"])
+		if "indep" in model_flavors:
+			set_sizes_indep = result["set_sizes_indep"]
+			recall_rate_indep = result["recall_rate_indep"]
+			inclusion_rate_indep = list(result["inclusion_rate_indep"])
+			recall_list.append("Joint-Independent:{:>15}\n".format(recall_rate_indep))
+			with open(os.path.join(out_dir, "causal_set_sizes_independent.txt"), "w") as cssindep:
+				cssindep.write("\n".join(str(i) for i in set_sizes_indep))
+
+		if "eqtl" in model_flavors:
+			set_sizes_eqtl = result["set_sizes_eqtl"]
+			recall_rate_eqtl = result["recall_rate_eqtl"]
+			inclusion_rate_eqtl = list(result["inclusion_rate_eqtl"])
+			recall_list.append("eQTL-Only:{:>15}\n".format(recall_rate_eqtl))
+			with open(os.path.join(out_dir, "causal_set_sizes_eqtl_only.txt"), "w") as csseqtl:
+				csseqtl.write("\n".join(str(i) for i in set_sizes_eqtl))
+
+		if "ase" in model_flavors:
+			set_sizes_ase = result["set_sizes_ase"]
+			recall_rate_ase = result["recall_rate_ase"]
+			inclusion_rate_ase = list(result["inclusion_rate_ase"])
+			recall_list.append("ASE-Only:{:>15}\n".format(recall_rate_ase))
+			with open(os.path.join(out_dir, "causal_set_sizes_ase_only.txt"), "w") as cssase:
+				cssase.write("\n".join(str(i) for i in set_sizes_ase))
+
+		if "cav" in model_flavors:
+			set_sizes_caviar = result["set_sizes_caviar"]
+			recall_rate_caviar = result["recall_rate_caviar"]
+			inclusion_rate_caviar = list(result["inclusion_rate_caviar"])
+			recall_list.append("CAVIAR:{:>15}\n".format(recall_rate_caviar))
+			with open(os.path.join(out_dir, "causal_set_sizes_caviar.txt"), "w") as csscav:
+				csscav.write("\n".join(str(i) for i in set_sizes_caviar))
+
+		if "acav" in model_flavors:
+			set_sizes_caviar_ase = result["set_sizes_caviar_ase"]
+			recall_rate_caviar_ase = result["recall_rate_caviar_ase"]
+			inclusion_rate_caviar_ase = list(result["inclusion_rate_caviar_ase"])
+			recall_list.append("CAVIAR-ASE:{:>15}\n".format(recall_rate_caviar_ase))
+			with open(os.path.join(out_dir, "causal_set_sizes_caviar_ase.txt"), "w") as csscavase:
+				csscavase.write("\n".join(str(i) for i in set_sizes_caviar_ase))
 
 		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in self.params.viewitems())
 		with open(os.path.join(out_dir, "parameters.txt"), "w") as params_file:
 			params_file.write(params_str)
 
-		with open(os.path.join(out_dir, "causal_set_sizes.txt"), "w") as cssfull:
-			cssfull.write("\n".join(str(i) for i in set_sizes_full))
-
-		with open(os.path.join(out_dir, "causal_set_sizes_independent.txt"), "w") as cssindep:
-			cssindep.write("\n".join(str(i) for i in set_sizes_indep))
-
-		with open(os.path.join(out_dir, "causal_set_sizes_eqtl_only.txt"), "w") as csseqtl:
-			csseqtl.write("\n".join(str(i) for i in set_sizes_eqtl))
-
-		with open(os.path.join(out_dir, "causal_set_sizes_ase_only.txt"), "w") as cssase:
-			cssase.write("\n".join(str(i) for i in set_sizes_ase))
-
-		with open(os.path.join(out_dir, "causal_set_sizes_caviar.txt"), "w") as csscav:
-			csscav.write("\n".join(str(i) for i in set_sizes_caviar))
-		
-		with open(os.path.join(out_dir, "causal_set_sizes_caviar_ase.txt"), "w") as csscavase:
-			csscavase.write("\n".join(str(i) for i in set_sizes_caviar_ase))
-
 		with open(os.path.join(out_dir, "recalls.txt"), "w") as rr:
-			rr.write(
-				"Full:{:>15}\nIndependent Likelihoods:{:>15}\neQTL-Only:{:>15}\nASE-only:{:>15}\nCAVIAR:{:>15}\nCAVIAR_ASE:{:>15}".format(
-					recall_rate_full, 
-					recall_rate_indep, 
-					recall_rate_eqtl, 
-					recall_rate_ase,
-					recall_rate_caviar,
-					recall_rate_caviar_ase
+			rr.writelines(recall_list)
+
+		sns.set(style="dark", font="Roboto")
+		if "full" in model_flavors:
+			try:
+				sns.distplot(
+					set_sizes_full,
+					hist=False,
+					kde=True,
+					kde_kws={"linewidth": 2, "shade":False},
+					label="Joint-Correlated"
 				)
-			)
-		try:
-			sns.set(style="white")
-			sns.distplot(
-				set_sizes_full,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
-				label="Full"
-			)
-			sns.distplot(
-				set_sizes_indep,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
-				label="Independent Likelihoods"
-			)
-			sns.distplot(
-				set_sizes_eqtl,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
-				label="eQTL-Only"
-			)
-			sns.distplot(
-				set_sizes_ase,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
-				label="ASE-Only"
-			)
-			sns.distplot(
-				set_sizes_caviar,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
-				label="CAVIAR"
-			)
-			sns.distplot(
-				set_sizes_caviar_ase,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 3, "shade":True},
-				label="CAVIAR-ASE"
-			)
-			plt.xlim(0, None)
-			plt.legend(title="Model")
-			plt.xlabel("Set Size")
-			plt.ylabel("Density")
-			plt.title("Distribution of Causal Set Sizes, {0} = {1}".format(title_var, var_value))
-			plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
-			plt.clf()
-		except Exception:
-			# raise ####
-			plt.clf()
+			except Exception:
+				pass
+		if "indep" in model_flavors:
+			try:
+				sns.distplot(
+					set_sizes_indep,
+					hist=False,
+					kde=True,
+					kde_kws={"linewidth": 2, "shade":False},
+					label="Joint-Independent"			
+				)
+			except Exception:
+				pass
+		if "eqtl" in model_flavors:
+			try:
+				sns.distplot(
+					set_sizes_eqtl,
+					hist=False,
+					kde=True,
+					kde_kws={"linewidth": 2, "shade":False},
+					label="eQTL-Only"			
+				)
+			except Exception:
+				pass
+		if "ase" in model_flavors:
+			try:
+				sns.distplot(
+					set_sizes_ase,
+					hist=False,
+					kde=True,
+					kde_kws={"linewidth": 2, "shade":False},
+					label="ASE-Only"			
+				)
+			except Exception:
+				pass
+		if "cav" in model_flavors:
+			try:
+				sns.distplot(
+					set_sizes_caviar,
+					hist=False,
+					kde=True,
+					kde_kws={"linewidth": 2, "shade":False},
+					label="ASE-Only"			
+				)
+			except Exception:
+				pass
+		if "acav" in model_flavors:
+			try:
+				sns.distplot(
+					set_sizes_caviar_ase,
+					hist=False,
+					kde=True,
+					kde_kws={"linewidth": 2, "shade":False},
+					label="CAVIAR-ASE"			
+				)
+			except Exception:
+				pass
+
+		plt.xlim(0, None)
+		plt.legend(title="Model")
+		plt.xlabel("Set Size")
+		plt.ylabel("Density")
+		plt.title("Distribution of Causal Set Sizes, {0} = {1}".format(title_var, var_value))
+		plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
+		plt.clf()
+
+		# try:
+		# 	sns.set(style="whitegrid", font="Roboto")
+		# 	sns.distplot(
+		# 		set_sizes_full,
+		# 		hist=False,
+		# 		kde=True,
+		# 		kde_kws={"linewidth": 2, "shade":False},
+		# 		label="Joint-Correlated"
+		# 	)
+		# 	sns.distplot(
+		# 		set_sizes_indep,
+		# 		hist=False,
+		# 		kde=True,
+		# 		kde_kws={"linewidth": 2, "shade":False},
+		# 		label="Joint-Independent"
+		# 	)
+		# 	sns.distplot(
+		# 		set_sizes_eqtl,
+		# 		hist=False,
+		# 		kde=True,
+		# 		kde_kws={"linewidth": 3, "shade":True},
+		# 		label="eQTL-Only"
+		# 	)
+		# 	sns.distplot(
+		# 		set_sizes_ase,
+		# 		hist=False,
+		# 		kde=True,
+		# 		kde_kws={"linewidth": 3, "shade":True},
+		# 		label="ASE-Only"
+		# 	)
+		# 	sns.distplot(
+		# 		set_sizes_caviar,
+		# 		hist=False,
+		# 		kde=True,
+		# 		kde_kws={"linewidth": 3, "shade":True},
+		# 		label="CAVIAR"
+		# 	)
+		# 	sns.distplot(
+		# 		set_sizes_caviar_ase,
+		# 		hist=False,
+		# 		kde=True,
+		# 		kde_kws={"linewidth": 3, "shade":True},
+		# 		label="CAVIAR-ASE"
+		# 	)
+		# 	plt.xlim(0, None)
+		# 	plt.legend(title="Model")
+		# 	plt.xlabel("Set Size")
+		# 	plt.ylabel("Density")
+		# 	plt.title("Distribution of Causal Set Sizes, {0} = {1}".format(title_var, var_value))
+		# 	plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
+		# 	plt.clf()
+		# except Exception:
+		# 	# raise ####
+		# 	plt.clf()
 
 		inclusions_dict = {
-			"Number of Selected Markers": 6 * range(1, num_snps+1),
-			"Inclusion Rate": (
-				inclusion_rate_full 
-				+ inclusion_rate_indep 
-				+ inclusion_rate_eqtl 
-				+ inclusion_rate_ase
-				+ inclusion_rate_caviar
-				+ inclusion_rate_caviar_ase
-			),
-			"Model": (
-				num_snps * ["Full"]
-				+ num_snps * ["Independent Likelihoods"]
-				+ num_snps * ["eQTL-Only"]
-				+ num_snps * ["ASE-Only"]
-				+ num_snps * ["CAVIAR"]
-				+ num_snps * ["CAVIAR-ASE"]
-			)
+			"Number of Selected Markers": [],
+			"Inclusion Rate": [],
+			"Model": []
 		}
+
+		if "full" in model_flavors:
+			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_full)
+			inclusions_dict["Model"].extend(num_snps * ["Joint-Correlated"])
+
+		if "indep" in model_flavors:
+			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_indep)
+			inclusions_dict["Model"].extend(num_snps * ["Joint-Independent"])
+
+		if "eqtl" in model_flavors:
+			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_eqtl)
+			inclusions_dict["Model"].extend(num_snps * ["eQTL-Only"])
+
+		if "ase" in model_flavors:
+			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_ase)
+			inclusions_dict["Model"].extend(num_snps * ["ASE-Only"])
+
+		if "cav" in model_flavors:
+			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_caviar)
+			inclusions_dict["Model"].extend(num_snps * ["CAVIAR"])
+
+		if "acav" in model_flavors:
+			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_caviar_ase)
+			inclusions_dict["Model"].extend(num_snps * ["CAVIAR-ASE"])
+
 		# print(inclusions_dict) ####
 		# print(len(inclusion_rate_full)) ####
 		# print(num_snps) ####
 		inclusions_df = pd.DataFrame(inclusions_dict)
 
-		sns.set()
+		sns.set(font="Roboto")
 		sns.lineplot(x="Number of Selected Markers", y="Inclusion Rate", hue="Model", data=inclusions_df)
 		plt.title("Inclusion Rate vs. Selection Size, {0} = {1}".format(title_var, var_value))
 		plt.savefig(os.path.join(out_dir, "inclusion.svg"))
@@ -543,41 +691,59 @@ class Benchmark(object):
 
 
 	def output_summary(self):
-		recall_rate_full = [i["recall_rate_full"] for i in self.results]
-		recall_rate_indep = [i["recall_rate_indep"] for i in self.results]
-		recall_rate_eqtl = [i["recall_rate_eqtl"] for i in self.results]
-		recall_rate_ase = [i["recall_rate_ase"] for i in self.results]
-		recall_rate_caviar = [i["recall_rate_caviar"] for i in self.results]
-		recall_rate_caviar_ase = [i["recall_rate_caviar_ase"] for i in self.results]
-		# sets_full = [i["set_sizes_full"] for i in self.results]
-		# sets_eqtl = [i["set_sizes_eqtl"] for i in self.results]
-
+		if self.params["model_flavors"] == "all":
+			model_flavors = set(["full", "indep", "eqtl", "ase", "cav", "acav"])
+		else:
+			model_flavors = self.params["model_flavors"]
 		title_var = self.params["primary_var_display"]
 		num_trials = self.test_count
 
 		rec_dict = {
-			title_var: 6 * self.primary_var_vals,
-			"Recall Rate": (
-				recall_rate_full 
-				+ recall_rate_indep 
-				+ recall_rate_eqtl 
-				+ recall_rate_ase
-				+ recall_rate_caviar
-				+ recall_rate_caviar_ase
-			),
-			"Model": (
-				num_trials * ["Full"]
-				+ num_trials * ["Independent Likelihoods"]
-				+ num_trials * ["eQTL-Only"]
-				+ num_trials * ["ASE-Only"]
-				+ num_trials * ["CAVIAR"]
-				+ num_trials * ["CAVIAR-ASE"]
-			)
+			title_var: [],
+			"Recall Rate": [],
+			"Model": []
 		}
+
+		if "full" in model_flavors:
+			recall_rate_full = [i["recall_rate_full"] for i in self.results]
+			rec_dict[title_var].extend(self.primary_var_vals)
+			rec_dict["Recall Rate"].extend(recall_rate_full)
+			rec_dict["Model"].extend(num_trials * ["Joint-Correlated"])
+
+		if "indep" in model_flavors:
+			recall_rate_indep = [i["recall_rate_indep"] for i in self.results]
+			rec_dict[title_var].extend(self.primary_var_vals)
+			rec_dict["Recall Rate"].extend(recall_rate_indep)
+			rec_dict["Model"].extend(num_trials * ["Joint-Independent"])
+
+		if "eqtl" in model_flavors:
+			recall_rate_eqtl = [i["recall_rate_eqtl"] for i in self.results]
+			rec_dict[title_var].extend(self.primary_var_vals)
+			rec_dict["Recall Rate"].extend(recall_rate_eqtl)
+			rec_dict["Model"].extend(num_trials * ["eQTL-Only"])
+
+		if "ase" in model_flavors:
+			recall_rate_ase = [i["recall_rate_ase"] for i in self.results]
+			rec_dict[title_var].extend(self.primary_var_vals)
+			rec_dict["Recall Rate"].extend(recall_rate_ase)
+			rec_dict["Model"].extend(num_trials * ["ASE-Only"])
+
+		if "cav" in model_flavors:
+			recall_rate_caviar = [i["recall_rate_caviar"] for i in self.results]
+			rec_dict[title_var].extend(self.primary_var_vals)
+			rec_dict["Recall Rate"].extend(recall_rate_caviar)
+			rec_dict["Model"].extend(num_trials * ["CAVIAR"])
+
+		if "acav" in model_flavors:
+			recall_rate_caviar_ase = [i["recall_rate_caviar_ase"] for i in self.results]
+			rec_dict[title_var].extend(self.primary_var_vals)
+			rec_dict["Recall Rate"].extend(recall_rate_caviar_ase)
+			rec_dict["Model"].extend(num_trials * ["CAVIAR-ASE"])
+
 		# print(rec_dict) ####
 		rec_df = pd.DataFrame(rec_dict)
 
-		sns.set(style="white")
+		sns.set(font="Roboto")
 		sns.lmplot(title_var, "Recall Rate", rec_df, hue="Model")
 		# sns.lmplot(self.primary_var_vals, recall_full)
 		# sns.lmplot(self.primary_var_vals, recall_indep)
@@ -590,24 +756,56 @@ class Benchmark(object):
 		plt.savefig(os.path.join(self.output_path, "recalls.svg"))
 		plt.clf()
 
+		# dflst = []
+		# for ind, dct in enumerate(self.results):
+		# 	var_value = self.primary_var_vals[ind]
+		# 	for i in dct["set_sizes_full"]:
+		# 		dflst.append([i, var_value, "Full"])
+		# 	for i in dct["set_sizes_eqtl"]:
+		# 		dflst.append([i, var_value, "eQTL-Only"])
+		# res_df = pd.DataFrame(dflst, columns=["Set Size", title_var, "Model"])
+
 		dflst = []
 		for ind, dct in enumerate(self.results):
 			var_value = self.primary_var_vals[ind]
-			for i in dct["set_sizes_full"]:
-				dflst.append([i, var_value, "Full"])
-			for i in dct["set_sizes_eqtl"]:
-				dflst.append([i, var_value, "eQTL-Only"])
+			if "full" in model_flavors:
+				for i in dct["set_sizes_full"]:
+					dflst.append([i, var_value, "Joint-Correlated"])
+			if "indep" in model_flavors:
+				for i in dct["set_sizes_indep"]:
+					dflst.append([i, var_value, "Joint-Independent"])
+			if "eqtl" in model_flavors:
+				for i in dct["set_sizes_eqtl"]:
+					dflst.append([i, var_value, "eQTL-Only"])
+			if "ase" in model_flavors:
+				for i in dct["set_sizes_ase"]:
+					dflst.append([i, var_value, "ASE-Only"])
+			if "cav" in model_flavors:
+				for i in dct["set_sizes_caviar"]:
+					dflst.append([i, var_value, "CAVIAR"])
+			if "acav" in model_flavors:
+				for i in dct["set_sizes_caviar_ase"]:
+					dflst.append([i, var_value, "CAVIAR-ASE"])
+
 		res_df = pd.DataFrame(dflst, columns=["Set Size", title_var, "Model"])
 		
-		sns.set(style="whitegrid")
+		sns.set(style="whitegrid", font="Roboto")
 		sns.violinplot(
 			x=title_var,
 			y="Set Size",
 			hue="Model",
 			data=res_df,
-			split=True,
-			inner="quartile"
 		)
+		
+		# sns.set(style="whitegrid", font="Roboto")
+		# sns.violinplot(
+		# 	x=title_var,
+		# 	y="Set Size",
+		# 	hue="Model",
+		# 	data=res_df,
+		# 	split=True,
+		# 	inner="quartile"
+		# )
 		plt.title("Causal Set Sizes across {0}".format(title_var))
 		plt.savefig(os.path.join(self.output_path, "causal_sets.svg"))
 		plt.clf()
@@ -654,6 +852,8 @@ class Benchmark(object):
 			self.params[k] = v
 		self.update_model_params()
 		self.update_sim_params()
+
+		model_flavors = self.params["model_flavors"]
 
 		result = {
 			"set_sizes_full": [],
@@ -989,18 +1189,25 @@ class Benchmark(object):
 		
 		print("Writing Result")
 		self.primary_var_vals.append(self.params[self.params["primary_var"]])
-		result["recall_rate_full"] = np.mean(result["recall_full"])
-		result["recall_rate_indep"] = np.mean(result["recall_indep"])
-		result["recall_rate_eqtl"] = np.mean(result["recall_eqtl"])
-		result["recall_rate_ase"] = np.mean(result["recall_ase"])
-		result["recall_rate_caviar"] = np.mean(result["recall_caviar"])
-		result["recall_rate_caviar_ase"] = np.mean(result["recall_caviar_ase"])
-		result["inclusion_rate_full"] = np.mean(result["inclusions_full"], axis=0)
-		result["inclusion_rate_indep"] = np.mean(result["inclusions_indep"], axis=0)
-		result["inclusion_rate_eqtl"] = np.mean(result["inclusions_eqtl"], axis=0)
-		result["inclusion_rate_ase"] = np.mean(result["inclusions_ase"], axis=0)
-		result["inclusion_rate_caviar"] = np.mean(result["inclusions_caviar"], axis=0)
-		result["inclusion_rate_caviar_ase"] = np.mean(result["inclusions_caviar_ase"], axis=0)
+		if "full" in model_flavors:
+			result["recall_rate_full"] = np.mean(result["recall_full"])
+			result["inclusion_rate_full"] = np.mean(result["inclusions_full"], axis=0)
+		if "indep" in model_flavors:
+			result["recall_rate_indep"] = np.mean(result["recall_indep"])
+			result["inclusion_rate_indep"] = np.mean(result["inclusions_indep"], axis=0)
+		if "eqtl" in model_flavors:
+			result["recall_rate_eqtl"] = np.mean(result["recall_eqtl"])
+			result["inclusion_rate_eqtl"] = np.mean(result["inclusions_eqtl"], axis=0)
+		if "ase" in model_flavors:
+			result["recall_rate_ase"] = np.mean(result["recall_ase"])
+			result["inclusion_rate_ase"] = np.mean(result["inclusions_ase"], axis=0)
+		if "cav" in model_flavors:
+			result["recall_rate_caviar"] = np.mean(result["recall_caviar"])
+			result["inclusion_rate_caviar"] = np.mean(result["inclusions_caviar"], axis=0)
+		if "acav" in model_flavors:
+			result["recall_rate_caviar_ase"] = np.mean(result["recall_caviar_ase"])
+			result["inclusion_rate_caviar_ase"] = np.mean(result["inclusions_caviar_ase"], axis=0)
+		
 		test_path = self.set_output_folder()
 		self.output_result(result, test_path)
 		self.results.append(result)
@@ -1033,20 +1240,36 @@ class Benchmark2d(Benchmark):
 		pname, 
 		secondary, 
 		sname, 
-		vals_full,
-		vals_indep,
-		vals_eqtl,
-		vals_ase,
-		vals_caviar,
-		vals_caviar_ase,
+		vals,
 		vname, 
 		title_base, 
 		output_path, 
-		output_name_base
+		output_name_base,
+		model_flavors
 	):
-		sns.set()
+		sns.set(font="Roboto")
 
-		if vals_full is not None:
+		if True in vals:
+			val = vals[True]
+			df_full = pd.DataFrame({
+				sname: secondary,
+				pname: primary,
+				vname: val,
+			}).pivot(
+				sname,
+				pname,
+				vname
+			)
+
+			title_full = title_base
+			output_name_full = output_name_base + ".svg"
+			sns.heatmap(df_full, annot=True, fmt=".1f", square=True)
+			plt.title(title_full)
+			plt.savefig(os.path.join(output_path, output_name_full))
+			plt.clf()
+
+		if "full" in model_flavors:
+			vals_full = vals["full"]
 			df_full = pd.DataFrame({
 				sname: secondary,
 				pname: primary,
@@ -1057,14 +1280,15 @@ class Benchmark2d(Benchmark):
 				vname
 			)
 
-			title_full = title_base + " (Full Model)"
+			title_full = title_base + " (Joint-Correlated)"
 			output_name_full = output_name_base + "_full.svg"
-			sns.heatmap(df_full, annot=True, linewidths=1.5)
+			sns.heatmap(df_full, annot=True, fmt=".1f", square=True)
 			plt.title(title_full)
 			plt.savefig(os.path.join(output_path, output_name_full))
 			plt.clf()
 
-		if vals_indep is not None:
+		if "indep" in model_flavors:
+			vals_indep = vals["indep"]
 			df_indep = pd.DataFrame({
 				sname: secondary,
 				pname: primary,
@@ -1075,14 +1299,15 @@ class Benchmark2d(Benchmark):
 				vname
 			)
 
-			title_indep = title_base + " (Independent Likelihoods)"
+			title_indep = title_base + " (Joint-Independent)"
 			output_name_indep = output_name_base + "_indep.svg"
-			sns.heatmap(df_indep, annot=True, linewidths=1.5)
+			sns.heatmap(df_indep, annot=True, fmt=".1f", square=True)
 			plt.title(title_indep)
 			plt.savefig(os.path.join(output_path, output_name_indep))
 			plt.clf()
 
-		if vals_eqtl is not None:
+		if "eqtl" in model_flavors:
+			vals_eqtl = vals["eqtl"]
 			df_eqtl = pd.DataFrame({
 				sname: secondary,
 				pname: primary,
@@ -1095,12 +1320,13 @@ class Benchmark2d(Benchmark):
 
 			title_eqtl = title_base + " (eQTL-Only)"
 			output_name_eqtl = output_name_base + "_eqtl.svg"
-			sns.heatmap(df_eqtl, annot=True, linewidths=1.5)
+			sns.heatmap(df_eqtl, annot=True, fmt=".1f", square=True)
 			plt.title(title_eqtl)
 			plt.savefig(os.path.join(output_path, output_name_eqtl))
 			plt.clf()
 
-		if vals_ase is not None:
+		if "ase" in model_flavors:
+			vals_ase = vals["ase"]
 			df_ase = pd.DataFrame({
 				sname: secondary,
 				pname: primary,
@@ -1113,12 +1339,13 @@ class Benchmark2d(Benchmark):
 
 			title_ase = title_base + " (ASE-Only)"
 			output_name_ase = output_name_base + "_ase.svg"
-			sns.heatmap(df_ase, annot=True, linewidths=1.5)
+			sns.heatmap(df_ase, annot=True, fmt=".1f", square=True)
 			plt.title(title_ase)
 			plt.savefig(os.path.join(output_path, output_name_ase))
 			plt.clf()
 
-		if vals_caviar is not None:
+		if "cav" in model_flavors:
+			vals_caviar = vals["cav"]
 			df_caviar = pd.DataFrame({
 				sname: secondary,
 				pname: primary,
@@ -1131,12 +1358,13 @@ class Benchmark2d(Benchmark):
 
 			title_caviar = title_base + " (CAVIAR)"
 			output_name_caviar = output_name_base + "_caviar.svg"
-			sns.heatmap(df_caviar, annot=True, linewidths=1.5)
+			sns.heatmap(df_caviar, annot=True, fmt=".1f", square=True)
 			plt.title(title_caviar)
 			plt.savefig(os.path.join(output_path, output_name_caviar))
 			plt.clf()
 
-		if vals_caviar_ase is not None:
+		if "acav" in model_flavors:
+			vals_caviar_ase = vals["acav"]
 			df_caviar_ase = pd.DataFrame({
 				sname: secondary,
 				pname: primary,
@@ -1149,13 +1377,17 @@ class Benchmark2d(Benchmark):
 
 			title_caviar_ase = title_base + " (CAVIAR-ASE)"
 			output_name_caviar_ase = output_name_base + "_caviar_ase.svg"
-			sns.heatmap(df_caviar_ase, annot=True, linewidths=1.5)
+			sns.heatmap(df_caviar_ase, annot=True, fmt=".1f", square=True)
 			plt.title(title_caviar_ase)
 			plt.savefig(os.path.join(output_path, output_name_caviar_ase))
 			plt.clf()
 	
 	
 	def output_summary(self):
+		if self.params["model_flavors"] == "all":
+			model_flavors = set(["full", "indep", "eqtl", "ase", "cav", "acav"])
+		else:
+			model_flavors = self.params["model_flavors"]
 		num_trials = self.test_count
 		num_trials_primary = self.params["test_count_primary"]
 		num_trials_secondary = self.params["test_count_secondary"]
@@ -1165,21 +1397,29 @@ class Benchmark2d(Benchmark):
 			col = x % num_trials_secondary
 			results2d[row][col] = self.results[x]
 
-		means_full = [np.mean(i["set_sizes_full"]) for i in self.results]
-		means_indep = [np.mean(i["set_sizes_indep"]) for i in self.results]
-		means_eqtl = [np.mean(i["set_sizes_eqtl"]) for i in self.results]
-		means_ase = [np.mean(i["set_sizes_ase"]) for i in self.results]
-		means_caviar = [np.mean(i["set_sizes_caviar"]) for i in self.results]
-		means_caviar_ase = [np.mean(i["set_sizes_caviar_ase"]) for i in self.results]
+		means = {}
+		recall_rate = {}
 
-		recall_rate_full = [i["recall_rate_full"] for i in self.results]
-		recall_rate_indep = [i["recall_rate_indep"] for i in self.results]
-		recall_rate_eqtl = [i["recall_rate_eqtl"] for i in self.results]
-		recall_rate_ase = [i["recall_rate_ase"] for i in self.results]
-		recall_rate_caviar = [i["recall_rate_caviar"] for i in self.results]
-		recall_rate_caviar_ase = [i["recall_rate_caviar_ase"] for i in self.results]
+		if "full" in model_flavors:
+			means["full"] = [np.mean(i["set_sizes_full"]) for i in self.results]
+			recall_rate["full"] = [i["recall_rate_full"] for i in self.results]
+		if "indep" in model_flavors:
+			means["indep"] = [np.mean(i["set_sizes_indep"]) for i in self.results]
+			recall_rate["indep"] = [i["recall_rate_indep"] for i in self.results]
+		if "eqtl" in model_flavors:
+			means["eqtl"] = [np.mean(i["set_sizes_eqtl"]) for i in self.results]
+			recall_rate["eqtl"] = [i["recall_rate_eqtl"] for i in self.results]
+		if "ase" in model_flavors:
+			means["ase"] = [np.mean(i["set_sizes_ase"]) for i in self.results]
+			recall_rate_ase = [i["recall_rate_ase"] for i in self.results]
+		if "cav" in model_flavors:
+			means["cav"] = [np.mean(i["set_sizes_caviar"]) for i in self.results]
+			recall_rate["cav"] = [i["recall_rate_caviar"] for i in self.results]
+		if "acav" in model_flavors:
+			means["acav"] = [np.mean(i["set_sizes_caviar_ase"]) for i in self.results]
+			recall_rate["acav"] = [i["recall_rate_caviar_ase"] for i in self.results]
 
-		max_stat_ase_full = [np.nanmean(i["max_stat_ase_full"])for i in self.results]
+		max_stat_ase = {True: [np.nanmean(i["max_stat_ase_full"])for i in self.results]}
 		# max_stat_ase_indep = [np.mean(i["max_stat_ase_indep"]) for i in self.results]
 		# max_stat_ase_ase = [np.mean(i["max_stat_ase_ase"]) for i in self.results]
 
@@ -1202,16 +1442,12 @@ class Benchmark2d(Benchmark):
 			self.params["primary_var_display"],
 			secondary,
 			self.params["secondary_var_display"],
-			means_full,
-			means_indep,
-			means_eqtl,
-			means_ase,
-			means_caviar,
-			means_caviar_ase,
+			means,
 			"Mean Causal Set Size",
 			"Mean Causal Set Sizes",
 			self.output_path,
-			"causal_sets"
+			"causal_sets",
+			model_flavors
 		)
 
 		self.plot_heatmap(
@@ -1219,16 +1455,12 @@ class Benchmark2d(Benchmark):
 			self.params["primary_var_display"],
 			secondary,
 			self.params["secondary_var_display"],
-			recall_rate_full,
-			recall_rate_indep,
-			recall_rate_eqtl,
-			recall_rate_ase,
-			recall_rate_caviar,
-			recall_rate_caviar_ase,
+			recall_rate,
 			"Recall Rate",
 			"Recall Rates",
 			self.output_path,
-			"recall"
+			"recall",
+			model_flavors
 		)
 
 		self.plot_heatmap(
@@ -1236,16 +1468,12 @@ class Benchmark2d(Benchmark):
 			self.params["primary_var_display"],
 			secondary,
 			self.params["secondary_var_display"],
-			max_stat_ase_full,
-			None,
-			None,
-			None,
-			None,
-			None,
+			max_stat_ase,
 			"Max Association Stat",
 			"Max Association Statistics",
 			self.output_path,
-			"max_stat_ase"
+			"max_stat_ase",
+			model_flavors
 		)
 
 

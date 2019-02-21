@@ -47,7 +47,7 @@ class Finemap(FmUnchecked):
 	def _check_ndarray(matrix, name):
 		if not isinstance(matrix, np.ndarray):
 			raise TypeError(
-				"{0} is not a Numpy array\nIs of type{1}:\n{2}".format(
+				"{0} is not a Numpy array\nIs of type {1}:\n{2}".format(
 					name,
 					str(type(matrix)),
 					str(matrix)
@@ -174,6 +174,8 @@ class Finemap(FmUnchecked):
 
 	def _calc_counts(self):
 		super(Finemap, self)._calc_counts()
+		# print(self.counts_A) ####
+		# print(self.counts_B) ####
 		self.check_matrix_positive_int(
 			self.counts_A, 
 			(self.num_ppl_imbalance,), 

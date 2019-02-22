@@ -3,6 +3,8 @@ from __future__ import division
 from __future__ import unicode_literals 
 from __future__ import absolute_import
 
+import scipy.misc as spm
+
 from . import Benchmark, Benchmark2d
 from . import Haplotypes
 
@@ -203,9 +205,12 @@ def multi_cv():
 		"min_causal": 1,
 		"coverage": 100,
 		"search_mode": "shotgun",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": None, 
 		"max_causal": None,
 		"num_causal": None,
-		"primary_var": "std_fraction",
+		"primary_var": "num_causal",
 		"primary_var_display": "Number of Causal Variants",
 		"test_count": 3,
 		"test_name": "multi_cv",
@@ -217,7 +222,8 @@ def multi_cv():
 	tests = [1, 2, 3]
 	bm = Benchmark(params)
 	for t in tests:
-		bm.test(max_causal=t, num_causal=t)
+		it = int(spm.comb(params["num_snps"], t))
+		bm.test(max_causal=t, num_causal=t, search_iterations=it)
 	bm.output_summary()
 
 if __name__ == "__main__":
@@ -225,6 +231,6 @@ if __name__ == "__main__":
 	# dummy_test_2d()
 	# confidence_test()
 	# imbalance()
-	fraction_vs_coverage()
-	fraction_vs_noise()
+	# fraction_vs_coverage()
+	# fraction_vs_noise()
 	multi_cv()

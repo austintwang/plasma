@@ -154,7 +154,13 @@ def evaluate_bm(targs):
 		if bm.params["search_mode"] == "exhaustive":
 			model_full.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
 		elif bm.params["search_mode"] == "shotgun":
-			model_full.search_shotgun(bm.params["search_iterations"])
+			model_full.search_shotgun(
+				bm.params["min_causal"], 
+				bm.params["max_causal"], 
+				bm.params["prob_threshold"], 
+				bm.params["streak_threshold"], 
+				bm.params["search_iterations"]
+			)
 		# print("Finished Search Under Full Model")
 
 		causal_set = model_full.get_causal_set(bm.params["confidence"])
@@ -196,7 +202,13 @@ def evaluate_bm(targs):
 		if bm.params["search_mode"] == "exhaustive":
 			model_indep.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
 		elif bm.params["search_mode"] == "shotgun":
-			model_indep.search_shotgun(bm.params["search_iterations"])
+			model_indep.search_shotgun(
+				bm.params["min_causal"], 
+				bm.params["max_causal"], 
+				bm.params["prob_threshold"], 
+				bm.params["streak_threshold"], 
+				bm.params["search_iterations"]
+			)
 		# print("Finished Search Under Independent Model")
 
 		causal_set_indep = model_indep.get_causal_set(bm.params["confidence"])
@@ -245,7 +257,13 @@ def evaluate_bm(targs):
 		if bm.params["search_mode"] == "exhaustive":
 			model_eqtl.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
 		elif bm.params["search_mode"] == "shotgun":
-			model_eqtl.search_shotgun(bm.params["search_iterations"])
+			model_eqtl.search_shotgun(
+				bm.params["min_causal"], 
+				bm.params["max_causal"], 
+				bm.params["prob_threshold"], 
+				bm.params["streak_threshold"], 
+				bm.params["search_iterations"]
+			)
 		# print("Finished Search Under eQTL Model")
 
 		causal_set_eqtl = model_eqtl.get_causal_set(bm.params["confidence"])
@@ -296,7 +314,13 @@ def evaluate_bm(targs):
 		if bm.params["search_mode"] == "exhaustive":
 			model_ase.search_exhaustive(bm.params["min_causal"], bm.params["max_causal"])
 		elif bm.params["search_mode"] == "shotgun":
-			model_ase.search_shotgun(bm.params["search_iterations"])
+			model_ase.search_shotgun(
+				bm.params["min_causal"], 
+				bm.params["max_causal"], 
+				bm.params["prob_threshold"], 
+				bm.params["streak_threshold"], 
+				bm.params["search_iterations"]
+			)
 		# print("Finished Search Under ASE Model")
 
 		causal_set_ase = model_ase.get_causal_set(bm.params["confidence"])

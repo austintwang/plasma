@@ -458,8 +458,8 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 
 	sig_snps = []
 	num_sigs = []
-	for i in summaries[0]:
-		sig_snps.append(set([ind for ind, val in enumerate(i["ppas_eqtl"]) if val >= 0.1]))
+	for i in summaries[0]["ppas_eqtl"]:
+		sig_snps.append(set([ind for ind, val in enumerate(i) if val >= 0.1]))
 		num_sigs.append(len(sig_snps))
 
 	for ind, val in enumerate(summaries):

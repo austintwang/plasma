@@ -25,8 +25,8 @@ class SimAse(object):
 		self.num_ppl = self.bm.sim_params["num_ppl"]
 		# self.var_effect_size = self.bm.sim_params["var_effect_size"]
 		self.overdispersion = self.bm.sim_params["overdispersion"]
-		self.prop_noise_eqtl = 1 - self.bm.sim_params["herit_eqtl"]
-		self.prop_noise_ase = 1 - self.bm.sim_params["herit_ase"]
+		self.herit_eqtl = self.bm.sim_params["herit_eqtl"]
+		self.herit_ase = self.bm.sim_params["herit_ase"]
 		# self.baseline_exp = self.bm.sim_params["baseline_exp"]
 		self.num_causal = self.bm.sim_params["num_causal"]
 		# self.genotypes_A = self.bm.sim_params["genotypes_A"]
@@ -86,6 +86,9 @@ class SimAse(object):
 	# 	return counts
 
 	def _generate_expression(self):
+		self.prop_noise_eqtl = 1 - self.herit_eqtl
+		self.prop_noise_ase = 1 - self.herit_ase
+
 		self.exp_A = self.hap_A.dot(self.causal_snps)
 		self.exp_B = self.hap_B.dot(self.causal_snps)
 		# counts_A_ideal = np.exp(self.exp_A)
@@ -163,7 +166,10 @@ class SimAse(object):
 
 		# counts_A_as-e = npr.binomial(ase_counts, npr.beta(alphas, betas))
 		noised_coverage = npr.poisson(self.coverage, self.num_ppl)
+		noised_coverage[noised_coverage==0] = 1
 		self.counts_A = _bb(noised_coverage, alphas, betas)
+
+
 		# self.counts_A[self.counts_A==self.coverage] = self.coverage - 1
 
 		# self.counts_A = counts_A_ase + trans_counts_A
@@ -202,16 +208,25 @@ class SimAse(object):
 		self.counts_B = noised_coverage - self.counts_A
 		self.counts_A[self.counts_A==0] = 1
 		self.counts_B[self.counts_B==0] = 1
+
+		# try: ####
+		# 	assert (self.counts_A > 0).all() ####
+		# except AssertionError: ####
+		# 	print(self.counts_A)
+		# 	print(noised_coverage)
+		# 	print(self.imbalance)
 		# np.savetxt("counts_A.txt", self.counts_A) ####
 		# np.savetxt("counts_B.txt", self.counts_B) ####
 		# print(self.counts_A) ####
 
 	def generate_data(self):
-		self.hap_A, self.hap_B = self.haplotypes.draw_haps()
-		self._generate_effects()
-		self._generate_genotypes()
-		self._generate_expression()
-		return self.__dict__.copy()
+		while True:
+			self.hap_A, self.hap_B = self.haplotypes.draw_haps()
+			self._generate_effects()
+			self._generate_genotypes()
+			self._generate_expression()
+			if (self.counts_A > 0).all():
+				return self.__dict__.copy()
 
 		# alt_counts = (
 		# 	(self.hap_A.T * (1 - self.hap_B.T) * self.counts_A).sum(1) 

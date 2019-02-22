@@ -112,6 +112,13 @@ def evaluate_bm(targs):
 	# 	"hap_A": bm.simulation.hap_A,
 	# 	"hap_B": bm.simulation.hap_B
 	# }
+	
+	# try: ####
+	# 	assert (simulation["counts_A"] > 0).all() ####
+	# except AssertionError: ####
+	# 	print(simulation["counts_A"])
+	# 	print(simulation["counts_B"])
+
 	sim_result = {
 		"counts_A": simulation["counts_A"],
 		"counts_B": simulation["counts_B"],
@@ -818,7 +825,9 @@ class Benchmark(object):
 			str(self.params[self.params["primary_var"]])
 		)
 		test_path = os.path.join(self.output_path, test_folder)
-		os.makedirs(test_path)
+
+		if not os.path.exists(test_path):
+			os.makedirs(test_path)
 		self.counter += 1
 		return test_path
 	
@@ -1230,7 +1239,8 @@ class Benchmark2d(Benchmark):
 			str(self.params[self.params["secondary_var"]])
 		)
 		test_path = os.path.join(self.output_path, test_folder)
-		os.makedirs(test_path)
+		if not os.path.exists(test_path):
+			os.makedirs(test_path)
 		self.counter += 1
 		return test_path
 
@@ -1411,7 +1421,7 @@ class Benchmark2d(Benchmark):
 			recall_rate["eqtl"] = [i["recall_rate_eqtl"] for i in self.results]
 		if "ase" in model_flavors:
 			means["ase"] = [np.mean(i["set_sizes_ase"]) for i in self.results]
-			recall_rate_ase = [i["recall_rate_ase"] for i in self.results]
+			recall_rate["ase"] = [i["recall_rate_ase"] for i in self.results]
 		if "cav" in model_flavors:
 			means["cav"] = [np.mean(i["set_sizes_caviar"]) for i in self.results]
 			recall_rate["cav"] = [i["recall_rate_caviar"] for i in self.results]
@@ -1419,7 +1429,7 @@ class Benchmark2d(Benchmark):
 			means["acav"] = [np.mean(i["set_sizes_caviar_ase"]) for i in self.results]
 			recall_rate["acav"] = [i["recall_rate_caviar_ase"] for i in self.results]
 
-		max_stat_ase = {True: [np.nanmean(i["max_stat_ase_full"])for i in self.results]}
+		max_stat_ase = {True: [np.nanmean(i["max_stat_ase_ase"])for i in self.results]}
 		# max_stat_ase_indep = [np.mean(i["max_stat_ase_indep"]) for i in self.results]
 		# max_stat_ase_ase = [np.mean(i["max_stat_ase_ase"]) for i in self.results]
 
@@ -1473,7 +1483,7 @@ class Benchmark2d(Benchmark):
 			"Max Association Statistics",
 			self.output_path,
 			"max_stat_ase",
-			model_flavors
+			set()
 		)
 
 

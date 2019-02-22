@@ -92,39 +92,13 @@ def confidence_test():
 		bm.test(confidence=t)
 	bm.output_summary()
 
-def confidence_test():
-	params = {
-		"num_snps": 00,
-		"num_ppl": 95,
-		"overdispersion": 0.05,
-		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.50,
-		"std_fraction": 0.75,
-		"min_causal": 1,
-		"num_causal": 1,
-		"coverage": 100,
-		"search_mode": "exhaustive",
-		"max_causal": 1,
-		"primary_var": "confidence",
-		"primary_var_display": "Confidence of Causal Set",
-		"test_count": 9,
-		"test_name": "confidence_test",
-		"iterations": 100,
-		"confidence": None 
-	}
-	tests = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-	bm = Benchmark(params)
-	for t in tests:
-		bm.test(confidence=t)
-	bm.output_summary()
-
 def imbalance():
 	params = {
 		"num_snps": 100,
 		"num_ppl": 95,
 		"overdispersion": 0.05,
 		"herit_eqtl": 0.05,
-		"herit_ase": 0.50,
+		"herit_ase": 0.4,
 		"std_fraction": None,
 		"min_causal": 1,
 		"num_causal": 1,
@@ -152,7 +126,7 @@ def fraction_vs_coverage():
 		"num_ppl": 95,
 		"overdispersion": 0.05,
 		"herit_eqtl": 0.05,
-		"herit_ase": 0.50,
+		"herit_ase": 0.4,
 		"std_fraction": None,
 		"num_causal": 1,
 		"coverage": None,
@@ -224,12 +198,13 @@ def multi_cv():
 		"num_ppl": 95,
 		"overdispersion": 0.05,
 		"herit_eqtl": 0.05,
-		"herit_ase": 0.50,
+		"herit_ase": 0.6,
 		"std_fraction": 0.65,
 		"min_causal": 1,
 		"coverage": 100,
 		"search_mode": "shotgun",
-		"max_causal": 1,
+		"max_causal": None,
+		"num_causal": None,
 		"primary_var": "std_fraction",
 		"primary_var_display": "Number of Causal Variants",
 		"test_count": 3,
@@ -242,14 +217,14 @@ def multi_cv():
 	tests = [1, 2, 3]
 	bm = Benchmark(params)
 	for t in tests:
-		bm.test(confidence=t)
+		bm.test(max_causal=t, num_causal=t)
 	bm.output_summary()
 
 if __name__ == "__main__":
 	# dummy_test()
 	# dummy_test_2d()
 	# confidence_test()
-	imbalance()
+	# imbalance()
 	fraction_vs_coverage()
 	fraction_vs_noise()
 	multi_cv()

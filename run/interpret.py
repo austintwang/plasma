@@ -484,6 +484,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["avg_sets_indep"][var_val] = np.mean(val["set_sizes_indep"])
 			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
 			series["all_props_indep"][var_val] = val["set_props_indep"]
+			series["recall_indep"][var_val] = []
 			if num_sigs > 0:
 				for sind, sval in enumerate(val["causal_sets_indep"]):
 					sigs = sig_snps[sind]
@@ -495,6 +496,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["avg_sets_eqtl"][var_val] = np.mean(val["set_sizes_eqtl"])
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
 			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
+			series["recall_eqtl"][var_val] = []
 			if num_sigs > 0:
 				for sind, sval in enumerate(val["causal_sets_eqtl"]):
 					sigs = sig_snps[sind]
@@ -506,6 +508,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["avg_sets_ase"][var_val] = np.mean(val["set_sizes_ase"])
 			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
 			series["all_props_ase"][var_val] = val["set_props_ase"]
+			series["recall_ase"][var_val] = []
 			if num_sigs > 0:
 				for sind, sval in enumerate(val["causal_sets_ase"]):
 					sigs = sig_snps[sind]
@@ -517,6 +520,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["avg_sets_caviar_ase"][var_val] = np.mean(val["set_sizes_caviar_ase"])
 			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
 			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
+			series["recall_caviar_ase"][var_val] = []
 			if num_sigs > 0:
 				for sind, sval in enumerate(val["causal_sets_caviar_ase"]):
 					sigs = sig_snps[sind]

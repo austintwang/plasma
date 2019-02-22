@@ -20,12 +20,12 @@ except ImportError:
 def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	thresholds_list = []
 	if "full" in model_flavors:
-		thresholds_list.append("Full Model")
+		thresholds_list.append("Joint-Correlated")
 		for k in sorted(summary["thresholds_full"].keys()):
 			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_full"][k] / total_jobs))
 		thresholds_list.append("")
 	if "indep" in model_flavors:
-		thresholds_list.append("Independent Likelihoods")
+		thresholds_list.append("Joint-Independent")
 		for k in sorted(summary["thresholds_indep"].keys()):
 			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_indep"][k] / total_jobs))
 		thresholds_list.append("")
@@ -54,11 +54,11 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 def write_size_probs(summary, out_dir, total_jobs, model_flavors):
 	size_probs_list = []
 	if "full" in model_flavors:
-		size_probs_list.append("Full Model")
+		size_probs_list.append("Joint-Correlated")
 		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_full"] / total_jobs))
 		size_probs_list.append("")
 	if "indep" in model_flavors:
-		size_probs_list.append("Independent Likelihoods")
+		size_probs_list.append("Joint-Independent")
 		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_indep"] / total_jobs))
 		size_probs_list.append("")
 	if "eqtl" in model_flavors:
@@ -82,7 +82,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	elif metric == "prop":
 		kwd = "set_props"
 
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="dark", font="Roboto")
 
 	# if "full" in model_flavors:
 	# 	set_sizes_full = result["{0}_full".format(kwd)]
@@ -102,7 +102,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="Full"
+				label="Joint-Correlated"
 			)
 		except Exception:
 			pass
@@ -114,7 +114,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="Independent Likelihoods"			
+				label="Joint-Independent"			
 			)
 		except Exception:
 			pass
@@ -157,7 +157,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if metric == "prop":
 		plt.xlim(0, 1)
 	elif metric == "size":
-		plt.xlim(0, None)
+		plt.xlim(0, 1000)
 	plt.legend(title="Model")
 	if cumu:
 		cumu_kwd = "Cumulative "
@@ -192,11 +192,11 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		if "full" in model_flavors:
 			for skey, sval in series["{0}_full".format(kwd)].viewitems():
 				for i in sval:
-					dflst.append([i, skey, "Full"])
+					dflst.append([i, skey, "Joint-Correlated"])
 		if "indep" in model_flavors:
 			for skey, sval in series["{0}_indep".format(kwd)].viewitems():
 				for i in sval:
-					dflst.append([i, skey, "Independent Likelihoods"])
+					dflst.append([i, skey, "Joint-Independent"])
 		if "eqtl" in model_flavors:
 			for skey, sval in series["{0}_eqtl".format(kwd)].viewitems():
 				for i in sval:
@@ -214,6 +214,10 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	title = "Causal Set Sizes Across {0}:\n{1}".format(primary_var_name, name)
 	
 	sns.set(style="whitegrid", font="Roboto")
+	if metric == "prop":
+		plt.ylim(0, 1)
+	elif metric == "size":
+		plt.ylim(0, 1000)
 	sns.violinplot(
 		x=primary_var_name,
 		y=label,
@@ -242,11 +246,11 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		if "full" in model_flavors:
 			for skey, sval in series["recall_full"].viewitems():
 				for i in sval:
-					dflst.append([i, skey, "Full"])
+					dflst.append([i, skey, "Joint-Correlated"])
 		if "indep" in model_flavors:
 			for skey, sval in series["recall_indep"].viewitems():
 				for i in sval:
-					dflst.append([i, skey, "Independent Likelihoods"])
+					dflst.append([i, skey, "Joint-Independent"])
 		if "eqtl" in model_flavors:
 			for skey, sval in series["recall_eqtl"].viewitems():
 				for i in sval:
@@ -521,32 +525,34 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 					recall = sum([int(i in sigs) for i in cset]) / num
 					series["recall_caviar_ase"][var_val].append(recall)
 
+	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors)
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "size")
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "prop")
 
 if __name__ == '__main__':
 	# Normal
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
 	# Normal, all samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
 	name = "Kidney RNA-Seq\nAll Normal Samples"
 
-	normal_all = interpret(target_dir, out_dir, name, "all")
+	normal_all = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Normal, 50 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
 	name = "Kidney RNA-Seq\n50 Normal Samples"
 
-	normal_50 = interpret(target_dir, out_dir, name, "all")
+	normal_50 = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Normal, 10 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
 	name = "Kidney RNA-Seq\n10 Normal Samples"
 
-	normal_10 = interpret(target_dir, out_dir, name, "all")
+	normal_10 = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Normal, across sample sizes
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
@@ -559,41 +565,42 @@ if __name__ == '__main__':
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 
 	# Tumor
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
 	# Tumor, all samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
 	name = "Kidney RNA-Seq\nAll Tumor Samples"
 
-	tumor_all = interpret(target_dir, out_dir, name, "all")
+	tumor_all = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Tumor, 200 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
 	name = "Kidney RNA-Seq\n200 Tumor Samples"
 
-	tumor_200 = interpret(target_dir, out_dir, name, "all")
+	tumor_200 = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Tumor, 100 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
 	name = "Kidney RNA-Seq\n100 Tumor Samples"
 
-	tumor_100 = interpret(target_dir, out_dir, name, "all")
+	tumor_100 = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Tumor, 50 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
 	name = "Kidney RNA-Seq\n50 Tumor Samples"
 
-	tumor_50 = interpret(target_dir, out_dir, name, "all")
+	tumor_50 = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Tumor, 10 samples
 	target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
 	name = "Kidney RNA-Seq\n10 Tumor Samples"
 
-	tumor_10 = interpret(target_dir, out_dir, name, "all")
+	tumor_10 = interpret(target_dir, out_dir, name, model_flavors)
 
 	# Tumor, across sample sizes
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
@@ -610,4 +617,4 @@ if __name__ == '__main__':
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
 	name = "Kidney RNA-Seq\nAll Tumor Samples"
 
-	tumor_low_herit = interpret(target_dir, out_dir, name, "all")
+	tumor_low_herit = interpret(target_dir, out_dir, name, model_flavors)

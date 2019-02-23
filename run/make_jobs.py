@@ -102,7 +102,11 @@ if __name__ == '__main__':
 	chr_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/vcf/"
 	# chrs = ["KIRC.ALL.AS.chr{0}.vcf.gz".format(i + 1) for i in xrange(22)]
 	# chr_paths = [os.path.join(chr_dir, i) for i in chrs]
-	chr_info = {"all": os.path.join(chr_dir, "all_chrs.h3k27ac.vcf.gz")}
+	# chr_info = {"all": os.path.join(chr_dir, "all_chrs.h3k27ac.vcf.gz")}
+	chr_info = {
+		"chr{0}".format(i + 1): os.path.join(chr_dir, "all_chrs.h3k27ac.vcf.gz") for i in xrange(22)
+	}
+
 
 	# Tumor Data
 	bed_path = "/bcb/agusevlab/ashetty/stratas_analysis_files/imbalanced_peaks.T.h3k27ac.101118.bed"

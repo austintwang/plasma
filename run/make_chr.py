@@ -9,6 +9,7 @@ import numpy as np
 import os
 import gzip
 import sys
+import pysam
 import vcf
 try:
 	import cPickle as pickle
@@ -96,6 +97,8 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 	max_active = -1
 	# finish = False
 	target_final = len(target_data) - 1
+
+	pysam.tabix_index(chr_path)
 
 	vcf_reader = vcf.Reader(filename=chr_path)
 	ppl_names = vcf_reader.samples

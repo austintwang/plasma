@@ -82,7 +82,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	elif metric == "prop":
 		kwd = "set_props"
 
-	sns.set(style="dark", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto")
 
 	# if "full" in model_flavors:
 	# 	set_sizes_full = result["{0}_full".format(kwd)]
@@ -463,8 +463,9 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 	sig_snps = []
 	num_sigs = []
 	for i in summaries[0]["ppas_eqtl"]:
-		sig_snps.append(set([ind for ind, val in enumerate(i) if val >= 0.1]))
-		num_sigs.append(len(sig_snps))
+		sigs = set([ind for ind, val in enumerate(i) if val >= 0.1])
+		sig_snps.append(sigs)
+		num_sigs.append(len(sigs))
 
 	for ind, val in enumerate(summaries):
 		var_val = primary_var_vals[ind]

@@ -36,6 +36,7 @@ def finalize(data, jobs_dir):
 	if not os.path.isdir(target_path):
 		os.makedirs(target_path)
 
+	print(data) ####
 	with open(out_path, "wb") as outfile:
 		pickle.dump(data, outfile)
 	return target_path
@@ -96,7 +97,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 
 	target_data.sort(key=lambda x: x["abs_begin"])
 	target_data.sort(key=lambda x: int((x["chr"]).translate(None, non_numeric_chars)))
-	print(target_data) ####
+	# print(target_data) ####
 
 	active_ids = {}
 	max_active = -1

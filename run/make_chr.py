@@ -36,7 +36,7 @@ def finalize(data, jobs_dir):
 	if not os.path.isdir(target_path):
 		os.makedirs(target_path)
 
-	print(data) ####
+	# print(data) ####
 	with open(out_path, "wb") as outfile:
 		pickle.dump(data, outfile)
 	return target_path
@@ -119,7 +119,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 	for record in vcf_iter:
 		chr_num = record.CHROM
 		# print(chr_num) ####
-		# print(record) ####
+		print(record) ####
 		pos = int(record.POS) + 1
 		# print(pos) ####
 		if record.ID == ".":

@@ -474,10 +474,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_full"][var_val] = val["set_sizes_full"]
 			series["all_props_full"][var_val] = val["set_props_full"]
 			series["recall_full"][var_val] = []
-			if num_sigs > 0:
-				for sind, sval in enumerate(val["causal_sets_full"]):
-					sigs = sig_snps[sind]
-					num = num_sigs[sind]
+			for sind, sval in enumerate(val["causal_sets_full"]):
+				sigs = sig_snps[sind]
+				num = num_sigs[sind]
+				if num > 0:
 					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
 					recall = sum([int(i in sigs) for i in cset]) / num
 					series["recall_full"][var_val].append(recall)
@@ -486,10 +486,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
 			series["all_props_indep"][var_val] = val["set_props_indep"]
 			series["recall_indep"][var_val] = []
-			if num_sigs > 0:
-				for sind, sval in enumerate(val["causal_sets_indep"]):
-					sigs = sig_snps[sind]
-					num = num_sigs[sind]
+			for sind, sval in enumerate(val["causal_sets_indep"]):
+				sigs = sig_snps[sind]
+				num = num_sigs[sind]
+				if num > 0:
 					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
 					recall = sum([int(i in sigs) for i in cset]) / num
 					series["recall_indep"][var_val].append(recall)
@@ -498,10 +498,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
 			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
 			series["recall_eqtl"][var_val] = []
-			if num_sigs > 0:
-				for sind, sval in enumerate(val["causal_sets_eqtl"]):
-					sigs = sig_snps[sind]
-					num = num_sigs[sind]
+			for sind, sval in enumerate(val["causal_sets_eqtl"]):
+				sigs = sig_snps[sind]
+				num = num_sigs[sind]
+				if num > 0:
 					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
 					recall = sum([int(i in sigs) for i in cset]) / num
 					series["recall_eqtl"][var_val].append(recall)
@@ -510,10 +510,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
 			series["all_props_ase"][var_val] = val["set_props_ase"]
 			series["recall_ase"][var_val] = []
-			if num_sigs > 0:
-				for sind, sval in enumerate(val["causal_sets_ase"]):
-					sigs = sig_snps[sind]
-					num = num_sigs[sind]
+			for sind, sval in enumerate(val["causal_sets_ase"]):
+				sigs = sig_snps[sind]
+				num = num_sigs[sind]
+				if num > 0:
 					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
 					recall = sum([int(i in sigs) for i in cset]) / num
 					series["recall_ase"][var_val].append(recall)
@@ -522,10 +522,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
 			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
 			series["recall_caviar_ase"][var_val] = []
-			if num_sigs > 0:
-				for sind, sval in enumerate(val["causal_sets_caviar_ase"]):
-					sigs = sig_snps[sind]
-					num = num_sigs[sind]
+			for sind, sval in enumerate(val["causal_sets_caviar_ase"]):
+				sigs = sig_snps[sind]
+				num = num_sigs[sind]
+				if num > 0:
 					cset = [cind for cind, cval in enumerate(sval) if cval == 1]
 					recall = sum([int(i in sigs) for i in cset]) / num
 					series["recall_caviar_ase"][var_val].append(recall)

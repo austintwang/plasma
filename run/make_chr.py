@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import numpy as np
+import string
 import os
 import gzip
 import sys
@@ -91,7 +92,10 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 		target_data.append(job_info)
 
 	# print(target_data) ####
+	non_numeric_chars = string.printable[10:]
+
 	target_data.sort(key=lambda x: x["abs_begin"])
+	target_data.sort(key=lambda x: int((x["chr"]).translate(None, non_numeric_chars)))
 
 	active_ids = {}
 	max_active = -1

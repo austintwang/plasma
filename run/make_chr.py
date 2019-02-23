@@ -96,6 +96,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 
 	target_data.sort(key=lambda x: x["abs_begin"])
 	target_data.sort(key=lambda x: int((x["chr"]).translate(None, non_numeric_chars)))
+	print(target_data) ####
 
 	active_ids = {}
 	max_active = -1

@@ -111,7 +111,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 	# print(next(vcf_reader)) ####
 
 	for record in vcf_reader.fetch(chr_num):
-		chr_num = record.CHROM[3:]
+		chr_num = record.CHROM
 		# print(chr_num) ####
 		# print(record) ####
 		pos = int(record.POS) + 1

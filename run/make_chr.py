@@ -38,7 +38,7 @@ def finalize(data, jobs_dir):
 		pickle.dump(data, outfile)
 	return target_path
 
-def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
+def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 	jobs_dir = os.path.join(out_dir, "jobs")
 
 	bed_info = []
@@ -49,24 +49,29 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 			# 	if not line.startswith("chr"):
 			# 		continue
 			# 	bed_start = True
-			if line.startswith("chr{0}\t".format(chr_num)):
-				entry = line.split()[0:5]
+			if chr_num == "all" or line.startswith(chr_spec + "\t"):
+				entry = line.split()
 				bed_info.append(entry)
 
 	target_data = []
 	for i in bed_info:
+		chr_num = i[0]
 		margin = int(margin)
-		tss = int(i[4])
-		snps_begin = tss - margin
-		snps_end = tss + margin
 		gene_begin = int(i[1])
 		gene_end = int(i[2])
+		if len(entry) >= 5:
+			center = int(i[4])
+		else:
+			center = (gene_begin + gene_end) // 2
+		snps_begin = center - margin
+		snps_end = center + margin
+		
 		abs_begin = min(snps_begin, gene_begin)
 		abs_end = max(snps_end, gene_end)
 
 		job_info = {
 			"chr": str(chr_num),
-			"tss": int(i[4]),
+			"center": center,
 			"snps_begin": snps_begin,
 			"snps_end": snps_end,
 			"gene_begin": gene_begin,
@@ -98,14 +103,14 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_num):
 
 	# print(next(vcf_reader)) ####
 
-	for record in vcf_reader.fetch("chr{0}".format(chr_num)):
+	for record in vcf_reader.fetch(chr_num):
 		chr_num = record.CHROM[3:]
 		# print(chr_num) ####
 		# print(record) ####
 		pos = int(record.POS) + 1
 		# print(pos) ####
 		if record.ID == ".":
-			snp_id = "chr{0}.{1}".format(chr_num, pos)
+			snp_id = "{0}.{1}".format(chr_num, pos)
 		else:
 			snp_id = record.ID
 

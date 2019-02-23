@@ -109,8 +109,12 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 	num_ppl = len(ppl_names)
 
 	# print(next(vcf_reader)) ####
+	if chr_spec == "all":
+		vcf_iter = vcf_reader
+	else:
+		vcf_iter = vcf_reader.fetch(chr_spec)
 
-	for record in vcf_reader.fetch(chr_num):
+	for record in vcf_iter:
 		chr_num = record.CHROM
 		# print(chr_num) ####
 		# print(record) ####

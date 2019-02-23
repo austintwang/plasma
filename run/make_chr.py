@@ -49,7 +49,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 			# 	if not line.startswith("chr"):
 			# 		continue
 			# 	bed_start = True
-			if chr_num == "all" or line.startswith(chr_spec + "\t"):
+			if chr_spec == "all" or line.startswith(chr_spec + "\t"):
 				entry = line.split()
 				bed_info.append(entry)
 

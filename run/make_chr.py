@@ -98,7 +98,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 	# finish = False
 	target_final = len(target_data) - 1
 
-	pysam.tabix_index(chr_path)
+	# pysam.tabix_index(chr_path, preset="vcf")
 
 	vcf_reader = vcf.Reader(filename=chr_path)
 	ppl_names = vcf_reader.samples

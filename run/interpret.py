@@ -579,7 +579,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval), key=lambda x:sval[x], reverse=True))
+					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
 					recall = []
 					recall_stat = 0
 					for i in ppa_idx_sorted:
@@ -596,7 +596,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval), key=lambda x:sval[x], reverse=True))
+					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
 					recall = []
 					recall_stat = 0
 					for i in ppa_idx_sorted:
@@ -613,7 +613,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval), key=lambda x:sval[x], reverse=True))
+					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
 					recall = []
 					recall_stat = 0
 					for i in ppa_idx_sorted:
@@ -630,7 +630,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval), key=lambda x:sval[x], reverse=True))
+					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
 					recall = []
 					recall_stat = 0
 					for i in ppa_idx_sorted:

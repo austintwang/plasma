@@ -255,7 +255,7 @@ class FmUnchecked(object):
 		# remaining_errors = 1 ####
 		varphi = denominator * denominator * ((phases.T * weights**2 * phases.T).sum(1) * remaining_errors + (phases.T * weights * phases.T).sum(1))
 		# np.savetxt("varphi.txt", varphi) ####
-		self.imbalance_stats = phi / np.sqrt(varphi)
+		self.imbalance_stats = np.nan_to_num(phi / np.sqrt(varphi))
 		# np.savetxt("imbalance_stats.txt", self.imbalance_stats) ####
 
 		# print(self.phases) ####

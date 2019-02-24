@@ -24,7 +24,7 @@ def make_filter(in_path, out_path):
 if __name__ == '__main__':
 
 	# Prostate Data
-	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets/prostate_tn"
+	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs_filt.bed.gz"
 	out_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq/snp_filters/"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)

@@ -541,7 +541,7 @@ if __name__ == '__main__':
 	poll_freq = 5
 
 	list_path = "all"
-	selection_path = "all"
+	selection_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets/normal.pickle"
 
 	# Normal, all samples
 	params_name = "1cv_all.pickle"
@@ -600,12 +600,12 @@ if __name__ == '__main__':
 	poll_freq = 5
 
 	list_path = "all"
-	selection_path = "all"
+	selection_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets/tumor.pickle"
 
 	# Tumor, all samples
 	params_name = "1cv_all.pickle"
 	hyperparams["max_ppl"] = None
-	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_normal_all"
+	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
 
 	run(
 		output_path, 
@@ -623,7 +623,7 @@ if __name__ == '__main__':
 	# Normal, 10 samples
 	params_name = "1cv_10.pickle"
 	hyperparams["max_ppl"] = 10
-	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_normal_10"
+	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
 
 	run(
 		output_path, 

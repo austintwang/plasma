@@ -164,15 +164,16 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 		include_marker = True
 		for ind, sample in enumerate(record.samples):
 			gen_data = sample["GT"]
+			
+			if gen_data == "./.":
+				include_marker = False
+				break
+
 			read_data = sample["AS"]
 
 			ref_reads = int(read_data[0])
 			alt_reads = int(read_data[1])
 			counts_total[ind] += ref_reads + alt_reads
-
-			if gen_data == "./.":
-				include_marker = False
-				break
 
 			haps = gen_data.split("|")
 			hap1 = int(haps[0])

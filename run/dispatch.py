@@ -106,7 +106,19 @@ def delete(s, job_id):
 	
 	# args = ["qdel", job_id]
 
-def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq, script_path, selection_path, list_path, params_name):
+def run(
+		output_path, 
+		input_path, 
+		params_path, 
+		hyperparams, 
+		num_tasks, 
+		poll_freq, 
+		script_path, 
+		selection_path, 
+		list_path, 
+		filter_path, 
+		params_name
+	):
 	if not os.path.exists(params_path):
 		os.makedirs(params_path)
 
@@ -163,7 +175,8 @@ def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq,
 						input_path, 
 						hyperparams_path, 
 						script_path, 
-						selection_path
+						selection_path,
+						filter_path
 					)
 					active_pool[target] = job_id
 
@@ -200,7 +213,8 @@ def run(output_path, input_path, params_path, hyperparams, num_tasks, poll_freq,
 						input_path, 
 						params_path, 
 						script_path, 
-						selection_path
+						selection_path,
+						filter_path
 					)
 					active_pool[target] = job_id
 
@@ -524,6 +538,7 @@ if __name__ == '__main__':
 	input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/jobs"
 	params_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/params"
 	script_path = os.path.join(curr_path, "job.py")
+	filter_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
 
 	hyperparams = {
 		"overdispersion": 0.05,
@@ -558,7 +573,8 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
-		params_name
+		filter_path,
+		params_name,
 	)
 
 	# Normal, 10 samples
@@ -576,6 +592,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		params_name
 	)
 
@@ -617,6 +634,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		params_name
 	)
 
@@ -635,5 +653,6 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		params_name
 	)

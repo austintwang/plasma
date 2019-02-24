@@ -101,13 +101,19 @@ def write_output(output_path, result):
 	with open(output_return, "wb") as output_file:
 		pickle.dump(result, output_file)
 
-def main(output_path, input_path, params_path, selection_path):
+def main(output_path, input_path, params_path, selection_path, filter_path):
 	# input_path = os.path.join(target_dir, "input.pickle")
 	if selection_path == "all":
 		selection = False
 	else:
 		with open(selection_path, "rb") as selection_file:
 			selection = pickle.load(selection_file)
+
+	if filter_path == "all":
+		snp_filter = False
+	else:
+		with open(filter_path, "rb") as filter_file:
+			snp_filter = pickle.load(filter_file)
 
 	with open(input_path, "rb") as input_file:
 		# print(input_path) ####
@@ -118,9 +124,6 @@ def main(output_path, input_path, params_path, selection_path):
 		params = pickle.load(params_file)
 
 	inputs.update(params)
-
-	inputs["num_snps_imbalance"] = len(inputs["hap1"])
-	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
 	if selection:
 		select = np.array([i in selection for i in inputs["sample_names"]])
@@ -164,6 +167,16 @@ def main(output_path, input_path, params_path, selection_path):
 	inputs["counts_total"] = inputs["counts_total"][select_counts]
 
 	inputs["num_ppl"] = np.size(inputs["counts1"])
+
+	if snp_filter:
+		snps_in_filter = [ind for ind, val in enumerate(inputs["snp_ids"]) if val in snp_filter]
+		inputs["snp_ids"] = inputs["snp_ids"][snps_in_filter]
+		inputs["snp_pos"] = inputs["snp_pos"][snps_in_filter]
+		inputs["hap1"] = inputs["hap1"][:, snps_in_filter]
+		inputs["hap2"] = inputs["hap2"][:, snps_in_filter]
+
+	inputs["num_snps_imbalance"] = len(inputs["hap1"])
+	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
 	result = {}
 
@@ -351,7 +364,8 @@ if __name__ == '__main__':
 	input_path = sys.argv[2]
 	params_path = sys.argv[3]
 	selection_path = sys.argv[4]
-	main(output_path, input_path, params_path, selection_path)
+	filter_path = sys.argv[5]
+	main(output_path, input_path, params_path, selection_path, filter_path)
 
 	
 	# exit_code = 0

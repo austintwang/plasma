@@ -292,7 +292,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
-			x="Number of Selected Markers",
+			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'Joint-Correlated'"),
@@ -307,7 +307,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
-			x="Number of Selected Markers",
+			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'Joint-Independent'"),
@@ -322,7 +322,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
-			x="Number of Selected Markers",
+			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'eQTL-Only'"),
@@ -337,7 +337,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
-			x="Number of Selected Markers",
+			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'ASE-Only'"),
@@ -352,7 +352,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
-			x="Number of Selected Markers",
+			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'CAVIAR-ASE'"),

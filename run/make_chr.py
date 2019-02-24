@@ -161,9 +161,18 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 		counts2 = np.zeros(num_ppl)
 		counts_total = np.zeros(num_ppl)
 
+		include_marker = True
 		for ind, sample in enumerate(record.samples):
 			gen_data = sample["GT"]
 			read_data = sample["AS"]
+
+			ref_reads = int(read_data[0])
+			alt_reads = int(read_data[1])
+			counts_total[ind] += ref_reads + alt_reads
+
+			if gen_data == "./.":
+				include_marker = False
+				break
 
 			haps = gen_data.split("|")
 			hap1 = int(haps[0])
@@ -171,9 +180,6 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 			hap1_all[ind] = hap1
 			hap2_all[ind] = hap2
 
-			ref_reads = int(read_data[0])
-			alt_reads = int(read_data[1])
-			counts_total[ind] += ref_reads + alt_reads
 			if (hap1 == 0) and (hap2 == 1):
 				counts1[ind] += ref_reads
 				counts2[ind] += alt_reads
@@ -181,16 +187,17 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 				counts2[ind] += ref_reads
 				counts1[ind] += alt_reads
 
-		for k, v in active_ids.viewitems():
-			if v["snps_begin"] <= pos < v["snps_end"]:
-				v["snp_ids"].append(snp_id)
-				v["snp_pos"].append(pos)
-				v["hap1"].append(hap1_all)
-				v["hap2"].append(hap2_all)
-			if v["gene_begin"] <= pos < v["gene_end"]:
-				v["counts1"] += counts1
-				v["counts2"] += counts2
-				v["counts_total"] += counts_total
+		if include_marker:
+			for k, v in active_ids.viewitems():
+				if v["snps_begin"] <= pos < v["snps_end"]:
+					v["snp_ids"].append(snp_id)
+					v["snp_pos"].append(pos)
+					v["hap1"].append(hap1_all)
+					v["hap2"].append(hap2_all)
+				if v["gene_begin"] <= pos < v["gene_end"]:
+					v["counts1"] += counts1
+					v["counts2"] += counts2
+					v["counts_total"] += counts_total
 
 		# print(max_active, target_final) ####
 		if (max_active == target_final) and (len(active_ids) == 0):

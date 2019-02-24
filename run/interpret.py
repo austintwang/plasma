@@ -288,7 +288,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 	plt.clf()
 
 	if "full" in model_flavors:
-		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "Joint-Correlated")
+		title = "Proportion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "Joint-Correlated")
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(

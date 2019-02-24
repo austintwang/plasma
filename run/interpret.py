@@ -247,35 +247,35 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 			for skey, sval in series["recall_full"].viewitems():
 				for i in sval:
 					for ind, val in enumerate(i):
-						dflst.append([ind + 1, val, skey, "Joint-Correlated"])
+						dflst.append([(ind + 1)/len(i), val, skey, "Joint-Correlated"])
 		if "indep" in model_flavors:
 			for skey, sval in series["recall_indep"].viewitems():
 				for i in sval:
 					for ind, val in enumerate(i):
-						dflst.append([ind + 1, val, skey, "Joint-Independent"])
+						dflst.append([(ind + 1)/len(i), val, skey, "Joint-Independent"])
 		if "eqtl" in model_flavors:
 			for skey, sval in series["recall_eqtl"].viewitems():
 				for i in sval:
 					for ind, val in enumerate(i):
-						dflst.append([ind + 1, val, skey, "eQTL-Only"])
+						dflst.append([(ind + 1)/len(i), val, skey, "eQTL-Only"])
 		if "ase" in model_flavors:
 			for skey, sval in series["recall_ase"].viewitems():
 				for i in sval:
 					for ind, val in enumerate(i):
-						dflst.append([ind + 1, val, skey, "ASE-Only"])
+						dflst.append([(ind + 1)/len(i), val, skey, "ASE-Only"])
 		if "acav" in model_flavors:
 			for skey, sval in series["recall_caviar_ase"].viewitems():
 				for i in sval:
 					for ind, val in enumerate(i):
-						dflst.append([ind + 1, val, skey, "CAVIAR-ASE"])
-	res_df = pd.DataFrame(dflst, columns=["Number of Selected Markers", "Inclusion Rate", primary_var_name, "Model"])
+						dflst.append([(ind + 1)/len(i), val, skey, "CAVIAR-ASE"])
+	res_df = pd.DataFrame(dflst, columns=["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"])
 
 	title = "Inclusion Rates Across {0}:\n{1}".format(primary_var_name, name)
 	
 	sns.set(style="whitegrid", font="Roboto")
 	palette = sns.cubehelix_palette(len(primary_var_vals))
 	sns.lineplot(
-		x="Number of Selected Markers",
+		x="Proportion of Selected Markers",
 		y="Inclusion Rate",
 		hue=primary_var_name,
 		style="Model",
@@ -592,7 +592,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
 			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
 			series["recall_eqtl"][var_val] = []
-			for sind, sval in enumerate(val["ppas_indep"]):
+			for sind, sval in enumerate(val["ppas_eqtl"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
@@ -673,7 +673,7 @@ if __name__ == '__main__':
 	name = "Kidney RNA-Seq, Normal Samples"
 	model_flavors = set(["indep", "eqtl", "acav"])
 	summaries = [normal_all, normal_50, normal_10]
-	primary_var_vals = [90, 50, 10]
+	primary_var_vals = [70, 50, 10]
 	primary_var_name = "Sample Size"
 
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
@@ -721,7 +721,7 @@ if __name__ == '__main__':
 	name = "Kidney RNA-Seq, Tumor Samples"
 	model_flavors = set(["indep", "eqtl", "acav"])
 	summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
-	primary_var_vals = [500, 200, 100, 50, 10]
+	primary_var_vals = [524, 200, 100, 50, 10]
 	primary_var_name = "Sample Size"
 
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
@@ -732,3 +732,6 @@ if __name__ == '__main__':
 	name = "Kidney RNA-Seq\nAll Tumor Samples"
 
 	tumor_low_herit = interpret(target_dir, out_dir, name, model_flavors)
+
+
+	#39

@@ -29,9 +29,19 @@ def make_set(in_path, out_tumor_path, out_normal_path):
 		pickle.dump(normal_set, out_normal_file)
 
 if __name__ == '__main__':
-	# Kidney Data
-	in_path = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASVCF/KIRC.ALL.AS.PHE"
-	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets"
+	# # Kidney Data
+	# in_path = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASVCF/KIRC.ALL.AS.PHE"
+	# out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets"
+	# if not os.path.exists(out_dir):
+	# 	os.makedirs(out_dir)
+	# out_tumor_path = os.path.join(out_dir, "tumor.pickle")
+	# out_normal_path = os.path.join(out_dir, "normal.pickle")
+
+	# make_set(in_path, out_tumor_path, out_normal_path)
+
+	# Prostate Data
+	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets/prostate_tn"
+	out_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	out_tumor_path = os.path.join(out_dir, "tumor.pickle")

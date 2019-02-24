@@ -18,7 +18,7 @@ except ImportError:
 
 # LOCAL = False
 
-def dispatch(s, target, output_path, input_path, params_path, script_path, selection_path):
+def dispatch(s, target, output_path, input_path, params_path, script_path, selection_path, filter_path):
 	job_input_path = os.path.join(input_path, target, "input.pickle")
 	job_output_path = os.path.join(output_path, target)
 
@@ -33,7 +33,7 @@ def dispatch(s, target, output_path, input_path, params_path, script_path, selec
 
 	jt = s.createJobTemplate()
 	jt.remoteCommand = script_path
-	jt.args = [job_output_path, job_input_path, params_path, selection_path]
+	jt.args = [job_output_path, job_input_path, params_path, selection_path, filter_path]
 	# jt.joinFiles = True
 	jt.outputPath = stdout_path
 	jt.errorPath = stderr_path

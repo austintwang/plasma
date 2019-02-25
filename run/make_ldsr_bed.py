@@ -57,6 +57,7 @@ def make_bed(input_path, output_path, model_flavors):
 		except (EOFError, IOError):
 			continue
 
+		print(result.keys()) ####
 		if "full" in model_flavors:
 			for k, v in result["ldsr_data_full"].viewitems():
 				if k in bed_data_all["full"]:

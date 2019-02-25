@@ -246,29 +246,40 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 	for key, val in series.viewitems():
 		if "full" in model_flavors:
 			for skey, sval in series["recall_full"].viewitems():
-				for i in sval:
-					for ind, val in enumerate(i):
-						dflst.append([(ind + 1)/len(i), val, skey, "Joint-Correlated"])
+				data = sorted(sval.items(), key=lambda x: x[0])
+				cumu_recall = 0.
+				for x, val in data:
+					cumu_recall += val
+					dflst.append([x, cumu_recall, skey, "Joint-Correlated"])
+
 		if "indep" in model_flavors:
 			for skey, sval in series["recall_indep"].viewitems():
-				for i in sval:
-					for ind, val in enumerate(i):
-						dflst.append([(ind + 1)/len(i), val, skey, "Joint-Independent"])
+				data = sorted(sval.items(), key=lambda x: x[0])
+				cumu_recall = 0.
+				for x, val in data:
+					cumu_recall += val
+					dflst.append([x, val, skey, "Joint-Independent"])
 		if "eqtl" in model_flavors:
 			for skey, sval in series["recall_eqtl"].viewitems():
-				for i in sval:
-					for ind, val in enumerate(i):
-						dflst.append([(ind + 1)/len(i), val, skey, "eQTL-Only"])
+				data = sorted(sval.items(), key=lambda x: x[0])
+				cumu_recall = 0.
+				for x, val in data:
+					cumu_recall += val
+					dflst.append([x, val, skey, "eQTL-Only"])
 		if "ase" in model_flavors:
 			for skey, sval in series["recall_ase"].viewitems():
-				for i in sval:
-					for ind, val in enumerate(i):
-						dflst.append([(ind + 1)/len(i), val, skey, "ASE-Only"])
+				data = sorted(sval.items(), key=lambda x: x[0])
+				cumu_recall = 0.
+				for x, val in data:
+					cumu_recall += val
+					dflst.append([x, val, skey, "ASE-Only"])
 		if "acav" in model_flavors:
 			for skey, sval in series["recall_caviar_ase"].viewitems():
-				for i in sval:
-					for ind, val in enumerate(i):
-						dflst.append([(ind + 1)/len(i), val, skey, "CAVIAR-ASE"])
+				data = sorted(sval.items(), key=lambda x: x[0])
+				cumu_recall = 0.
+				for x, val in data:
+					cumu_recall += val
+					dflst.append([x, val, skey, "CAVIAR-ASE"])
 	res_df = pd.DataFrame(dflst, columns=["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"])
 
 	title = "Inclusion Rates Across {0}:\n{1}".format(primary_var_name, name)
@@ -281,7 +292,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		hue=primary_var_name,
 		style="Model",
 		data=res_df,
-		sort=False,
+		sort=True,
 		palette=palette
 	)
 	plt.title(title)
@@ -297,7 +308,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'Joint-Correlated'"),
-			sort=False,
+			sort=True,
 			palette=palette
 		)
 		plt.title(title)
@@ -312,7 +323,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'Joint-Independent'"),
-			sort=False,
+			sort=True,
 			palette=palette
 		)
 		plt.title(title)
@@ -327,7 +338,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'eQTL-Only'"),
-			sort=False,
+			sort=True,
 			palette=palette
 		)
 		plt.title(title)
@@ -342,7 +353,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'ASE-Only'"),
-			sort=False,
+			sort=True,
 			palette=palette
 		)
 		plt.title(title)
@@ -357,7 +368,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 			y="Inclusion Rate",
 			hue=primary_var_name,
 			data=res_df.query("Model == 'CAVIAR-ASE'"),
-			sort=False,
+			sort=True,
 			palette=palette
 		)
 		plt.title(title)
@@ -558,87 +569,91 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["avg_sets_full"][var_val] = np.mean(val["set_sizes_full"])
 			series["all_sizes_full"][var_val] = val["set_sizes_full"]
 			series["all_props_full"][var_val] = val["set_props_full"]
-			series["recall_full"][var_val] = []
+			series["recall_full"][var_val] = {}
+			data_size = len(val["ppas_full"])
 			for sind, sval in enumerate(val["ppas_full"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval), key=lambda x:sval[x], reverse=True))
-					recall = []
-					recall_stat = 0
+					loc_size = len(sval)
+					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
 					for i in ppa_idx_sorted:
 						if i in sigs:
-							recall_stat += 1. / num
-						recall.append(recall_stat)
-					series["recall_full"][var_val].append(recall)
+							pos = i / loc_size
+							series["recall_full"][var_val].setdefault(pos, 0)
+							series["recall_full"][var_val][pos] += 1. / (num * data_size)
+						
 		if "indep" in model_flavors:
 			series["avg_sets_indep"][var_val] = np.mean(val["set_sizes_indep"])
 			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
 			series["all_props_indep"][var_val] = val["set_props_indep"]
-			series["recall_indep"][var_val] = []
+			series["recall_indep"][var_val] = {}
+			data_size = len(val["ppas_full"])
 			for sind, sval in enumerate(val["ppas_indep"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
-					recall = []
-					recall_stat = 0
+					loc_size = len(sval)
+					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
 					for i in ppa_idx_sorted:
 						if i in sigs:
-							recall_stat += 1. / num
-						recall.append(recall_stat)
-					series["recall_indep"][var_val].append(recall)
+							pos = i / loc_size
+							series["recall_indep"][var_val].setdefault(pos, 0)
+							series["recall_indep"][var_val][pos] += 1. / (num * data_size)
+
 		if "eqtl" in model_flavors:
 			series["avg_sets_eqtl"][var_val] = np.mean(val["set_sizes_eqtl"])
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
 			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
-			series["recall_eqtl"][var_val] = []
+			series["recall_eqtl"][var_val] = {}
+			data_size = len(val["ppas_full"])
 			for sind, sval in enumerate(val["ppas_eqtl"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
-					recall = []
-					recall_stat = 0
+					loc_size = len(sval)
+					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
 					for i in ppa_idx_sorted:
 						if i in sigs:
-							recall_stat += 1. / num
-						recall.append(recall_stat)
-					series["recall_indep"][var_val].append(recall)
+							pos = i / loc_size
+							series["recall_eqtl"][var_val].setdefault(pos, 0)
+							series["recall_eqtl"][var_val][pos] += 1. / (num * data_size)
+
 		if "ase" in model_flavors:
 			series["avg_sets_ase"][var_val] = np.mean(val["set_sizes_ase"])
 			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
 			series["all_props_ase"][var_val] = val["set_props_ase"]
-			series["recall_ase"][var_val] = []
+			series["recall_ase"][var_val] = {}
+			data_size = len(val["ppas_full"])
 			for sind, sval in enumerate(val["ppas_ase"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
-					recall = []
-					recall_stat = 0
+					loc_size = len(sval)
+					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
 					for i in ppa_idx_sorted:
 						if i in sigs:
-							recall_stat += 1. / num
-						recall.append(recall_stat)
-					series["recall_ase"][var_val].append(recall)
+							pos = i / loc_size
+							series["recall_ase"][var_val].setdefault(pos, 0)
+							series["recall_ase"][var_val][pos] += 1. / (num * data_size)
+
 		if "acav" in model_flavors:
 			series["avg_sets_caviar_ase"][var_val] = np.mean(val["set_sizes_caviar_ase"])
 			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
 			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
-			series["recall_caviar_ase"][var_val] = []
+			series["recall_caviar_ase"][var_val] = {}
+			data_size = len(val["ppas_full"])
 			for sind, sval in enumerate(val["ppas_caviar_ase"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
 				if num > 0:
-					ppa_idx_sorted = sorted(range(len(sval)), key=lambda x:sval[x], reverse=True)
-					recall = []
-					recall_stat = 0
+					loc_size = len(sval)
+					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
 					for i in ppa_idx_sorted:
 						if i in sigs:
-							recall_stat += 1. / num
-						recall.append(recall_stat)
-					series["recall_caviar_ase"][var_val].append(recall)
+							pos = i / loc_size
+							series["recall_caviar_ase"][var_val].setdefault(pos, 0)
+							series["recall_caviar_ase"][var_val][pos] += 1. / (num * data_size)
 
 	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors)
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "size")

@@ -588,7 +588,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
 			series["all_props_indep"][var_val] = val["set_props_indep"]
 			series["recall_indep"][var_val] = {}
-			data_size = len(val["ppas_full"])
+			data_size = len(val["ppas_indep"])
 			for sind, sval in enumerate(val["ppas_indep"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
@@ -606,7 +606,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
 			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
 			series["recall_eqtl"][var_val] = {}
-			data_size = len(val["ppas_full"])
+			data_size = len(val["ppas_eqtl"])
 			for sind, sval in enumerate(val["ppas_eqtl"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
@@ -624,7 +624,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
 			series["all_props_ase"][var_val] = val["set_props_ase"]
 			series["recall_ase"][var_val] = {}
-			data_size = len(val["ppas_full"])
+			data_size = len(val["ppas_ase"])
 			for sind, sval in enumerate(val["ppas_ase"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]
@@ -642,7 +642,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
 			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
 			series["recall_caviar_ase"][var_val] = {}
-			data_size = len(val["ppas_full"])
+			data_size = len(val["ppas_caviar_ase"])
 			for sind, sval in enumerate(val["ppas_caviar_ase"]):
 				sigs = sig_snps[sind]
 				num = num_sigs[sind]

@@ -121,13 +121,13 @@ if __name__ == '__main__':
 	# Prostate Data, Tumor
 	input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
 	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all"
-	model_flavors = "all"
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)
 
 	# Prostate Data, Normal
 	input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
 	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all"
-	model_flavors = "all"
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)

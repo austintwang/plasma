@@ -54,11 +54,13 @@ def make_bed(input_path, output_path, model_flavors):
 		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file)
+				if "data_error" in result:
+					continue
 		except (EOFError, IOError):
 			continue
 
-		print(result.keys()) ####
-		print(result["ldsr_data_indep"]) ####
+		# print(result.keys()) ####
+		# print(result["ldsr_data_indep"]) ####
 		if "full" in model_flavors:
 			for k, v in result["ldsr_data_full"].viewitems():
 				if k in bed_data_all["full"]:

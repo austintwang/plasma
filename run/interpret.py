@@ -577,9 +577,9 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
-					for i in ppa_idx_sorted:
-						if i in sigs:
-							pos = i / loc_size
+					for xind, xval in enumerate(ppa_idx_sorted):
+						if xval in sigs:
+							pos = xind / loc_size
 							series["recall_full"][var_val].setdefault(pos, 0)
 							series["recall_full"][var_val][pos] += 1. / (num * data_size)
 						
@@ -595,9 +595,9 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
-					for i in ppa_idx_sorted:
-						if i in sigs:
-							pos = i / loc_size
+					for xind, xval in enumerate(ppa_idx_sorted):
+						if xval in sigs:
+							pos = xind / loc_size
 							series["recall_indep"][var_val].setdefault(pos, 0)
 							series["recall_indep"][var_val][pos] += 1. / (num * data_size)
 
@@ -613,9 +613,9 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
-					for i in ppa_idx_sorted:
-						if i in sigs:
-							pos = i / loc_size
+					for xind, xval in enumerate(ppa_idx_sorted):
+						if xval in sigs:
+							pos = xind / loc_size
 							series["recall_eqtl"][var_val].setdefault(pos, 0)
 							series["recall_eqtl"][var_val][pos] += 1. / (num * data_size)
 
@@ -631,9 +631,9 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
-					for i in ppa_idx_sorted:
-						if i in sigs:
-							pos = i / loc_size
+					for xind, xval in enumerate(ppa_idx_sorted):
+						if xval in sigs:
+							pos = xind / loc_size
 							series["recall_ase"][var_val].setdefault(pos, 0)
 							series["recall_ase"][var_val][pos] += 1. / (num * data_size)
 
@@ -649,9 +649,9 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
-					for i in ppa_idx_sorted:
-						if i in sigs:
-							pos = i / loc_size
+					for xind, xval in enumerate(ppa_idx_sorted):
+						if xval in sigs:
+							pos = xind / loc_size
 							series["recall_caviar_ase"][var_val].setdefault(pos, 0)
 							series["recall_caviar_ase"][var_val][pos] += 1. / (num * data_size)
 

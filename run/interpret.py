@@ -384,7 +384,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 
 	targets = os.listdir(target_dir)
 
-	summary = {}
+	summary = {"names":[]}
 	if "full" in model_flavors:
 		summary["causal_sets_full"] = []
 		summary["ppas_full"] = []
@@ -443,6 +443,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			failed_jobs.append(t)
 			continue
 		
+		summary["names"].append(t)
 		if "full" in model_flavors:
 			summary["causal_sets_full"].append(result["causal_set_full"])
 			summary["ppas_full"].append(result["ppas_full"])
@@ -556,24 +557,26 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 		series["all_props_caviar_ase"] = {}
 		series["recall_caviar_ase"] = {}
 
-	sig_snps = []
-	num_sigs = []
-	for i in summaries[0]["ppas_eqtl"]:
-		sigs = set([ind for ind, val in enumerate(i) if val >= 0.1])
-		sig_snps.append(sigs)
-		num_sigs.append(len(sigs))
+	sig_snps = {}
+	num_sigs = {}
+	for ind, val in enumerate(summaries[0]["ppas_eqtl"]):
+		name = summaries[0]["names"][ind]
+		sigs = set([sind for sind, sval in enumerate(val) if sval >= 0.1])
+		sig_snps[name] = sigs
+		num_sigs[name] = len(sigs)
 
 	for ind, val in enumerate(summaries):
 		var_val = primary_var_vals[ind]
+		data_size = sum([1 for i in num_sigs.values() if i > 0])
 		if "full" in model_flavors:
 			series["avg_sets_full"][var_val] = np.mean(val["set_sizes_full"])
 			series["all_sizes_full"][var_val] = val["set_sizes_full"]
 			series["all_props_full"][var_val] = val["set_props_full"]
 			series["recall_full"][var_val] = {}
-			data_size = sum([1 for i in xrange(len(val["ppas_full"])) if num_sigs[i] > 0])
 			for sind, sval in enumerate(val["ppas_full"]):
-				sigs = sig_snps[sind]
-				num = num_sigs[sind]
+				name = val["names"][sind]
+				sigs = sig_snps[name]
+				num = num_sigs[name]
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
@@ -588,10 +591,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
 			series["all_props_indep"][var_val] = val["set_props_indep"]
 			series["recall_indep"][var_val] = {}
-			data_size = sum([1 for i in xrange(len(val["ppas_indep"])) if num_sigs[i] > 0])
 			for sind, sval in enumerate(val["ppas_indep"]):
-				sigs = sig_snps[sind]
-				num = num_sigs[sind]
+				name = val["names"][sind]
+				sigs = sig_snps[name]
+				num = num_sigs[name]
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
@@ -606,10 +609,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
 			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
 			series["recall_eqtl"][var_val] = {}
-			data_size = sum([1 for i in xrange(len(val["ppas_eqtl"])) if num_sigs[i] > 0])
 			for sind, sval in enumerate(val["ppas_eqtl"]):
-				sigs = sig_snps[sind]
-				num = num_sigs[sind]
+				name = val["names"][sind]
+				sigs = sig_snps[name]
+				num = num_sigs[name]
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
@@ -624,10 +627,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
 			series["all_props_ase"][var_val] = val["set_props_ase"]
 			series["recall_ase"][var_val] = {}
-			data_size = sum([1 for i in xrange(len(val["ppas_ase"])) if num_sigs[i] > 0])
 			for sind, sval in enumerate(val["ppas_ase"]):
-				sigs = sig_snps[sind]
-				num = num_sigs[sind]
+				name = val["names"][sind]
+				sigs = sig_snps[name]
+				num = num_sigs[name]
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
@@ -642,10 +645,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
 			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
 			series["recall_caviar_ase"][var_val] = {}
-			data_size = sum([1 for i in xrange(len(val["ppas_caviar_ase"])) if num_sigs[i] > 0])
 			for sind, sval in enumerate(val["ppas_caviar_ase"]):
-				sigs = sig_snps[sind]
-				num = num_sigs[sind]
+				name = val["names"][sind]
+				sigs = sig_snps[name]
+				num = num_sigs[name]
 				if num > 0:
 					loc_size = len(sval)
 					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)

@@ -258,28 +258,28 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, val, skey, "Joint-Independent"])
+					dflst.append([x, cumu_recall, skey, "Joint-Independent"])
 		if "eqtl" in model_flavors:
 			for skey, sval in series["recall_eqtl"].viewitems():
 				data = sorted(sval.items(), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, val, skey, "eQTL-Only"])
+					dflst.append([x, cumu_recall, skey, "eQTL-Only"])
 		if "ase" in model_flavors:
 			for skey, sval in series["recall_ase"].viewitems():
 				data = sorted(sval.items(), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, val, skey, "ASE-Only"])
+					dflst.append([x, cumu_recall, skey, "ASE-Only"])
 		if "acav" in model_flavors:
 			for skey, sval in series["recall_caviar_ase"].viewitems():
 				data = sorted(sval.items(), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, val, skey, "CAVIAR-ASE"])
+					dflst.append([x, cumu_recall, skey, "CAVIAR-ASE"])
 	res_df = pd.DataFrame(dflst, columns=["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"])
 
 	title = "Inclusion Rates Across {0}:\n{1}".format(primary_var_name, name)

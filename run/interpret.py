@@ -758,7 +758,7 @@ if __name__ == '__main__':
 
 	# tumor_low_herit = interpret(target_dir, out_dir, name, model_flavors)
 
-	Prostate Cancer
+	#Prostate Cancer
 	
 	# Normal
 	model_flavors = set(["indep", "eqtl", "ase", "acav"])

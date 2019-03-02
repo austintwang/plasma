@@ -46,7 +46,7 @@ except ImportError:
 
 # print("imp5") ####
 
-def run_model(inputs, input_updates):
+def run_model(inputs, input_updates, informative_snps):
 	model_inputs = inputs.copy()
 	model_inputs.update(input_updates)
 	# print(model_inputs) ####
@@ -65,9 +65,15 @@ def run_model(inputs, input_updates):
 			inputs["search_iterations"]
 		)
 
-	causal_set = model.get_causal_set(inputs["confidence"])
-	ppas = model.get_ppas()
+	causal_set_inf = model.get_causal_set(inputs["confidence"])
+	ppas_inf = model.get_ppas()
 	size_probs = model.get_size_probs()
+
+	causal_set = np.ones(np.shape(informative_snps))
+	np.put(causal_set, informative_snps, causal_set_inf)
+
+	ppas = np.fill(np.shape(informative_snps), np.nan)
+	np.put(ppas, informative_snps, ppas_inf)
 
 	return causal_set, ppas, size_probs, model
 
@@ -174,6 +180,17 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 		inputs["snp_pos"] = inputs["snp_pos"][snps_in_filter]
 		inputs["hap1"] = inputs["hap1"][:, snps_in_filter]
 		inputs["hap2"] = inputs["hap2"][:, snps_in_filter]
+
+	# inputs["num_snps_imbalance"] = len(inputs["hap1"])
+	# inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
+
+	haps_comb = inputs["hap1"] + inputs["hap2"]
+	informative_snps = np.where(np.all(haps_comb == haps_comb[0,:], axis=0))
+
+	# inputs["snp_ids"] = inputs["snp_ids"][informative_snps]
+	# inputs["snp_pos"] = inputs["snp_pos"][informative_snps]
+	inputs["hap1"] = inputs["hap1"][:, informative_snps]
+	inputs["hap2"] = inputs["hap2"][:, informative_snps]
 
 	inputs["num_snps_imbalance"] = len(inputs["hap1"])
 	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]

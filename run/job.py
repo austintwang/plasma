@@ -69,10 +69,10 @@ def run_model(inputs, input_updates, informative_snps):
 	ppas_inf = model.get_ppas()
 	size_probs = model.get_size_probs()
 
-	causal_set = np.ones(np.shape(informative_snps))
+	causal_set = np.ones(np.shape(inputs["snp_ids"]))
 	np.put(causal_set, informative_snps, causal_set_inf)
 
-	ppas = np.fill(np.shape(informative_snps), np.nan)
+	ppas = np.fill(np.shape(inputs["snp_ids"]), np.nan)
 	np.put(ppas, informative_snps, ppas_inf)
 
 	return causal_set, ppas, size_probs, model
@@ -367,10 +367,10 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 		)
 		model_caviar_ase.run()
 
-		causal_set = np.ones(np.shape(informative_snps))
+		causal_set = np.ones(np.shape(inputs["snp_ids"]))
 		np.put(causal_set, informative_snps, model_caviar_ase.causal_set)
 
-		ppas = np.fill(np.shape(informative_snps), np.nan)
+		ppas = np.fill(np.shape(inputs["snp_ids"]), np.nan)
 		np.put(ppas, informative_snps, model_caviar_ase.post_probs)
 
 		result["causal_set_caviar_ase"] = causal_set

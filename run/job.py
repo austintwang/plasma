@@ -185,8 +185,8 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 	# inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
 	haps_comb = inputs["hap1"] + inputs["hap2"]
-	informative_snps = np.where(np.all(haps_comb == haps_comb[0,:], axis=0))
-	print(informative_snps) ####
+	informative_snps = np.where(np.all(haps_comb == haps_comb[0,:], axis=0))[0]
+	# print(informative_snps) ####
 
 	# inputs["snp_ids"] = inputs["snp_ids"][informative_snps]
 	# inputs["snp_pos"] = inputs["snp_pos"][informative_snps]

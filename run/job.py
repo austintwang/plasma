@@ -296,7 +296,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 		"total_exp_var_prior": total_exp_var_prior
 	}
 	if "full" in model_flavors:
-		result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(inputs, updates_full)
+		result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(
+			inputs, updates_full,informative_snps
+		)
 		result["ldsr_data_full"] = get_ldsr_data(inputs, result["causal_set_full"], result["ppas_full"])
 
 	updates_indep = {
@@ -306,7 +308,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 		"total_exp_var_prior": total_exp_var_prior
 	}
 	if "indep" in model_flavors:
-		result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"], model_indep = run_model(inputs, updates_indep)
+		result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"], model_indep = run_model(
+			inputs, updates_indep, informative_snps
+		)
 		result["ldsr_data_indep"] = get_ldsr_data(inputs, result["causal_set_indep"], result["ppas_indep"])
 
 	updates_eqtl = {
@@ -325,7 +329,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 		"cross_corr_prior": 0.0,
 	}
 	if "eqtl" in model_flavors:
-		result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"], model_eqtl = run_model(inputs, updates_eqtl)
+		result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"], model_eqtl = run_model(
+			inputs, updates_eqtl, informative_snps
+		)
 		result["ldsr_data_eqtl"] = get_ldsr_data(inputs, result["causal_set_eqtl"], result["ppas_eqtl"])
 
 	updates_ase = {
@@ -342,7 +348,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 		"cross_corr_prior": 0.0,
 	}
 	if "ase" in model_flavors:
-		result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"], model_ase = run_model(inputs, updates_ase)
+		result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"], model_ase = run_model(
+			inputs, updates_ase, informative_snps
+		)
 		result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
 		# print(result["causal_set_ase"]) ####
 
@@ -357,8 +365,15 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 			inputs["max_causal"]
 		)
 		model_caviar_ase.run()
-		result["causal_set_caviar_ase"] = model_caviar_ase.causal_set
-		result["ppas_caviar_ase"] = model_caviar_ase.post_probs
+
+		causal_set = np.ones(np.shape(informative_snps))
+		np.put(causal_set, informative_snps, model_caviar_ase.causal_set)
+
+		ppas = np.fill(np.shape(informative_snps), np.nan)
+		np.put(ppas, informative_snps, model_caviar_ase.post_probs)
+
+		result["causal_set_caviar_ase"] = causal_set
+		result["ppas_caviar_ase"] = ppas
 		result["ldsr_data_caviar_ase"] = get_ldsr_data(
 			inputs, result["causal_set_caviar_ase"], result["ppas_caviar_ase"]
 		)

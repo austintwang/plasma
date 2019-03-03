@@ -768,59 +768,59 @@ if __name__ == '__main__':
 
 	# tumor_low_herit = interpret(target_dir, out_dir, name, model_flavors)
 
-	# #Prostate Cancer
+	#Prostate Cancer
 	
-	# # Normal
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
-
-	# # Normal, all samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
-	# name = "Prostate ChIP-Seq\nAll Normal Samples"
-
-	# normal_all = interpret(target_dir, out_dir, name, model_flavors)
-
-	# # Normal, 10 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
-	# name = "Prostate ChIP-Seq\n10 Normal Samples"
-
-	# normal_10 = interpret(target_dir, out_dir, name, model_flavors)
-
-	# # Normal, across sample sizes
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
-	# name = "Prostate ChIP-Seq, Normal Samples"
-	# model_flavors = set(["indep", "eqtl", "acav"])
-	# summaries = [normal_all, normal_10]
-	# primary_var_vals = [24, 10]
-	# primary_var_name = "Sample Size"
-
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
-
-	# Tumor
+	# Normal
 	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
-	# Tumor, all samples
-	target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
-	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
-	name = "Prostate ChIP-Seq\nAll Tumor Samples"
+	# Normal, all samples
+	target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
+	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
+	name = "Prostate ChIP-Seq\nAll Normal Samples"
 
-	tumor_all = interpret(target_dir, out_dir, name, model_flavors)
+	normal_all = interpret(target_dir, out_dir, name, model_flavors)
 
-	# Tumor, 10 samples
-	target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
-	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
-	name = "Prostate ChIP-Seq\n10 Tumor Samples"
+	# Normal, 10 samples
+	target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
+	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
+	name = "Prostate ChIP-Seq\n10 Normal Samples"
 
-	tumor_10 = interpret(target_dir, out_dir, name, model_flavors)
+	normal_10 = interpret(target_dir, out_dir, name, model_flavors)
 
-	# Tumor, across sample sizes
-	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
-	name = "Prostate ChIP-Seq, Tumor Samples"
+	# Normal, across sample sizes
+	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
+	name = "Prostate ChIP-Seq, Normal Samples"
 	model_flavors = set(["indep", "eqtl", "acav"])
-	summaries = [tumor_all, tumor_10]
+	summaries = [normal_all, normal_10]
 	primary_var_vals = [24, 10]
 	primary_var_name = "Sample Size"
 
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+
+	# # Tumor
+	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
+
+	# # Tumor, all samples
+	# target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
+	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
+	# name = "Prostate ChIP-Seq\nAll Tumor Samples"
+
+	# tumor_all = interpret(target_dir, out_dir, name, model_flavors)
+
+	# # Tumor, 10 samples
+	# target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
+	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
+	# name = "Prostate ChIP-Seq\n10 Tumor Samples"
+
+	# tumor_10 = interpret(target_dir, out_dir, name, model_flavors)
+
+	# # Tumor, across sample sizes
+	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
+	# name = "Prostate ChIP-Seq, Tumor Samples"
+	# model_flavors = set(["indep", "eqtl", "acav"])
+	# summaries = [tumor_all, tumor_10]
+	# primary_var_vals = [24, 10]
+	# primary_var_name = "Sample Size"
+
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 

@@ -27,6 +27,7 @@ def write_bed(bed_data, output_name):
 			bed_data[i]["gene"]
 		) 
 		for i in keys_sorted
+		if bed_data[i]["ppa"] != np.nan
 	]
 	with open(output_name, "w") as outfile:
 		outfile.writelines(bed_list) 

@@ -104,7 +104,7 @@ def enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_fla
 
 if __name__ == '__main__':
 	enrichment_path = "/bcb/agusevlab/awang/job_data/enrichment"
-	script_path = os.path.join(enrichment_path, "run.sh")
+	script_path = os.path.join(enrichment_path, "pct.sh")
 
 	# Kidney Data
 	annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")

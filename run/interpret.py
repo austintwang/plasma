@@ -242,6 +242,8 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	plt.clf()
 
 def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors):
+	print(model_flavors) ####
+	print(series.keys()) ####
 	dflst = []
 	for key, val in series.viewitems():
 		if "full" in model_flavors:
@@ -281,7 +283,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 					cumu_recall += val
 					dflst.append([x, cumu_recall, skey, "CAVIAR-ASE"])
 	res_df = pd.DataFrame(dflst, columns=["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"])
-	print(res_df) ####
+	# print(res_df) ####
 	
 	title = "Inclusion Rates Across {0}:\n{1}".format(primary_var_name, name)
 	

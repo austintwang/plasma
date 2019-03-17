@@ -88,7 +88,7 @@ if __name__ == '__main__':
 	res_path_base = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"
 
 	# SCARB1
-	res_paths = [res_path_base.format(i, "ENSG00000073060.15") for i in ["all", "200", "100", "50", "10"]]
+	res_paths = [res_path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50", "10"]]
 	sample_sizes = [524, 200, 100, 50, 10]
 	gene_name = "SCARB1"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
@@ -96,7 +96,7 @@ if __name__ == '__main__':
 	manhattan(res_paths, sample_sizes, gene_name, out_dir, model_flavors)
 
 	# DPF3
-	res_paths = [res_path_base.format(i, "ENSG00000205683.11") for i in ["all", "200", "100", "50", "10"]]
+	res_paths = [res_path_base.format(i, "ENSG00000205683.7") for i in ["all", "200", "100", "50", "10"]]
 	sample_sizes = [524, 200, 100, 50, 10]
 	gene_name = "DPF3"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
@@ -104,7 +104,7 @@ if __name__ == '__main__':
 	manhattan(res_paths, sample_sizes, gene_name, out_dir, model_flavors)
 
 	# GRAMD4
-	res_paths = [res_path_base.format(i, "ENSG00000075240.16") for i in ["all", "200", "100", "50", "10"]]
+	res_paths = [res_path_base.format(i, "ENSG00000075240.12") for i in ["all", "200", "100", "50", "10"]]
 	sample_sizes = [524, 200, 100, 50, 10]
 	gene_name = "GRAMD4"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"

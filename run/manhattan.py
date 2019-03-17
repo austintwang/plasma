@@ -73,7 +73,7 @@ def manhattan(res_paths, sample_sizes, gene_name, out_dir, model_flavors):
 				info = [i, p, "CAVIAR-ASE", sample_sizes[ind]]
 				pp_lst.append(info)
 
-	cols_out = [
+	pp_cols = [
 		"Marker", 
 		"Posterior Probability", 
 		"Model", 

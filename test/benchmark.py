@@ -542,7 +542,7 @@ class Benchmark(object):
 		with open(os.path.join(out_dir, "recalls.txt"), "w") as rr:
 			rr.writelines(recall_list)
 
-		sns.set(style="dark", font="Roboto")
+		sns.set(style="whitegrid", font="Roboto")
 		if "full" in model_flavors:
 			try:
 				sns.distplot(
@@ -594,7 +594,7 @@ class Benchmark(object):
 					hist=False,
 					kde=True,
 					kde_kws={"linewidth": 2, "shade":False},
-					label="ASE-Only"			
+					label="CAVIAR"			
 				)
 			except Exception:
 				pass
@@ -610,7 +610,7 @@ class Benchmark(object):
 			except Exception:
 				pass
 
-		plt.xlim(0, None)
+		plt.xlim(0, self.params["num_snps"])
 		plt.legend(title="Model")
 		plt.xlabel("Set Size")
 		plt.ylabel("Density")
@@ -714,7 +714,7 @@ class Benchmark(object):
 		# print(num_snps) ####
 		inclusions_df = pd.DataFrame(inclusions_dict)
 
-		sns.set(font="Roboto")
+		sns.set(style="whitegrid", font="Roboto")
 		sns.lineplot(x="Number of Selected Markers", y="Inclusion Rate", hue="Model", data=inclusions_df)
 		plt.title("Inclusion Rate vs. Selection Size, {0} = {1}".format(title_var, var_value))
 		plt.savefig(os.path.join(out_dir, "inclusion.svg"))
@@ -774,7 +774,7 @@ class Benchmark(object):
 		# print(rec_dict) ####
 		rec_df = pd.DataFrame(rec_dict)
 
-		sns.set(font="Roboto")
+		sns.set(style="whitegrid", font="Roboto")
 		sns.lmplot(title_var, "Recall Rate", rec_df, hue="Model")
 		# sns.lmplot(self.primary_var_vals, recall_full)
 		# sns.lmplot(self.primary_var_vals, recall_indep)

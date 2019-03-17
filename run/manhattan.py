@@ -85,7 +85,7 @@ def manhattan(res_paths, sample_sizes, gene_name, out_dir, model_flavors):
 	plot_manhattan(pp_df, gene_name, out_dir)
 
 if __name__ == '__main__':
-	res_path_base = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"
+	res_path_base = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}/output.pickle"
 
 	# SCARB1
 	res_paths = [res_path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50", "10"]]

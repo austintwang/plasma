@@ -153,7 +153,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["counts1"] = inputs["counts1"][select]
 		inputs["counts2"] = inputs["counts2"][select]
 		inputs["counts_total"] = inputs["counts_total"][select]
-		inputs["sample_names"] = inputs["sample_names"][select]
+		inputs["sample_names"] = np.array(inputs["sample_names"])[select]
 
 	if ind_overdispersion:
 		inputs["overdispersion"] = np.array([overdispersion_dict[i] for i in inputs["sample_names"]])

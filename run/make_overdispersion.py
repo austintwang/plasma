@@ -31,7 +31,7 @@ if __name__ == '__main__':
 		os.makedirs(out_dir)
 	out_path = os.path.join(out_dir, "overdispersion.pickle")
 
-	make_set(in_path, out_path)
+	make_overdispersion(in_path, out_path)
 
 	# Prostate Data
 	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/overdispersion/calculated_overdispersion_values.txt"
@@ -40,4 +40,4 @@ if __name__ == '__main__':
 		os.makedirs(out_dir)
 	out_path = os.path.join(out_dir, "overdispersion.pickle")
 
-	make_set(in_path, out_path)
+	make_overdispersion(in_path, out_path)

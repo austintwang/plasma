@@ -34,7 +34,7 @@ if __name__ == '__main__':
 	make_set(in_path, out_path)
 
 	# Prostate Data
-	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.txt"
+	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/overdispersion/calculated_overdispersion_values.txt"
 	out_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq/overdispersion"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)

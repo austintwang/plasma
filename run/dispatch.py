@@ -277,6 +277,7 @@ if __name__ == '__main__':
 	overdispersion_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/overdispersion/overdispersion.pickle"
 
 	hyperparams = {
+		"overdispersion": 0.01,
 		"prop_noise_eqtl": 0.95,
 		"prop_noise_ase": 0.50,
 		"min_causal": 1,
@@ -455,6 +456,7 @@ if __name__ == '__main__':
 	selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
 	hyperparams = {
+		"overdispersion": 0.01,
 		"prop_noise_eqtl": 0.95,
 		"prop_noise_ase": 0.95,
 		"min_causal": 1,
@@ -563,7 +565,7 @@ if __name__ == '__main__':
 	overdispersion_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.pickle"
 
 	hyperparams = {
-		"overdispersion": 0.05,
+		"overdispersion": 4.22e-4,
 		"prop_noise_eqtl": 0.95,
 		"prop_noise_ase": 0.50,
 		"min_causal": 1,

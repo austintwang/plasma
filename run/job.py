@@ -156,7 +156,8 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["sample_names"] = np.array(inputs["sample_names"])[select]
 
 	if ind_overdispersion:
-		inputs["overdispersion"] = np.array([overdispersion_dict[i] for i in inputs["sample_names"]])
+		default = inputs["overdispersion"]
+		inputs["overdispersion"] = np.array([overdispersion_dict.get(i, default) for i in inputs["sample_names"]])
 
 	num_ppl_raw = np.size(inputs["counts1"])
 

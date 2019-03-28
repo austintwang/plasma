@@ -107,13 +107,19 @@ def write_output(output_path, result):
 	with open(output_return, "wb") as output_file:
 		pickle.dump(result, output_file)
 
-def main(output_path, input_path, params_path, selection_path, filter_path):
+def main(output_path, input_path, params_path, selection_path, filter_path, overdispersion_path):
 	# input_path = os.path.join(target_dir, "input.pickle")
 	if selection_path == "all":
 		selection = False
 	else:
 		with open(selection_path, "rb") as selection_file:
 			selection = pickle.load(selection_file)
+
+	ind_overdispersion = False
+	if overdispersion_path:
+		with open(overdispersion_path, "rb") as overdispersion_file:
+			overdispersion_dict = pickle.load(overdispersion_file)
+		ind_overdispersion = True
 
 	if filter_path == "all":
 		snp_filter = False
@@ -147,6 +153,10 @@ def main(output_path, input_path, params_path, selection_path, filter_path):
 		inputs["counts1"] = inputs["counts1"][select]
 		inputs["counts2"] = inputs["counts2"][select]
 		inputs["counts_total"] = inputs["counts_total"][select]
+		inputs["sample_names"] = inputs["sample_names"][select]
+
+	if ind_overdispersion:
+		inputs["overdispersion"] = np.array([overdispersion_dict[i] for i in inputs["sample_names"]])
 
 	num_ppl_raw = np.size(inputs["counts1"])
 
@@ -398,7 +408,8 @@ if __name__ == '__main__':
 	params_path = sys.argv[3]
 	selection_path = sys.argv[4]
 	filter_path = sys.argv[5]
-	main(output_path, input_path, params_path, selection_path, filter_path)
+	overdispersion_path = sys.argv[6]
+	main(output_path, input_path, params_path, selection_path, filter_path, overdispersion_path)
 
 	
 	# exit_code = 0

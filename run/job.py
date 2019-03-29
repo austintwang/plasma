@@ -181,7 +181,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["counts2"] = inputs["counts2"][threshold]
 		inputs["counts_total"] = inputs["counts_total"][threshold]
 		inputs["sample_names"] = inputs["sample_names"][threshold]
-		print(np.size(inputs["counts1"])) ####
+		# print(np.size(inputs["counts1"])) ####
 
 	# print(inputs["counts1"]) ####
 	select_counts = np.logical_and(inputs["counts1"] >= 1, inputs["counts2"] >= 1) 

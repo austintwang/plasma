@@ -581,7 +581,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["recall_full"][var_val] = {}
 			for sind, sval in enumerate(val["ppas_full"]):
 				gene_name = val["names"][sind]
-				if gene_name not in sigs:
+				if gene_name not in sig_snps:
 					continue
 				sigs = sig_snps[gene_name]
 				num = num_sigs[gene_name]
@@ -601,7 +601,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["recall_indep"][var_val] = {}
 			for sind, sval in enumerate(val["ppas_indep"]):
 				gene_name = val["names"][sind]
-				if gene_name not in sigs:
+				if gene_name not in sig_snps:
 					continue
 				sigs = sig_snps[gene_name]
 				num = num_sigs[gene_name]
@@ -621,7 +621,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["recall_eqtl"][var_val] = {}
 			for sind, sval in enumerate(val["ppas_eqtl"]):
 				gene_name = val["names"][sind]
-				if gene_name not in sigs:
+				if gene_name not in sig_snps:
 					continue
 				sigs = sig_snps[gene_name]
 				num = num_sigs[gene_name]
@@ -641,7 +641,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["recall_ase"][var_val] = {}
 			for sind, sval in enumerate(val["ppas_ase"]):
 				gene_name = val["names"][sind]
-				if gene_name not in sigs:
+				if gene_name not in sig_snps:
 					continue
 				sigs = sig_snps[gene_name]
 				num = num_sigs[gene_name]
@@ -661,7 +661,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 			series["recall_caviar_ase"][var_val] = {}
 			for sind, sval in enumerate(val["ppas_caviar_ase"]):
 				gene_name = val["names"][sind]
-				if gene_name not in sigs:
+				if gene_name not in sig_snps:
 					continue
 				sigs = sig_snps[gene_name]
 				num = num_sigs[gene_name]
@@ -674,7 +674,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 							series["recall_caviar_ase"][var_val].setdefault(pos, 0)
 							series["recall_caviar_ase"][var_val][pos] += 1. / (num * data_size)
 
-	print(series.keys()) ####
+	# print(series.keys()) ####
 	if recall_model_flavors is None:
 		recall_model_flavors = model_flavors
 	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, recall_model_flavors)

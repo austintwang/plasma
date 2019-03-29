@@ -193,7 +193,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	inputs["sample_names"] = inputs["sample_names"][select_counts]
 
 	inputs["num_ppl"] = np.size(inputs["counts1"])
-	print(num_ppl) ####
+	print(inputs["num_ppl"]) ####
 
 	if ind_overdispersion:
 		default = np.mean(overdispersion_dict.values())

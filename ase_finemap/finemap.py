@@ -348,8 +348,15 @@ class Finemap(FmUnchecked):
 		self.check_probability(
 			self.cross_corr_prior, "Prior cross-correlation"
 		)
-		self.check_positive_number(
-			self.overdispersion, "Allelic imbalance overdispersion"
-		)
+		try:
+			self.check_positive_number(
+				self.overdispersion, "Allelic imbalance overdispersion"
+			)
+		except ValueError:
+			self.check_matrix(
+				self.overdispersion, 
+				(self.num_ppl_total_exp,), 
+				"Allelic imbalance overdispersion"
+			)
 
 		super(Finemap, self).initialize()

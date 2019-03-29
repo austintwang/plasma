@@ -156,7 +156,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["sample_names"] = np.array(inputs["sample_names"])[select]
 
 	if ind_overdispersion:
-		default = inputs["overdispersion"]
+		default = np.mean(overdispersion_dict.values())
 		inputs["overdispersion"] = np.array([overdispersion_dict.get(i, default) for i in inputs["sample_names"]])
 
 	num_ppl_raw = np.size(inputs["counts1"])
@@ -228,7 +228,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	ase_herit = 1 - inputs["prop_noise_ase"]
 
 	coverage = np.mean(inputs["counts1"] + inputs["counts2"])
-	overdispersion = inputs["overdispersion"]
+	overdispersion = np.mean(inputs["overdispersion"])
 	# std_fraction = inputs["std_fraction"]
 	# ase_inherent_var = (np.log(std_fraction) - np.log(1-std_fraction))**2
 	imbalance = np.log(inputs["counts1"]) - np.log(inputs["counts2"])

@@ -208,6 +208,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	# inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
 	haps_comb = inputs["hap1"] + inputs["hap2"]
+	print(haps_comb) ####
+	print(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0))) ####
+	print(np.where(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))) ####
 	informative_snps = np.where(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))[0]
 	# print(informative_snps) ####
 

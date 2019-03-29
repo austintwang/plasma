@@ -107,6 +107,14 @@ def write_output(output_path, result):
 	with open(output_return, "wb") as output_file:
 		pickle.dump(result, output_file)
 
+def write_in_data(output_path, in_data):
+	if not os.path.exists(output_path):
+		os.makedirs(output_path)
+
+	in_data_return = os.path.join(output_path, "in_data.pickle")
+	with open(in_data_return, "wb") as in_data_file:
+		pickle.dump(in_data, in_data_file)
+
 def main(output_path, input_path, params_path, selection_path, filter_path, overdispersion_path):
 	# input_path = os.path.join(target_dir, "input.pickle")
 	if selection_path == "all":
@@ -137,6 +145,8 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 
 	inputs.update(params)
 
+	inputs["sample_names"] = np.array(inputs["sample_names"])
+
 	if selection:
 		select = np.array([i in selection for i in inputs["sample_names"]])
 
@@ -153,11 +163,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["counts1"] = inputs["counts1"][select]
 		inputs["counts2"] = inputs["counts2"][select]
 		inputs["counts_total"] = inputs["counts_total"][select]
-		inputs["sample_names"] = np.array(inputs["sample_names"])[select]
-
-	if ind_overdispersion:
-		default = np.mean(overdispersion_dict.values())
-		inputs["overdispersion"] = np.array([overdispersion_dict.get(i, default) for i in inputs["sample_names"]])
+		inputs["sample_names"] = inputs["sample_names"][select]
 
 	num_ppl_raw = np.size(inputs["counts1"])
 
@@ -173,6 +179,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["counts1"] = inputs["counts1"][threshold]
 		inputs["counts2"] = inputs["counts2"][threshold]
 		inputs["counts_total"] = inputs["counts_total"][threshold]
+		inputs["sample_names"] = inputs["sample_names"][threshold]
 		# print(np.size(inputs["counts1"])) ####
 
 	select_counts = np.logical_and(inputs["counts1"] >= 1, inputs["counts2"] >= 1) 
@@ -182,8 +189,13 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	inputs["counts1"] = inputs["counts1"][select_counts]
 	inputs["counts2"] = inputs["counts2"][select_counts]
 	inputs["counts_total"] = inputs["counts_total"][select_counts]
+	inputs["sample_names"] = inputs["sample_names"][select_counts]
 
 	inputs["num_ppl"] = np.size(inputs["counts1"])
+
+	if ind_overdispersion:
+		default = np.mean(overdispersion_dict.values())
+		inputs["overdispersion"] = np.array([overdispersion_dict.get(i, default) for i in inputs["sample_names"]])
 
 	if snp_filter:
 		snps_in_filter = [ind for ind, val in enumerate(inputs["snp_ids"]) if val in snp_filter]
@@ -390,6 +402,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 			inputs, result["causal_set_caviar_ase"], result["ppas_caviar_ase"]
 		)
 
+	write_in_data(output_path, inputs)
 	write_output(output_path, result)
 
 	# print(result) ####

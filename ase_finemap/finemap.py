@@ -355,7 +355,7 @@ class Finemap(FmUnchecked):
 		except TypeError:
 			self.check_matrix(
 				self.overdispersion, 
-				(self.num_ppl_total_exp,), 
+				(self.num_ppl_imbalance,), 
 				"Allelic imbalance overdispersion"
 			)
 

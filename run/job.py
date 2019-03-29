@@ -345,6 +345,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		"imbalance_corr": np.zeros(shape=(0,0)),
 		"imbalance_errors": np.zeros(shape=0),
 		"imbalance_stats": np.zeros(shape=0),
+		"overdispersion": np.zeros(shape=0),
 		"num_ppl_imbalance": 0,
 		"num_snps_imbalance": 0,
 		"corr_stats": 0.0,

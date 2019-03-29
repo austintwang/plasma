@@ -124,7 +124,7 @@ if __name__ == '__main__':
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
-	title = "Kidney RNA-Seq, Open Chromatin Enrichment, Normal Samples"
+	title = "Kidney RNA-Seq, Open Chromatin Enrichment, Tumor Samples"
 
 	enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_flavors)
 

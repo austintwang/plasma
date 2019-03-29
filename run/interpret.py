@@ -163,17 +163,19 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if cumu:
 		cumu_kwd = "Cumulative "
 		cumu_fname = "_cumu"
+		yax = "Probability"
 	else:
 		cumu_kwd = ""
 		cumu_fname = ""
+		yax = "Density"
 	if metric == "size":
 		plt.xlabel("Set Size")
-		plt.ylabel("Density")
+		plt.ylabel(yax)
 		plt.title("{0}Distribution of Causal Set Sizes: {1}".format(cumu_kwd, name))
 		plt.savefig(os.path.join(out_dir, "set_size_distribution{0}.svg".format(cumu_fname)))
 	elif metric == "prop":
 		plt.xlabel("Set Size (Proportion of Total Markers)")
-		plt.ylabel("Density")
+		plt.ylabel(yax)
 		plt.title("{0}Distribution of Causal Set Sizes: {1}".format(cumu_kwd, name))
 		plt.savefig(os.path.join(out_dir, "set_prop_distribution{0}.svg".format(cumu_fname)))
 	plt.clf()
@@ -282,7 +284,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 				for x, val in data:
 					cumu_recall += val
 					dflst.append([x, cumu_recall, skey, "CAVIAR-ASE"])
-	print(dflst[:10]) ####
+	# print(dflst[:10]) ####
 	res_df = pd.DataFrame(dflst, columns=["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"])
 	# print(res_df) ####
 	
@@ -672,6 +674,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 							series["recall_caviar_ase"][var_val].setdefault(pos, 0)
 							series["recall_caviar_ase"][var_val][pos] += 1. / (num * data_size)
 
+	print(series.keys()) ####
 	if recall_model_flavors is None:
 		recall_model_flavors = model_flavors
 	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, recall_model_flavors)

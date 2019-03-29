@@ -352,7 +352,7 @@ class Finemap(FmUnchecked):
 			self.check_positive_number(
 				self.overdispersion, "Allelic imbalance overdispersion"
 			)
-		except ValueError:
+		except TypeError:
 			self.check_matrix(
 				self.overdispersion, 
 				(self.num_ppl_total_exp,), 

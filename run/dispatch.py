@@ -331,6 +331,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)

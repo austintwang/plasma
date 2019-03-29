@@ -274,6 +274,7 @@ if __name__ == '__main__':
 	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
 	params_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/params"
 	script_path = os.path.join(curr_path, "job.py")
+	filter_path = "all"
 	overdispersion_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/overdispersion/overdispersion.pickle"
 
 	hyperparams = {
@@ -310,6 +311,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -348,6 +350,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -371,6 +374,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -390,6 +394,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -409,6 +414,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -428,6 +434,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -447,6 +454,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -482,6 +490,7 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
+		filter_path,
 		overdispersion_path,
 		params_name
 	)
@@ -528,6 +537,7 @@ if __name__ == '__main__':
 	# 	script_path,
 	# 	selection_path,
 	# 	list_path,
+	# 	filter_path,
 	# 	overdispersion_path,
 	# 	params_name
 	# )

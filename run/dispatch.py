@@ -188,7 +188,8 @@ def run(
 						hyperparams_path, 
 						script_path, 
 						selection_path,
-						filter_path
+						filter_path,
+						overdispersion_path
 					)
 					active_pool[target] = job_id
 
@@ -226,7 +227,8 @@ def run(
 						params_path, 
 						script_path, 
 						selection_path,
-						filter_path
+						filter_path,
+						overdispersion_path
 					)
 					active_pool[target] = job_id
 

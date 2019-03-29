@@ -166,7 +166,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["sample_names"] = inputs["sample_names"][select]
 
 	num_ppl_raw = np.size(inputs["counts1"])
-	print(num_ppl_raw) ####
+	# print(num_ppl_raw) ####
 
 	max_ppl = inputs.get("max_ppl")
 	if max_ppl and max_ppl < num_ppl_raw:
@@ -183,7 +183,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["sample_names"] = inputs["sample_names"][threshold]
 		print(np.size(inputs["counts1"])) ####
 
-	print(inputs["counts1"]) ####
+	# print(inputs["counts1"]) ####
 	select_counts = np.logical_and(inputs["counts1"] >= 1, inputs["counts2"] >= 1) 
 	
 	inputs["hap1"] = inputs["hap1"][select_counts]
@@ -194,7 +194,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	inputs["sample_names"] = inputs["sample_names"][select_counts]
 
 	inputs["num_ppl"] = np.size(inputs["counts1"])
-	print(inputs["num_ppl"]) ####
+	# print(inputs["num_ppl"]) ####
 
 	if ind_overdispersion:
 		default = np.mean(overdispersion_dict.values())
@@ -211,6 +211,14 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	# inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
 
 	haps_comb = inputs["hap1"] + inputs["hap2"]
+
+	result = {}
+
+	if inputs["num_ppl"] <= 1:
+		result["data_error"] = "Insufficient Read Counts"
+		write_output(output_path, result)
+		return
+
 	# print(haps_comb) ####
 	# print(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0))) ####
 	# print(np.where(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))) ####
@@ -224,13 +232,6 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 
 	inputs["num_snps_imbalance"] = len(inputs["hap1"])
 	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
-
-	result = {}
-
-	if inputs["num_ppl"] == 0:
-		result["data_error"] = "Insufficient Read Counts"
-		write_output(output_path, result)
-		return
 
 	if inputs["hap1"].size == 0:
 		result["data_error"] = "Insufficient Markers"

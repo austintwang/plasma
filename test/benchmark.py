@@ -30,6 +30,10 @@ def evaluate_bm(targs):
 		num_causal = bm.params["max_causal"]
 	else:
 		num_causal = bm.params["num_causal"]
+	num_snps = bm.params["num_snps"]
+
+	causal_status_prior = num_causal / num_snps
+
 	eqtl_herit = bm.params["herit_eqtl"]
 	ase_herit = bm.params["herit_ase"]
 
@@ -143,7 +147,8 @@ def evaluate_bm(targs):
 		model_inputs_full.update({
 			"corr_stats": corr_stats,
 			"imbalance_var_prior": imbalance_var_prior,
-			"total_exp_var_prior": total_exp_var_prior
+			"total_exp_var_prior": total_exp_var_prior,
+			"causal_status_prior": causal_status_prior
 		})
 		# print(model_inputs) ####
 		# print(model_inputs_full["counts_A"]) ####
@@ -192,7 +197,8 @@ def evaluate_bm(targs):
 			"cross_corr_prior": 0.0, 
 			"corr_stats": 0.0,
 			"imbalance_var_prior": imbalance_var_prior,
-			"total_exp_var_prior": total_exp_var_prior
+			"total_exp_var_prior": total_exp_var_prior,
+			"causal_status_prior": causal_status_prior
 		})
 		# print("Finished Initializing Independent Model")
 		# print("Starting Search Under Independent Model")
@@ -249,6 +255,7 @@ def evaluate_bm(targs):
 			"imbalance_var_prior": imbalance_var_prior,
 			"total_exp_var_prior": total_exp_var_prior,
 			"cross_corr_prior": 0.0,
+			"causal_status_prior": causal_status_prior
 		})
 		# print("Finished Initializing eQTL Model")
 		# print("Starting Search Under eQTL Model")
@@ -306,6 +313,7 @@ def evaluate_bm(targs):
 			"imbalance_var_prior": imbalance_var_prior,
 			"total_exp_var_prior": total_exp_var_prior,
 			"cross_corr_prior": 0.0,
+			"causal_status_prior": causal_status_prior
 		})
 		# print("Finished Initializing ASE Model")
 		# print("Starting Search Under ASE Model")

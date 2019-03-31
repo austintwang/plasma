@@ -204,7 +204,7 @@ def multi_cv():
 		"std_fraction": 0.65,
 		"min_causal": 1,
 		"coverage": 100,
-		"search_mode": "shotgun",
+		"search_mode": "exhaustive",
 		"prob_threshold": 0.001,
 		"streak_threshold": 1000,
 		"search_iterations": None, 
@@ -212,14 +212,14 @@ def multi_cv():
 		"num_causal": None,
 		"primary_var": "num_causal",
 		"primary_var_display": "Number of Causal Variants",
-		"test_count": 3,
+		"test_count": 2,
 		"test_name": "multi_cv",
 		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
 		"iterations": 500,
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase"]) 
 	}
-	tests = [1, 2, 3]
+	tests = [1, 2]
 	bm = Benchmark(params)
 	for t in tests:
 		it = int(spm.comb(params["num_snps"], t))
@@ -230,7 +230,7 @@ if __name__ == "__main__":
 	# dummy_test()
 	# dummy_test_2d()
 	# confidence_test()
-	imbalance()
+	# imbalance()
 	# fraction_vs_coverage()
 	# fraction_vs_noise()
-	# multi_cv()
+	multi_cv()

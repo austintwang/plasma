@@ -111,19 +111,19 @@ def make_bed(input_path, output_path, model_flavors):
 		write_bed(bed_data_all["acav"], os.path.join(output_path, "ldsr_acav.bed"))
 
 if __name__ == '__main__':
-	# # Kidney Data, Tumor
-	# input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all"
-	# model_flavors = "all"
+	# Kidney Data, Tumor
+	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all"
+	model_flavors = "all"
 
-	# make_bed(input_path, output_path, model_flavors)
+	make_bed(input_path, output_path, model_flavors)
 
-	# # Kidney Data, Normal
-	# input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
-	# output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all"
-	# model_flavors = "all"
+	# Kidney Data, Normal
+	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
+	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all"
+	model_flavors = "all"
 
-	# make_bed(input_path, output_path, model_flavors)
+	make_bed(input_path, output_path, model_flavors)
 
 	# Prostate Data, Tumor
 	input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"

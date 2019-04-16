@@ -77,6 +77,60 @@ def write_size_probs(summary, out_dir, total_jobs, model_flavors):
 	with open(out_path, "w") as out_file:
 		out_file.write(size_probs_str)
 
+def write_sumstats(summary, out_dir, total_jobs, model_flavors):
+	sumstats_list = []
+	if "full" in model_flavors:
+		sumstats_list.append("Joint-Correlated")
+		sizes = summary["set_sizes_full"]
+		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
+		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
+		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
+		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
+		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
+		sumstats_list.append("")
+	if "indep" in model_flavors:
+		sumstats_list.append("Joint-Independent")
+		sizes = summary["set_sizes_indep"]
+		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
+		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
+		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
+		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
+		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
+		sumstats_list.append("")
+	if "eqtl" in model_flavors:
+		sumstats_list.append("eQTL-Only")
+		sizes = summary["set_sizes_eqtl"]
+		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
+		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
+		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
+		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
+		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
+		sumstats_list.append("")
+	if "ase" in model_flavors:
+		sumstats_list.append("ASE-Only")
+		sizes = summary["set_sizes_ase"]
+		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
+		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
+		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
+		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
+		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
+		sumstats_list.append("")
+	if "acav" in model_flavors:
+		sumstats_list.append("CAVIAR-ASE")
+		sizes = summary["set_sizes_caviar_ase"]
+		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
+		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
+		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
+		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
+		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
+		sumstats_list.append("")
+
+	sumstats_str = "\n".join(sumstats_list)
+	out_path = os.path.join(out_dir, "causal_set_stats")
+
+	with open(out_path, "w") as out_file:
+		out_file.write(sumstats_str)
+
 def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if metric == "size":
 		kwd = "set_sizes"
@@ -398,6 +452,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		summary["set_props_full"] = []
 		summary["thresholds_full"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_full"] = np.zeros(6)
+		
 	if "indep" in model_flavors:
 		summary["causal_sets_indep"] = []
 		summary["ppas_indep"] = []
@@ -405,6 +460,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		summary["set_props_indep"] = []
 		summary["thresholds_indep"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_indep"] = np.zeros(6)
+		
 	if "eqtl" in model_flavors:
 		summary["causal_sets_eqtl"] = []
 		summary["ppas_eqtl"] = []
@@ -412,6 +468,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		summary["set_props_eqtl"] = []
 		summary["thresholds_eqtl"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_eqtl"] = np.zeros(6)
+		
 	if "ase" in model_flavors:
 		summary["causal_sets_ase"] = []
 		summary["ppas_ase"] = []
@@ -419,12 +476,14 @@ def interpret(target_dir, out_dir, name, model_flavors):
 		summary["set_props_ase"] = []
 		summary["thresholds_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
 		summary["size_probs_ase"] = np.zeros(6)
+	
 	if "acav" in model_flavors:
 		summary["causal_sets_caviar_ase"] = []
 		summary["ppas_caviar_ase"] = []
 		summary["set_sizes_caviar_ase"] = []
 		summary["set_props_caviar_ase"] = []
 		summary["thresholds_caviar_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
+		summary["size_probs_caviar_ase"] = np.zeros(6)
 
 	failed_jobs = []
 	insufficient_data_jobs = []
@@ -462,6 +521,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 					summary["thresholds_full"][k] += 1
 			size_probs = np.resize(result["size_probs_full"], 6)
 			summary["size_probs_full"] += size_probs
+
 		if "indep" in model_flavors:
 			summary["causal_sets_indep"].append(result["causal_set_indep"])
 			summary["ppas_indep"].append(result["ppas_indep"])

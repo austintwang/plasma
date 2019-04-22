@@ -70,7 +70,7 @@ def dummy_test_2d():
 
 def confidence_test():
 	params = {
-		"num_snps": 00,
+		"num_snps": 100,
 		"num_ppl": 95,
 		"overdispersion": 0.05,
 		"prop_noise_eqtl": 0.95,
@@ -200,11 +200,11 @@ def multi_cv():
 		"num_ppl": 95,
 		"overdispersion": 0.05,
 		"herit_eqtl": 0.05,
-		"herit_ase": 0.6,
+		"herit_ase": 0.4,
 		"std_fraction": 0.65,
 		"min_causal": 1,
 		"coverage": 100,
-		"search_mode": "exhaustive",
+		"search_mode": "shotgun",
 		"prob_threshold": 0.001,
 		"streak_threshold": 1000,
 		"search_iterations": None, 
@@ -219,18 +219,84 @@ def multi_cv():
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase"]) 
 	}
-	tests = [1, 2]
+	tests = [2, 3]
 	bm = Benchmark(params)
 	for t in tests:
 		it = int(spm.comb(params["num_snps"], t))
-		bm.test(max_causal=t, num_causal=t, search_iterations=it)
+		bm.test(max_causal=t+1, num_causal=t, search_iterations=it)
+	bm.output_summary()
+
+def multi_cv_recall():
+	params = {
+		"num_snps": 20,
+		"num_ppl": 95,
+		"overdispersion": 0.05,
+		"herit_eqtl": 0.05,
+		"herit_ase": 0.4,
+		"std_fraction": 0.65,
+		"min_causal": 1,
+		"coverage": 100,
+		"search_mode": "shotgun",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": int(spm.comb(100, 2)), 
+		"max_causal": 3,
+		"num_causal": 2,
+		"primary_var": "causal_status_prior",
+		"primary_var_display": "Causal Status Prior",
+		"test_count": 5,
+		"test_name": "multi_cv_recall",
+		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
+		"iterations": 500,
+		"confidence": 0.95,
+		"causal_status_prior": None,
+		"model_flavors": set(["indep", "eqtl", "ase"]) 
+	}
+	tests = [2/20., 4/20., 6/20, 8/20, 10/20.]
+	bm = Benchmark(params)
+	for t in tests:
+		bm.test(causal_status_prior=t)
+	bm.output_summary()
+
+def multi_cv_herit():
+	params = {
+		"num_snps": 100,
+		"num_ppl": 95,
+		"overdispersion": 0.05,
+		"herit_eqtl": 0.05,
+		"herit_ase": 0.4,
+		"herit_ase_manual": None,
+		"std_fraction": 0.65,
+		"min_causal": 1,
+		"coverage": 100,
+		"search_mode": "shotgun",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": int(spm.comb(100, 2)), 
+		"max_causal": 3,
+		"num_causal": 2,
+		"primary_var": "herit_ase_manual",
+		"primary_var_display": "ASE Heritability Hyperparameter",
+		"test_count": 4,
+		"test_name": "multi_cv_herit",
+		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
+		"iterations": 500,
+		"confidence": 0.95,
+		"model_flavors": set(["indep", "eqtl", "ase"]) 
+	}
+	tests = [0.1, 0.2, 0.3, 0.4]
+	bm = Benchmark(params)
+	for t in tests:
+		bm.test(herit_ase_manual=t)
 	bm.output_summary()
 
 if __name__ == "__main__":
 	# dummy_test()
 	# dummy_test_2d()
 	# confidence_test()
-	# imbalance()
-	# fraction_vs_coverage()
-	# fraction_vs_noise()
-	multi_cv()
+	imbalance()
+	fraction_vs_coverage()
+	fraction_vs_noise()
+	# multi_cv()
+	# multi_cv_recall()
+	# multi_cv_herit()

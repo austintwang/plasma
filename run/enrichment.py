@@ -45,13 +45,13 @@ def run_enrichment(bed_path_base, annot_path, script_path, model_flavors):
 		bed_path = bed_path_base.format("eqtl")
 		s_args = [script_path, bed_path, annot_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "eQTL-Only")
+		parse_output(s_out, lst_out, "QTL-Only")
 
 	if "ase" in model_flavors:
 		bed_path = bed_path_base.format("ase")
 		s_args = [script_path, bed_path, annot_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "ASE-Only")
+		parse_output(s_out, lst_out, "AS-Only")
 
 	if "acav" in model_flavors:
 		bed_path = bed_path_base.format("acav")

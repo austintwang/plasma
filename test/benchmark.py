@@ -32,10 +32,20 @@ def evaluate_bm(targs):
 		num_causal = bm.params["num_causal"]
 	num_snps = bm.params["num_snps"]
 
-	causal_status_prior = num_causal / num_snps
+	if bm.params.get("causal_status_prior", None) is None:
+		causal_status_prior = num_causal / num_snps
+	else:
+		causal_status_prior = bm.params["causal_status_prior"]
 
-	eqtl_herit = bm.params["herit_eqtl"]
-	ase_herit = bm.params["herit_ase"]
+	if bm.params.get("herit_eqtl_manual", None) is None:
+		eqtl_herit = bm.params["herit_eqtl"]
+	else:
+		eqtl_herit = bm.params["herit_eqtl_manual"]
+
+	if bm.params.get("herit_ase_manual", None) is None:
+		ase_herit = bm.params["herit_ase"]
+	else:
+		ase_herit = bm.params["herit_ase_manual"]
 
 	coverage = bm.params["coverage"]
 	overdispersion = bm.params["overdispersion"]
@@ -515,7 +525,7 @@ class Benchmark(object):
 			set_sizes_eqtl = result["set_sizes_eqtl"]
 			recall_rate_eqtl = result["recall_rate_eqtl"]
 			inclusion_rate_eqtl = list(result["inclusion_rate_eqtl"])
-			recall_list.append("eQTL-Only:{:>15}\n".format(recall_rate_eqtl))
+			recall_list.append("QTL-Only:{:>15}\n".format(recall_rate_eqtl))
 			with open(os.path.join(out_dir, "causal_set_sizes_eqtl_only.txt"), "w") as csseqtl:
 				csseqtl.write("\n".join(str(i) for i in set_sizes_eqtl))
 
@@ -523,7 +533,7 @@ class Benchmark(object):
 			set_sizes_ase = result["set_sizes_ase"]
 			recall_rate_ase = result["recall_rate_ase"]
 			inclusion_rate_ase = list(result["inclusion_rate_ase"])
-			recall_list.append("ASE-Only:{:>15}\n".format(recall_rate_ase))
+			recall_list.append("AS-Only:{:>15}\n".format(recall_rate_ase))
 			with open(os.path.join(out_dir, "causal_set_sizes_ase_only.txt"), "w") as cssase:
 				cssase.write("\n".join(str(i) for i in set_sizes_ase))
 
@@ -580,7 +590,7 @@ class Benchmark(object):
 					hist=False,
 					kde=True,
 					kde_kws={"linewidth": 2, "shade":False},
-					label="eQTL-Only"			
+					label="QTL-Only"			
 				)
 			except Exception:
 				pass
@@ -591,7 +601,7 @@ class Benchmark(object):
 					hist=False,
 					kde=True,
 					kde_kws={"linewidth": 2, "shade":False},
-					label="ASE-Only"			
+					label="AS-Only"			
 				)
 			except Exception:
 				pass
@@ -622,7 +632,7 @@ class Benchmark(object):
 		plt.legend(title="Model")
 		plt.xlabel("Set Size")
 		plt.ylabel("Density")
-		plt.title("Distribution of Causal Set Sizes, {0} = {1}".format(title_var, var_value))
+		plt.title("Distribution of Credible Set Sizes, {0} = {1}".format(title_var, var_value))
 		plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
 		plt.clf()
 
@@ -647,14 +657,14 @@ class Benchmark(object):
 		# 		hist=False,
 		# 		kde=True,
 		# 		kde_kws={"linewidth": 3, "shade":True},
-		# 		label="eQTL-Only"
+		# 		label="QTL-Only"
 		# 	)
 		# 	sns.distplot(
 		# 		set_sizes_ase,
 		# 		hist=False,
 		# 		kde=True,
 		# 		kde_kws={"linewidth": 3, "shade":True},
-		# 		label="ASE-Only"
+		# 		label="AS-Only"
 		# 	)
 		# 	sns.distplot(
 		# 		set_sizes_caviar,
@@ -674,7 +684,7 @@ class Benchmark(object):
 		# 	plt.legend(title="Model")
 		# 	plt.xlabel("Set Size")
 		# 	plt.ylabel("Density")
-		# 	plt.title("Distribution of Causal Set Sizes, {0} = {1}".format(title_var, var_value))
+		# 	plt.title("Distribution of Credible Set Sizes, {0} = {1}".format(title_var, var_value))
 		# 	plt.savefig(os.path.join(out_dir, "set_size_distribution.svg"))
 		# 	plt.clf()
 		# except Exception:
@@ -700,12 +710,12 @@ class Benchmark(object):
 		if "eqtl" in model_flavors:
 			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_eqtl)
-			inclusions_dict["Model"].extend(num_snps * ["eQTL-Only"])
+			inclusions_dict["Model"].extend(num_snps * ["QTL-Only"])
 
 		if "ase" in model_flavors:
 			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_ase)
-			inclusions_dict["Model"].extend(num_snps * ["ASE-Only"])
+			inclusions_dict["Model"].extend(num_snps * ["AS-Only"])
 
 		if "cav" in model_flavors:
 			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
@@ -724,6 +734,7 @@ class Benchmark(object):
 
 		sns.set(style="whitegrid", font="Roboto")
 		sns.lineplot(x="Number of Selected Markers", y="Inclusion Rate", hue="Model", data=inclusions_df)
+		plt.ylim(0., None)
 		plt.title("Inclusion Rate vs. Selection Size, {0} = {1}".format(title_var, var_value))
 		plt.savefig(os.path.join(out_dir, "inclusion.svg"))
 		plt.clf()
@@ -759,13 +770,13 @@ class Benchmark(object):
 			recall_rate_eqtl = [i["recall_rate_eqtl"] for i in self.results]
 			rec_dict[title_var].extend(self.primary_var_vals)
 			rec_dict["Recall Rate"].extend(recall_rate_eqtl)
-			rec_dict["Model"].extend(num_trials * ["eQTL-Only"])
+			rec_dict["Model"].extend(num_trials * ["QTL-Only"])
 
 		if "ase" in model_flavors:
 			recall_rate_ase = [i["recall_rate_ase"] for i in self.results]
 			rec_dict[title_var].extend(self.primary_var_vals)
 			rec_dict["Recall Rate"].extend(recall_rate_ase)
-			rec_dict["Model"].extend(num_trials * ["ASE-Only"])
+			rec_dict["Model"].extend(num_trials * ["AS-Only"])
 
 		if "cav" in model_flavors:
 			recall_rate_caviar = [i["recall_rate_caviar"] for i in self.results]
@@ -783,7 +794,7 @@ class Benchmark(object):
 		rec_df = pd.DataFrame(rec_dict)
 
 		sns.set(style="whitegrid", font="Roboto")
-		sns.lmplot(title_var, "Recall Rate", rec_df, hue="Model")
+		sns.lmplot(title_var, "Recall Rate", rec_df, hue="Model", fit_reg=False)
 		# sns.lmplot(self.primary_var_vals, recall_full)
 		# sns.lmplot(self.primary_var_vals, recall_indep)
 		# sns.lmplot(self.primary_var_vals, recall_eqtl)
@@ -801,7 +812,7 @@ class Benchmark(object):
 		# 	for i in dct["set_sizes_full"]:
 		# 		dflst.append([i, var_value, "Full"])
 		# 	for i in dct["set_sizes_eqtl"]:
-		# 		dflst.append([i, var_value, "eQTL-Only"])
+		# 		dflst.append([i, var_value, "QTL-Only"])
 		# res_df = pd.DataFrame(dflst, columns=["Set Size", title_var, "Model"])
 
 		dflst = []
@@ -815,10 +826,10 @@ class Benchmark(object):
 					dflst.append([i, var_value, "Joint-Independent"])
 			if "eqtl" in model_flavors:
 				for i in dct["set_sizes_eqtl"]:
-					dflst.append([i, var_value, "eQTL-Only"])
+					dflst.append([i, var_value, "QTL-Only"])
 			if "ase" in model_flavors:
 				for i in dct["set_sizes_ase"]:
-					dflst.append([i, var_value, "ASE-Only"])
+					dflst.append([i, var_value, "AS-Only"])
 			if "cav" in model_flavors:
 				for i in dct["set_sizes_caviar"]:
 					dflst.append([i, var_value, "CAVIAR"])
@@ -845,7 +856,7 @@ class Benchmark(object):
 		# 	split=True,
 		# 	inner="quartile"
 		# )
-		plt.title("Causal Set Sizes across {0}".format(title_var))
+		plt.title("Credible Set Sizes across {0}".format(title_var))
 		plt.savefig(os.path.join(self.output_path, "causal_sets.svg"))
 		plt.clf()
 
@@ -1360,7 +1371,7 @@ class Benchmark2d(Benchmark):
 				vname
 			)
 
-			title_eqtl = title_base + " (eQTL-Only)"
+			title_eqtl = title_base + " (QTL-Only)"
 			output_name_eqtl = output_name_base + "_eqtl.svg"
 			sns.heatmap(df_eqtl, annot=True, fmt=".1f", square=True)
 			plt.title(title_eqtl)
@@ -1379,7 +1390,7 @@ class Benchmark2d(Benchmark):
 				vname
 			)
 
-			title_ase = title_base + " (ASE-Only)"
+			title_ase = title_base + " (AS-Only)"
 			output_name_ase = output_name_base + "_ase.svg"
 			sns.heatmap(df_ase, annot=True, fmt=".1f", square=True)
 			plt.title(title_ase)
@@ -1485,8 +1496,8 @@ class Benchmark2d(Benchmark):
 			secondary,
 			self.params["secondary_var_display"],
 			means,
-			"Mean Causal Set Size",
-			"Mean Causal Set Sizes",
+			"Mean Credible Set Size",
+			"Mean Credible Set Sizes",
 			self.output_path,
 			"causal_sets",
 			model_flavors
@@ -1522,38 +1533,38 @@ class Benchmark2d(Benchmark):
 		# df_full = pd.DataFrame({
 		# 	self.params["secondary_var_display"]: secondary,
 		# 	self.params["primary_var_display"]: primary,
-		# 	"Mean Causal Set Size": means_full,
+		# 	"Mean Credible Set Size": means_full,
 		# }).pivot(
 		# 	self.params["secondary_var_display"],
 		# 	self.params["primary_var_display"],
-		# 	"Mean Causal Set Size"
+		# 	"Mean Credible Set Size"
 		# )
 		# df_indep = pd.DataFrame({
 		# 	self.params["secondary_var_display"]: secondary,
 		# 	self.params["primary_var_display"]: primary,
-		# 	"Mean Causal Set Size": means_indep,
+		# 	"Mean Credible Set Size": means_indep,
 		# }).pivot(
 		# 	self.params["secondary_var_display"],
 		# 	self.params["primary_var_display"],
-		# 	"Mean Causal Set Size"
+		# 	"Mean Credible Set Size"
 		# )
 		# df_eqtl = pd.DataFrame({
 		# 	self.params["secondary_var_display"]: secondary,
 		# 	self.params["primary_var_display"]: primary,
-		# 	"Mean Causal Set Size": means_eqtl,
+		# 	"Mean Credible Set Size": means_eqtl,
 		# }).pivot(
 		# 	self.params["secondary_var_display"],
 		# 	self.params["primary_var_display"],
-		# 	"Mean Causal Set Size"
+		# 	"Mean Credible Set Size"
 		# )
 		# df_ase = pd.DataFrame({
 		# 	self.params["secondary_var_display"]: secondary,
 		# 	self.params["primary_var_display"]: primary,
-		# 	"Mean Causal Set Size": means_ase,
+		# 	"Mean Credible Set Size": means_ase,
 		# }).pivot(
 		# 	self.params["secondary_var_display"],
 		# 	self.params["primary_var_display"],
-		# 	"Mean Causal Set Size"
+		# 	"Mean Credible Set Size"
 		# )
 
 		# df_full_recall = pd.DataFrame({
@@ -1596,22 +1607,22 @@ class Benchmark2d(Benchmark):
 		# sns.set()
 
 		# sns.heatmap(df_full, annot=True, linewidths=1)
-		# plt.title("Mean Causal Set Sizes (Full Model)")
+		# plt.title("Mean Credible Set Sizes (Full Model)")
 		# plt.savefig(os.path.join(self.output_path, "causal_sets_full.svg"))
 		# plt.clf()
 
 		# sns.heatmap(df_indep, annot=True, linewidths=1)
-		# plt.title("Mean Causal Set Sizes (Independent Likelihoods)")
+		# plt.title("Mean Credible Set Sizes (Independent Likelihoods)")
 		# plt.savefig(os.path.join(self.output_path, "causal_sets_indep.svg"))
 		# plt.clf()
 
 		# sns.heatmap(df_eqtl, annot=True, linewidths=1)
-		# plt.title("Mean Causal Set Sizes (eQTL-Only)")
+		# plt.title("Mean Credible Set Sizes (QTL-Only)")
 		# plt.savefig(os.path.join(self.output_path, "causal_sets_eqtl.svg"))
 		# plt.clf()
 
 		# sns.heatmap(df_ase, annot=True, linewidths=1)
-		# plt.title("Mean Causal Set Sizes (ASE-Only)")
+		# plt.title("Mean Credible Set Sizes (AS-Only)")
 		# plt.savefig(os.path.join(self.output_path, "causal_sets_ase.svg"))
 		# plt.clf()
 
@@ -1626,12 +1637,12 @@ class Benchmark2d(Benchmark):
 		# plt.clf()
 
 		# sns.heatmap(df_eqtl_recall, annot=True, linewidths=1)
-		# plt.title("Recall Rate (eQTL-Only)")
+		# plt.title("Recall Rate (QTL-Only)")
 		# plt.savefig(os.path.join(self.output_path, "recall_eqtl.svg"))
 		# plt.clf()
 
 		# sns.heatmap(df_ase_recall, annot=True, linewidths=1)
-		# plt.title("Recall Rate (ASE-Only)")
+		# plt.title("Recall Rate (AS-Only)")
 		# plt.savefig(os.path.join(self.output_path, "recall_ase.svg"))
 		# plt.clf()
 

@@ -31,12 +31,12 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_indep"][k] / total_jobs))
 		thresholds_list.append("")
 	if "eqtl" in model_flavors:
-		thresholds_list.append("eQTL-Only")
+		thresholds_list.append("QTL-Only")
 		for k in sorted(summary["thresholds_eqtl"].keys()):
 			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_eqtl"][k] / total_jobs))
 		thresholds_list.append("")
 	if "ase" in model_flavors:
-		thresholds_list.append("ASE-Only")
+		thresholds_list.append("AS-Only")
 		for k in sorted(summary["thresholds_ase"].keys()):
 			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_ase"][k] / total_jobs))
 		thresholds_list.append("")
@@ -63,11 +63,11 @@ def write_size_probs(summary, out_dir, total_jobs, model_flavors):
 		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_indep"] / total_jobs))
 		size_probs_list.append("")
 	if "eqtl" in model_flavors:
-		size_probs_list.append("eQTL-Only")
+		size_probs_list.append("QTL-Only")
 		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_eqtl"] / total_jobs))
 		size_probs_list.append("")
 	if "ase" in model_flavors:
-		size_probs_list.append("ASE-Only")
+		size_probs_list.append("AS-Only")
 		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_ase"] / total_jobs))
 		size_probs_list.append("")
 
@@ -98,7 +98,7 @@ def write_sumstats(summary, out_dir, total_jobs, model_flavors):
 		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
 		sumstats_list.append("")
 	if "eqtl" in model_flavors:
-		sumstats_list.append("eQTL-Only")
+		sumstats_list.append("QTL-Only")
 		sizes = summary["set_sizes_eqtl"]
 		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
 		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
@@ -107,7 +107,7 @@ def write_sumstats(summary, out_dir, total_jobs, model_flavors):
 		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
 		sumstats_list.append("")
 	if "ase" in model_flavors:
-		sumstats_list.append("ASE-Only")
+		sumstats_list.append("AS-Only")
 		sizes = summary["set_sizes_ase"]
 		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
 		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
@@ -181,7 +181,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="eQTL-Only"			
+				label="QTL-Only"			
 			)
 		except Exception:
 			pass
@@ -193,7 +193,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="ASE-Only"			
+				label="AS-Only"			
 			)
 		except Exception:
 			pass
@@ -225,12 +225,12 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if metric == "size":
 		plt.xlabel("Set Size")
 		plt.ylabel(yax)
-		plt.title("{0}Distribution of Causal Set Sizes: {1}".format(cumu_kwd, name))
+		plt.title("{0}Distribution of Credible Set Sizes: {1}".format(cumu_kwd, name))
 		plt.savefig(os.path.join(out_dir, "set_size_distribution{0}.svg".format(cumu_fname)))
 	elif metric == "prop":
 		plt.xlabel("Set Size (Proportion of Total Markers)")
 		plt.ylabel(yax)
-		plt.title("{0}Distribution of Causal Set Sizes: {1}".format(cumu_kwd, name))
+		plt.title("{0}Distribution of Credible Set Sizes: {1}".format(cumu_kwd, name))
 		plt.savefig(os.path.join(out_dir, "set_prop_distribution{0}.svg".format(cumu_fname)))
 	plt.clf()
 
@@ -257,18 +257,18 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		if "eqtl" in model_flavors:
 			for skey, sval in series["{0}_eqtl".format(kwd)].viewitems():
 				for i in sval:
-					dflst.append([i, skey, "eQTL-Only"])
+					dflst.append([i, skey, "QTL-Only"])
 		if "ase" in model_flavors:
 			for skey, sval in series["{0}_ase".format(kwd)].viewitems():
 				for i in sval:
-					dflst.append([i, skey, "ASE-Only"])
+					dflst.append([i, skey, "AS-Only"])
 		if "acav" in model_flavors:
 			for skey, sval in series["{0}_caviar_ase".format(kwd)].viewitems():
 				for i in sval:
 					dflst.append([i, skey, "CAVIAR-ASE"])
 	res_df = pd.DataFrame(dflst, columns=[label, primary_var_name, "Model"])
 
-	title = "Causal Set Sizes Across {0}:\n{1}".format(primary_var_name, name)
+	title = "Credible Set Sizes Across {0}:\n{1}".format(primary_var_name, name)
 	
 	sns.set(style="whitegrid", font="Roboto")
 	if metric == "prop":
@@ -323,14 +323,14 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, "eQTL-Only"])
+					dflst.append([x, cumu_recall, skey, "QTL-Only"])
 		if "ase" in model_flavors:
 			for skey, sval in series["recall_ase"].viewitems():
 				data = sorted(sval.items(), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, "ASE-Only"])
+					dflst.append([x, cumu_recall, skey, "AS-Only"])
 		if "acav" in model_flavors:
 			for skey, sval in series["recall_caviar_ase"].viewitems():
 				data = sorted(sval.items(), key=lambda x: x[0])
@@ -390,14 +390,14 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		plt.savefig(os.path.join(out_dir, "inclusion_indep.svg"))
 		plt.clf()
 	if "eqtl" in model_flavors:
-		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "eQTL-Only")
+		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "QTL-Only")
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
 			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
-			data=res_df.query("Model == 'eQTL-Only'"),
+			data=res_df.query("Model == 'QTL-Only'"),
 			sort=True,
 			palette=palette
 		)
@@ -405,14 +405,14 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		plt.savefig(os.path.join(out_dir, "inclusion_eqtl.svg"))
 		plt.clf()
 	if "ase" in model_flavors:
-		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "ASE-Only")
+		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "AS-Only")
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
 			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
-			data=res_df.query("Model == 'ASE-Only'"),
+			data=res_df.query("Model == 'AS-Only'"),
 			sort=True,
 			palette=palette
 		)

@@ -114,14 +114,14 @@ if __name__ == '__main__':
 	# Kidney Data, Tumor
 	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
 	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all"
-	model_flavors = "all"
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)
 
 	# Kidney Data, Normal
 	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
 	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all"
-	model_flavors = "all"
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)
 

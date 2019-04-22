@@ -97,9 +97,11 @@ def plot_enrichment(out_dir, df_out, title):
 
 def enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_flavors):
 	df_out = run_enrichment(bed_path_base, annot_path, script_path, model_flavors)
-	plot_enrichment(out_dir, df_out, title)
 	data_path = os.path.join(out_dir, "enrichment_data.txt")
 	df_out.to_csv(data_path, sep=str("\t"))
+	df_out.replace(inf, 250)
+	plot_enrichment(out_dir, df_out, title)
+	
 
 
 if __name__ == '__main__':

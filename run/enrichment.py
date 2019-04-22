@@ -99,7 +99,7 @@ def enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_fla
 	df_out = run_enrichment(bed_path_base, annot_path, script_path, model_flavors)
 	data_path = os.path.join(out_dir, "enrichment_data.txt")
 	df_out.to_csv(data_path, sep=str("\t"))
-	df_out.replace(np.inf, 250)
+	df_out.replace(np.inf, 250, inplace=True)
 	plot_enrichment(out_dir, df_out, title)
 	
 

@@ -138,7 +138,7 @@ def fraction_vs_coverage():
 		"primary_var": "std_fraction",
 		"primary_var_display": "Imbalance (Standard Allelic Fraction)",
 		"secondary_var": "coverage",
-		"secondary_var_display": "Coverage",
+		"secondary_var_display": "Mean Coverage",
 		"test_count": 54,
 		"test_count_primary": 9,
 		"test_count_secondary": 6,
@@ -296,7 +296,7 @@ if __name__ == "__main__":
 	# confidence_test()
 	# imbalance()
 	fraction_vs_coverage()
-	fraction_vs_noise()
+	# fraction_vs_noise()
 	# multi_cv()
 	# multi_cv_recall()
 	# multi_cv_herit()

@@ -99,6 +99,25 @@ def get_ldsr_data(inputs, causal_set, ppas):
 
 	return data
 
+def get_bed_ctrl(inputs):
+	chromosome = inputs["chr"]
+	markers = inputs["snp_ids"]
+	positions = inputs["snp_pos"]
+	ends = positions + 1
+	gene = inputs["name"]
+
+	data = {}
+	for ind, val in enumerate(markers):
+		data[val] = {
+			"chr": chromosome,
+			"start": positions[ind], 
+			"end": ends[ind], 
+			"ppa": None, 
+			"gene": gene
+		}	
+
+	return data
+
 def write_output(output_path, result):
 	if not os.path.exists(output_path):
 		os.makedirs(output_path)
@@ -320,6 +339,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
 	else:
 		model_flavors = inputs["model_flavors"]
+
+	
+	result["bed_ctrl"] = get_bed_ctrl(inputs)
 
 	updates_full = {
 		"corr_stats": corr_stats,

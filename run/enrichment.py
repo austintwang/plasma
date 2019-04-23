@@ -24,38 +24,38 @@ def parse_output(s_out, lst_out, model_name):
 		entry = [model_name, float(cols[1]), float(cols[2]), float(cols[3]), float(cols[4]), -np.log10(float(cols[5]))]
 		lst_out.append(entry)
 
-def run_enrichment(bed_path_base, annot_path, script_path, model_flavors):
+def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors):
 	if model_flavors == "all":
 		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
 
 	lst_out = []
 	if "full" in model_flavors:
 		bed_path = bed_path_base.format("full")
-		s_args = [script_path, bed_path, annot_path]
+		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
 		parse_output(s_out, lst_out, "Joint-Correlated")
 
 	if "indep" in model_flavors:
 		bed_path = bed_path_base.format("indep")
-		s_args = [script_path, bed_path, annot_path]
+		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
 		parse_output(s_out, lst_out, "Joint-Independent")
 
 	if "eqtl" in model_flavors:
 		bed_path = bed_path_base.format("eqtl")
-		s_args = [script_path, bed_path, annot_path]
+		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
 		parse_output(s_out, lst_out, "QTL-Only")
 
 	if "ase" in model_flavors:
 		bed_path = bed_path_base.format("ase")
-		s_args = [script_path, bed_path, annot_path]
+		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
 		parse_output(s_out, lst_out, "AS-Only")
 
 	if "acav" in model_flavors:
 		bed_path = bed_path_base.format("acav")
-		s_args = [script_path, bed_path, annot_path]
+		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
 		parse_output(s_out, lst_out, "CAVIAR-ASE")
 
@@ -95,11 +95,11 @@ def plot_enrichment(out_dir, df_out, title):
 	plt.savefig(os.path.join(out_dir, "enrichment_pvals.svg"))
 	plt.clf()
 
-def enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_flavors):
-	df_out = run_enrichment(bed_path_base, annot_path, script_path, model_flavors)
+def enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors):
+	df_out = run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors)
 	data_path = os.path.join(out_dir, "enrichment_data.txt")
 	df_out.to_csv(data_path, sep=str("\t"))
-	df_out.replace(np.inf, 250, inplace=True)
+	df_out.replace(np.inf, 100, inplace=True)
 	plot_enrichment(out_dir, df_out, title)
 	
 
@@ -114,21 +114,23 @@ if __name__ == '__main__':
 
 	# Normal
 	bed_path_base = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
+	ctrl_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ctrl.bed"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_enrichment"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	title = "Kidney RNA-Seq, Open Chromatin Enrichment, Normal Samples"
 
-	enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_flavors)
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
 
 	# Tumor
 	bed_path_base = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
+	ctrl_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	title = "Kidney RNA-Seq, Open Chromatin Enrichment, Tumor Samples"
 
-	enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_flavors)
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
 
 	# Prostate Data
 	annot_path = os.path.join(enrichment_path, "PRCA_HICHIP.MERGED_Annotated_FDR0.01_ncounts10.E.bed")
@@ -136,18 +138,20 @@ if __name__ == '__main__':
 
 	# Normal
 	bed_path_base = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
+	ctrl_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ctrl.bed"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_enrichment"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	title = "Prostate ChIP-Seq, Chromatin Looping Enrichment, Normal Samples"
 
-	enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_flavors)
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
 
 	# Tumor
 	bed_path_base = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
+	ctrl_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all/ctrl.bed"
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_enrichment"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	title = "Prostate ChIP-Seq, Chromatin Looping Enrichment, Tumor Samples"
 
-	enrichment(bed_path_base, annot_path, script_path, out_dir, title, model_flavors)
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)

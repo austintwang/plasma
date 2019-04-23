@@ -1298,7 +1298,8 @@ class Benchmark2d(Benchmark):
 		title_base, 
 		output_path, 
 		output_name_base,
-		model_flavors
+		model_flavors,
+		fmt=".1f"
 	):
 		sns.set(font="Roboto")
 
@@ -1316,7 +1317,7 @@ class Benchmark2d(Benchmark):
 
 			title_full = title_base
 			output_name_full = output_name_base + ".svg"
-			sns.heatmap(df_full, annot=True, fmt=".1f", square=True)
+			sns.heatmap(df_full, annot=True, fmt=fmt, square=True)
 			plt.title(title_full)
 			plt.savefig(os.path.join(output_path, output_name_full))
 			plt.clf()
@@ -1335,7 +1336,7 @@ class Benchmark2d(Benchmark):
 
 			title_full = title_base + " (Joint-Correlated)"
 			output_name_full = output_name_base + "_full.svg"
-			sns.heatmap(df_full, annot=True, fmt=".1f", square=True)
+			sns.heatmap(df_full, annot=True, fmt=fmt, square=True)
 			plt.title(title_full)
 			plt.savefig(os.path.join(output_path, output_name_full))
 			plt.clf()
@@ -1354,7 +1355,7 @@ class Benchmark2d(Benchmark):
 
 			title_indep = title_base + " (Joint-Independent)"
 			output_name_indep = output_name_base + "_indep.svg"
-			sns.heatmap(df_indep, annot=True, fmt=".1f", square=True)
+			sns.heatmap(df_indep, annot=True, fmt=fmt, square=True)
 			plt.title(title_indep)
 			plt.savefig(os.path.join(output_path, output_name_indep))
 			plt.clf()
@@ -1373,7 +1374,7 @@ class Benchmark2d(Benchmark):
 
 			title_eqtl = title_base + " (QTL-Only)"
 			output_name_eqtl = output_name_base + "_eqtl.svg"
-			sns.heatmap(df_eqtl, annot=True, fmt=".1f", square=True)
+			sns.heatmap(df_eqtl, annot=True, fmt=fmt, square=True)
 			plt.title(title_eqtl)
 			plt.savefig(os.path.join(output_path, output_name_eqtl))
 			plt.clf()
@@ -1392,7 +1393,7 @@ class Benchmark2d(Benchmark):
 
 			title_ase = title_base + " (AS-Only)"
 			output_name_ase = output_name_base + "_ase.svg"
-			sns.heatmap(df_ase, annot=True, fmt=".1f", square=True)
+			sns.heatmap(df_ase, annot=True, fmt=fmt, square=True)
 			plt.title(title_ase)
 			plt.savefig(os.path.join(output_path, output_name_ase))
 			plt.clf()
@@ -1411,7 +1412,7 @@ class Benchmark2d(Benchmark):
 
 			title_caviar = title_base + " (CAVIAR)"
 			output_name_caviar = output_name_base + "_caviar.svg"
-			sns.heatmap(df_caviar, annot=True, fmt=".1f", square=True)
+			sns.heatmap(df_caviar, annot=True, fmt=fmt, square=True)
 			plt.title(title_caviar)
 			plt.savefig(os.path.join(output_path, output_name_caviar))
 			plt.clf()
@@ -1430,7 +1431,7 @@ class Benchmark2d(Benchmark):
 
 			title_caviar_ase = title_base + " (CAVIAR-ASE)"
 			output_name_caviar_ase = output_name_base + "_caviar_ase.svg"
-			sns.heatmap(df_caviar_ase, annot=True, fmt=".1f", square=True)
+			sns.heatmap(df_caviar_ase, annot=True, fmt=fmt, square=True)
 			plt.title(title_caviar_ase)
 			plt.savefig(os.path.join(output_path, output_name_caviar_ase))
 			plt.clf()
@@ -1513,7 +1514,8 @@ class Benchmark2d(Benchmark):
 			"Recall Rates",
 			self.output_path,
 			"recall",
-			model_flavors
+			model_flavors,
+			fmt='.2g'
 		)
 
 		self.plot_heatmap(

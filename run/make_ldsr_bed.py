@@ -29,6 +29,22 @@ def write_bed(bed_data, output_name):
 		for i in keys_sorted
 		if bed_data[i]["ppa"] != np.nan
 	]
+	for i in keys_sorted:
+		if bed_data[i]["ppa"] != np.nan:
+			if str(bed_data[i]["chr"]).startswith("chr"):
+				chr_data = bed_data[i]["chr"]
+			else:
+				chr_data = "chr" + str(bed_data[i]["chr"])
+			entry = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
+				chr, 
+				bed_data[i]["start"], 
+				bed_data[i]["end"], 
+				i, 
+				bed_data[i]["ppa"], 
+				bed_data[i]["gene"]
+			) 
+
+
 	with open(output_name, "w") as outfile:
 		outfile.writelines(bed_list) 
 
@@ -40,6 +56,7 @@ def make_bed(input_path, output_path, model_flavors):
 		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
 
 	bed_data_all = {}
+	bed_data_all["ctrl"] = {}
 	if "full" in model_flavors:
 		bed_data_all["full"] = {}
 	if "indep" in model_flavors:
@@ -62,6 +79,10 @@ def make_bed(input_path, output_path, model_flavors):
 		except (EOFError, IOError):
 			continue
 
+		
+		for k, v in result["bed_ctrl"].viewitems():
+				bed_data_all["ctrl"][k] = v
+
 		# print(result.keys()) ####
 		# print(result["ldsr_data_indep"]) ####
 		if "full" in model_flavors:
@@ -69,7 +90,7 @@ def make_bed(input_path, output_path, model_flavors):
 				if k in bed_data_all["full"]:
 					bed_data_all["full"][k] = max(v, bed_data_all["full"][k], key=lambda x: x["ppa"]) 
 				else:
-					bed_data_all["full"][k] = v
+				bed_data_all["full"][k] = v
 
 		if "indep" in model_flavors:
 			for k, v in result["ldsr_data_indep"].viewitems():
@@ -99,6 +120,7 @@ def make_bed(input_path, output_path, model_flavors):
 				else:
 					bed_data_all["acav"][k] = v
 
+	write_bed(bed_data_all["ctrl"], os.path.join(output_path, "ctrl.bed"))
 	if "full" in model_flavors:
 		write_bed(bed_data_all["full"], os.path.join(output_path, "ldsr_full.bed"))
 	if "indep" in model_flavors:

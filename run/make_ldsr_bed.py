@@ -17,18 +17,19 @@ def write_bed(bed_data, output_name):
 	non_numeric_chars = string.printable[10:]
 	keys_sorted = sorted(bed_data.keys(), key=lambda x: bed_data[x]["start"])
 	keys_sorted.sort(key=lambda x: int(bed_data[x]["chr"].translate(None, non_numeric_chars)))
-	bed_list = [
-		"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
-			bed_data[i]["chr"], 
-			bed_data[i]["start"], 
-			bed_data[i]["end"], 
-			i, 
-			bed_data[i]["ppa"], 
-			bed_data[i]["gene"]
-		) 
-		for i in keys_sorted
-		if bed_data[i]["ppa"] != np.nan
-	]
+	# bed_list = [
+	# 	"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
+	# 		bed_data[i]["chr"], 
+	# 		bed_data[i]["start"], 
+	# 		bed_data[i]["end"], 
+	# 		i, 
+	# 		bed_data[i]["ppa"], 
+	# 		bed_data[i]["gene"]
+	# 	) 
+	# 	for i in keys_sorted
+	# 	if bed_data[i]["ppa"] != np.nan
+	# ]
+	bed_list = []
 	for i in keys_sorted:
 		if bed_data[i]["ppa"] != np.nan:
 			if str(bed_data[i]["chr"]).startswith("chr"):
@@ -36,13 +37,14 @@ def write_bed(bed_data, output_name):
 			else:
 				chr_data = "chr" + str(bed_data[i]["chr"])
 			entry = "{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
-				chr, 
+				chr_data, 
 				bed_data[i]["start"], 
 				bed_data[i]["end"], 
 				i, 
 				bed_data[i]["ppa"], 
 				bed_data[i]["gene"]
 			) 
+			bed_list.append(entry)
 
 
 	with open(output_name, "w") as outfile:

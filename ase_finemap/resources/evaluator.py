@@ -313,9 +313,11 @@ class Evaluator(object):
 			self.results[key] = res
 			if self.cumu_lposts is None:
 				self.cumu_lposts = res
-			else:
+			elif res - self.cumu_lposts < 100:
 				self.cumu_lposts += np.log(1 + np.exp(res - self.cumu_lposts))
-				print(self.cumu_lposts, res) ####
+				# print(self.cumu_lposts, res) ####
+			else:
+				self.cumu_lposts = res + np.log(1 + np.exp(self.cumu_lposts - res))
 		else:
 			self.results_unsaved[key] = res
 		# self.cumu_sum += res

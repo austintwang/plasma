@@ -334,6 +334,8 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	# print(np.shape(inputs["counts_B"])) ####
 	# print(num_ppl) ####
 	# raise Exception ####
+	print(inputs["hap_A"]) ####
+	print(inputs["counts_A"]) ####
 
 	if inputs["model_flavors"] == "all":
 		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])

@@ -350,7 +350,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	}
 	if "full" in model_flavors:
 		result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(
-			inputs, updates_full,informative_snps
+			inputs, updates_full, informative_snps
 		)
 		result["ldsr_data_full"] = get_ldsr_data(inputs, result["causal_set_full"], result["ppas_full"])
 

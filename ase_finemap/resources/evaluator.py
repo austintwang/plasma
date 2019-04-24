@@ -461,6 +461,7 @@ class Evaluator(object):
 				diff_snp = next(iter(causal_extras[i]))
 				neighbors.setdefault(diff_snp, 0)
 				neighbors[diff_snp] += results_exp[i]
+				print(results_exp[i]) ####
 
 			max_snp = max(neighbors, key=neighbors.get)
 			causal_set[max_snp] = 1

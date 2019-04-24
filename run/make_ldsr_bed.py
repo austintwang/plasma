@@ -79,9 +79,13 @@ def make_bed(input_path, output_path, model_flavors):
 		except (EOFError, IOError):
 			continue
 
-		
-		for k, v in result["bed_ctrl"].viewitems():
-				bed_data_all["ctrl"][k] = v
+		try:
+			for k, v in result["bed_ctrl"].viewitems():
+					bed_data_all["ctrl"][k] = v
+		except Exception:
+			print(result_path) ####
+			print(t) ####
+			raise Exception ####
 
 		# print(result.keys()) ####
 		# print(result["ldsr_data_indep"]) ####

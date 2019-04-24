@@ -336,7 +336,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	# raise Exception ####
 	# print(inputs["hap_A"]) ####
 	# print(inputs["counts_A"]) ####
-	print(inputs["overdispersion"]) ####
+	# print(inputs["overdispersion"]) ####
 
 	if inputs["model_flavors"] == "all":
 		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])

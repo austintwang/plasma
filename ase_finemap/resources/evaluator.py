@@ -315,6 +315,7 @@ class Evaluator(object):
 				self.cumu_lposts = res
 			else:
 				self.cumu_lposts += np.log(1 + np.exp(res - self.cumu_lposts))
+				print(self.cumu_lposts) ####
 		else:
 			self.results_unsaved[key] = res
 		# self.cumu_sum += res

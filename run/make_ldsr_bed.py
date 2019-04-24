@@ -90,7 +90,7 @@ def make_bed(input_path, output_path, model_flavors):
 				if k in bed_data_all["full"]:
 					bed_data_all["full"][k] = max(v, bed_data_all["full"][k], key=lambda x: x["ppa"]) 
 				else:
-				bed_data_all["full"][k] = v
+					bed_data_all["full"][k] = v
 
 		if "indep" in model_flavors:
 			for k, v in result["ldsr_data_indep"].viewitems():

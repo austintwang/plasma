@@ -368,6 +368,8 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 			inputs, updates_indep, informative_snps
 		)
 		result["ldsr_data_indep"] = get_ldsr_data(inputs, result["causal_set_indep"], result["ppas_indep"])
+		result["z_phi"] = model_indep.imbalance_stats
+		result["z_beta"] = model_indep.total_exp_stats
 
 	updates_eqtl = {
 		"counts_A": np.zeros(shape=0),

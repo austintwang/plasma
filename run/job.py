@@ -242,6 +242,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	# print(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0))) ####
 	# print(np.where(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))) ####
 	informative_snps = np.where(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))[0]
+	result["informative_snps"] = informative_snps
 	# print(informative_snps) ####
 
 	# inputs["snp_ids"] = inputs["snp_ids"][informative_snps]

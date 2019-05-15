@@ -568,52 +568,52 @@ if __name__ == '__main__':
 	# 	params_name
 	# )
 
-	# Prostate Data, 1 CV
+	# # Prostate Data, 1 CV
 	
-	# Normal
-	input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/jobs"
-	params_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/params"
-	script_path = os.path.join(curr_path, "job.py")
-	filter_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
-	overdispersion_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.pickle"
+	# # Normal
+	# input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/jobs"
+	# params_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/params"
+	# script_path = os.path.join(curr_path, "job.py")
+	# filter_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
+	# overdispersion_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.pickle"
 
-	hyperparams = {
-		"overdispersion": 4.22e-4,
-		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.50,
-		"min_causal": 1,
-		"num_causal": 1.1,
-		"search_mode": "exhaustive",
-		"max_causal": 1,
-		"confidence": 0.95, 
-		"model_flavors": "all"
-	}
+	# hyperparams = {
+	# 	"overdispersion": 4.22e-4,
+	# 	"prop_noise_eqtl": 0.95,
+	# 	"prop_noise_ase": 0.50,
+	# 	"min_causal": 1,
+	# 	"num_causal": 1.1,
+	# 	"search_mode": "exhaustive",
+	# 	"max_causal": 1,
+	# 	"confidence": 0.95, 
+	# 	"model_flavors": "all"
+	# }
 
-	num_tasks = 100
-	poll_freq = 5
+	# num_tasks = 100
+	# poll_freq = 5
 
-	list_path = "all"
-	selection_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets/normal.pickle"
+	# list_path = "all"
+	# selection_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets/normal.pickle"
 
-	# Normal, all samples
-	params_name = "1cv_all.pickle"
-	hyperparams["max_ppl"] = None
-	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
+	# # Normal, all samples
+	# params_name = "1cv_all.pickle"
+	# hyperparams["max_ppl"] = None
+	# output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
 
-	run(
-		output_path, 
-		input_path, 
-		params_path, 
-		hyperparams, 
-		num_tasks, 
-		poll_freq, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-	)
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	num_tasks, 
+	# 	poll_freq, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# )
 
 	# # Normal, 10 samples
 	# params_name = "1cv_10.pickle"

@@ -20,24 +20,6 @@ except ImportError:
 	import pickle
 
 
-#!/usr/bin/env python
-
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
-import numpy as np
-import os
-import sys
-import traceback
-
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
-
-
 def region_plotter(regions, bounds):
 	def region_plot():
 		for p, q in regions:

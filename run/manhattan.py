@@ -80,7 +80,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 	for ind, val in enumerate(res_paths):
 		with open(os.path.join(val, "output.pickle")) as res_file:
 			result = pickle.load(res_file)
-		with open(os.path.join(val, "input.pickle")) as inp_file:
+		with open(os.path.join(val, "in_data.pickle")) as inp_file:
 			inputs = pickle.load(inp_file)
 
 		snp_ids = inputs["snp_ids"]

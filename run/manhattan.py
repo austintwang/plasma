@@ -132,7 +132,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 	reg = [chromosome, region_start, region_end]
 	reg = pybedtools.create_interval_from_list(reg)
 	ann = pybedtools.BedTool(annot_path)
-	features = reg.intersect(ann)
+	features = ann.intersect(reg)
 
 	regions = []
 	for f in features:

@@ -62,7 +62,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		color=".3", 
 		linewidth=0,
 		palette=pal,
-		hue_order=[1, 0]
+		hue_order=[1, 0],
 		s=1
 	)
 

@@ -98,7 +98,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 			causal = int(i in causal_inds)
 			print(snp_pos[i]) ####
 			print(l) ####
-			print(sample_sizes[ind]) ####
+			# print(sample_sizes[ind]) ####
 			print(ind) ####
 			print(sample_sizes) ####
 			print(causal) ####

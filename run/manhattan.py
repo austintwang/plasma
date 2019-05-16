@@ -52,6 +52,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		(0.23529411764705882, 0.23529411764705882, 0.23529411764705882),
 		(0.5490196078431373, 0.03137254901960784, 0.0)
 	]
+	print(pp_df) ####
 	g.map(
 		sns.scatterplot, 
 		"Position", 

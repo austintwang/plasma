@@ -88,6 +88,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 		snp_pos = inputs["snp_pos"]
 
 		causal_inds = set([i for i, v in enumerate(inputs["snp_ids"]) if v in causal_snps])
+		print(causal_inds) ####
 
 		informative_snps = result["informative_snps"]
 

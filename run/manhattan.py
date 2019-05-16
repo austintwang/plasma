@@ -99,6 +99,8 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 			print(snp_pos[i]) ####
 			print(l) ####
 			print(sample_sizes[ind]) ####
+			print(ind) ####
+			print(sample_sizes) ####
 			print(causal) ####
 			info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
 			pp_lst.append(info)

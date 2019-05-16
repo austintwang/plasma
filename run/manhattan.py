@@ -78,6 +78,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 	pp_lst = []
 	for ind, val in enumerate(res_paths):
+		print(sample_sizes[ind]) ####
 		with open(os.path.join(val, "output.pickle")) as res_file:
 			result = pickle.load(res_file)
 		with open(os.path.join(val, "in_data.pickle")) as inp_file:
@@ -92,11 +93,11 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 		z_phi = np.full(np.shape(inputs["snp_ids"]), 0.)
 		np.put(z_phi, informative_snps, result["z_phi"])
-		print(len(z_phi), len(informative_snps), len(snp_ids), len(snp_pos)) ####
+		# print(len(z_phi), len(informative_snps), len(snp_ids), len(snp_pos)) ####
 		for i, z in enumerate(z_phi):
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			causal = int(i in causal_inds)
-			print(snp_pos[i]) ####
+			# print(snp_pos[i]) ####
 			info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
 			pp_lst.append(info)
 

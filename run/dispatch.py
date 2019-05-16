@@ -360,6 +360,7 @@ if __name__ == '__main__':
 
 	# Tumor
 	list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/verified.pickle" ####
 	selection_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
 	# Tumor, all samples

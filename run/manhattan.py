@@ -21,7 +21,7 @@ except ImportError:
 
 
 def region_plotter(regions, bounds):
-	def region_plot():
+	def region_plot(*args, **kwargs):
 		for p, q in regions:
 			if p < bounds[0]:
 				start = bounds[0]

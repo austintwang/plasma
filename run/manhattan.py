@@ -163,11 +163,11 @@ if __name__ == '__main__':
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 	manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir)
 
-	# GRAMD4
-	res_paths = [path_base.format(i, "ENSG00000075240.12") for i in ["all", "200", "100", "50"]]
-	sample_sizes = [524, 200, 100, 50]
-	gene_name = "GRAMD4"
-	causal_snps = set()
-	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
-	manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir)
+	# # GRAMD4
+	# res_paths = [path_base.format(i, "ENSG00000075240.12") for i in ["all", "200", "100", "50"]]
+	# sample_sizes = [524, 200, 100, 50]
+	# gene_name = "GRAMD4"
+	# causal_snps = set()
+	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
+	# manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir)
 

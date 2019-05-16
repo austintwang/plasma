@@ -92,6 +92,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 		z_phi = np.full(np.shape(inputs["snp_ids"]), 0.)
 		np.put(z_phi, informative_snps, result["z_phi"])
+		print(len(z_phi), len(informative_snps), len(snp_ids), len(snp_pos)) ####
 		for i, z in enumerate(z_phi):
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			causal = int(i in causal_inds)

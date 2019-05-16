@@ -61,9 +61,9 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		legend=False,
 		color=".3", 
 		linewidth=0,
-		palette=pal,
+		# palette=pal,
 		hue_order=[1, 0],
-		s=1
+		s=5
 	)
 
 	# for ax in g.axes.flat:

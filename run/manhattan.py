@@ -88,15 +88,21 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 		causal_inds = set([ind for ind, val in enumerate(inputs["snp_ids"]) if val in causal_snps])
 
+		informative_snps = result["informative_snps"]
+
 		for i, z in enumerate(result["z_phi"]):
-			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-			causal = (i in causal_inds)
+			l_s = -np.log10(scipy.stats.norm.sf(abs(z))*2)
+			l = np.full(np.shape(inputs["snp_ids"]), 0.)
+			np.put(l, informative_snps, l_s)
+			causal = int(i in causal_inds)
 			info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
 			pp_lst.append(info)
 
 		for i, z in enumerate(result["z_beta"]):
-			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-			causal = (i in causal_inds)
+			l_s = -np.log10(scipy.stats.norm.sf(abs(z))*2)
+			l = np.full(np.shape(inputs["snp_ids"]), 0.)
+			np.put(l, informative_snps, l_s)
+			causal = int(i in causal_inds)
 			info = [snp_pos[i], l, "QTL", sample_sizes[ind], causal]
 			pp_lst.append(info)
 

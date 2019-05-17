@@ -39,12 +39,13 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	sns.set(style="ticks", font="Roboto")
 
 	pal = sns.xkcd_palette(["slate", "blood red"])
-	
+
 	g = sns.FacetGrid(
 		pp_df, 
 		row="Sample Size", 
 		col="Statistic", 
 		hue="Causal",
+		hue_kws={"sizes": [9, 13]},
 		palette=pal,
 		margin_titles=True, 
 		height=1.7, 
@@ -57,7 +58,8 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	# 	(0.5490196078431373, 0.03137254901960784, 0.0)
 	# ]
 	
-	
+	g.map(region_plotter(regions, bounds))
+
 	# print(pp_df) ####
 	g.map(
 		sns.scatterplot, 
@@ -71,14 +73,15 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		# sizes={0:9, 1:12},
 		s=9
 	)
+
+	y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
 	for i, ax in enumerate(g.fig.axes): 
 		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
+		ax.xaxis.set_major_formatter(x_formatter)
 
 	# for ax in g.axes.flat:
 	# 	labels = ["" for i in ax.get_xticklabels()] 
 	# 	ax.set_xticklabels(labels) 
-
-	g.map(region_plotter(regions, bounds))
 	
 	plt.subplots_adjust(top=0.9)
 	g.fig.suptitle("Association Statistics for {0}".format(gene_name))

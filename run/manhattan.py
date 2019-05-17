@@ -9,6 +9,7 @@ import matplotlib
 matplotlib.use('Agg')
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.ticker 
 import pandas as pd 
 import scipy.stats
 
@@ -45,7 +46,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		row="Sample Size", 
 		col="Statistic", 
 		hue="Causal",
-		hue_kws={"sizes": [9, 13]},
+		hue_kws={"sizes": [9, 13], marker=["o", "X"]},
 		palette=pal,
 		margin_titles=True, 
 		height=1.7, 
@@ -74,10 +75,10 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		s=9
 	)
 
-	x_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+	# x_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
 	for i, ax in enumerate(g.fig.axes): 
 		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
-		ax.xaxis.set_major_formatter(x_formatter)
+		# ax.xaxis.set_major_formatter(x_formatter)
 
 	# for ax in g.axes.flat:
 	# 	labels = ["" for i in ax.get_xticklabels()] 

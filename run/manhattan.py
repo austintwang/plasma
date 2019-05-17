@@ -46,7 +46,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		row="Sample Size", 
 		col="Statistic", 
 		hue="Causal",
-		hue_kws={"sizes": [9, 13], marker=["o", "X"]},
+		hue_kws={"sizes": [9, 13], marker:["o", "X"]},
 		palette=pal,
 		margin_titles=True, 
 		height=1.7, 

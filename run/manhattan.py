@@ -43,7 +43,6 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		row="Sample Size", 
 		col="Statistic", 
 		hue="Causal",
-		size="Causal",
 		margin_titles=True, 
 		height=1.7, 
 		aspect=3
@@ -60,7 +59,8 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	g.map(
 		sns.scatterplot, 
 		"Position", 
-		"-log_10 p-Value", 
+		"-log_10 p-Value",
+		size="Causal", 
 		legend=False,
 		# color=".3", 
 		linewidth=0,

@@ -133,14 +133,14 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 	bounds = (region_start, region_end)
 
-	reg = [chromosome, region_start, region_end]
-	reg = pybedtools.create_interval_from_list(reg)
+	reg = "{0}\t{1}\t{2}".format([chromosome, region_start, region_end])
+	reg = BedTool(reg, from_string=True)
 	ann = pybedtools.BedTool(annot_path)
 	features = ann.intersect(reg)
 
 	regions = []
 	for f in features:
-		print(f) ####
+		# print(f) ####
 		regions.append((f.start, f.stop,))
 
 	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds)

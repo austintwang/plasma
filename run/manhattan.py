@@ -43,10 +43,10 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 
 	g = sns.FacetGrid(
 		pp_df, 
-		row="Sample Size", 
+		row="Samples", 
 		col="Statistic", 
 		hue="Causal",
-		hue_kws={"sizes": [9, 13], "marker":["o", "X"]},
+		hue_kws={"marker":["o", "D"]},
 		palette=pal,
 		margin_titles=True, 
 		height=1.7, 
@@ -65,7 +65,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	g.map(
 		sns.scatterplot, 
 		"Position", 
-		"-log_10 p-Value",
+		"-log10 p-Value",
 		# size="Causal", 
 		legend=False,
 		# color=".3", 
@@ -84,7 +84,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	# 	labels = ["" for i in ax.get_xticklabels()] 
 	# 	ax.set_xticklabels(labels) 
 	
-	plt.subplots_adjust(top=0.9)
+	plt.subplots_adjust(top=0.9, bottom = 0.05, right = 0.95)
 	g.fig.suptitle("Association Statistics for {0}".format(gene_name))
 	plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
 	plt.clf()
@@ -142,9 +142,9 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 
 	pp_cols = [
 		"Position", 
-		"-log_10 p-Value", 
+		"-log10 p-Value", 
 		"Statistic", 
-		"Sample Size",
+		"Samples",
 		"Causal"
 	]
 

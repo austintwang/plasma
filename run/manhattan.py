@@ -75,16 +75,16 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		s=9
 	)
 
-	# x_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+	x_formatter = matplotlib.ticker.ScalarFormatter()
 	for i, ax in enumerate(g.fig.axes): 
 		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
-		# ax.xaxis.set_major_formatter(x_formatter)
+		ax.xaxis.set_major_formatter(x_formatter)
 
 	# for ax in g.axes.flat:
 	# 	labels = ["" for i in ax.get_xticklabels()] 
 	# 	ax.set_xticklabels(labels) 
 	
-	plt.subplots_adjust(top=0.9, bottom = 0.15, right = 0.96)
+	plt.subplots_adjust(top=0.9, bottom = 0.1, right = 0.96)
 	g.fig.suptitle("Association Statistics for {0}".format(gene_name))
 	plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
 	plt.clf()

@@ -36,13 +36,16 @@ def region_plotter(regions, bounds):
 	return region_plot
 
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
-	sns.set(style="white", font="Roboto")
+	sns.set(style="ticks", font="Roboto")
 
+	pal = sns.xkcd_palette(["slate", "blood red"])
+	
 	g = sns.FacetGrid(
 		pp_df, 
 		row="Sample Size", 
 		col="Statistic", 
 		hue="Causal",
+		palette=pal,
 		margin_titles=True, 
 		height=1.7, 
 		aspect=3
@@ -53,7 +56,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	# 	(0.23529411764705882, 0.23529411764705882, 0.23529411764705882),
 	# 	(0.5490196078431373, 0.03137254901960784, 0.0)
 	# ]
-	pal = sns.xkcd_palette(["slate", "blood red"])
+	
 	
 	# print(pp_df) ####
 	g.map(
@@ -64,7 +67,6 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		legend=False,
 		# color=".3", 
 		linewidth=0,
-		palette=pal,
 		hue_order=[1, 0],
 		# sizes={0:9, 1:12},
 		s=9
@@ -167,7 +169,7 @@ if __name__ == '__main__':
 	res_paths = [path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50"]]
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "SCARB1"
-	span = 50000
+	span = 70000
 	causal_snps = set(["rs4765621", "rs4765623"])
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 
@@ -178,7 +180,7 @@ if __name__ == '__main__':
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "DPF3"
 	causal_snps = set(["rs4903064"])
-	span = 50000
+	span = 70000
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
 

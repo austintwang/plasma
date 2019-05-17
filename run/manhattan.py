@@ -60,14 +60,14 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		sns.scatterplot, 
 		"Position", 
 		"-log_10 p-Value",
-		size="Causal", 
+		# size="Causal", 
 		legend=False,
 		# color=".3", 
 		linewidth=0,
 		palette=pal,
 		hue_order=[1, 0],
-		sizes={0:9, 1:12}
-		# s=9
+		# sizes={0:9, 1:12},
+		s=9
 	)
 	for i, ax in enumerate(g.fig.axes): 
 		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)

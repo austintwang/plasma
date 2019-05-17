@@ -65,6 +65,8 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		hue_order=[1, 0],
 		s=7
 	)
+	for i, ax in enumerate(g.fig.axes): 
+		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
 
 	# for ax in g.axes.flat:
 	# 	labels = ["" for i in ax.get_xticklabels()] 
@@ -110,7 +112,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 			pp_lst.append(info)
 
 		z_beta = np.full(np.shape(inputs["snp_ids"]), 0.)
-		np.put(z_phi, informative_snps, result["z_beta"])
+		np.put(z_beta, informative_snps, result["z_beta"])
 		for i, z in enumerate(z_beta):
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			causal = int(i in causal_inds)
@@ -140,7 +142,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 	regions = []
 	for f in features:
-		# print(f) ####
+		print(f) ####
 		regions.append((f.start, f.stop,))
 
 	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds)

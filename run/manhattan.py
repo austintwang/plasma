@@ -31,7 +31,7 @@ def region_plotter(regions, bounds):
 				end = bounds[1]
 			else:
 				end = q
-			plt.axvspan(start, end, facecolor='k', alpha=0.9)
+			plt.axvspan(start, end, facecolor='k', alpha=0.7)
 
 	return region_plot
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
 	res_paths = [path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50"]]
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "SCARB1"
-	span = 2000
+	span = 10000
 	causal_snps = set(["rs4765621", "rs4765623"])
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 
@@ -175,7 +175,7 @@ if __name__ == '__main__':
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "DPF3"
 	causal_snps = set(["rs4903064"])
-	span = 2000
+	span = 10000
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
 

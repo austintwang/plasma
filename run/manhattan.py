@@ -74,7 +74,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		s=9
 	)
 
-	y_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
+	x_formatter = matplotlib.ticker.ScalarFormatter(useOffset=False)
 	for i, ax in enumerate(g.fig.axes): 
 		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
 		ax.xaxis.set_major_formatter(x_formatter)

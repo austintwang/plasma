@@ -31,28 +31,30 @@ def region_plotter(regions, bounds):
 				end = bounds[1]
 			else:
 				end = q
-			plt.axvspan(start, end, facecolor='k', linewidth=0, alpha=0.2)
+			plt.axvspan(start, end, facecolor='k', linewidth=0, alpha=0.1)
 
 	return region_plot
 
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="white", font="Roboto")
 
 	g = sns.FacetGrid(
 		pp_df, 
 		row="Sample Size", 
 		col="Statistic", 
 		hue="Causal",
+		size="Causal",
 		margin_titles=True, 
 		height=1.7, 
 		aspect=3
 	)
 	# g.set(xticklabels=[])
 
-	pal = [
-		(0.23529411764705882, 0.23529411764705882, 0.23529411764705882),
-		(0.5490196078431373, 0.03137254901960784, 0.0)
-	]
+	# pal = [
+	# 	(0.23529411764705882, 0.23529411764705882, 0.23529411764705882),
+	# 	(0.5490196078431373, 0.03137254901960784, 0.0)
+	# ]
+	pal = sns.xkcd_palette(["slate", "blood red"])
 	
 	# print(pp_df) ####
 	g.map(
@@ -64,7 +66,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		linewidth=0,
 		palette=pal,
 		hue_order=[1, 0],
-		s=7
+		# s=9
 	)
 	for i, ax in enumerate(g.fig.axes): 
 		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
@@ -164,7 +166,7 @@ if __name__ == '__main__':
 	res_paths = [path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50"]]
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "SCARB1"
-	span = 30000
+	span = 50000
 	causal_snps = set(["rs4765621", "rs4765623"])
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 
@@ -175,7 +177,7 @@ if __name__ == '__main__':
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "DPF3"
 	causal_snps = set(["rs4903064"])
-	span = 30000
+	span = 50000
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
 

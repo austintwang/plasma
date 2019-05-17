@@ -63,7 +63,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		linewidth=0,
 		palette=pal,
 		hue_order=[1, 0],
-		s=6
+		s=7
 	)
 
 	# for ax in g.axes.flat:
@@ -140,6 +140,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 	regions = []
 	for f in features:
+		print(f) ####
 		regions.append((f.start, f.stop,))
 
 	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds)

@@ -80,7 +80,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
 	plt.clf()
 
-def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir):
+def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir):
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
@@ -95,6 +95,9 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 		snp_pos = inputs["snp_pos"]
 
 		causal_inds = set([i for i, v in enumerate(inputs["snp_ids"]) if v in causal_snps])
+		causal_pos = [snp_pos[i] for i in causal_inds]
+		llim = min(causal_pos) - span
+		ulim = max(causal_pos) + span
 		# print(causal_inds) ####
 
 		informative_snps = result["informative_snps"]
@@ -111,16 +114,18 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 			# print(ind) ####
 			# print(sample_sizes) ####
 			# print(causal) ####
-			info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
-			pp_lst.append(info)
+			if llim <= snp_pos[i] <= ulim:
+				info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
+				pp_lst.append(info)
 
 		z_beta = np.full(np.shape(inputs["snp_ids"]), 0.)
 		np.put(z_beta, informative_snps, result["z_beta"])
 		for i, z in enumerate(z_beta):
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			causal = int(i in causal_inds)
-			info = [snp_pos[i], l, "QTL", sample_sizes[ind], causal]
-			pp_lst.append(info)
+			if llim <= snp_pos[i] <= ulim:
+				info = [snp_pos[i], l, "QTL", sample_sizes[ind], causal]
+				pp_lst.append(info)
 
 		region_start = snp_pos[0]
 		region_end = snp_pos[-1] + 1
@@ -136,16 +141,16 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_d
 
 	pp_df = pd.DataFrame(pp_lst, columns=pp_cols)
 
-	bounds = (region_start, region_end)
+	bounds = (llim, ulim)
 
-	reg = "{0}\t{1}\t{2}".format(chromosome, region_start, region_end)
+	reg = "{0}\t{1}\t{2}".format(chromosome, llim, ulim)
 	reg = pybedtools.BedTool(reg, from_string=True)
 	ann = pybedtools.BedTool(annot_path)
 	features = ann.intersect(reg)
 
 	regions = []
 	for f in features:
-		print(f) ####
+		# print(f) ####
 		regions.append((f.start, f.stop,))
 
 	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds)
@@ -159,18 +164,20 @@ if __name__ == '__main__':
 	res_paths = [path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50"]]
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "SCARB1"
+	span = 10000
 	causal_snps = set(["rs4765621", "rs4765623"])
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 
-	manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir)
+	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
 
 	# DPF3
 	res_paths = [path_base.format(i, "ENSG00000205683.7") for i in ["all", "200", "100", "50"]]
 	sample_sizes = [524, 200, 100, 50]
 	gene_name = "DPF3"
 	causal_snps = set(["rs4903064"])
+	span = 10000
 	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
-	manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir)
+	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
 
 	# # GRAMD4
 	# res_paths = [path_base.format(i, "ENSG00000075240.12") for i in ["all", "200", "100", "50"]]

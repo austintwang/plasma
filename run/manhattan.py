@@ -84,7 +84,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	# 	labels = ["" for i in ax.get_xticklabels()] 
 	# 	ax.set_xticklabels(labels) 
 	
-	plt.subplots_adjust(top=0.9, bottom = 0.05, right = 0.95)
+	plt.subplots_adjust(top=0.9, bottom = 0.15, right = 0.96)
 	g.fig.suptitle("Association Statistics for {0}".format(gene_name))
 	plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
 	plt.clf()

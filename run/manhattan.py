@@ -48,11 +48,12 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		aspect=3
 	)
 	# g.set(xticklabels=[])
-	g.map(region_plotter(regions, bounds))
+
 	pal = [
 		(0.23529411764705882, 0.23529411764705882, 0.23529411764705882),
 		(0.5490196078431373, 0.03137254901960784, 0.0)
 	]
+	
 	# print(pp_df) ####
 	g.map(
 		sns.scatterplot, 
@@ -72,6 +73,8 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	# 	labels = ["" for i in ax.get_xticklabels()] 
 	# 	ax.set_xticklabels(labels) 
 
+	g.map(region_plotter(regions, bounds))
+	
 	plt.subplots_adjust(top=0.9)
 	g.fig.suptitle("Association Statistics for {0}".format(gene_name))
 	plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))

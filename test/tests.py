@@ -48,7 +48,7 @@ def dummy_test_2d():
 		"min_causal": 1,
 		"max_causal": 2,
 		"primary_var": "std_fraction",
-		"primary_var_display": "Standard Allelic Fraction",
+		"primary_var_display": "Standard Allelic Deviation",
 		"secondary_var": "coverage",
 		"secondary_var_display": "Coverage",
 		"test_count": 4,
@@ -201,6 +201,7 @@ def multi_cv():
 		"overdispersion": 0.05,
 		"herit_eqtl": 0.05,
 		"herit_ase": 0.4,
+		"herit_ase_manual": 0.1,
 		"std_fraction": 0.65,
 		"min_causal": 1,
 		"coverage": 100,
@@ -212,14 +213,14 @@ def multi_cv():
 		"num_causal": None,
 		"primary_var": "num_causal",
 		"primary_var_display": "Number of Causal Variants",
-		"test_count": 2,
+		"test_count": 1,
 		"test_name": "multi_cv",
 		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
 		"iterations": 500,
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase"]) 
 	}
-	tests = [2, 3]
+	tests = [2]
 	bm = Benchmark(params)
 	for t in tests:
 		it = int(spm.comb(params["num_snps"], t))
@@ -295,8 +296,8 @@ if __name__ == "__main__":
 	# dummy_test_2d()
 	# confidence_test()
 	# imbalance()
+	multi_cv()
 	fraction_vs_coverage()
-	# fraction_vs_noise()
-	# multi_cv()
+	fraction_vs_noise()
 	# multi_cv_recall()
 	# multi_cv_herit()

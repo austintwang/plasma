@@ -37,7 +37,7 @@ def region_plotter(regions, bounds):
 	return region_plot
 
 def cset_sizes(*args, **kwargs):
-	cset_size = np.count_nonzero(args[0]["Causal"])
+	cset_size = np.count_nonzero(kwargs["data"]["Causal"])
 	plt.text(0.8, 0.8, cset_size)
 
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):

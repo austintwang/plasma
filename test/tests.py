@@ -22,7 +22,7 @@ def dummy_test():
 		"search_mode": "exhaustive",
 		"max_causal": 1,
 		"primary_var": "std_fraction",
-		"primary_var_display": "Standard Allelic Fraction",
+		"primary_var_display": "Standard Allelic Deviation",
 		"test_count": 1,
 		"test_name": "dummy_test",
 		"iterations": 1,
@@ -108,7 +108,7 @@ def imbalance():
 		"search_mode": "exhaustive",
 		"max_causal": 1,
 		"primary_var": "std_fraction",
-		"primary_var_display": "Imbalance (Standard Allelic Fraction)",
+		"primary_var_display": "AS Variance (Standard Allelic Deviation)",
 		"test_count": 2,
 		"test_name": "imbalance",
 		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
@@ -136,7 +136,7 @@ def fraction_vs_coverage():
 		"min_causal": 1,
 		"max_causal": 1,
 		"primary_var": "std_fraction",
-		"primary_var_display": "Imbalance (Standard Allelic Fraction)",
+		"primary_var_display": "AS Variance (Standard Allelic Deviation)",
 		"secondary_var": "coverage",
 		"secondary_var_display": "Mean Coverage",
 		"test_count": 54,
@@ -172,7 +172,7 @@ def fraction_vs_noise():
 		"min_causal": 1,
 		"max_causal": 1,
 		"primary_var": "std_fraction",
-		"primary_var_display": "Imbalance (Standard Allelic Fraction)",
+		"primary_var_display": "AS Variance (Standard Allelic Deviation)",
 		"secondary_var": "herit_ase",
 		"secondary_var_display": "ASE Heritability",
 		"test_count": 54,
@@ -295,9 +295,9 @@ if __name__ == "__main__":
 	# dummy_test()
 	# dummy_test_2d()
 	# confidence_test()
-	# imbalance()
-	multi_cv()
-	fraction_vs_coverage()
-	fraction_vs_noise()
+	imbalance()
+	# multi_cv()
+	# fraction_vs_coverage()
+	# fraction_vs_noise()
 	# multi_cv_recall()
 	# multi_cv_herit()

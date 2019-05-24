@@ -39,14 +39,14 @@ def region_plotter(regions, bounds):
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	sns.set(style="ticks", font="Roboto")
 
-	pal = sns.xkcd_palette(["slate", "blood red"])
+	pal = sns.xkcd_palette(["cool grey", "slate", "blood red"])
 
 	g = sns.FacetGrid(
 		pp_df, 
 		row="Samples", 
 		col="Statistic", 
 		hue="Causal",
-		hue_kws={"marker":["o", "D"]},
+		hue_kws={"marker":["o", "o", "D"]},
 		palette=pal,
 		margin_titles=True, 
 		height=1.7, 
@@ -70,7 +70,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		legend=False,
 		# color=".3", 
 		linewidth=0,
-		hue_order=[1, 0],
+		hue_order=[2, 1, 0],
 		# sizes={0:9, 1:12},
 		s=9
 	)
@@ -109,6 +109,9 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 		ulim = max(causal_pos) + span
 		# print(causal_inds) ####
 
+		cset_ase = result["causal_set_ase"]
+		cset_eqtl = result["causal_set_eqtl"]
+
 		informative_snps = result["informative_snps"]
 
 		z_phi = np.full(np.shape(inputs["snp_ids"]), 0.)
@@ -116,7 +119,12 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 		# print(len(z_phi), len(informative_snps), len(snp_ids), len(snp_pos)) ####
 		for i, z in enumerate(z_phi):
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-			causal = int(i in causal_inds)
+			if i in causal_inds:
+				causal = 2
+			elif cset_ase[i] == 1:
+				causal = 1
+			else:
+				causal = 0
 			# print(snp_pos[i]) ####
 			# print(l) ####
 			# # print(sample_sizes[ind]) ####
@@ -131,7 +139,12 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 		np.put(z_beta, informative_snps, result["z_beta"])
 		for i, z in enumerate(z_beta):
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-			causal = int(i in causal_inds)
+			if i in causal_inds:
+				causal = 2
+			elif cset_eqtl[i] == 1:
+				causal = 1
+			else:
+				causal = 0
 			if llim <= snp_pos[i] <= ulim:
 				info = [snp_pos[i], l, "QTL", sample_sizes[ind], causal]
 				pp_lst.append(info)

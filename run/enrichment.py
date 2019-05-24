@@ -33,31 +33,31 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 		bed_path = bed_path_base.format("full")
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "Joint-Correlated")
+		parse_output(s_out, lst_out, "PLASMA-JC")
 
 	if "indep" in model_flavors:
 		bed_path = bed_path_base.format("indep")
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "Joint-Independent")
-
-	if "eqtl" in model_flavors:
-		bed_path = bed_path_base.format("eqtl")
-		s_args = [script_path, bed_path, annot_path, ctrl_path]
-		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "QTL-Only")
+		parse_output(s_out, lst_out, "PLASMA-JI")
 
 	if "ase" in model_flavors:
 		bed_path = bed_path_base.format("ase")
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "AS-Only")
+		parse_output(s_out, lst_out, "PLASMA-AS")
 
 	if "acav" in model_flavors:
 		bed_path = bed_path_base.format("acav")
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
 		parse_output(s_out, lst_out, "CAVIAR-ASE")
+
+	if "eqtl" in model_flavors:
+		bed_path = bed_path_base.format("eqtl")
+		s_args = [script_path, bed_path, annot_path, ctrl_path]
+		s_out = subprocess.check_output(s_args)
+		parse_output(s_out, lst_out, "QTL-Only")
 
 	cols_out = [
 		"Model", 

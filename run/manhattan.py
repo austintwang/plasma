@@ -81,7 +81,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		s=9
 	)
 
-	g.map(cset_sizes)
+	g.map_dataframe(cset_sizes)
 
 	x_formatter = matplotlib.ticker.ScalarFormatter()
 	for i, ax in enumerate(g.fig.axes): 

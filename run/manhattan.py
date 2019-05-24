@@ -70,6 +70,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true):
 	# ]
 	
 	g.map(region_plotter(regions, bounds))
+	g.map(cset_sizes, "Causal", num_true=num_true)
 
 	# print(pp_df) ####
 	g.map(
@@ -84,8 +85,6 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true):
 		# sizes={0:9, 1:12},
 		s=9
 	)
-
-	g.map(cset_sizes, "Causal", num_true=num_true)
 
 	x_formatter = matplotlib.ticker.ScalarFormatter()
 	for i, ax in enumerate(g.fig.axes): 

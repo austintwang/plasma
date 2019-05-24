@@ -65,7 +65,7 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 		"Odds Ratio", 
 		"95% Confidence Interval Lower Bound", 
 		"95% Confidence Interval Upper Bound", 
-		"$-log_{10}$ p-Value"
+		"-log10 p-Value"
 	]
 
 	df_out = pd.DataFrame(lst_out, columns=cols_out)
@@ -87,7 +87,7 @@ def plot_enrichment(out_dir, df_out, title):
 
 	sns.barplot(
 		x="Minimum Posterior Probability", 
-		y="$-log_{10}$ p-Value",
+		y="-log10 p-Value",
 		hue="Model",
 		data=df_out
 	)

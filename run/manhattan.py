@@ -36,15 +36,19 @@ def region_plotter(regions, bounds):
 
 	return region_plot
 
+def cset_sizes(*args, **kwargs):
+	cset_size = np.count_nonzero(args[0]["Causal"])
+	plt.text(0.8, 0.8, cset_size)
+
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	sns.set(style="ticks", font="Roboto")
 
-	pal = sns.xkcd_palette(["cool grey", "slate", "blood red"])
+	pal = sns.xkcd_palette(["stone", "slate", "blood red"])
 
 	g = sns.FacetGrid(
 		pp_df, 
 		row="Samples", 
-		col="Statistic", 
+		col="Model", 
 		hue="Causal",
 		hue_kws={"marker":["o", "o", "D"]},
 		palette=pal,
@@ -74,6 +78,8 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		# sizes={0:9, 1:12},
 		s=9
 	)
+
+	g.map(cset_sizes)
 
 	x_formatter = matplotlib.ticker.ScalarFormatter()
 	for i, ax in enumerate(g.fig.axes): 
@@ -124,7 +130,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			if i in causal_inds:
 				causal = 2
-			elif cset_ase[i] == 1 and ppas_ase[i] != np.nan:
+			elif all(cset_ase[i] == 1, ppas_ase[i] != np.nan, ppas_ase[i] > 0.):
 				causal = 1
 			else:
 				causal = 0
@@ -144,7 +150,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			if i in causal_inds:
 				causal = 2
-			elif cset_eqtl[i] == 1 and ppas_eqtl[i] != np.nan:
+			elif all(cset_eqtl[i] == 1, ppas_eqtl[i] != np.nan, ppas_eqtl[i] > 0.):
 				causal = 1
 			else:
 				causal = 0
@@ -159,7 +165,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 	pp_cols = [
 		"Position", 
 		"-log10 p-Value", 
-		"Statistic", 
+		"Model", 
 		"Samples",
 		"Causal"
 	]

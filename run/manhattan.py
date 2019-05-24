@@ -130,7 +130,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			if i in causal_inds:
 				causal = 2
-			elif all(cset_ase[i] == 1, ppas_ase[i] != np.nan, ppas_ase[i] > 0.):
+			elif all([cset_ase[i] == 1, ppas_ase[i] != np.nan, z > 0.]):
 				causal = 1
 			else:
 				causal = 0
@@ -150,7 +150,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			if i in causal_inds:
 				causal = 2
-			elif all(cset_eqtl[i] == 1, ppas_eqtl[i] != np.nan, ppas_eqtl[i] > 0.):
+			elif all([cset_eqtl[i] == 1, ppas_eqtl[i] != np.nan, z > 0.]):
 				causal = 1
 			else:
 				causal = 0

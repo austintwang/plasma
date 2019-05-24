@@ -39,13 +39,14 @@ def region_plotter(regions, bounds):
 def cset_sizes(*args, **kwargs):
 	# print(args) ####
 	# print(kwargs) ####
+	print(kwargs["data"]["Causal"]) ####
 	cset_size = np.count_nonzero(kwargs["data"]["Causal"])
 	plt.text(0.8, 0.8, cset_size)
 
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 	sns.set(style="ticks", font="Roboto")
 
-	pal = sns.xkcd_palette(["stone", "slate", "blood red"])
+	pal = sns.xkcd_palette(["silver", "slate", "blood red"])
 
 	g = sns.FacetGrid(
 		pp_df, 

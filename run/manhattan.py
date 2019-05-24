@@ -40,11 +40,12 @@ def cset_sizes(*args, **kwargs):
 	print(args) ####
 	print(kwargs) ####
 	# print(kwargs["data"]["Causal"]) ####
-	cset_size = np.count_nonzero(args[0])
-	print(cset_size) ####
-	plt.text(0.8, 0.8, cset_size)
+	if kwargs["label"] == "1":
+		cset_size = np.count_nonzero(args[0]) + int(kwargs["num_true"])
+		# print(cset_size) ####
+		plt.text(0.8, 0.8, cset_size)
 
-def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
+def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true):
 	sns.set(style="ticks", font="Roboto")
 
 	pal = sns.xkcd_palette(["silver", "slate", "blood red"])
@@ -83,7 +84,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
 		s=9
 	)
 
-	g.map(cset_sizes, "Causal")
+	g.map(cset_sizes, "Causal", num_true=num_true)
 
 	x_formatter = matplotlib.ticker.ScalarFormatter()
 	for i, ax in enumerate(g.fig.axes): 
@@ -112,6 +113,8 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 
 		snp_ids = inputs["snp_ids"]
 		snp_pos = inputs["snp_pos"]
+
+		num_true = len(causal_snps)
 
 		causal_inds = set([i for i, v in enumerate(inputs["snp_ids"]) if v in causal_snps])
 		causal_pos = [snp_pos[i] for i in causal_inds]
@@ -188,7 +191,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 		# print(f) ####
 		regions.append((f.start, f.stop,))
 
-	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds)
+	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true)
 
 if __name__ == '__main__':
 	path_base = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"

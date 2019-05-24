@@ -37,8 +37,8 @@ def region_plotter(regions, bounds):
 	return region_plot
 
 def cset_sizes(*args, **kwargs):
-	# print(args) ####
-	# print(kwargs) ####
+	print(args) ####
+	print(kwargs) ####
 	# print(kwargs["data"]["Causal"]) ####
 	cset_size = np.count_nonzero(args[0])
 	print(cset_size) ####

@@ -91,7 +91,7 @@ def plot_enrichment(out_dir, df_out, title):
 		hue="Model",
 		data=df_out
 	)
-	plt.title(title + "\n$-log_{10}$ p-Values")
+	plt.title(title + "\n-log10 p-Values")
 	plt.savefig(os.path.join(out_dir, "enrichment_pvals.svg"))
 	plt.clf()
 

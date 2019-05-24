@@ -44,7 +44,7 @@ def cset_sizes(*args, **kwargs):
 		cset_size = np.count_nonzero(args[0]) + int(kwargs["num_true"])
 		# print(cset_size) ####
 		ax = plt.gca()
-		ax.text(0.8, 0.8, cset_size, transform=ax.transAxes)
+		ax.text(0.9, 0.8, cset_size, transform=ax.transAxes)
 
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true):
 	sns.set(style="ticks", font="Roboto")

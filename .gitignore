@@ -42,9 +42,12 @@ Thumbs.db
 *.pickle
 *.vcf
 *.bed
+
 /test/results
 /test/caviar
 /test/temp
 /test/data
 
 /run/caviar
+
+/unused

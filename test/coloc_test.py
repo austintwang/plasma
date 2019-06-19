@@ -176,8 +176,20 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, pop_name, shared_params, qtl_p
 
 	return locus, qtl_data, gwas_z
 
-
-
 def coloc_test(test_type, vcf_dir, vcf_name_template, out_dir, batch_size, shared_params, qtl_params, gwas_params):
+	sim_map = {
+		"shared": sim_shared_causal,
+		"unshared": sim_shared_causal,
+		"corr": sim_unshared_corr
+	}
+	sim_fn = sim_map[test_type]
+	locus, qtl_data, gwas_z = sim_fn(
+		vcf_dir, 
+		vcf_name_template, 
+		pop_name, 
+		shared_params, 
+		qtl_params, 
+		gwas_params
+	)
 
 

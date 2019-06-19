@@ -4,10 +4,7 @@ from __future__ import unicode_literals
 from __future__ import absolute_import
 
 import numpy as np 
-import scipy.stats
 import vcf
-import os
-import random
 
 class LocusSimulator(object):
 	def __init__(
@@ -79,7 +76,7 @@ class LocusSimulator(object):
 
 		haps_means = np.mean(self.haps, axis=0)
 		haps_centered = self.haps - haps_means
-		self.haps_cov = np.cov(haps_centered.T)
+		self.haps_cov = np.nan_to_num(np.cov(haps_centered.T))
 
 	def sim_asqtl(
 			self, 

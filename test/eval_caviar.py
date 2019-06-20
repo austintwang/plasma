@@ -174,5 +174,113 @@ class EvalCaviarASE(object):
 			self.causal_set = set2
 			self.post_probs = ppa2
 
+class EvalECaviar(object):
+	dir_path = os.path.dirname(os.path.realpath(__file__))
+	caviar_path = os.path.join(dir_path, "caviar", "CAVIAR-C++", "eCAVIAR")
+	temp_path = os.path.join(dir_path, "temp")
+	
+	def __init__(self, fm_qtl, fm_gwas, confidence, max_causal):
+		self.confidence = confidence
+		self.max_causal = max_causal
 
+		self.num_snps = fm_qtl.num_snps
+		self.causal_status_prior = fm_qtl.causal_status_prior
+		self.total_exp_stats_qtl = fm_qtl.total_exp_stats
+		self.stats_gwas = fm_gwas.total_exp_stats
+		self.corr_qtl = fm_qtl.total_exp_corr
+		self.corr_gwas = fm_gwas.total_exp_corr
+		# self.ncp = np.sqrt(fm.imbalance_var_prior)
+
+		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
+		self.rsid_map = dict(zip(self.rsids, range(self.num_snps)))
+
+		self.output_name = ''.join(
+			random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+		)
+		self.output_path = os.path.join(self.temp_path, self.output_name)
+		os.mkdir(self.output_path)
+		self.output_filename_base = os.path.join(self.output_path, self.output_name)
+
+		self.z_qtl_path = os.path.join(self.output_path, "z_qtl.txt")
+		self.z_gwas_path = os.path.join(self.output_path, "z_gwas.txt")
+		self.ld_qtl_path = os.path.join(self.output_path, "ld_qtl.txt")
+		self.ld_gwas_path = os.path.join(self.output_path, "ld_gwas.txt")
+		self.set_qtl_path = os.path.join(self.output_path, self.output_name + "_1_set")
+		self.set_gwas_path = os.path.join(self.output_path, self.output_name + "_2_set")
+		self.post_qtl_path = os.path.join(self.output_path, self.output_name + "_1_post")
+		self.post_gwas_path = os.path.join(self.output_path, self.output_name + "_2_post")
+		self.clpp_path = os.path.join(self.output_path, self.output_name + "_col")
+
+		self.causal_set_qtl = np.zeros(self.num_snps)
+		self.causal_set_gwas = np.zeros(self.num_snps)
+		self.post_probs_qtl = np.zeros(self.num_snps)
+		self.causal_set_gwas = np.zeros(self.num_snps)
+		self.clpp = np.zeros(self.num_snps)
+
+		self.z_qtl = self.total_exp_stats_qtl.tolist()
+		self.z_gwas = self.stats_gwas.tolist()
+		self.ld_qtl = self.corr_qtl.tolist()
+		self.ld_gwas = self.corr_gwas.tolist()
+
+	def run(self):
+		self.params = [
+			self.caviar_path,
+			"-o", self.output_filename_base,
+			"-l", self.ld_qtl_path,
+			"-l", self.ld_gwas_path,
+			"-z", self.z_qtl_path,
+			"-z", self.z_gwas_path,
+			"-r", str(self.confidence),
+			"-c", str(self.max_causal),
+			# "-n", str(self.ncp)
+		]
+
+		with open(self.z_path, "w") as zfile:
+			zstr = "\n".join("\t".join(str(j) for j in i) for i in zip(self.rsids, self.z_scores)) + "\n"
+			zfile.write(zstr)
+
+		with open(self.ld_path, "w") as ldfile:
+			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
+			ldfile.write(ldstr)
+
+		out = subprocess.check_output(self.params)
+		# print(out) ####
+		# print(self.z_path) ####
+
+		with open(self.set_qtl_path) as setfile_qtl:
+			ids_qtl = setfile_qtl.read().splitlines()
+
+		for i in ids_qtl:
+			self.causal_set_qtl[self.rsid_map[i]] = 1
+
+		with open(self.set_gwas_path) as setfile_gwas:
+			ids_gwas = setfile_gwas.read().splitlines()
+
+		for i in ids_gwas:
+			self.causal_set_gwas[self.rsid_map[i]] = 1
+
+		with open(self.post_qtl_path) as postfile_qtl:
+			posts_qtl = [i.split("\t") for i in postfile_qtl.read().splitlines()]
+		postdict_qtl = {i[0]: i[2] for i in posts_qtl}
+
+		for r in self.rsids:
+			self.post_probs_qtl[self.rsid_map[r]] = postdict_qtl[r]
+
+		with open(self.post_gwas_path) as postfile_gwas:
+			posts_gwas = [i.split("\t") for i in postfile_gwas.read().splitlines()]
+		postdict_gwas = {i[0]: i[2] for i in posts_gwas}
+
+		for r in self.rsids:
+			self.post_probs_gwas[self.rsid_map[r]] = postdict_gwas[r]
+
+		with open(self.clpp_path) as clppfile:
+			clpps = [i.split("\t") for i in clppfile.read().splitlines()]
+		clppdict_gwas = {i[0]: i[2] for i in clpps}
+
+		for r in self.rsids:
+			self.clpp[self.rsid_map[r]] = clppdict_gwas[r]
+
+		self.h4 = np.sum(self.clpp)
+
+		shutil.rmtree(self.output_path)
 

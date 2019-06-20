@@ -6,17 +6,26 @@ from __future__ import absolute_import
 import numpy as np 
 import vcf
 
+class Universe(object):
+	def __contains__(self, other):
+		return True
+
 class LocusSimulator(object):
 	def __init__(
 		self, 
 		vcf_path, 
 		chrom, 
 		start, 
-		num_snps,
+		region_size,
 		num_causal, 
 		sample_filter=None,
+		snp_filter=None,
 		maf_thresh=0.
 	):
+		self.chrom = chrom
+		self.start = start
+		self.region_size = region_size
+
 		vcf_reader = vcf.Reader(filename=vcf_path)
 		samples = vcf_reader.samples
 		if sample_filter is not None:
@@ -24,22 +33,28 @@ class LocusSimulator(object):
 			sample_idx = [ind for ind, val in enumerate(samples) if val in filter_set]
 		else:
 			sample_idx = range(len(samples))
+		if snp_filter is not None:
+			snp_filter = set(snp_filter)
+		else:
+			snp_filter = Universe()	
 
 		haps = []
 		snp_ids = []
 		snp_count = 0
 
-		for record in vcf_reader.fetch(chrom, start, None):
-			chr_num = record.CHROM
+		for record in vcf_reader.fetch(chrom, start, start + region_size):
+			chr_rec = record.CHROM
 			pos = int(record.POS) + 1
 			if record.ID == ".":
-				snp_id = "{0}.{1}".format(chr_num, pos)
+				snp_id = "{0}.{1}".format(chr_rec, pos)
 			else:
 				snp_id = record.ID
 
+			if snp_id not in snp_filter:
+				continue
+
 			genotypes = []
 			include_marker = True
-
 			for ind in sample_idx:
 				sample = record.samples[ind]
 
@@ -52,26 +67,29 @@ class LocusSimulator(object):
 				genotypes.append(int(haps[0]))
 				genotypes.append(int(haps[1]))
 
-			if include_marker:
-				genotypes = np.array(genotypes)
-				freq = np.mean(genotypes)
-				maf = min(freq, 1 - freq)
-				if maf < maf_thresh:
-					include_marker = False
+			if not include_marker:
+				continue
 
-			if include_marker:
-				haps.append(genotypes)
-				snp_ids.append(snp_id)
-				snp_count += 1
+			genotypes = np.array(genotypes)
+			freq = np.mean(genotypes)
+			maf = min(freq, 1 - freq)
+			if maf < maf_thresh:
+				continue
 
-			if snp_count >= num_snps
-				break
+			haps.append(genotypes)
+			snp_ids.append(snp_id)
+			snp_count += 1
+
+			# if snp_count >= num_snps
+			# 	break
 
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)
 		self.snp_count = snp_count
 
-		self.causal_inds = np.random.choice(self.snp_count, num_causal, replace=False)
+		causal_inds = np.random.choice(self.snp_count, num_causal, replace=False)
+		self.causal_config = np.zeros(snp_count)
+		np.put(self.causal_config, causal_inds, 1)
 		self.num_causal = num_causal
 
 		haps_means = np.mean(self.haps, axis=0)
@@ -98,17 +116,15 @@ class LocusSimulator(object):
 		phases = hap_A - hap_B
 		
 		if causal_override is not None:
-			causal_inds = causal_override
+			causal_config = causal_override
 			num_causal = np.size(causal_override)
 		else:
-			causal_inds = self.causal_inds
+			causal_config = self.causal_config
 			num_causal = self.num_causal
 
 		causal_effects = np.random.normal(0, 1, num_causal)
-		causal_config = np.zeros(self.snp_count)
-		np.put(causal_config, causal_inds, 1)
 		causal_snps = np.zeros(self.snp_count)
-		np.put(causal_snps, causal_inds, causal_effects)
+		causal_snps[causal_config] = causal_effects
 
 		prop_noise_eqtl = 1 - herit_qtl
 		prop_noise_ase = 1 - herit_as
@@ -167,20 +183,34 @@ class LocusSimulator(object):
 			causal_override=None
 		):
 		if causal_override is not None:
-			causal_inds = causal_override
+			causal_config = causal_override
 			num_causal = np.size(causal_override)
 		else:
-			causal_inds = self.causal_inds
+			causal_config = self.causal_config
 			num_causal = self.num_causal
 
-		causal_effects = np.random.normal(0, 1, num_causal)
-		var_causal_raw = causal_effects.dot(self.haps_cov.dot(causal_effects))
-		scale = herit / var_causal_raw
-		causal_effects_scaled = causal_effects * np.sqrt(scale)
+		gram = self.haps_cov * self.snp_count
 
-		signal = self.haps_cov * causal_effects_scaled
-		noise = np.random.multivariate_normal(0, self.haps_cov*(1-herit))
+		causal_effects = np.random.normal(0, 1, num_causal)
+		causal_snps = np.zeros(self.snp_count)
+		causal_snps[causal_config] = causal_effects
+
+		var_causal_raw = causal_snps.dot(gram.dot(causal_snps))
+		scale = herit / var_causal_raw
+		causal_snps_scaled = causal_snps * np.sqrt(scale)
+
+		signal = gram.dot(causal_snps_scaled)
+		noise = np.random.multivariate_normal(0, gram*(1-herit))
 		haps_var = np.diagonal(self.haps_cov)
 		z_scores = (signal + noise) * np.sqrt(self.snp_count / haps_var)
 
-		return z_scores
+		corr = self.haps_corr / np.sqrt(np.outer(haps_var, haps_var))
+		corr = np.nan_to_num(corr)
+		np.fill_diagonal(corr, 1.0)
+
+		data_dict = {
+			"z_gwas": z_scores,
+			"ld_gwas": corr,
+		}
+
+		return data_dict

@@ -90,12 +90,12 @@ class Finemap(object):
 
 		self.causal_status_prior = self.num_causal_prior / self.num_snps
 
-	def _calc_hap_vars(self):
-		if self.hap_vars is not None:
-			return
+	# def _calc_hap_vars(self):
+	# 	if self.hap_vars is not None:
+	# 		return
 
-		haps_pooled = np.append(self.hap_A, self.hap_B, axis=0)
-		self.hap_vars = np.var(haps_pooled, axis=0)
+	# 	haps_pooled = np.append(self.hap_A, self.hap_B, axis=0)
+	# 	self.hap_vars = np.var(haps_pooled, axis=0)
 
 	def _calc_imbalance(self):
 		if self.imbalance is not None:
@@ -123,8 +123,6 @@ class Finemap(object):
 		if self.phases is not None:
 			return
 
-		self._calc_hap_vars()
-
 		self.phases = self.hap_A - self.hap_B
 
 	def _calc_total_exp(self):
@@ -136,8 +134,6 @@ class Finemap(object):
 	def _calc_genotypes_comb(self):
 		if self.genotypes_comb is not None:
 			return
-
-		self._calc_hap_vars()
 
 		self.genotypes_comb = self.hap_A + self.hap_B
 

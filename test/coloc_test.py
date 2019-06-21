@@ -68,7 +68,7 @@ def sim_shared_causal(vcf_dir, vcf_name_template, pop_name, params):
 		vcf_path, 
 		chrom, 
 		start, 
-		params["num_snps"], 
+		params["region_size"], 
 		params["num_causal"],
 		sample_filter=pop_fiter,
 		maf_thresh=params["maf_thresh"]
@@ -467,7 +467,8 @@ def coloc_test(
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
-	output_return = os.path.join(out_dir, "out_{0}.pickle".format(batch_num))
+	output_name = "{0}_out_{1}.pickle".format(params["job_name"], batch_num)
+	output_return = os.path.join(out_dir, output_name)
 	with open(output_return, "wb") as output_file:
 		pickle.dump(output, output_file)
 

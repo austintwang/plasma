@@ -1,0 +1,182 @@
+from __future__ import print_function
+from __future__ import division
+from __future__ import unicode_literals 
+from __future__ import absolute_import
+
+import subprocess
+import os
+try:
+	import cPickle as pickle
+except ImportError:
+	import pickle
+
+class Dispatcher(object):
+	def __init__(self, script_path, batch_size):
+		self.script_path = script_path
+		self.batch_size = batch_size
+		self.jobs = []
+
+	def add_job(self, out_dir, params_path, params, num_tasks):
+		with open(params_path, "wb") as params_file:
+			pickle.dump(params, params_file)
+
+		job_name = params["job_name"]
+
+		num_jobs = -(-num_tasks // self.batch_size)
+		batches = [self.batch_size for i in xrange(num_jobs)]
+		batches[-1] -= -num_tasks % self.batch_size
+
+		for ind, val in enumerate(batches):
+			job_args = [
+				"sbatch", 
+				"-J", 
+				job_name, 
+				self.script_path,
+				str(val),
+				str(ind),
+				params_path
+			]
+			self.jobs.append(["sbatch", "-J", job_name, self.script_path])
+
+	def submit(self):
+		for i in jobs:
+			subprocess.call(i)
+
+def test_shared_causal(
+	disp, 
+	vcf_info,
+	params_dir, 
+	out_dir_base, 
+	qtl_sizes, 
+	gwas_sizes, 
+	gwas_herits, 
+	num_trials,
+	script_path,
+):
+	params_base = {
+		"test_type": "shared",
+		"region_size": 100,
+		"num_samples_qtl": None,
+		"num_samples_gwas": None,
+		"overdispersion": 0.05,
+		"herit_eqtl": 0.05,
+		"herit_ase": 0.4,
+		"herit_gwas": None
+		"std_al_dev": 0.7,
+		"num_causal": 1,
+		"coverage": 100,
+		"search_mode": "exhaustive",
+		"min_causal": 1,
+		"max_causal": 1,
+		"test_name": None
+		"confidence": 0.95,
+		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
+	}
+	out_dir = os.path.join(out_dir_base, "shared_causal")
+
+	for i in qtl_sizes:
+		for j in gwas_sizes:
+			for k in gwas_herits:
+				test_name = "q_{0}_g_{1}_h_{2}_shared_causal".format(i, j, k)
+				param_updates = {
+					"test_name": test_name,
+					"num_samples_qtl": i,
+					"num_samples_gwas": j,
+					"herit_gwas": k,
+				}
+				params = params_base.copy().update(param_updates)
+				params.update(vcf_info)
+				params_path = os.path.join(params_base, test_name + ".pickle")
+				disp.add_job(out_dir, params_path, params, num_trials)
+
+def test_unshared_corr(
+	disp, 
+	vcf_info,
+	params_dir, 
+	out_dir_base, 
+	qtl_sizes, 
+	gwas_sizes, 
+	ld_thresh, 
+	num_trials,
+	script_path,
+):
+	params_base = {
+		"test_type": "corr",
+		"region_size": 100,
+		"num_samples_qtl": None,
+		"num_samples_gwas": None,
+		"overdispersion": 0.05,
+		"herit_eqtl": 0.05,
+		"herit_ase": 0.4,
+		"herit_gwas": .01/100,
+		"corr_thresh": None
+		"std_al_dev": 0.7,
+		"num_causal": 1,
+		"coverage": 100,
+		"search_mode": "exhaustive",
+		"min_causal": 1,
+		"max_causal": 1,
+		"test_name": None
+		"confidence": 0.95,
+		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
+	}
+	out_dir = os.path.join(out_dir_base, "unshared_corr")
+
+	for i in qtl_sizes:
+		for j in gwas_sizes:
+			for k in ld_thresh:
+				test_name = "q_{0}_g_{1}_h_{2}_shared_causal".format(i, j, k)
+				param_updates = {
+					"test_name": test_name,
+					"num_samples_qtl": i,
+					"num_samples_gwas": j,
+					"corr_thresh": k,
+				}
+				params = params_base.copy().update(param_updates)
+				params.update(vcf_info)
+				params_path = os.path.join(params_base, test_name + ".pickle")
+				disp.add_job(out_dir, params_path, params, num_trials)
+
+if __name__ == '__main__':
+	script_path = "TODO"
+	batch_size = 50
+
+	disp = Dispatcher(script_path, batch_size)
+
+	vcf_info = {
+		"vcf_dir": "TODO",
+		"vcf_name_template": "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
+	}
+	params_dir = "TODO"
+	out_dir_base = "TODO"
+
+	qtl_sizes = [10, 50, 100, 200, 500]
+	gwas_sizes = [10000, 50000, 100000, 200000, 500000]
+
+	gwas_herits = [.01/100, .05/1000]
+	test_shared_causal(
+		disp, 
+		vcf_info,
+		params_dir, 
+		out_dir_base, 
+		qtl_sizes, 
+		gwas_sizes, 
+		gwas_herits, 
+		num_trials,
+		script_path,
+	)
+
+	ld_thresh = [0., 0.2, 0.4, 0.8]
+	test_unshared_corr(
+		disp, 
+		vcf_info,
+		params_dir, 
+		out_dir_base, 
+		qtl_sizes, 
+		gwas_sizes, 
+		ld_thresh, 
+		num_trials,
+		script_path,
+	)
+
+	disp.submit()

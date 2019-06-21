@@ -22,7 +22,6 @@ if __name__ == '__main__' and __package__ is None:
 else:
 	from . import Finemap, LocusSimulator, EvalCaviarASE
 
-# VCF_NAME_TEMPLATE = "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
 CHROM_LENS = [
 	248956422,
 	242193529,

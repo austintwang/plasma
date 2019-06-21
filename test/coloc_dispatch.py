@@ -138,17 +138,19 @@ def test_unshared_corr(
 				disp.add_job(out_dir, params_path, params, num_trials)
 
 if __name__ == '__main__':
-	script_path = "TODO"
+	curr_path = os.path.abspath(os.path.dirname(__file__))
+
+	script_path = os.path.join(curr_path, "coloc_test.py")
 	batch_size = 50
 
 	disp = Dispatcher(script_path, batch_size)
 
 	vcf_info = {
-		"vcf_dir": "TODO",
+		"vcf_dir": "/bcb/agusevlab/awang/job_data/sim_coloc/vcfs/",
 		"vcf_name_template": "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
 	}
-	params_dir = "TODO"
-	out_dir_base = "TODO"
+	params_dir = "/bcb/agusevlab/awang/job_data/sim_coloc/params/"
+	out_dir_base = "/bcb/agusevlab/awang/job_data/sim_coloc/outs/"
 
 	qtl_sizes = [10, 50, 100, 200, 500]
 	gwas_sizes = [10000, 50000, 100000, 200000, 500000]

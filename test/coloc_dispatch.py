@@ -44,7 +44,7 @@ class Dispatcher(object):
 
 def test_shared_causal(
 	disp, 
-	vcf_info,
+	data_info,
 	params_dir, 
 	out_dir_base, 
 	qtl_sizes, 
@@ -85,13 +85,13 @@ def test_shared_causal(
 					"herit_gwas": k,
 				}
 				params = params_base.copy().update(param_updates)
-				params.update(vcf_info)
+				params.update(data_info)
 				params_path = os.path.join(params_base, test_name + ".pickle")
 				disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_unshared_corr(
 	disp, 
-	vcf_info,
+	data_info,
 	params_dir, 
 	out_dir_base, 
 	qtl_sizes, 
@@ -133,7 +133,7 @@ def test_unshared_corr(
 					"corr_thresh": k,
 				}
 				params = params_base.copy().update(param_updates)
-				params.update(vcf_info)
+				params.update(data_info)
 				params_path = os.path.join(params_base, test_name + ".pickle")
 				disp.add_job(out_dir, params_path, params, num_trials)
 
@@ -145,9 +145,11 @@ if __name__ == '__main__':
 
 	disp = Dispatcher(script_path, batch_size)
 
-	vcf_info = {
+	data_info = {
 		"vcf_dir": "/bcb/agusevlab/awang/job_data/sim_coloc/vcfs/",
 		"vcf_name_template": "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
+		"sample_filter_path": "/bcb/agusevlab/awang/job_data/sim_coloc/vcfs/integrated_call_samples_v3.20130502.ALL.panel",
+		"snp_filter_path":, "/bcb/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
 	}
 	params_dir = "/bcb/agusevlab/awang/job_data/sim_coloc/params/"
 	out_dir_base = "/bcb/agusevlab/awang/job_data/sim_coloc/outs/"
@@ -158,7 +160,7 @@ if __name__ == '__main__':
 	gwas_herits = [.01/100, .05/1000]
 	test_shared_causal(
 		disp, 
-		vcf_info,
+		data_info,
 		params_dir, 
 		out_dir_base, 
 		qtl_sizes, 
@@ -171,7 +173,7 @@ if __name__ == '__main__':
 	ld_thresh = [0., 0.2, 0.4, 0.8]
 	test_unshared_corr(
 		disp, 
-		vcf_info,
+		data_info,
 		params_dir, 
 		out_dir_base, 
 		qtl_sizes, 

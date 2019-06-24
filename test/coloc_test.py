@@ -57,10 +57,7 @@ def draw_region(vcf_dir, vcf_name_template):
 
 	return chrom, start, vcf_path
 
-def sim_shared_causal(vcf_dir, vcf_name_template, pop_name, params):
-	pop_data = pd.read_csv("pop_name", sep="\t", usecols=["sample", "super_pop"])
-	pop_fiter = pop_data.loc[pop_data["super_pop"] == "EUR", ["sample"]].to_numpy().flatten() 
-
+def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 	chrom, start, vcf_path = draw_region(vcf_dir)
 
 	locus = LocusSimulator(
@@ -69,7 +66,8 @@ def sim_shared_causal(vcf_dir, vcf_name_template, pop_name, params):
 		start, 
 		params["region_size"], 
 		params["num_causal"],
-		sample_filter=pop_fiter,
+		sample_filter=sample_filter,
+		snp_filter=snp_filter,
 		maf_thresh=params["maf_thresh"]
 	)
 
@@ -92,10 +90,7 @@ def sim_shared_causal(vcf_dir, vcf_name_template, pop_name, params):
 
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
-def sim_unshared_causal(vcf_dir, vcf_name_template, pop_name, params):
-	pop_data = pd.read_csv("pop_name", sep="\t", usecols=["sample", "super_pop"])
-	pop_fiter = pop_data.loc[pop_data["super_pop"] == "EUR", ["sample"]].to_numpy().flatten() 
-
+def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 	chrom, start, vcf_path = draw_region(vcf_dir)
 
 	locus = LocusSimulator(
@@ -104,7 +99,8 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, pop_name, params):
 		start, 
 		params["num_snps"], 
 		params["num_causal"],
-		sample_filter=pop_fiter,
+		sample_filter=sample_filter,
+		snp_filter=snp_filter,
 		maf_thresh=params["maf_thresh"]
 	)
 
@@ -138,10 +134,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, pop_name, params):
 
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
-def sim_unshared_corr(vcf_dir, vcf_name_template, pop_name, params):
-	pop_data = pd.read_csv("pop_name", sep="\t", usecols=["sample", "super_pop"])
-	pop_fiter = pop_data.loc[pop_data["super_pop"] == "EUR", ["sample"]].to_numpy().flatten() 
-
+def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 	max_corr = 0.
 	while max_corr < params["corr_thresh"]:
 		chrom, start, vcf_path = draw_region(vcf_dir)
@@ -152,7 +145,8 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, pop_name, params):
 			start, 
 			params["num_snps"], 
 			1,
-			sample_filter=pop_fiter,
+			sample_filter=sample_filter,
+			snp_filter=snp_filter,
 			maf_thresh=params["maf_thresh"]
 		)
 
@@ -332,20 +326,36 @@ def coloc_test(
 	vcf_dir = params["vcf_dir"] 
 	vcf_name_template = params["vcf_name_template"]
 	model_flavors = params["model_flavors"]
+
+	sample_filter_data = pd.read_csv(
+		sample_filter_path, 
+		sep="\t", 
+		usecols=["sample", "super_pop"]
+	)
+	sample_filter = set(
+			sample_filter_data.loc[
+				sample_filter_data["super_pop"]=="EUR",["sample"]
+			].to_numpy().flatten()
+		)
+
+	with open(params["snp_filter_path"], "rb") as snp_filter_file:
+		snp_filter = pickle.load(snp_filter_file)
 	
+	sim_map = {
+		"shared": sim_shared_causal,
+		"unshared": sim_shared_causal,
+		"corr": sim_unshared_corr
+	}
+	sim_fn = sim_map[test_type]
+
 	output = []
 	for _ in xrange(batch_size):
 		try:
-			sim_map = {
-				"shared": sim_shared_causal,
-				"unshared": sim_shared_causal,
-				"corr": sim_unshared_corr
-			}
-			sim_fn = sim_map[test_type]
 			locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas = sim_fn(
 				vcf_dir, 
 				vcf_name_template, 
-				pop_name, 
+				sample_filter,
+				snp_filter,
 				params
 			)
 			sim_data = {

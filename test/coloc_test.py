@@ -328,15 +328,16 @@ def coloc_test(
 	model_flavors = params["model_flavors"]
 
 	sample_filter_data = pd.read_csv(
-		sample_filter_path, 
+		params["sample_filter_path"], 
 		sep="\t", 
 		usecols=["sample", "super_pop"]
 	)
 	sample_filter = set(
-			sample_filter_data.loc[
-				sample_filter_data["super_pop"]=="EUR",["sample"]
-			].to_numpy().flatten()
-		)
+		sample_filter_data.loc[
+			sample_filter_data["super_pop"]=="EUR",
+			["sample"]
+		].to_numpy().flatten()
+	)
 
 	with open(params["snp_filter_path"], "rb") as snp_filter_file:
 		snp_filter = pickle.load(snp_filter_file)

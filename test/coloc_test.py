@@ -332,6 +332,7 @@ def coloc_test(
 		sep="\t", 
 		usecols=["sample", "super_pop"]
 	)
+	
 	sample_filter = set(
 		sample_filter_data.loc[
 			sample_filter_data["super_pop"]=="EUR",

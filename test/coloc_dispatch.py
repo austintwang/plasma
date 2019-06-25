@@ -72,12 +72,12 @@ def test_shared_causal(
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
 	}
-	out_dir = os.path.join(out_dir_base, "shared_causal")
+	out_dir = os.path.join(out_dir_base, "shared")
 
 	for i in qtl_sizes:
 		for j in gwas_sizes:
 			for k in gwas_herits:
-				test_name = "q_{0}_g_{1}_h_{2}_shared_causal".format(i, j, k)
+				test_name = "q_{0}_g_{1}_h_{2}_shared".format(i, j, k)
 				param_updates = {
 					"test_name": test_name,
 					"num_samples_qtl": i,
@@ -87,6 +87,7 @@ def test_shared_causal(
 				params = params_base.copy().update(param_updates)
 				params.update(data_info)
 				params_path = os.path.join(params_base, test_name + ".pickle")
+				raise Exception ####
 				disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_unshared_corr(
@@ -120,12 +121,12 @@ def test_unshared_corr(
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
 	}
-	out_dir = os.path.join(out_dir_base, "unshared_corr")
+	out_dir = os.path.join(out_dir_base, "corr")
 
 	for i in qtl_sizes:
 		for j in gwas_sizes:
 			for k in ld_thresh:
-				test_name = "q_{0}_g_{1}_h_{2}_shared_causal".format(i, j, k)
+				test_name = "q_{0}_g_{1}_h_{2}_corr".format(i, j, k)
 				param_updates = {
 					"test_name": test_name,
 					"num_samples_qtl": i,
@@ -156,6 +157,9 @@ if __name__ == '__main__':
 
 	qtl_sizes = [10, 50, 100, 200, 500]
 	gwas_sizes = [10000, 50000, 100000, 200000, 500000]
+
+	qtl_sizes = [500, 200, 100, 50, 10]
+	gwas_sizes = [500000, 200000, 100000, 50000, 10000]
 
 	gwas_herits = [.01/100, .05/1000]
 	test_shared_causal(

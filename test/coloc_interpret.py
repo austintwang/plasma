@@ -219,5 +219,5 @@ if __name__ == '__main__':
 	res_dir_base = "/bcb/agusevlab/awang/ase_finemap_results/sim_coloc/"
 	model_flavors = set(["indep", "eqtl", "ase", "ecav"])
 
-	gwas_herits = []
+	gwas_herits = [.1/100, .5/1e4]
 	interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)

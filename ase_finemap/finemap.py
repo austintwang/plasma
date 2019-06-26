@@ -129,7 +129,7 @@ class Finemap(object):
 		if self.total_exp is not None:
 			return
 
-		self.total_exp = np.log(self.counts_A) + np.log(self.counts_B)
+		self.total_exp = self.counts_A + self.counts_B
 
 	def _calc_genotypes_comb(self):
 		if self.genotypes_comb is not None:

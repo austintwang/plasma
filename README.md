@@ -3,9 +3,8 @@
 **PLASMA (PopuLation Allele-Specific MApping) is a statistical fine-mapping method for functional data using QTL and allelic-imbalance signal.**
 
 [Preprint for the PLASMA method](https://www.biorxiv.org/content/10.1101/650242v1)
-Developed at the [Gusev Lab](http://gusevlab.org/) at the Dana Farber Cancer Institute / Harvard Medical School.
 
-## Workflow
+Developed at the [Gusev Lab](http://gusevlab.org/) at the Dana Farber Cancer Institute / Harvard Medical School.
 
 ## Installation and Dependencies
 
@@ -26,12 +25,6 @@ To download PLASMA, click "Clone or Download" or enter:
 ```
 git clone https://github.com/austintwang/plasma
 ```
-
-## Recommended pre-processing and allelic counts
-
-* Phase genotype data with EAGLE/HRC.
-* Process all sequence data with the [WASP](https://github.com/bmvdgeijn/WASP) mapping pipeline.
-* Use the GATK ASEReadCounter to count reads then convert into vcf (see `pipeline/` scripts).
 
 ## `run_plasma.py` : Quick-start fine-mapping script
 

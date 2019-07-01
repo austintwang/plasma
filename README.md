@@ -8,7 +8,7 @@ Developed at the [Gusev Lab](http://gusevlab.org/) at the Dana Farber Cancer Ins
 
 ## Installation and Dependencies
 
-PLASMA utilizes Python 2.7 requires the following Python packages for core functionality:
+PLASMA utilizes Python 3.6+ and requires the following Python packages for core functionality:
 * [Numpy 1.15+](https://scipy.org/install.html)
 * [Scipy 1.1+](https://scipy.org/install.html)
 

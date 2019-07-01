@@ -1,15 +1,10 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import os
 import random
 import traceback
 try:
-	import cPickle as pickle
+	import pickle as pickle
 except ImportError:
 	import pickle
 
@@ -50,7 +45,7 @@ CHROM_LENS = [
 def draw_region(vcf_dir, vcf_name_template):
 	regions = [i - 1000000 for i in CHROM_LENS]
 	weights = np.array(regions) / np.sum(regions)
-	chrom_num = np.random.choice(range(1, 23), p=weights)
+	chrom_num = np.random.choice(list(range(1, 23)), p=weights)
 	chrom = "chr{0}".format(chrom_num)
 	vcf_path = os.path.join(vcf_dir, vcf_name_template.format(chrom))
 	start = random.randrange(0, regions[chrom_num-1])
@@ -351,7 +346,7 @@ def coloc_test(
 	sim_fn = sim_map[test_type]
 
 	output = []
-	for _ in xrange(batch_size):
+	for _ in range(batch_size):
 		try:
 			locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas = sim_fn(
 				vcf_dir, 
@@ -403,7 +398,7 @@ def coloc_test(
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_full = {
-					"model": "full"
+					"model": "full",
 					"complete": False, 
 					"error": message, 
 					"traceback": trace
@@ -419,7 +414,7 @@ def coloc_test(
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_indep = {
-					"model": "indep"
+					"model": "indep",
 					"complete": False, 
 					"error": message, 
 					"traceback": trace
@@ -435,7 +430,7 @@ def coloc_test(
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_ase = {
-					"model": "ase"
+					"model": "ase",
 					"complete": False, 
 					"error": message, 
 					"traceback": trace
@@ -451,7 +446,7 @@ def coloc_test(
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_ecav = {
-					"model": "ecav"
+					"model": "ecav",
 					"complete": False, 
 					"error": message, 
 					"traceback": trace
@@ -467,7 +462,7 @@ def coloc_test(
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_eqtl = {
-					"model": "eqtl"
+					"model": "eqtl",
 					"complete": False, 
 					"error": message, 
 					"traceback": trace
@@ -493,4 +488,4 @@ if __name__ == '__main__':
 		batch_size, 
 		batch_num, 
 		params_path
-	):
+	)

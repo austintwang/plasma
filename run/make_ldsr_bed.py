@@ -1,21 +1,12 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np
 import os
 import sys
 import string
-
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
+import pickle
 
 def write_bed(bed_data, output_name):
 	non_numeric_chars = string.printable[10:]
-	keys_sorted = sorted(bed_data.keys(), key=lambda x: bed_data[x]["start"])
+	keys_sorted = sorted(list(bed_data.keys()), key=lambda x: bed_data[x]["start"])
 	keys_sorted.sort(key=lambda x: int(bed_data[x]["chr"].translate(None, non_numeric_chars)))
 	# bed_list = [
 	# 	"{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n".format(
@@ -82,7 +73,7 @@ def make_bed(input_path, output_path, model_flavors):
 			continue
 
 		try:
-			for k, v in result["bed_ctrl"].viewitems():
+			for k, v in result["bed_ctrl"].items():
 					bed_data_all["ctrl"][k] = v
 		except Exception:
 			print(result_path) ####
@@ -92,35 +83,35 @@ def make_bed(input_path, output_path, model_flavors):
 		# print(result.keys()) ####
 		# print(result["ldsr_data_indep"]) ####
 		if "full" in model_flavors:
-			for k, v in result["ldsr_data_full"].viewitems():
+			for k, v in result["ldsr_data_full"].items():
 				if k in bed_data_all["full"]:
 					bed_data_all["full"][k] = max(v, bed_data_all["full"][k], key=lambda x: x["ppa"]) 
 				else:
 					bed_data_all["full"][k] = v
 
 		if "indep" in model_flavors:
-			for k, v in result["ldsr_data_indep"].viewitems():
+			for k, v in result["ldsr_data_indep"].items():
 				if k in bed_data_all["indep"]:
 					bed_data_all["indep"][k] = max(v, bed_data_all["indep"][k], key=lambda x: x["ppa"]) 
 				else:
 					bed_data_all["indep"][k] = v
 
 		if "eqtl" in model_flavors:
-			for k, v in result["ldsr_data_eqtl"].viewitems():
+			for k, v in result["ldsr_data_eqtl"].items():
 				if k in bed_data_all["eqtl"]:
 					bed_data_all["eqtl"][k] = max(v, bed_data_all["eqtl"][k], key=lambda x: x["ppa"]) 
 				else:
 					bed_data_all["eqtl"][k] = v
 
 		if "ase" in model_flavors:
-			for k, v in result["ldsr_data_ase"].viewitems():
+			for k, v in result["ldsr_data_ase"].items():
 				if k in bed_data_all["ase"]:
 					bed_data_all["ase"][k] = max(v, bed_data_all["ase"][k], key=lambda x: x["ppa"]) 
 				else:
 					bed_data_all["ase"][k] = v
 
 		if "acav" in model_flavors:
-			for k, v in result["ldsr_data_caviar_ase"].viewitems():
+			for k, v in result["ldsr_data_caviar_ase"].items():
 				if k in bed_data_all["acav"]:
 					bed_data_all["acav"][k] = max(v, bed_data_all["acav"][k], key=lambda x: x["ppa"]) 
 				else:

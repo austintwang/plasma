@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np 
 import vcf
 
@@ -32,7 +27,7 @@ class LocusSimulator(object):
 			filter_set = set(sample_filter)
 			sample_idx = [ind for ind, val in enumerate(samples) if val in filter_set]
 		else:
-			sample_idx = range(len(samples))
+			sample_idx = list(range(len(samples)))
 		if snp_filter is not None:
 			snp_filter = set(snp_filter)
 		else:

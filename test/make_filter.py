@@ -1,14 +1,5 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import os
-
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
+import pickle
 
 def add_to_filter(snp_filter, in_path):
 	with open(in_path) as bim_file:

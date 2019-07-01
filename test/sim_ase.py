@@ -1,19 +1,6 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np
 import numpy.random as npr
 import scipy.stats as sps
-# import numpy.random.normal as normal
-# import numpy.random.multivariate_normal as mvn
-# import numpy.random.beta as betadist
-# import numpy.random.binomial as binomial
-
-# print("hhhh") ####
-# from . import Haplotypes
-# print("hhhhh") ####
 
 class SimAse(object):
 	def __init__(self, bm):

@@ -1,14 +1,6 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import subprocess
 import os
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
+import pickle
 
 class Dispatcher(object):
 	def __init__(self, script_path, batch_size):
@@ -23,7 +15,7 @@ class Dispatcher(object):
 		job_name = params["job_name"]
 
 		num_jobs = -(-num_tasks // self.batch_size)
-		batches = [self.batch_size for i in xrange(num_jobs)]
+		batches = [self.batch_size for i in range(num_jobs)]
 		batches[-1] -= -num_tasks % self.batch_size
 
 		for ind, val in enumerate(batches):
@@ -61,14 +53,14 @@ def test_shared_causal(
 		"overdispersion": 0.05,
 		"herit_eqtl": 0.05,
 		"herit_ase": 0.4,
-		"herit_gwas": None
+		"herit_gwas": None,
 		"std_al_dev": 0.7,
 		"num_causal": 1,
 		"coverage": 100,
 		"search_mode": "exhaustive",
 		"min_causal": 1,
 		"max_causal": 1,
-		"test_name": None
+		"test_name": None,
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
 	}
@@ -110,14 +102,14 @@ def test_unshared_corr(
 		"herit_eqtl": 0.05,
 		"herit_ase": 0.4,
 		"herit_gwas": .01/100,
-		"corr_thresh": None
+		"corr_thresh": None,
 		"std_al_dev": 0.7,
 		"num_causal": 1,
 		"coverage": 100,
 		"search_mode": "exhaustive",
 		"min_causal": 1,
 		"max_causal": 1,
-		"test_name": None
+		"test_name": None,
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
 	}
@@ -148,9 +140,9 @@ if __name__ == '__main__':
 
 	data_info = {
 		"vcf_dir": "/bcb/agusevlab/awang/job_data/sim_coloc/vcfs/",
-		"vcf_name_template": "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
+		"vcf_name_template": "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
 		"sample_filter_path": "/bcb/agusevlab/awang/job_data/sim_coloc/vcfs/integrated_call_samples_v3.20130502.ALL.panel",
-		"snp_filter_path":, "/bcb/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
+		"snp_filter_path": "/bcb/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
 	}
 	params_dir = "/bcb/agusevlab/awang/job_data/sim_coloc/params/"
 	out_dir_base = "/bcb/agusevlab/awang/job_data/sim_coloc/outs/"

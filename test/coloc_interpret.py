@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import os
 import numpy as np
 import pandas as pd
@@ -13,7 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 try:
-	import cPickle as pickle
+	import pickle as pickle
 except ImportError:
 	import pickle
 

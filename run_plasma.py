@@ -5,6 +5,7 @@ from __future__ import division
 from __future__ import unicode_literals 
 from __future__ import absolute_import
 
+# Allow proper import behavior when running directly from command line
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'plasma'
 	from ase_finemap import Finemap
@@ -16,14 +17,19 @@ import os
 import argparse
 
 def run_plasma(args):
+	"""
+	Run PLASMA based on arguments specified in args object
+	"""
 	params = {}
 
+	# Load input text files
 	params["hap_A"] = np.loadtxt(args.hap_A_path)
 	params["counts_A"] = np.loadtxt(args.counts_A_path)
 	params["hap_B"] = np.loadtxt(args.hap_B_path)
 	params["counts_B"] = np.loadtxt(args.counts_B_path)
 	params["total_exp"] = np.loadtxt(args.total_exp_path)
 
+	# Set overdispersion
 	if overdispersion_path is not None:
 		params["overdispersion"] = np.loadtxt(args.hap_A_path)
 	else:

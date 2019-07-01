@@ -1,42 +1,16 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
-# print("imp1") ####
-
 import numpy as np
 import os
 import sys
 import traceback
+import pickle
 
-# print("hi", file=sys.stderr) ####
-# print("imp2") ####
-
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
-
-# print("imp3") ####
-
-# print(__package__) ####
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'run'
 	from eval_caviar import EvalCaviarASE
 else:
 	from .eval_caviar import EvalCaviarASE
-
-# print("imp4") ####
-
-# print(__package__) ####
-
-# import eval_caviar
-# from .eval_caviar import EvalCaviarASE
-# from . import eval_caviar
-# import run.eval_caviar.EvalCaviarASE as EvalCaviarASE
 
 try:
 	import Finemap
@@ -216,7 +190,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	# print(inputs["num_ppl"]) ####
 
 	if ind_overdispersion:
-		default = np.mean(overdispersion_dict.values())
+		default = np.mean(list(overdispersion_dict.values()))
 		inputs["overdispersion"] = np.array([overdispersion_dict.get(i, default) for i in inputs["sample_names"]])
 
 	if snp_filter:

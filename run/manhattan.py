@@ -1,9 +1,5 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import os
+import pickle
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -14,12 +10,6 @@ import pandas as pd
 import scipy.stats
 
 import pybedtools
-
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
-
 
 def region_plotter(regions, bounds):
 	def region_plot(*args, **kwargs):

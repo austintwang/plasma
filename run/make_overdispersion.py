@@ -1,14 +1,5 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import os
-
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
+import pickle
 
 def make_overdispersion(in_path, out_path):
 	overdispersion = {}

@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import subprocess
 import os
 import shutil
@@ -26,7 +21,7 @@ class EvalCaviar(object):
 		self.ncp = np.sqrt(fm.imbalance_var_prior)
 
 		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
-		self.rsid_map = dict(zip(self.rsids, range(self.num_snps)))
+		self.rsid_map = dict(list(zip(self.rsids, list(range(self.num_snps)))))
 
 		self.output_name = ''.join(
 			random.choice(string.ascii_uppercase + string.digits) for _ in range(10)

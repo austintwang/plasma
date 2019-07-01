@@ -21,7 +21,7 @@ The following packages are optional, but are used for pre/post-processing:
 
 All packages can be installed using Python's pip package manager.
 
-To download PLASMA, click "Clone or Download" or enter:
+To download PLASMA, click "Clone or Download" or enter in command line:
 ```
 git clone https://github.com/austintwang/plasma
 ```

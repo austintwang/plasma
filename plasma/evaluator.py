@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np 
 import scipy.linalg.lapack as lp
 
@@ -153,13 +148,13 @@ class Evaluator(object):
 		probs = {}
 		total_lpost = self.cumu_lposts
 
-		for k, v in self.results.viewitems():
+		for k, v in self.results.items():
 			lprob = v - total_lpost
 			probs[k] = np.exp(lprob)
 		return probs
 
 	def get_probs_sorted(self):
-		probs = self.get_probs().items()
+		probs = list(self.get_probs().items())
 		probs.sort(key=lambda x: x[1], reverse=True)
 		return probs
 
@@ -170,7 +165,7 @@ class Evaluator(object):
 
 		distances = {}
 		causal_extras = {}
-		for k in self.results.keys():
+		for k in list(self.results.keys()):
 			causals = set(ind for ind, val in enumerate(k) if val == 1)
 			distances.setdefault(sum(k), set()).add(k)
 			causal_extras[k] = causals
@@ -188,7 +183,7 @@ class Evaluator(object):
 			conf_sum += neighbors[max_snp]
 
 			diffs = {}
-			for k, v in distances.viewitems():
+			for k, v in distances.items():
 				diffs[k] = set() 
 				for i in v:
 					if i[max_snp] == 1:
@@ -198,7 +193,7 @@ class Evaluator(object):
 						else:
 							causal_extras[i].remove(max_snp)
 
-			for k, v in diffs.viewitems():
+			for k, v in diffs.items():
 				distances[k] -= v
 				if k > 1:
 					distances.setdefault(k-1, set())
@@ -208,9 +203,9 @@ class Evaluator(object):
 
 	def get_ppas(self):
 		ppas = []
-		for i in xrange(self.num_snps):
+		for i in range(self.num_snps):
 			ppa = 0
-			for k, v in self.get_probs().viewitems():
+			for k, v in self.get_probs().items():
 				if k[i] == 1:
 					ppa += v
 			ppas.append(ppa)
@@ -218,7 +213,7 @@ class Evaluator(object):
 
 	def get_size_probs(self):
 		size_probs = np.zeros(self.num_snps)
-		for k, v in self.get_probs().viewitems():
+		for k, v in self.get_probs().items():
 			num_snps = np.count_nonzero(k)
 			size_probs[num_snps] += v
 		return size_probs

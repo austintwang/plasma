@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np
 import os
 from datetime import datetime
@@ -95,7 +90,7 @@ def evaluate_bm(targs):
 	imbalance_var_prior = 1 * iv
 	total_exp_var_prior = 1 * xv
 
-	print("\nIteration {0}".format(str(itr + 1)))
+	print(("\nIteration {0}".format(str(itr + 1))))
 	sim_result = {
 		"counts_A": simulation["counts_A"],
 		"counts_B": simulation["counts_B"],
@@ -296,7 +291,7 @@ class BmInclusion(object):
 		recall_rate_caviar = result["recall_rate_caviar"]
 		recall_rate_caviar_ase = result["recall_rate_caviar_ase"]
 
-		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in self.params.viewitems())
+		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in list(self.params.items()))
 		with open(os.path.join(out_dir, "parameters.txt"), "w") as params_file:
 			params_file.write(params_str)
 
@@ -474,7 +469,7 @@ class BmInclusion(object):
 		return inclusions
 	
 	def test(self, **kwargs):
-		for k, v in kwargs.viewitems():
+		for k, v in list(kwargs.items()):
 			self.params[k] = v
 		self.update_model_params()
 		self.update_sim_params()
@@ -500,14 +495,14 @@ class BmInclusion(object):
 		trials = multiprocessing.Pool(num_workers)
 		targ_list = [
 			(self, self.simulation.generate_data(), i,) 
-			for i in xrange(self.params["iterations"])
+			for i in range(self.params["iterations"])
 		]
 		trial_results = trials.map(evaluate_bm, targ_list)
 		trials.close()
 		
 		# print(trial_results) ####
 		for i in trial_results:
-			for k, v in i.viewitems():
+			for k, v in list(i.items()):
 				result.setdefault(k, []).append(v)
 
 		
@@ -677,8 +672,8 @@ class Benchmark2d(Benchmark):
 		num_trials = self.test_count
 		num_trials_primary = self.params["test_count_primary"]
 		num_trials_secondary = self.params["test_count_secondary"]
-		results2d = [[None for _ in xrange(num_trials_primary)] for _ in xrange(num_trials_secondary)]
-		for x in xrange(num_trials):
+		results2d = [[None for _ in range(num_trials_primary)] for _ in range(num_trials_secondary)]
+		for x in range(num_trials):
 			row = x // num_trials_primary
 			col = x % num_trials_secondary
 			results2d[row][col] = self.results[x]

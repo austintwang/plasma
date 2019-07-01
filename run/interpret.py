@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np
 import os
 import time
@@ -14,7 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 try:
-	import cPickle as pickle
+	import pickle as pickle
 except ImportError:
 	import pickle
 
@@ -245,25 +240,25 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		filename = "causal_set_props"
 
 	dflst = []
-	for key, val in series.viewitems():
+	for key, val in series.items():
 		if "full" in model_flavors:
-			for skey, sval in series["{0}_full".format(kwd)].viewitems():
+			for skey, sval in series["{0}_full".format(kwd)].items():
 				for i in sval:
 					dflst.append([i, skey, "PLASMA-JC"])
 		if "indep" in model_flavors:
-			for skey, sval in series["{0}_indep".format(kwd)].viewitems():
+			for skey, sval in series["{0}_indep".format(kwd)].items():
 				for i in sval:
 					dflst.append([i, skey, "PLASMA-JI"])
 		if "ase" in model_flavors:
-			for skey, sval in series["{0}_ase".format(kwd)].viewitems():
+			for skey, sval in series["{0}_ase".format(kwd)].items():
 				for i in sval:
 					dflst.append([i, skey, "PLASMA-AS"])
 		if "acav" in model_flavors:
-			for skey, sval in series["{0}_caviar_ase".format(kwd)].viewitems():
+			for skey, sval in series["{0}_caviar_ase".format(kwd)].items():
 				for i in sval:
 					dflst.append([i, skey, "CAVIAR-ASE"])
 		if "eqtl" in model_flavors:
-			for skey, sval in series["{0}_eqtl".format(kwd)].viewitems():
+			for skey, sval in series["{0}_eqtl".format(kwd)].items():
 				for i in sval:
 					dflst.append([i, skey, "QTL-Only"])
 	res_df = pd.DataFrame(dflst, columns=[label, primary_var_name, "Model"])
@@ -301,39 +296,39 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 	# print(model_flavors) ####
 	# print(series.keys()) ####
 	dflst = []
-	for key, val in series.viewitems():
+	for key, val in series.items():
 		if "full" in model_flavors:
-			for skey, sval in series["recall_full"].viewitems():
-				data = sorted(sval.items(), key=lambda x: x[0])
+			for skey, sval in series["recall_full"].items():
+				data = sorted(list(sval.items()), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
 					dflst.append([x, cumu_recall, skey, "PLASMA-JC"])
 
 		if "indep" in model_flavors:
-			for skey, sval in series["recall_indep"].viewitems():
-				data = sorted(sval.items(), key=lambda x: x[0])
+			for skey, sval in series["recall_indep"].items():
+				data = sorted(list(sval.items()), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
 					dflst.append([x, cumu_recall, skey, "PLASMA-JI"])
 		if "ase" in model_flavors:
-			for skey, sval in series["recall_ase"].viewitems():
-				data = sorted(sval.items(), key=lambda x: x[0])
+			for skey, sval in series["recall_ase"].items():
+				data = sorted(list(sval.items()), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
 					dflst.append([x, cumu_recall, skey, "PLASMA-AS"])
 		if "acav" in model_flavors:
-			for skey, sval in series["recall_caviar_ase"].viewitems():
-				data = sorted(sval.items(), key=lambda x: x[0])
+			for skey, sval in series["recall_caviar_ase"].items():
+				data = sorted(list(sval.items()), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
 					dflst.append([x, cumu_recall, skey, "CAVIAR-ASE"])
 		if "eqtl" in model_flavors:
-			for skey, sval in series["recall_eqtl"].viewitems():
-				data = sorted(sval.items(), key=lambda x: x[0])
+			for skey, sval in series["recall_eqtl"].items():
+				data = sorted(list(sval.items()), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
@@ -516,7 +511,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			set_prop = set_size / np.shape(result["causal_set_full"])[0]
 			summary["set_sizes_full"].append(set_size)
 			summary["set_props_full"].append(set_prop)
-			for k in summary["thresholds_full"].keys():
+			for k in list(summary["thresholds_full"].keys()):
 				if set_size <= k:
 					summary["thresholds_full"][k] += 1
 			size_probs = np.resize(result["size_probs_full"], 6)
@@ -529,7 +524,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			set_prop = set_size / np.shape(result["causal_set_indep"])[0]
 			summary["set_sizes_indep"].append(set_size)
 			summary["set_props_indep"].append(set_prop)
-			for k in summary["thresholds_indep"].keys():
+			for k in list(summary["thresholds_indep"].keys()):
 				if set_size <= k:
 					summary["thresholds_indep"][k] += 1
 			size_probs = np.resize(result["size_probs_indep"], 6)
@@ -541,7 +536,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			set_prop = set_size / np.shape(result["causal_set_eqtl"])[0]
 			summary["set_sizes_eqtl"].append(set_size)
 			summary["set_props_eqtl"].append(set_prop)
-			for k in summary["thresholds_eqtl"].keys():
+			for k in list(summary["thresholds_eqtl"].keys()):
 				if set_size <= k:
 					summary["thresholds_eqtl"][k] += 1
 			size_probs = np.resize(result["size_probs_eqtl"], 6)
@@ -553,7 +548,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			set_prop = set_size / np.shape(result["causal_set_ase"])[0]
 			summary["set_sizes_ase"].append(set_size)
 			summary["set_props_ase"].append(set_prop)
-			for k in summary["thresholds_ase"].keys():
+			for k in list(summary["thresholds_ase"].keys()):
 				if set_size <= k:
 					summary["thresholds_ase"][k] += 1
 			size_probs = np.resize(result["size_probs_ase"], 6)
@@ -565,7 +560,7 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			set_prop = set_size / np.shape(result["causal_set_caviar_ase"])[0]
 			summary["set_sizes_caviar_ase"].append(set_size)
 			summary["set_props_caviar_ase"].append(set_prop)
-			for k in summary["thresholds_caviar_ase"].keys():
+			for k in list(summary["thresholds_caviar_ase"].keys()):
 				if set_size <= k:
 					summary["thresholds_caviar_ase"][k] += 1
 
@@ -648,7 +643,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				num = num_sigs[gene_name]
 				if num > 0:
 					loc_size = len(sval)
-					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
+					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
 					for xind, xval in enumerate(ppa_idx_sorted):
 						if xval in sigs:
 							pos = xind / loc_size
@@ -668,7 +663,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				num = num_sigs[gene_name]
 				if num > 0:
 					loc_size = len(sval)
-					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
+					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
 					for xind, xval in enumerate(ppa_idx_sorted):
 						if xval in sigs:
 							pos = xind / loc_size
@@ -688,7 +683,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				num = num_sigs[gene_name]
 				if num > 0:
 					loc_size = len(sval)
-					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
+					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
 					for xind, xval in enumerate(ppa_idx_sorted):
 						if xval in sigs:
 							pos = xind / loc_size
@@ -708,7 +703,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				num = num_sigs[gene_name]
 				if num > 0:
 					loc_size = len(sval)
-					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
+					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
 					for xind, xval in enumerate(ppa_idx_sorted):
 						if xval in sigs:
 							pos = xind / loc_size
@@ -728,7 +723,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 				num = num_sigs[gene_name]
 				if num > 0:
 					loc_size = len(sval)
-					ppa_idx_sorted = sorted(range(loc_size), key=lambda x:sval[x], reverse=True)
+					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
 					for xind, xval in enumerate(ppa_idx_sorted):
 						if xval in sigs:
 							pos = xind / loc_size

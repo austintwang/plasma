@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np 
 import scipy.linalg.lapack as lp
 import itertools
@@ -403,8 +398,8 @@ class Finemap(object):
 	def search_exhaustive(self, min_causal, max_causal):
 		m = self.num_snps
 		configuration = np.zeros(m)
-		for k in xrange(min_causal, max_causal + 1):
-			for c in itertools.combinations(xrange(m), k):
+		for k in range(min_causal, max_causal + 1):
+			for c in itertools.combinations(range(m), k):
 				np.put(configuration, c, 1)
 				self.evaluator.eval(configuration)
 				configuration[:] = 0
@@ -415,7 +410,7 @@ class Finemap(object):
 
 		cumu_lposts = None
 		streak = 0
-		for i in xrange(num_iterations):
+		for i in range(num_iterations):
 			lposts = []
 			before_cumu_lposts = self.evaluator.cumu_lposts
 			for c in configs:
@@ -451,7 +446,7 @@ class Finemap(object):
 
 			num_causal = np.count_nonzero(configuration)
 			configs = []
-			for ind in xrange(m):
+			for ind in range(m):
 				val = configuration[ind]
 				# Add causal variant
 				if (val == 0) and (num_causal < max_causal):
@@ -464,7 +459,7 @@ class Finemap(object):
 					neighbor[ind] = 0
 					configs.append(neighbor)
 				# Swap status with other variants
-				for ind2 in xrange(ind+1, m):
+				for ind2 in range(ind+1, m):
 					val2 = configuration[ind2]
 					if val2 != val:
 						neighbor = configuration.copy()

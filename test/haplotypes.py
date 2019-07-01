@@ -1,13 +1,8 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np
 import os
 import random
 try:
-	import cPickle as pickle
+	import pickle as pickle
 except ImportError:
 	import pickle
 
@@ -37,7 +32,7 @@ class Haplotypes(object):
 		try:
 			with open(cls.pickle_path, "rb") as hapfile:
 				cls.haps = pickle.load(hapfile)
-		except StandardError:
+		except Exception:
 			# print("iosheiof") ####
 			cls.build()
 		finally:
@@ -104,7 +99,7 @@ class Haplotypes(object):
 		# locus_haps = self.haps[locus]
 		a_ind = np.random.choice(Haplotypes.num_haps, self.num_ppl, replace=False)
 		a_set = set(a_ind)
-		b_ind = np.array([i for i in xrange(Haplotypes.num_haps) if i not in a_set])
+		b_ind = np.array([i for i in range(Haplotypes.num_haps) if i not in a_set])
 		hapA = locus_haps[a_ind]
 		hapB = locus_haps[b_ind]
 		np.random.shuffle(hapA)

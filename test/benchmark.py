@@ -1,8 +1,3 @@
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np
 import os
 from datetime import datetime
@@ -116,7 +111,7 @@ def evaluate_bm(targs):
 	imbalance_var_prior = 1 * iv
 	total_exp_var_prior = 1 * xv
 
-	print("\nIteration {0}".format(str(itr + 1)))
+	print(("\nIteration {0}".format(str(itr + 1))))
 	# print("Generating Simulation Data")
 	# simulation = bm.simulation.generate_data()
 	# sim_result = {
@@ -566,7 +561,7 @@ class Benchmark(object):
 			with open(os.path.join(out_dir, "causal_set_sizes_caviar.txt"), "w") as csscav:
 				csscav.write("\n".join(str(i) for i in set_sizes_caviar))
 
-		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in self.params.viewitems())
+		params_str = "\n".join("{:<20}{:>20}".format(k, v) for k, v in list(self.params.items()))
 		with open(os.path.join(out_dir, "parameters.txt"), "w") as params_file:
 			params_file.write(params_str)
 
@@ -714,32 +709,32 @@ class Benchmark(object):
 		}
 
 		if "full" in model_flavors:
-			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_full)
 			inclusions_dict["Model"].extend(num_snps * ["PLASMA-JC"])
 
 		if "indep" in model_flavors:
-			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_indep)
 			inclusions_dict["Model"].extend(num_snps * ["PLASMA-JI"])
 
 		if "ase" in model_flavors:
-			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_ase)
 			inclusions_dict["Model"].extend(num_snps * ["PLASMA-AS"])
 
 		if "acav" in model_flavors:
-			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_caviar_ase)
 			inclusions_dict["Model"].extend(num_snps * ["CAVIAR-ASE"])
 
 		if "eqtl" in model_flavors:
-			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_eqtl)
 			inclusions_dict["Model"].extend(num_snps * ["QTL-Only"])
 
 		if "cav" in model_flavors:
-			inclusions_dict["Number of Selected Markers"].extend(range(1, num_snps+1))
+			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict["Inclusion Rate"].extend(inclusion_rate_caviar)
 			inclusions_dict["Model"].extend(num_snps * ["CAVIAR"])
 
@@ -916,7 +911,7 @@ class Benchmark(object):
 		# test_path = os.path.join(self.output_path, test_folder)
 		# os.makedirs(test_path)
 
-		for k, v in kwargs.viewitems():
+		for k, v in list(kwargs.items()):
 			self.params[k] = v
 		self.update_model_params()
 		self.update_sim_params()
@@ -1018,14 +1013,14 @@ class Benchmark(object):
 		trials = multiprocessing.Pool(num_workers)
 		targ_list = [
 			(self, self.simulation.generate_data(), i,) 
-			for i in xrange(self.params["iterations"])
+			for i in range(self.params["iterations"])
 		]
 		trial_results = trials.map(evaluate_bm, targ_list)
 		trials.close()
 		
 		# print(trial_results) ####
 		for i in trial_results:
-			for k, v in i.viewitems():
+			for k, v in list(i.items()):
 				result.setdefault(k, []).append(v)
 
 		# for itr in xrange(self.params["iterations"]):
@@ -1461,8 +1456,8 @@ class Benchmark2d(Benchmark):
 		num_trials = self.test_count
 		num_trials_primary = self.params["test_count_primary"]
 		num_trials_secondary = self.params["test_count_secondary"]
-		results2d = [[None for _ in xrange(num_trials_primary)] for _ in xrange(num_trials_secondary)]
-		for x in xrange(num_trials):
+		results2d = [[None for _ in range(num_trials_primary)] for _ in range(num_trials_secondary)]
+		for x in range(num_trials):
 			row = x // num_trials_primary
 			col = x % num_trials_secondary
 			results2d[row][col] = self.results[x]

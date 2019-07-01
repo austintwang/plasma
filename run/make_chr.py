@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
 import numpy as np
 import string
 import os
@@ -12,10 +7,7 @@ import gzip
 import sys
 import pysam
 import vcf
-try:
-	import cPickle as pickle
-except ImportError:
-	import pickle
+import pickle
 
 
 def finalize(data, jobs_dir):
@@ -128,11 +120,11 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 			snp_id = record.ID
 
 		remove_ids = {}
-		for k, v in active_ids.viewitems():
+		for k, v in active_ids.items():
 			if (v["chr"] != chr_num) or (v["abs_end"] < pos):
 				remove_ids[k] = v
 		# print(remove_ids.keys()) ####
-		for k, v in remove_ids.viewitems():
+		for k, v in remove_ids.items():
 			path = finalize(v, jobs_dir)
 			active_ids.pop(k, None)
 			target_data[k] = path
@@ -189,7 +181,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 				counts1[ind] += alt_reads
 
 		if include_marker:
-			for k, v in active_ids.viewitems():
+			for k, v in active_ids.items():
 				if v["snps_begin"] <= pos < v["snps_end"]:
 					v["snp_ids"].append(snp_id)
 					v["snp_pos"].append(pos)
@@ -204,7 +196,7 @@ def make_chr(chr_path, bed_path, out_dir, margin, chr_spec):
 		if (max_active == target_final) and (len(active_ids) == 0):
 			break
 
-	for k, v in active_ids.viewitems():
+	for k, v in active_ids.items():
 		path = finalize(v, jobs_dir)
 		target_data[k] = path
 

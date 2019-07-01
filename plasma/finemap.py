@@ -66,18 +66,30 @@ class Finemap(object):
 		self.evaluator = None
 	
 	def _calc_num_snps(self):
+		"""
+		Infer number of markers from read counts vector 
+		If already specified, defer to specified value
+		"""
 		if self.num_snps is not None:
 			return
 
 		self.num_snps = np.size(self.counts_A)
 
 	def _calc_num_ppl(self):
+		"""
+		Infer sample size from haplotype matrix
+		If already specified, defer to specified value
+		"""
 		if self.num_ppl is not None:
 			return
 
 		self.num_ppl = np.shape(self.hap_A)[0]
 
 	def _calc_causal_status_prior(self):
+		"""
+		Infer causal status prior (gamma) as (# causal) / (# snps)
+		If already specified, defer to specified value
+		"""
 		if self.causal_status_prior is not None:
 			return
 
@@ -93,6 +105,10 @@ class Finemap(object):
 	# 	self.hap_vars = np.var(haps_pooled, axis=0)
 
 	def _calc_imbalance(self):
+		"""
+		Calculate allelic imbalance phenotype (w) from read counts 
+		If already specified, defer to specified value
+		"""
 		if self.imbalance is not None:
 			return
 
@@ -115,24 +131,40 @@ class Finemap(object):
 		)
 	
 	def _calc_phases(self):
+		"""
+		Calculate genotype phasing (v) from haplotypes
+		If already specified, defer to specified value
+		"""
 		if self.phases is not None:
 			return
 
 		self.phases = self.hap_A - self.hap_B
 
 	def _calc_total_exp(self):
+		"""
+		Calculate total phenotype (y) from read counts
+		If already specified, defer to specified value
+		"""
 		if self.total_exp is not None:
 			return
 
 		self.total_exp = self.counts_A + self.counts_B
 
 	def _calc_genotypes_comb(self):
+		"""
+		Calculate genotype dosage (x) from read counts
+		If already specified, defer to specified value
+		"""
 		if self.genotypes_comb is not None:
 			return
 
 		self.genotypes_comb = self.hap_A + self.hap_B
 
 	def _calc_corr_shared(self):
+		"""
+		Calculate unified LD matrix (R) from genotypes
+		If already specified, defer to specified value
+		"""
 		if self.corr_shared is not None:
 			return
 
@@ -147,6 +179,10 @@ class Finemap(object):
 		np.fill_diagonal(self.corr_shared, 1.0)
 
 	def _calc_imbalance_errors(self):
+		"""
+		Calculate weights (predicted errors) for AI samples
+		If already specified, defer to specified value
+		"""
 		if self.imbalance_errors is not None:
 			return
 
@@ -171,6 +207,10 @@ class Finemap(object):
 		)
 
 	def _calc_phi(self):
+		"""
+		Calculate AS effect sizes (phi)
+		If already specified, defer to specified value
+		"""
 		if self.phi is not None:
 			return
 
@@ -184,6 +224,10 @@ class Finemap(object):
 		self.phi = denominator * np.matmul(phases.T, (weights * self.imbalance)) 
 
 	def _calc_imbalance_stats(self):
+		"""
+		Calculate AS z-scores (z_phi)
+		If already specified, defer to specified value
+		"""
 		if self.imbalance_stats is not None:
 			return
 
@@ -218,6 +262,10 @@ class Finemap(object):
 		self.imbalance_stats = np.nan_to_num(phi / np.sqrt(varphi))
 
 	def _calc_imbalance_corr(self):
+		"""
+		Set LD for AS stats
+		If already specified, defer to specified value
+		"""
 		if self.imbalance_corr is not None:
 			return
 
@@ -228,6 +276,10 @@ class Finemap(object):
 		self.imbalance_corr = self.corr_shared.copy()
 		
 	def _calc_beta(self):
+		"""
+		Calculate QTL effect sizes (beta)
+		If already specified, defer to specified value
+		"""
 		if self.beta is not None:
 			return
 
@@ -246,6 +298,10 @@ class Finemap(object):
 		self._beta_normalizer = denominator 
 
 	def _calc_total_exp_errors(self):
+		"""
+		Calculate QTL effect residuals
+		If already specified, defer to specified value
+		"""
 		if self.exp_errors is not None:
 			return
 
@@ -259,6 +315,10 @@ class Finemap(object):
 		) / (self.num_snps - 1)
 
 	def _calc_total_exp_stats(self):
+		"""
+		Calculate QTL association statistics (z_beta)
+		If already specified, defer to specified value
+		"""
 		if self.total_exp_stats is not None:
 			return
 
@@ -283,6 +343,10 @@ class Finemap(object):
 		self.total_exp_stats = self.beta / np.sqrt(varbeta)
 
 	def _calc_total_exp_corr(self):
+		"""
+		Set LD for QTL stats
+		If already specified, defer to specified value
+		"""
 		if self.total_exp_corr is not None:
 			return
 
@@ -293,6 +357,10 @@ class Finemap(object):
 		self.total_exp_corr = self.corr_shared.copy()
 
 	def _calc_imbalance_var_prior(self):
+		"""
+		Infer AS causal effect size hyperparameter
+		If already specified, defer to specified value
+		"""
 		if self.imbalance_var_prior is not None:
 			return
 
@@ -330,6 +398,10 @@ class Finemap(object):
 		)
 
 	def _calc_total_exp_var_prior(self):
+		"""
+		Infer QTL causal effect size hyperparameter
+		If already specified, defer to specified value
+		"""
 		if self.total_exp_var_prior is not None:
 			return
 
@@ -341,6 +413,10 @@ class Finemap(object):
 		)
 
 	def _calc_corr_stats(self):
+		"""
+		Infer correlation between AS and QTL statistics
+		If already specified, defer to specified value
+		"""
 		if self.corr_stats is not None:
 			return
 
@@ -363,6 +439,10 @@ class Finemap(object):
 		)
 
 	def _calc_cross_corr(self):
+		"""
+		Infer causal effect correlation hyperparameter
+		If already specified, defer to specified value
+		"""
 		if self.cross_corr is not None:
 			return
 
@@ -386,6 +466,10 @@ class Finemap(object):
 		self.cross_corr = self.corr_shared * self.corr_stats
 
 	def initialize(self):
+		"""
+		Recursively calculate all required parameters and data from initial settings
+		Create Evaluator instance for fine-mapping
+		"""
 		self._calc_causal_status_prior()
 		self._calc_imbalance_stats()
 		self._calc_total_exp_stats()
@@ -396,6 +480,10 @@ class Finemap(object):
 		self.evaluator = Evaluator(self)
 
 	def search_exhaustive(self, min_causal, max_causal):
+		"""
+		Conduct an exhaustive search over all possible causal configurations
+		between min_causal and max_causal causal variants
+		"""
 		m = self.num_snps
 		configuration = np.zeros(m)
 		for k in range(min_causal, max_causal + 1):
@@ -405,6 +493,10 @@ class Finemap(object):
 				configuration[:] = 0
 
 	def search_shotgun(self, min_causal, max_causal, prob_threshold, streak_threshold, num_iterations):
+		"""
+		Conduct an stochastic shotgun search over all possible causal configurations
+		between min_causal and max_causal causal variants
+		"""
 		m = self.num_snps
 		configs = [np.zeros(m)]
 

@@ -139,13 +139,13 @@ if __name__ == '__main__':
 	disp = Dispatcher(script_path, batch_size)
 
 	data_info = {
-		"vcf_dir": "/bcb/agusevlab/awang/job_data/sim_coloc/vcfs/",
+		"vcf_dir": "/agusevlab/awang/job_data/sim_coloc/vcfs/",
 		"vcf_name_template": "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-		"sample_filter_path": "/bcb/agusevlab/awang/job_data/sim_coloc/vcfs/integrated_call_samples_v3.20130502.ALL.panel",
-		"snp_filter_path": "/bcb/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
+		"sample_filter_path": "/agusevlab/awang/job_data/sim_coloc/vcfs/integrated_call_samples_v3.20130502.ALL.panel",
+		"snp_filter_path": "/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
 	}
-	params_dir = "/bcb/agusevlab/awang/job_data/sim_coloc/params/"
-	out_dir_base = "/bcb/agusevlab/awang/job_data/sim_coloc/outs/"
+	params_dir = "/agusevlab/awang/job_data/sim_coloc/params/"
+	out_dir_base = "/agusevlab/awang/job_data/sim_coloc/outs/"
 
 	qtl_sizes = [10, 50, 100, 200, 500]
 	gwas_sizes = [10000, 50000, 100000, 200000, 500000]

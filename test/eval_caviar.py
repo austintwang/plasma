@@ -6,9 +6,9 @@ import string
 import numpy as np
 
 class EvalCaviar(object):
-	dir_path = os.path.dirname(os.path.realpath(__file__))
-	caviar_path = os.path.join(dir_path, "caviar", "CAVIAR-C++", "CAVIAR")
-	temp_path = os.path.join(dir_path, "temp")
+	cav_dir_path = "/agusevlab/awang/caviar"
+	caviar_path = "CAVIAR"
+	temp_path = os.path.join(cav_dir_path, "temp")
 	
 	def __init__(self, fm, confidence, max_causal):
 		self.confidence = confidence

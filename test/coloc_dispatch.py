@@ -81,7 +81,7 @@ def test_shared_causal(
 				params = params_base.copy()
 				params.update(param_updates)
 				params.update(data_info)
-				params_path = os.path.join(out_dir_base, test_name + ".pickle")
+				params_path = os.path.join(params_dir, test_name + ".pickle")
 				disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_unshared_corr(
@@ -130,7 +130,7 @@ def test_unshared_corr(
 				params = params_base.copy()
 				params.update(param_updates)
 				params.update(data_info)
-				params_path = os.path.join(out_dir_base, test_name + ".pickle")
+				params_path = os.path.join(params_dir, test_name + ".pickle")
 				disp.add_job(out_dir, params_path, params, num_trials)
 
 if __name__ == '__main__':
@@ -149,7 +149,11 @@ if __name__ == '__main__':
 		"snp_filter_path": "/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
 	}
 	params_dir = "/agusevlab/awang/job_data/sim_coloc/params/"
+	if not os.path.exists(params_dir):
+		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim_coloc/outs/"
+	if not os.path.exists(out_dir_base):
+		os.makedirs(out_dir_base)
 
 	qtl_sizes = [10, 50, 100, 200, 500]
 	gwas_sizes = [10000, 50000, 100000, 200000, 500000]

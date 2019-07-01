@@ -76,9 +76,10 @@ def test_shared_causal(
 					"num_samples_gwas": j,
 					"herit_gwas": k,
 				}
-				params = params_base.copy().update(param_updates)
+				params = params_base.copy()
+				params.update(param_updates)
 				params.update(data_info)
-				params_path = os.path.join(params_base, test_name + ".pickle")
+				params_path = os.path.join(out_dir_base, test_name + ".pickle")
 				raise Exception ####
 				disp.add_job(out_dir, params_path, params, num_trials)
 
@@ -125,9 +126,10 @@ def test_unshared_corr(
 					"num_samples_gwas": j,
 					"corr_thresh": k,
 				}
-				params = params_base.copy().update(param_updates)
+				params = params_base.copy()
+				params.update(param_updates)
 				params.update(data_info)
-				params_path = os.path.join(params_base, test_name + ".pickle")
+				params_path = os.path.join(out_dir_base, test_name + ".pickle")
 				disp.add_job(out_dir, params_path, params, num_trials)
 
 if __name__ == '__main__':

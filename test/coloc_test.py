@@ -368,7 +368,7 @@ def coloc_test(
 			sim_data.update(qtl_data)
 			sim_data.update(gwas_data)
 
-			inputs = params.copy().update().data()
+			inputs = params.copy()
 
 		except Exception as e:
 			trace = traceback.format_exc()

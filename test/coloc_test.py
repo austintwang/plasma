@@ -3,19 +3,17 @@
 import os
 import random
 import traceback
-try:
-	import pickle as pickle
-except ImportError:
-	import pickle
+import pickle
 
 import numpy as np
 import pandas as pd
 
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'test'
-	import Finemap, LocusSimulator, EvalCaviarASE
-else:
-	from . import Finemap, LocusSimulator, EvalCaviarASE
+# 	import Finemap, LocusSimulator, EvalCaviarASE
+# else:
+# 	from . import Finemap, LocusSimulator, EvalCaviarASE
+from . import Finemap, LocusSimulator, EvalCaviarASE
 
 CHROM_LENS = [
 	248956422,

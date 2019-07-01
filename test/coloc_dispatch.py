@@ -30,6 +30,8 @@ class Dispatcher(object):
 			]
 			self.jobs.append(["sbatch", "-J", job_name, self.script_path])
 
+		raise Exception ####
+
 	def submit(self):
 		for i in jobs:
 			subprocess.call(i)
@@ -80,7 +82,6 @@ def test_shared_causal(
 				params.update(param_updates)
 				params.update(data_info)
 				params_path = os.path.join(out_dir_base, test_name + ".pickle")
-				raise Exception ####
 				disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_unshared_corr(

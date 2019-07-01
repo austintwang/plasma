@@ -135,6 +135,7 @@ if __name__ == '__main__':
 
 	script_path = os.path.join(curr_path, "coloc_test.py")
 	batch_size = 50
+	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)
 

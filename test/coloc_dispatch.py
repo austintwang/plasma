@@ -12,7 +12,7 @@ class Dispatcher(object):
 		with open(params_path, "wb") as params_file:
 			pickle.dump(params, params_file)
 
-		job_name = params["job_name"]
+		job_name = params["test_name"]
 
 		num_jobs = -(-num_tasks // self.batch_size)
 		batches = [self.batch_size for i in range(num_jobs)]
@@ -28,7 +28,7 @@ class Dispatcher(object):
 				str(ind),
 				params_path
 			]
-			self.jobs.append(["sbatch", "-J", job_name, self.script_path])
+			self.jobs.append(job_args)
 
 		raise Exception ####
 

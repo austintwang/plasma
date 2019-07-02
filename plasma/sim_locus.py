@@ -38,6 +38,7 @@ class LocusSimulator(object):
 		snp_count = 0
 
 		for record in vcf_reader.fetch(chrom, start, start + region_size):
+			print('a') ####
 			chr_rec = record.CHROM
 			pos = int(record.POS) + 1
 			# if pos % 10 == 0: ####
@@ -78,11 +79,15 @@ class LocusSimulator(object):
 			snp_ids.append(snp_id)
 			snp_count += 1
 
+			print('b') ####
+
 			# if snp_count >= num_snps
 			# 	break
 
-			print(snp_count) ####
-			print(pos) ####
+			# print(snp_count) ####
+			# print(pos) ####
+
+		print(snp_count) ####
 
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)

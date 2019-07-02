@@ -10,11 +10,13 @@ import pandas as pd
 
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'test'
+	import sys
+	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # 	import Finemap, LocusSimulator, EvalCaviarASE
 # else:
 # 	from . import Finemap, LocusSimulator, EvalCaviarASE
 
-print(__package__) ####
+# print(__package__) ####
 from . import Finemap, LocusSimulator, EvalECaviar
 
 CHROM_LENS = [

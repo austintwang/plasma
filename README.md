@@ -50,7 +50,7 @@ The script outputs two files in the specified output directory:
 ### Usage
 Usage of the script is as follows:
 ```
-usage: run_plasma.py [-h] [--total_exp_path TOTAL_EXP_PATH]
+usage: ./run_plasma.py [-h] [--total_exp_path TOTAL_EXP_PATH]
                      [--overdispersion_path OVERDISPERSION_PATH]
                      [--overdispersion_global OVERDISPERSION_GLOBAL]
                      [--as_only] [--qtl_only] [--search_mode SEARCH_MODE]

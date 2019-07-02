@@ -13,7 +13,9 @@ if __name__ == '__main__' and __package__ is None:
 # 	import Finemap, LocusSimulator, EvalCaviarASE
 # else:
 # 	from . import Finemap, LocusSimulator, EvalCaviarASE
-from . import Finemap, LocusSimulator, EvalCaviarASE
+
+print(__package__) ####
+from . import Finemap, LocusSimulator, EvalECaviar
 
 CHROM_LENS = [
 	248956422,

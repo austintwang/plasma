@@ -1,20 +1,12 @@
-#!/usr/bin/env python
-
-from __future__ import print_function
-from __future__ import division
-from __future__ import unicode_literals 
-from __future__ import absolute_import
-
-# Allow proper import behavior when running directly from command line
-if __name__ == '__main__' and __package__ is None:
-	__package__ = 'plasma'
-	from ase_finemap import Finemap
-else:
-	from .ase_finemap import Finemap
+#!/usr/bin/env python3
 
 import numpy as np
 import os
 import argparse
+
+from plasma import Finemap
+# Note that the plasma package in /plasma is imported preferentially
+# over any globally-installed plasma package
 
 def run_plasma(args):
 	"""

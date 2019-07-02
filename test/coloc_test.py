@@ -130,7 +130,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 	max_corr = 0.
 	while max_corr < params["corr_thresh"]:
-		chrom, start, vcf_path = draw_region(vcf_dir)
+		chrom, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 		locus = LocusSimulator(
 			vcf_path, 

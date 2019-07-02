@@ -12,7 +12,7 @@ def make_filter(in_dir, out_dir, name):
 
 	snp_filter = set()
 	for b in bims:
-		add_to_filter(snp_filter, b)
+		add_to_filter(snp_filter, os.path.join(in_dir, b))
 
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)

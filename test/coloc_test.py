@@ -369,30 +369,39 @@ def coloc_test(
 			inputs = params.copy()
 
 		except Exception as e:
+			raise ####
 			trace = traceback.format_exc()
 			message = repr(e)
 			result = {"complete": False, "error": message, "traceback": trace}
 			if "full" in model_flavors:
-				result_full = result.copy().update({"model": "full"})
+				result_full = result.copy()
+				result_full.update({"model": "full"})
 				output.append(result_full)
 			if "indep" in model_flavors:
-				result_indep = result.copy().update({"model": "indep"})
+				result_indep = result.copy()
+				result_indep.update({"model": "indep"})
 				output.append(result_indep)
 			if "ase" in model_flavors:
-				result_ase = result.copy().update({"model": "ase"})
+				result_ase = result.copy()
+				result_ase.update({"model": "ase"})
 				output.append(result_ase)
 			if "ecav" in model_flavors:
-				result_ecav = result.copy().update({"model": "ecav"})
+				result_ecav = result.copy()
+				result_ecav.update({"model": "ecav"})
 				output.append(result_ecav)
 			if "eqtl" in model_flavors:
-				result_eqtl = result.copy().update({"model": "eqtl"})
+				result_eqtl = result.copy()
+				result_eqtl.update({"model": "eqtl"})
 				output.append(result_eqtl)
+
+			continue
 
 		if "full" in model_flavors:
 			try:
 				model_qtl_updates = {}
 				result_full = run_model(inputs, "full", model_qtl_updates)
 			except Exception as e:
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_full = {
@@ -409,6 +418,7 @@ def coloc_test(
 				model_qtl_updates = {"cross_corr_prior": 0.}
 				result_indep = run_model(inputs, "indep", model_qtl_updates)
 			except Exception as e:
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_indep = {
@@ -425,6 +435,7 @@ def coloc_test(
 				model_qtl_updates = {"as_only": True}
 				result_ase = run_model(inputs, "ase", model_qtl_updates)
 			except Exception as e:
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_ase = {
@@ -441,6 +452,7 @@ def coloc_test(
 				model_qtl_updates = {"qtl_only": True}
 				result_ecav = run_ecav(inputs, "ecav", model_qtl_updates)
 			except Exception as e:
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_ecav = {
@@ -457,6 +469,7 @@ def coloc_test(
 				model_qtl_updates = {"qtl_only": True}
 				result_eqtl = run_model(inputs, "ase", model_qtl_updates)
 			except Exception as e:
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_eqtl = {

@@ -23,8 +23,8 @@ def make_filter(in_dir, out_dir, name):
 
 if __name__ == '__main__':
 
-	in_path = "/bcb/agusevlab/awang/job_data/sim_coloc/1000g/LDREF/"
-	out_dir = "/bcb/agusevlab/awang/job_data/sim_coloc/1000g/"
+	in_path = "/agusevlab/awang/job_data/sim_coloc/1000g/LDREF/"
+	out_dir = "/agusevlab/awang/job_data/sim_coloc/1000g/"
 	name = "snp_filter.pickle"
 
 	make_filter(in_path, out_dir, name)

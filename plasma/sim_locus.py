@@ -50,6 +50,7 @@ class LocusSimulator(object):
 				snp_id = record.ID
 
 			if snp_id not in snp_filter:
+				print('b') ####
 				continue
 
 			genotypes = []

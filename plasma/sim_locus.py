@@ -38,8 +38,10 @@ class LocusSimulator(object):
 		snp_ids = []
 		snp_count = 0
 
+		region = vcf_reader.fetch(chrom, start, start + region_size)
+		region = list(region) ####
 		b = time.perf_counter() ####
-		for record in vcf_reader.fetch(chrom, start, start + region_size):
+		for record in region:
 			a = time.perf_counter() ####
 			print('a') ####
 			print(a - b) ####

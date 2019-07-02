@@ -16,7 +16,7 @@ def make_filter(in_dir, out_dir, name):
 
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
-	out_path = os.join(out_dir, name)
+	out_path = os.path.join(out_dir, name)
 
 	with open(out_path, "wb") as out_file:
 		pickle.dump(snp_filter, out_file)

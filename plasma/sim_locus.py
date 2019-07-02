@@ -40,7 +40,7 @@ class LocusSimulator(object):
 		for record in vcf_reader.fetch(chrom, start, start + region_size):
 			chr_rec = record.CHROM
 			pos = int(record.POS) + 1
-			if pos % 1000 == 0: ####
+			if pos % 10 == 0: ####
 				print(pos) ####
 
 			if record.ID == ".":

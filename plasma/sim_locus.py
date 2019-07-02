@@ -1,5 +1,6 @@
 import numpy as np 
 import vcf
+import time ####
 
 class Universe(object):
 	def __contains__(self, other):
@@ -37,8 +38,11 @@ class LocusSimulator(object):
 		snp_ids = []
 		snp_count = 0
 
+		b = time.perf_counter() ####
 		for record in vcf_reader.fetch(chrom, start, start + region_size):
+			a = time.perf_counter() ####
 			print('a') ####
+			print(a - b) ####
 			chr_rec = record.CHROM
 			pos = int(record.POS) + 1
 			# if pos % 10 == 0: ####
@@ -50,7 +54,8 @@ class LocusSimulator(object):
 				snp_id = record.ID
 
 			if snp_id not in snp_filter:
-				print('b') ####
+				b = time.perf_counter() ####
+				print(b - a) ####
 				continue
 
 			genotypes = []
@@ -68,21 +73,23 @@ class LocusSimulator(object):
 				genotypes.append(int(haps[1]))
 
 			if not include_marker:
-				print('b') ####
+				b = time.perf_counter() ####
+				print(b - a) ####
 				continue
 
 			genotypes = np.array(genotypes)
 			freq = np.mean(genotypes)
 			maf = min(freq, 1 - freq)
 			if maf < maf_thresh:
-				print('b') ####
+				b = time.perf_counter() ####
+				print(b - a) ####
 				continue
 
 			haps.append(genotypes)
 			snp_ids.append(snp_id)
 			snp_count += 1
 
-			print('b') ####
+			b = time.perf_counter() ####
 
 			# if snp_count >= num_snps
 			# 	break

@@ -48,14 +48,14 @@ def draw_region(vcf_dir, vcf_name_template):
 	vcf_path = os.path.join(vcf_dir, vcf_name_template.format(chrom))
 	start = random.randrange(0, regions[chrom_num-1])
 
-	return chrom, start, vcf_path
+	return chrom, chrom_num, start, vcf_path
 
 def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
-	chrom, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
+	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	locus = LocusSimulator(
 		vcf_path, 
-		chrom, 
+		chrom_num, 
 		start, 
 		params["region_size"], 
 		params["num_causal"],
@@ -84,11 +84,11 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
 def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
-	chrom, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
+	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	locus = LocusSimulator(
 		vcf_path, 
-		chrom, 
+		chrom_num, 
 		start, 
 		params["num_snps"], 
 		params["num_causal"],
@@ -130,11 +130,11 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 	max_corr = 0.
 	while max_corr < params["corr_thresh"]:
-		chrom, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
+		chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 		locus = LocusSimulator(
 			vcf_path, 
-			chrom, 
+			chrom_num, 
 			start, 
 			params["num_snps"], 
 			1,

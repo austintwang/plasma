@@ -67,12 +67,14 @@ class LocusSimulator(object):
 				genotypes.append(int(haps[1]))
 
 			if not include_marker:
+				print('b') ####
 				continue
 
 			genotypes = np.array(genotypes)
 			freq = np.mean(genotypes)
 			maf = min(freq, 1 - freq)
 			if maf < maf_thresh:
+				print('b') ####
 				continue
 
 			haps.append(genotypes)

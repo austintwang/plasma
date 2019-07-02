@@ -51,7 +51,7 @@ def draw_region(vcf_dir, vcf_name_template):
 	return chrom, start, vcf_path
 
 def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
-	chrom, start, vcf_path = draw_region(vcf_dir)
+	chrom, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	locus = LocusSimulator(
 		vcf_path, 
@@ -84,7 +84,7 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
 def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
-	chrom, start, vcf_path = draw_region(vcf_dir)
+	chrom, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	locus = LocusSimulator(
 		vcf_path, 

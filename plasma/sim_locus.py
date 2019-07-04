@@ -2,6 +2,62 @@ import numpy as np
 import vcf
 import time ####
 
+class SubsetReader(vcf.Reader):
+	def __init__(self, **kwargs):
+    	super().__init__(**kwargs)
+    	self.subset = kwargs["subset"]
+
+	def next(self):
+		'''Return the next record in the file.'''
+		while True:
+			line = next(self.reader)
+			row = self._row_pattern.split(line.rstrip())
+
+			if row[2] != '.':
+				ID = row[2]
+			else:
+				ID = None
+
+			if ID in self.subset:
+				break
+
+		chrom = row[0]
+			if self._prepend_chr:
+				chrom = 'chr' + chrom
+			pos = int(row[1])
+
+		ref = row[3]
+		alt = self._map(self._parse_alt, row[4].split(','))
+
+		try:
+			qual = int(row[5])
+		except ValueError:
+			try:
+				qual = float(row[5])
+			except ValueError:
+			qual = None
+
+		filt = self._parse_filter(row[6])
+		info = self._parse_info(row[7])
+
+		try:
+			fmt = row[8]
+		except IndexError:
+			fmt = None
+		else:
+			if fmt == '.':
+			fmt = None
+
+		record = _Record(chrom, pos, ID, ref, alt, qual, filt,
+				info, fmt, self._sample_indexes)
+
+		if fmt is not None:
+			samples = self._parse_samples(row[9:], fmt, record)
+			record.samples = samples
+
+		return record
+
+
 class Universe(object):
 	def __contains__(self, other):
 		return True
@@ -22,17 +78,19 @@ class LocusSimulator(object):
 		self.start = start
 		self.region_size = region_size
 
-		vcf_reader = vcf.Reader(filename=vcf_path)
+		if snp_filter is not None:
+			snp_filter = set(snp_filter)
+		else:
+			snp_filter = Universe()	
+
+		vcf_reader = SubsetReader(filename=vcf_path, subset=snp_filter)
+
 		samples = vcf_reader.samples
 		if sample_filter is not None:
 			filter_set = set(sample_filter)
 			sample_idx = [ind for ind, val in enumerate(samples) if val in filter_set]
 		else:
 			sample_idx = list(range(len(samples)))
-		if snp_filter is not None:
-			snp_filter = set(snp_filter)
-		else:
-			snp_filter = Universe()	
 
 		haps = []
 		snp_ids = []
@@ -40,11 +98,11 @@ class LocusSimulator(object):
 
 		region = vcf_reader.fetch(chrom, start, start + region_size)
 		# region = list(region) ####
-		# b = time.perf_counter() ####
+		b = time.perf_counter() ####
 		for record in region:
-			# a = time.perf_counter() ####
-			# print('a') ####
-			# print(a - b) ####
+			a = time.perf_counter() ####
+			print('a') ####
+			print(a - b) ####
 			chr_rec = record.CHROM
 			pos = int(record.POS) + 1
 			# if pos % 10 == 0: ####
@@ -55,10 +113,10 @@ class LocusSimulator(object):
 			else:
 				snp_id = record.ID
 
-			if snp_id not in snp_filter:
-				# b = time.perf_counter() ####
-				# print(b - a) ####
-				continue
+			# if snp_id not in snp_filter:
+			# 	b = time.perf_counter() ####
+			# 	print(b - a) ####
+			# 	continue
 
 			genotypes = []
 			include_marker = True
@@ -75,28 +133,28 @@ class LocusSimulator(object):
 				genotypes.append(int(haps[1]))
 
 			if not include_marker:
-				# b = time.perf_counter() ####
-				# print(b - a) ####
+				b = time.perf_counter() ####
+				print(b - a) ####
 				continue
 
 			genotypes = np.array(genotypes)
 			freq = np.mean(genotypes)
 			maf = min(freq, 1 - freq)
 			if maf < maf_thresh:
-				# b = time.perf_counter() ####
-				# print(b - a) ####
+				b = time.perf_counter() ####
+				print(b - a) ####
 				continue
 
 			haps.append(genotypes)
 			snp_ids.append(snp_id)
 			snp_count += 1
 
-			# b = time.perf_counter() ####
+			b = time.perf_counter() ####
 
 			# if snp_count >= num_snps
 			# 	break
 
-			# print(snp_count) ####
+			print(snp_count) ####
 			# print(pos) ####
 
 		print(snp_count) ####

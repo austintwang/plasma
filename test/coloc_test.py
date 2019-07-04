@@ -53,17 +53,20 @@ def draw_region(vcf_dir, vcf_name_template):
 def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
-	locus = LocusSimulator(
-		vcf_path, 
-		chrom_num, 
-		start, 
-		params["num_causal"],
-		region_size=params["region_size"],
-		max_snps=params["max_snps"],
-		sample_filter=sample_filter,
-		snp_filter=snp_filter,
-		maf_thresh=params["maf_thresh"]
-	)
+	while True:
+		locus = LocusSimulator(
+			vcf_path, 
+			chrom_num, 
+			start, 
+			params["num_causal"],
+			region_size=params["region_size"],
+			max_snps=params["max_snps"],
+			sample_filter=sample_filter,
+			snp_filter=snp_filter,
+			maf_thresh=params["maf_thresh"]
+		)
+		if locus.snp_count >= 10:
+			break
 
 	causal_config_qtl = locus.causal_config
 	causal_config_gwas = locus.causal_config
@@ -87,17 +90,20 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
-	locus = LocusSimulator(
-		vcf_path, 
-		chrom_num, 
-		start, 
-		params["num_causal"],
-		region_size=params["region_size"],
-		max_snps=params["max_snps"],
-		sample_filter=sample_filter,
-		snp_filter=snp_filter,
-		maf_thresh=params["maf_thresh"]
-	)
+	while True:
+		locus = LocusSimulator(
+			vcf_path, 
+			chrom_num, 
+			start, 
+			params["num_causal"],
+			region_size=params["region_size"],
+			max_snps=params["max_snps"],
+			sample_filter=sample_filter,
+			snp_filter=snp_filter,
+			maf_thresh=params["maf_thresh"]
+		)
+		if locus.snp_count >= 10:
+			break
 
 	causal_inds_combined = np.random.choice(
 		params["num_causal"]*2, 
@@ -145,6 +151,8 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 			snp_filter=snp_filter,
 			maf_thresh=params["maf_thresh"]
 		)
+		if locus.snp_count < 10:
+			continue
 
 		covdiag = np.diag(locus.haps_cov)
 		corr = locus.haps_cov / np.sqrt(np.outer(covdiag, covdiag))

@@ -172,7 +172,7 @@ class LocusSimulator(object):
 			print(snp_count) ####
 			print(pos) ####
 
-		print(snp_count) ####
+		# print(snp_count) ####
 
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)

@@ -22,9 +22,9 @@ class SubsetReader(vcf.Reader):
 				break
 
 		chrom = row[0]
-			if self._prepend_chr:
-				chrom = 'chr' + chrom
-			pos = int(row[1])
+		if self._prepend_chr:
+			chrom = 'chr' + chrom
+		pos = int(row[1])
 
 		ref = row[3]
 		alt = self._map(self._parse_alt, row[4].split(','))

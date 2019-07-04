@@ -31,7 +31,7 @@ class SubsetReader(vcf.Reader):
 				ID = None
 
 			print(ID) ####
-			if ID in self.sample_subset:
+			if ID in self.snp_subset:
 				break
 
 		b = time.perf_counter() ####

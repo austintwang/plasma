@@ -300,7 +300,7 @@ class LocusSimulator(object):
 		haps_var = np.diagonal(self.haps_cov)
 		z_scores = (signal + noise) * np.sqrt(self.snp_count / haps_var)
 
-		corr = self.haps_corr / np.sqrt(np.outer(haps_var, haps_var))
+		corr = self.haps_cov / np.sqrt(np.outer(haps_var, haps_var))
 		corr = np.nan_to_num(corr)
 		np.fill_diagonal(corr, 1.0)
 

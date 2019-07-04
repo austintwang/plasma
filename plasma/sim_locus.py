@@ -220,7 +220,7 @@ class LocusSimulator(object):
 
 		causal_effects = np.random.normal(0, 1, num_causal)
 		causal_snps = np.zeros(self.snp_count)
-		causal_snps[causal_config] = causal_effects
+		causal_snps[causal_config.astype(bool)] = causal_effects
 
 		prop_noise_eqtl = 1 - herit_qtl
 		prop_noise_ase = 1 - herit_as
@@ -289,7 +289,7 @@ class LocusSimulator(object):
 
 		causal_effects = np.random.normal(0, 1, num_causal)
 		causal_snps = np.zeros(self.snp_count)
-		causal_snps[causal_config] = causal_effects
+		causal_snps[causal_config.astype(bool)] = causal_effects
 
 		var_causal_raw = causal_snps.dot(gram.dot(causal_snps))
 		scale = herit / var_causal_raw

@@ -65,8 +65,8 @@ class Finemap(object):
 
 		self.evaluator = None
 
-		print(self.counts_A) ####
-		print(self.counts_B) ####
+		# print(self.counts_A) ####
+		# print(self.counts_B) ####
 	
 	def _calc_num_snps(self):
 		"""

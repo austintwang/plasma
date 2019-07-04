@@ -389,6 +389,8 @@ def coloc_test(
 			sim_data.update(gwas_data)
 
 			inputs = params.copy()
+			inputs.update(sim_data)
+			# print(inputs["hap_A"].shape()) ####
 
 		except Exception as e:
 			raise ####

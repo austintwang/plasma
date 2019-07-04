@@ -35,7 +35,7 @@ class SubsetReader(vcf.Reader):
 			try:
 				qual = float(row[5])
 			except ValueError:
-			qual = None
+				qual = None
 
 		filt = self._parse_filter(row[6])
 		info = self._parse_info(row[7])
@@ -46,7 +46,7 @@ class SubsetReader(vcf.Reader):
 			fmt = None
 		else:
 			if fmt == '.':
-			fmt = None
+				fmt = None
 
 		record = _Record(chrom, pos, ID, ref, alt, qual, filt,
 				info, fmt, self._sample_indexes)

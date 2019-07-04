@@ -198,7 +198,7 @@ class LocusSimulator(object):
 			overdispersion,
 			causal_override=None
 		):
-		haps_idx = np.random.choice(np.shape(self.haps)[0], num_samples, replace=False)
+		haps_idx = np.random.choice(np.shape(self.haps)[0], num_samples * 2, replace=False)
 		haps_sampled = self.haps[haps_idx]
 		np.random.shuffle(haps_sampled)
 		hap_A = haps_sampled[:num_samples]

@@ -4,8 +4,13 @@ import time ####
 
 class SubsetReader(vcf.Reader):
 	def __init__(self, **kwargs):
-		self.subset = kwargs.pop("subset")
+		self.snp_subset = kwargs.pop("snp_subset")
+		self.sample_subset = kwargs.pop("sample_subset")
 		super().__init__(**kwargs)
+
+	def _parse_metainfo(self):
+		super()._parse_metainfo()
+		self._sample_indexes = {k: v for k, v in self._sample_indexes.items() if k in self.sample_subset}
 
 	def next(self):
 		'''Return the next record in the file.'''
@@ -96,16 +101,21 @@ class LocusSimulator(object):
 		if snp_filter is not None:
 			snp_filter = set(snp_filter)
 		else:
-			snp_filter = Universe()	
+			snp_filter = Universe()
 
-		vcf_reader = SubsetReader(filename=vcf_path, subset=snp_filter)
-
-		samples = vcf_reader.samples
 		if sample_filter is not None:
-			filter_set = set(sample_filter)
-			sample_idx = [ind for ind, val in enumerate(samples) if val in filter_set]
+			sample_filter = set(sample_filter)
 		else:
-			sample_idx = list(range(len(samples)))
+			sample_filter = Universe()	
+
+		vcf_reader = SubsetReader(filename=vcf_path, snp_subset=snp_filter, sample_subset=sample_filter)
+
+		# samples = vcf_reader.samples
+		# if sample_filter is not None:
+		# 	filter_set = set(sample_filter)
+		# 	sample_idx = [ind for ind, val in enumerate(samples) if val in filter_set]
+		# else:
+		# 	sample_idx = list(range(len(samples)))
 
 		haps = []
 		snp_ids = []
@@ -135,9 +145,11 @@ class LocusSimulator(object):
 
 			genotypes = []
 			include_marker = True
-			for ind in sample_idx:
-				sample = record.samples[ind]
 
+			# for ind in sample_idx:
+			# 	sample = record.samples[ind]
+
+			for sample in record.samples:
 				gen_data = sample["GT"]
 				if "/" in gen_data:
 					include_marker = False

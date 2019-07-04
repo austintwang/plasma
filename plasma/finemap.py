@@ -394,6 +394,9 @@ class Finemap(object):
 		correction = ase_inherent_var / (ase_inherent_var + ase_count_var)
 		self._imb_herit_adj = self.imbalance_herit_prior * correction
 
+		print(self.num_ppl) ####
+		print(self.num_causal_prior) ####
+		print(self._imb_herit_adj) ####
 		self.imbalance_var_prior = (
 			self.num_ppl 
 			/ self.num_causal_prior 

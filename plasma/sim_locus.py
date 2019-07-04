@@ -68,15 +68,30 @@ class LocusSimulator(object):
 		vcf_path, 
 		chrom, 
 		start, 
-		region_size,
 		num_causal, 
+		region_size=None,
+		max_snps=None,
 		sample_filter=None,
 		snp_filter=None,
 		maf_thresh=0.
 	):
 		self.chrom = chrom
 		self.start = start
-		self.region_size = region_size
+
+		if (region_size is None) and (max_snps is None):
+			raise ValueError("Must specifify either region_size or max_snps")
+
+		if region_size is not None:
+			self.region_size = region_size
+			self.end = self.start + region_size
+		else:
+			self.region_size = np.inf
+			self.end = None
+
+		if max_snps is not None:
+			self.max_snps = max_snps
+		else:
+			self.max_snps = np.inf
 
 		if snp_filter is not None:
 			snp_filter = set(snp_filter)
@@ -96,7 +111,7 @@ class LocusSimulator(object):
 		snp_ids = []
 		snp_count = 0
 
-		region = vcf_reader.fetch(chrom, start, start + region_size)
+		region = vcf_reader.fetch(self.chrom, self.start, self.end)
 		# region = list(region) ####
 		b = time.perf_counter() ####
 		for record in region:
@@ -151,8 +166,8 @@ class LocusSimulator(object):
 
 			b = time.perf_counter() ####
 
-			# if snp_count >= num_snps
-			# 	break
+			if snp_count >= self.max_snps
+				break
 
 			print(snp_count) ####
 			# print(pos) ####

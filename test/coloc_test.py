@@ -57,8 +57,9 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 		vcf_path, 
 		chrom_num, 
 		start, 
-		params["region_size"], 
 		params["num_causal"],
+		region_size=params["region_size"],
+		max_snps=params["max_snps"],
 		sample_filter=sample_filter,
 		snp_filter=snp_filter,
 		maf_thresh=params["maf_thresh"]
@@ -90,8 +91,9 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 		vcf_path, 
 		chrom_num, 
 		start, 
-		params["num_snps"], 
 		params["num_causal"],
+		region_size=params["region_size"],
+		max_snps=params["max_snps"],
 		sample_filter=sample_filter,
 		snp_filter=snp_filter,
 		maf_thresh=params["maf_thresh"]
@@ -136,8 +138,9 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 			vcf_path, 
 			chrom_num, 
 			start, 
-			params["num_snps"], 
 			1,
+			region_size=params["region_size"],
+			max_snps=params["max_snps"],
 			sample_filter=sample_filter,
 			snp_filter=snp_filter,
 			maf_thresh=params["maf_thresh"]

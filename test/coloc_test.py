@@ -83,7 +83,7 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 		params["overdispersion"],
 	)
 
-	gwas_data = locus.sim_asqtl(
+	gwas_data = locus.sim_gwas(
 		params["num_samples_gwas"],
 		params["herit_gwas"],
 	)
@@ -133,7 +133,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 		causal_override=causal_config_qtl
 	)
 
-	gwas_data = locus.sim_asqtl(
+	gwas_data = locus.sim_gwas(
 		params["num_samples_gwas"],
 		params["herit_gwas"],
 		causal_override=causal_config_gwas
@@ -190,7 +190,7 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 		causal_override=causal_config_qtl
 	)
 
-	gwas_data = locus.sim_asqtl(
+	gwas_data = locus.sim_gwas(
 		params["num_samples_gwas"],
 		params["herit_gwas"],
 		causal_override=causal_config_gwas

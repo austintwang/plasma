@@ -183,6 +183,7 @@ class LocusSimulator(object):
 		np.put(self.causal_config, causal_inds, 1)
 		self.num_causal = num_causal
 
+		print(self.haps) ####
 		haps_means = np.mean(self.haps, axis=0)
 		haps_centered = self.haps - haps_means
 		self.haps_cov = np.nan_to_num(np.cov(haps_centered.T))

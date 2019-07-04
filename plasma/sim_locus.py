@@ -18,6 +18,9 @@ class SubsetReader(vcf.Reader):
 		samples_sel = [samples[i] for i in self.sample_pos]
 		return super()._parse_samples(samples_sel, samp_fmt, site)
 
+	def _parse_filter(self, filt_str):
+		return super()._parse_filter(filt_str)
+
 	def __next__(self):
 		'''Return the next record in the file.'''
 		a = time.perf_counter() ####

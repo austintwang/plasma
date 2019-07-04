@@ -275,9 +275,9 @@ class Finemap(object):
 
 		if self.qtl_only:
 			self.imbalance_corr = np.empty((0,0,))
-
-		self._calc_corr_shared()
-		self.imbalance_corr = self.corr_shared.copy()
+		else:
+			self._calc_corr_shared()
+			self.imbalance_corr = self.corr_shared.copy()
 		
 	def _calc_beta(self):
 		"""
@@ -356,9 +356,9 @@ class Finemap(object):
 
 		if self.as_only:
 			self.total_exp_corr = np.empty((0,0,))
-
-		self._calc_corr_shared()
-		self.total_exp_corr = self.corr_shared.copy()
+		else:
+			self._calc_corr_shared()
+			self.total_exp_corr = self.corr_shared.copy()
 
 	def _calc_imbalance_var_prior(self):
 		"""
@@ -462,15 +462,14 @@ class Finemap(object):
 		self._calc_corr_stats()
 		self._calc_num_snps()
 
-		if self.as_only:
-			self.cross_corr = np.zeros(shape=(self.num_snps,0))
-			return
+		if self.qtl_only:
+			self.cross_corr = np.empty(shape=(self.num_snps,0))
 
-		elif self.qtl_only:
-			self.cross_corr = np.zeros(shape=(0,self.num_snps))
-			return
+		elif self.as_only:
+			self.cross_corr = np.empty(shape=(0,self.num_snps))
 
-		self.cross_corr = self.corr_shared * self.corr_stats
+		else:
+			self.cross_corr = self.corr_shared * self.corr_stats
 
 	def initialize(self):
 		"""

@@ -59,10 +59,10 @@ class Evaluator(object):
 			]
 		])
 
-		print(self.imbalance_corr) ####
-		print(self.cross_corr.T) ####
-		print(self.cross_corr) ####
-		print(self.total_exp_corr) ####
+		# print(self.imbalance_corr) ####
+		# print(self.cross_corr.T) ####
+		# print(self.cross_corr) ####
+		# print(self.total_exp_corr) ####
 		self.corr = np.block([
 			[self.imbalance_corr, self.cross_corr.T],
 			[self.cross_corr, self.total_exp_corr]

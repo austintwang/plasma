@@ -230,13 +230,21 @@ class EvalECaviar(object):
 			# "-n", str(self.ncp)
 		]
 
-		with open(self.z_path, "w") as zfile:
-			zstr = "\n".join("\t".join(str(j) for j in i) for i in zip(self.rsids, self.z_scores)) + "\n"
-			zfile.write(zstr)
+		with open(self.z_qtl_path, "w") as z_qtl_file:
+			zstr = "\n".join("\t".join(str(j) for j in i) for i in zip(self.rsids, self.z_qtl)) + "\n"
+			z_qtl_file.write(zstr)
 
-		with open(self.ld_path, "w") as ldfile:
-			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
-			ldfile.write(ldstr)
+		with open(self.z_gwas_path, "w") as z_gwas_file:
+			zstr = "\n".join("\t".join(str(j) for j in i) for i in zip(self.rsids, self.z_gwas)) + "\n"
+			z_gwas_file.write(zstr)
+
+		with open(self.ld_qtl_path, "w") as ld_qtl_file:
+			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld_qtl) + "\n"
+			ld_qtl_file.write(ldstr)
+
+		with open(self.ld_gwas_path, "w") as ld_gwas_file:
+			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld_gwas) + "\n"
+			ld_gwas_file.write(ldstr)
 
 		out = subprocess.check_output(self.params)
 		# print(out) ####

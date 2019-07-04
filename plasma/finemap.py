@@ -433,7 +433,7 @@ class Finemap(object):
 			/ (
 				(
 					self.num_causal_prior * self.ld_adj_prior 
-					+ eqtl_herit * (self.num_ppl / self.num_causal_prior - 1)
+					+ self.total_exp_herit_prior * (self.num_ppl / self.num_causal_prior - 1)
 				)
 				* (
 					self.num_causal_prior * self.ld_adj_prior 

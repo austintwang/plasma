@@ -4,9 +4,17 @@ import scipy.linalg.lapack as lp
 class Evaluator(object):
 	
 	def __init__(self, fm):
-		self.num_snps_imbalance = fm.num_snps_imbalance
-		self.num_snps_total_exp = fm.num_snps_total_exp
-		self.num_snps_combined = fm.num_snps_imbalance + fm.num_snps_total_exp
+		if fm.qtl_only:
+			self.num_snps_imbalance = 0
+		else:
+			self.num_snps_imbalance = fm.num_snps
+
+		if fm.as_only:
+			self.num_snps_total_exp = 0
+		else:
+			self.num_snps_total_exp = fm.num_snps
+
+		self.num_snps_combined = self.num_snps_imbalance + self.num_snps_total_exp
 		self.num_snps = max(self.num_snps_imbalance, self.num_snps_total_exp)
 
 		self.causal_status_prior = fm.causal_status_prior

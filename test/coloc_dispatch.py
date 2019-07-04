@@ -49,7 +49,7 @@ def test_shared_causal(
 ):
 	params_base = {
 		"test_type": "shared",
-		"region_size": 100000,
+		"region_size": 200000,
 		"max_snps": 1000,
 		"num_samples_qtl": None,
 		"num_samples_gwas": None,
@@ -99,7 +99,7 @@ def test_unshared_corr(
 ):
 	params_base = {
 		"test_type": "corr",
-		"region_size": 100000,
+		"region_size": 200000,
 		"max_snps": 1000,
 		"num_samples_qtl": None,
 		"num_samples_gwas": None,

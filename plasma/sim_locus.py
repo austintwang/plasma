@@ -43,9 +43,9 @@ class SubsetReader(vcf.Reader):
 			if ID in self.snp_subset:
 				break
 
-		b = time.perf_counter() ####
-		print('ab') ####
-		print(b-a) ####
+		# b = time.perf_counter() ####
+		# print('ab') ####
+		# print(b-a) ####
 		chrom = row[0]
 		if self._prepend_chr:
 			chrom = 'chr' + chrom
@@ -80,9 +80,9 @@ class SubsetReader(vcf.Reader):
 			samples = self._parse_samples(row[9:], fmt, record)
 			record.samples = samples
 
-		c = time.perf_counter() ####
-		print('bc') ####
-		print(c-b) ####
+		# c = time.perf_counter() ####
+		# print('bc') ####
+		# print(c-b) ####
 
 		return record
 

@@ -181,6 +181,7 @@ class LocusSimulator(object):
 		causal_inds = np.random.choice(self.snp_count, num_causal, replace=False)
 		self.causal_config = np.zeros(snp_count)
 		np.put(self.causal_config, causal_inds, 1)
+		print(self.causal_config) ####
 		self.num_causal = num_causal
 
 		# print(self.haps) ####

@@ -1,5 +1,6 @@
 import numpy as np 
 import vcf
+from vcf.model import _Record
 import time ####
 
 class SubsetReader(vcf.Reader):

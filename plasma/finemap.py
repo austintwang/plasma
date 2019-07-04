@@ -424,7 +424,7 @@ class Finemap(object):
 		if self.corr_stats is not None:
 			return
 
-		_calc_imbalance_var_prior()
+		self._calc_imbalance_var_prior()
 
 		self.corr_stats = self.cross_corr_prior * np.sqrt(
 			(self.num_ppl / self.num_causal_prior)**2 

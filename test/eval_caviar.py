@@ -27,7 +27,7 @@ class EvalCaviar(object):
 			random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
 		)
 		self.output_path = os.path.join(self.temp_path, self.output_name)
-		os.mkdir(self.output_path)
+		os.makedirs(self.output_path)
 		self.output_filename_base = os.path.join(self.output_path, self.output_name)
 
 		self.z_path = os.path.join(self.output_path, "z.txt")
@@ -170,9 +170,9 @@ class EvalCaviarASE(object):
 			self.post_probs = ppa2
 
 class EvalECaviar(object):
-	dir_path = os.path.dirname(os.path.realpath(__file__))
-	caviar_path = os.path.join(dir_path, "caviar", "CAVIAR-C++", "eCAVIAR")
-	temp_path = os.path.join(dir_path, "temp")
+	cav_dir_path = "/agusevlab/awang/caviar"
+	caviar_path = "CAVIAR"
+	temp_path = os.path.join(cav_dir_path, "temp")
 	
 	def __init__(self, fm_qtl, fm_gwas, confidence, max_causal):
 		self.confidence = confidence
@@ -193,7 +193,7 @@ class EvalECaviar(object):
 			random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
 		)
 		self.output_path = os.path.join(self.temp_path, self.output_name)
-		os.mkdir(self.output_path)
+		os.makedirs(self.output_path)
 		self.output_filename_base = os.path.join(self.output_path, self.output_name)
 
 		self.z_qtl_path = os.path.join(self.output_path, "z_qtl.txt")

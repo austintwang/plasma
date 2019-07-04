@@ -19,6 +19,14 @@ class SubsetReader(vcf.Reader):
 		return super()._parse_samples(samples_sel, samp_fmt, site)
 
 	def _parse_filter(self, filt_str):
+		if filt_str == '.':
+			return None
+		elif filt_str == 'PASS':
+			return []
+		else:
+			return filt_str.split(';')
+
+	def _parse_filter(self, filt_str):
 		return super()._parse_filter(filt_str)
 
 	def __next__(self):

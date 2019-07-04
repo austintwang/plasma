@@ -39,7 +39,7 @@ class SubsetReader(vcf.Reader):
 			else:
 				ID = None
 
-			print(ID) ####
+			# print(ID) ####
 			if ID in self.snp_subset:
 				break
 

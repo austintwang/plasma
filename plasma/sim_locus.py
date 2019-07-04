@@ -30,6 +30,7 @@ class SubsetReader(vcf.Reader):
 			else:
 				ID = None
 
+			print(ID) ####
 			if ID in self.sample_subset:
 				break
 

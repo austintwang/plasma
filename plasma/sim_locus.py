@@ -26,9 +26,6 @@ class SubsetReader(vcf.Reader):
 		else:
 			return filt_str.split(';')
 
-	def _parse_filter(self, filt_str):
-		return super()._parse_filter(filt_str)
-
 	def __next__(self):
 		'''Return the next record in the file.'''
 		a = time.perf_counter() ####

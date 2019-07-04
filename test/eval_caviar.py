@@ -171,7 +171,7 @@ class EvalCaviarASE(object):
 
 class EvalECaviar(object):
 	cav_dir_path = "/agusevlab/awang/caviar"
-	caviar_path = "CAVIAR"
+	caviar_path = "eCAVIAR"
 	temp_path = os.path.join(cav_dir_path, "temp")
 	
 	def __init__(self, fm_qtl, fm_gwas, confidence, max_causal):

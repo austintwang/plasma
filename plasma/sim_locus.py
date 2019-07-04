@@ -169,8 +169,8 @@ class LocusSimulator(object):
 			if snp_count >= self.max_snps:
 				break
 
-			# print(snp_count) ####
-			# print(pos) ####
+			print(snp_count) ####
+			print(pos) ####
 
 		print(snp_count) ####
 

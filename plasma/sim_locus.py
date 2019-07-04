@@ -184,7 +184,7 @@ class LocusSimulator(object):
 		causal_inds = np.random.choice(self.snp_count, num_causal, replace=False)
 		self.causal_config = np.zeros(snp_count)
 		np.put(self.causal_config, causal_inds, 1)
-		print(self.causal_config) ####
+		# print(self.causal_config) ####
 		self.num_causal = num_causal
 
 		# print(self.haps) ####
@@ -234,7 +234,7 @@ class LocusSimulator(object):
 		imb_total_var = imbalance_var + imb_noise_var
 		std_imbalance = np.log(std_al_dev) - np.log(1 - std_al_dev)
 		imbalance = (
-			npr.normal(imbalance_ideal, np.sqrt(imb_noise_var)) 
+			np.random.normal(imbalance_ideal, np.sqrt(imb_noise_var)) 
 			* std_imbalance 
 			/ np.sqrt(imb_total_var)
 		)
@@ -244,17 +244,17 @@ class LocusSimulator(object):
 
 		exp_noise_var = ideal_exp_var * (prop_noise_eqtl / (1 - prop_noise_eqtl))
 
-		total_exp = npr.normal(total_exp_ideal, np.sqrt(exp_noise_var))
+		total_exp = np.random.normal(total_exp_ideal, np.sqrt(exp_noise_var))
 		
 		betas = (1 / overdispersion - 1) * (1 / (1 + np.exp(imbalance)))
 		alphas = (1 / overdispersion - 1) * (1 / (1 + np.exp(-imbalance)))
 
 		@np.vectorize
 		def _bb(counts, alpha, beta):
-			p = npr.beta(alpha, beta, size=counts)
-			return np.sum(npr.binomial(1, p))
+			p = np.random.beta(alpha, beta, size=counts)
+			return np.sum(np.random.binomial(1, p))
 
-		noised_coverage = npr.poisson(coverage, num_samples)
+		noised_coverage = np.random.poisson(coverage, num_samples)
 		noised_coverage[noised_coverage==0] = 1
 		counts_A = _bb(noised_coverage, alphas, betas)
 

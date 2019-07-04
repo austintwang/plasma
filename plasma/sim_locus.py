@@ -113,11 +113,11 @@ class LocusSimulator(object):
 
 		region = vcf_reader.fetch(self.chrom, self.start, self.end)
 		# region = list(region) ####
-		b = time.perf_counter() ####
+		# b = time.perf_counter() ####
 		for record in region:
-			a = time.perf_counter() ####
-			print('a') ####
-			print(a - b) ####
+			# a = time.perf_counter() ####
+			# print('a') ####
+			# print(a - b) ####
 			chr_rec = record.CHROM
 			pos = int(record.POS) + 1
 			# if pos % 10 == 0: ####
@@ -148,31 +148,31 @@ class LocusSimulator(object):
 				genotypes.append(int(haps[1]))
 
 			if not include_marker:
-				b = time.perf_counter() ####
-				print(b - a) ####
+				# b = time.perf_counter() ####
+				# print(b - a) ####
 				continue
 
 			genotypes = np.array(genotypes)
 			freq = np.mean(genotypes)
 			maf = min(freq, 1 - freq)
 			if maf < maf_thresh:
-				b = time.perf_counter() ####
-				print(b - a) ####
+				# b = time.perf_counter() ####
+				# print(b - a) ####
 				continue
 
 			haps.append(genotypes)
 			snp_ids.append(snp_id)
 			snp_count += 1
 
-			b = time.perf_counter() ####
+			# b = time.perf_counter() ####
 
 			if snp_count >= self.max_snps:
 				break
 
-			print(snp_count) ####
+			# print(snp_count) ####
 			# print(pos) ####
 
-		print(snp_count) ####
+		# print(snp_count) ####
 
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)

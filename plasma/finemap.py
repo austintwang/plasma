@@ -192,7 +192,6 @@ class Finemap(object):
 			return
 
 		self._calc_imbalance()
-		self._calc_counts()
 
 		imbalance_raw = np.log(self.counts_A) - np.log(self.counts_B)
 		counts = self.counts_A + self.counts_B

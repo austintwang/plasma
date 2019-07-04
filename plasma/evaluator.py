@@ -83,8 +83,8 @@ class Evaluator(object):
 				+ np.log(1 - self.cross_corr_prior ** 2)
 			)
 
-		print(self.imbalance_stats) ####
-		print(self.total_exp_stats) ####
+		# print(self.imbalance_stats) ####
+		# print(self.total_exp_stats) ####
 		self.valid_entries = np.append(
 			np.isfinite(self.imbalance_stats), 
 			np.isfinite(self.total_exp_stats)

@@ -291,6 +291,7 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 		"total_exp_herit_prior": inputs_gwas["herit_gwas"],
 		"total_exp_stats": inputs_gwas["z_gwas"],
 		"total_exp_corr": inputs_gwas["ld_gwas"],
+		"num_ppl": inputs_qtl["num_samples_gwas"],
 		"qtl_only": True
 	}
 	inputs_gwas.update(gwas_updates)

@@ -373,8 +373,8 @@ def coloc_test(
 				params
 			)
 			# print(qtl_data) ####
-			print(qtl_data["counts_A"]) ####
-			print(qtl_data["counts_B"]) ####
+			# print(qtl_data["counts_A"]) ####
+			# print(qtl_data["counts_B"]) ####
 			sim_data = {
 				"sim_type": test_type,
 				"chrom": locus.chrom,

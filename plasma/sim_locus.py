@@ -10,7 +10,12 @@ class SubsetReader(vcf.Reader):
 
 	def _parse_metainfo(self):
 		super()._parse_metainfo()
+		self.sample_pos = [ind for ind, val in enumerate(self.samples) if val in self.sample_subset]
+		self.samples = [i for i in self.samples if i in self.sample_subset]
 		self._sample_indexes = {k: v for k, v in self._sample_indexes.items() if k in self.sample_subset}
+
+	def _parse_samples(self, samples, samp_fmt, site):
+		super()._parse_samples(self, samples, samp_fmt, site)
 
 	def next(self):
 		'''Return the next record in the file.'''

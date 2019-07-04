@@ -54,17 +54,20 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	while True:
-		locus = LocusSimulator(
-			vcf_path, 
-			chrom_num, 
-			start, 
-			params["num_causal"],
-			region_size=params["region_size"],
-			max_snps=params["max_snps"],
-			sample_filter=sample_filter,
-			snp_filter=snp_filter,
-			maf_thresh=params["maf_thresh"]
-		)
+		try:
+			locus = LocusSimulator(
+				vcf_path, 
+				chrom_num, 
+				start, 
+				params["num_causal"],
+				region_size=params["region_size"],
+				max_snps=params["max_snps"],
+				sample_filter=sample_filter,
+				snp_filter=snp_filter,
+				maf_thresh=params["maf_thresh"]
+			)
+		except ValueError:
+			continue
 		if locus.snp_count >= 10:
 			break
 
@@ -91,17 +94,20 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	while True:
-		locus = LocusSimulator(
-			vcf_path, 
-			chrom_num, 
-			start, 
-			params["num_causal"],
-			region_size=params["region_size"],
-			max_snps=params["max_snps"],
-			sample_filter=sample_filter,
-			snp_filter=snp_filter,
-			maf_thresh=params["maf_thresh"]
-		)
+		try:
+			locus = LocusSimulator(
+				vcf_path, 
+				chrom_num, 
+				start, 
+				params["num_causal"],
+				region_size=params["region_size"],
+				max_snps=params["max_snps"],
+				sample_filter=sample_filter,
+				snp_filter=snp_filter,
+				maf_thresh=params["maf_thresh"]
+			)
+		except ValueError:
+			continue
 		if locus.snp_count >= 10:
 			break
 
@@ -139,18 +145,20 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	max_corr = 0.
 	while max_corr < params["corr_thresh"]:
 		chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
-
-		locus = LocusSimulator(
-			vcf_path, 
-			chrom_num, 
-			start, 
-			1,
-			region_size=params["region_size"],
-			max_snps=params["max_snps"],
-			sample_filter=sample_filter,
-			snp_filter=snp_filter,
-			maf_thresh=params["maf_thresh"]
-		)
+		try:
+			locus = LocusSimulator(
+				vcf_path, 
+				chrom_num, 
+				start, 
+				1,
+				region_size=params["region_size"],
+				max_snps=params["max_snps"],
+				sample_filter=sample_filter,
+				snp_filter=snp_filter,
+				maf_thresh=params["maf_thresh"]
+			)
+		except ValueError:
+			continue
 		if locus.snp_count < 10:
 			continue
 

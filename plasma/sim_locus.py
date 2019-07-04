@@ -174,6 +174,9 @@ class LocusSimulator(object):
 
 		# print(snp_count) ####
 
+		if snp_count == 0:
+			raise ValueError("Specified region yielded no markers")
+
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)
 		self.snp_count = snp_count

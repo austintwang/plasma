@@ -372,6 +372,7 @@ def coloc_test(
 				snp_filter,
 				params
 			)
+			print(qtl_data) ####
 			sim_data = {
 				"sim_type": test_type,
 				"chrom": locus.chrom,

@@ -462,11 +462,11 @@ class Finemap(object):
 		self._calc_corr_stats()
 		self._calc_num_snps()
 
-		if self.qtl_only:
+		if self.as_only:
 			self.cross_corr = np.zeros(shape=(self.num_snps,0))
 			return
 
-		elif self.as_only:
+		elif self.qtl_only:
 			self.cross_corr = np.zeros(shape=(0,self.num_snps))
 			return
 

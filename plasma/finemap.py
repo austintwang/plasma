@@ -237,6 +237,7 @@ class Finemap(object):
 
 		if self.qtl_only:
 			self.imbalance_stats = np.empty(0)
+			return
 
 		self._calc_imbalance_errors()
 		self._calc_phases()
@@ -328,6 +329,7 @@ class Finemap(object):
 
 		if self.as_only:
 			self.total_exp_stats = np.empty(0)
+			return
 
 		self._calc_beta()
 		self._calc_total_exp_errors()

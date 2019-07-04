@@ -205,7 +205,7 @@ class LocusSimulator(object):
 		# print(self.causal_config) ####
 		self.num_causal = num_causal
 
-		# print(self.haps) ####
+		print(self.haps) ####
 		print(self.haps.shape()) ####
 		haps_means = np.mean(self.haps, axis=0)
 		haps_centered = self.haps - haps_means

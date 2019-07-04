@@ -4,8 +4,8 @@ import time ####
 
 class SubsetReader(vcf.Reader):
 	def __init__(self, **kwargs):
+		self.subset = kwargs.pop("subset")
 		super().__init__(**kwargs)
-		self.subset = kwargs["subset"]
 
 	def next(self):
 		'''Return the next record in the file.'''

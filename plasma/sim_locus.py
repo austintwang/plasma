@@ -251,7 +251,7 @@ class LocusSimulator(object):
 		
 		if causal_override is not None:
 			causal_config = causal_override
-			num_causal = np.size(causal_override)
+			num_causal = np.count_nonzero(causal_override)
 		else:
 			causal_config = self.causal_config
 			num_causal = self.num_causal
@@ -318,7 +318,7 @@ class LocusSimulator(object):
 		):
 		if causal_override is not None:
 			causal_config = causal_override
-			num_causal = np.size(causal_override)
+			num_causal = np.count_nonzero(causal_override)
 		else:
 			causal_config = self.causal_config
 			num_causal = self.num_causal

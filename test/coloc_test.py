@@ -180,7 +180,7 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	
 	causal_config_qtl = np.zeros(locus.snp_count)
 	np.put(causal_config_qtl, causal_pair[0], 1)
-	print(causal_config_qtl) ####
+	# print(causal_config_qtl) ####
 	causal_config_gwas = np.zeros(locus.snp_count)
 	np.put(causal_config_gwas, causal_pair[1], 1)
 

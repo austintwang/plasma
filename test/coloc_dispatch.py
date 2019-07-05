@@ -30,9 +30,8 @@ class Dispatcher(object):
 			]
 			self.jobs.append(job_args)
 
-		raise Exception ####
-
 	def submit(self):
+		raise Exception ####
 		for i in jobs:
 			subprocess.call(i)
 

@@ -123,7 +123,7 @@ def test_unshared_corr(
 	for i in qtl_sizes:
 		for j in gwas_sizes:
 			for k in ld_thresh:
-				test_name = "q_{0}_g_{1}_h_{2}_corr".format(i, j, k)
+				test_name = "q_{0}_g_{1}_r_{2}_corr".format(i, j, k)
 				param_updates = {
 					"test_name": test_name,
 					"num_samples_qtl": i,

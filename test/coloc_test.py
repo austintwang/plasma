@@ -171,9 +171,9 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 
 	valid_pairs = np.greater_equal(corr, params["corr_thresh"])
 	valid_idx = np.nonzero(valid_pairs.astype(int))
-	print(valid_idx) ####
-	print(np.shape(valid_idx[0])) ####
-	choice_num = np.random.choice(np.arange(np.shape(valid_idx[0])))
+	# print(valid_idx) ####
+	# print(np.shape(valid_idx[0])) ####
+	choice_num = np.random.choice(np.arange(np.shape(valid_idx[0])[0]))
 	choice_idx = np.stack(valid_idx, axis=-1)[choice_num]
 
 	causal_pair = np.random.permutation(choice_idx)

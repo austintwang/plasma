@@ -113,14 +113,14 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 
 	causal_inds_combined = np.random.choice(
 		params["num_causal"]*2, 
-		params["num_snps"], 
+		locus.snp_count, 
 		replace=False
 	)
 	causal_inds_qtl = causal_inds_combined[:params["num_causal"]]
 	causal_inds_gwas = causal_inds_combined[params["num_causal"]:]
-	causal_config_qtl = np.zeros(params["num_snps"])
+	causal_config_qtl = np.zeros(locus.snp_count)
 	np.put(causal_config_qtl, causal_inds, 1)
-	causal_config_gwas = np.zeros(params["num_snps"])
+	causal_config_gwas = np.zeros(locus.snp_count)
 	np.put(causal_config_gwas, causal_inds, 1)
 
 	qtl_data = locus.sim_asqtl(
@@ -178,9 +178,9 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 
 	causal_pair = np.random.permutation(choice_idx)
 	
-	causal_config_qtl = np.zeros(params["num_snps"])
+	causal_config_qtl = np.zeros(locus.snp_count)
 	np.put(causal_config_qtl, causal_pair[0], 1)
-	causal_config_gwas = np.zeros(params["num_snps"])
+	causal_config_gwas = np.zeros(locus.snp_count)
 	np.put(causal_config_gwas, causal_pair[1], 1)
 
 	qtl_data = locus.sim_asqtl(

@@ -195,6 +195,7 @@ class EvalECaviar(object):
 		self.output_path = os.path.join(self.temp_path, self.output_name)
 		os.makedirs(self.output_path)
 		self.output_filename_base = os.path.join(self.output_path, self.output_name)
+		print(self.output_filename_base) ####
 
 		self.z_qtl_path = os.path.join(self.output_path, "z_qtl.txt")
 		self.z_gwas_path = os.path.join(self.output_path, "z_gwas.txt")
@@ -285,5 +286,6 @@ class EvalECaviar(object):
 
 		self.h4 = np.sum(self.clpp)
 
+		raise Exception ####
 		shutil.rmtree(self.output_path)
 

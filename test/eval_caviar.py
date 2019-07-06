@@ -209,7 +209,7 @@ class EvalECaviar(object):
 		self.causal_set_qtl = np.zeros(self.num_snps)
 		self.causal_set_gwas = np.zeros(self.num_snps)
 		self.post_probs_qtl = np.zeros(self.num_snps)
-		self.causal_set_gwas = np.zeros(self.num_snps)
+		self.post_probs_gwas = np.zeros(self.num_snps)
 		self.clpp = np.zeros(self.num_snps)
 
 		self.z_qtl = self.total_exp_stats_qtl.tolist()

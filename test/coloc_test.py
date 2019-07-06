@@ -503,7 +503,7 @@ def coloc_test(
 		if "eqtl" in model_flavors:
 			try:
 				model_qtl_updates = {"qtl_only": True}
-				result_eqtl = run_model(inputs, "ase", model_qtl_updates)
+				result_eqtl = run_model(inputs, "eqtl", model_qtl_updates)
 			except Exception as e:
 				raise ####
 				trace = traceback.format_exc()

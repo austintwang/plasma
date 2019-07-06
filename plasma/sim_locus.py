@@ -284,7 +284,7 @@ class LocusSimulator(object):
 		causal_snps[causal_config.astype(bool)] = causal_effects
 		print(causal_snps) ####
 
-		var_causal_raw = causal_snps.dot(gram.dot(causal_snps))
+		var_causal_raw = causal_snps.dot(gram.dot(causal_snps)) / self.snp_count
 		scale = herit / var_causal_raw
 		causal_snps_scaled = causal_snps * np.sqrt(scale)
 

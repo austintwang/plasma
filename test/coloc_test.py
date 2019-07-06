@@ -253,8 +253,8 @@ def run_model(inputs, model_name, model_qtl_updates):
 			inputs_gwas["search_iterations"]
 		)
 
-	causal_set_gwas = model_qtl.get_causal_set(inputs_qtl["confidence"])
-	ppas_gwas = model_qtl.get_ppas()
+	causal_set_gwas = model_gwas.get_causal_set(inputs_qtl["confidence"])
+	ppas_gwas = model_gwas.get_ppas()
 
 	clpps = model_qtl.coloc_clpps(model_gwas)
 	h0, h1, h2, h3, h4 = model_qtl.coloc_hyps(model_gwas)

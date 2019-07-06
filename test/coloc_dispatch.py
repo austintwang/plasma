@@ -31,7 +31,7 @@ class Dispatcher(object):
 			self.jobs.append(job_args)
 
 	def submit(self):
-		raise Exception ####
+		# raise Exception ####
 		for i in jobs:
 			subprocess.call(i)
 
@@ -140,8 +140,8 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "coloc_test.py")
-	batch_size = 50
-	num_trials = 500
+	batch_size = 10
+	num_trials = 50
 
 	disp = Dispatcher(script_path, batch_size)
 

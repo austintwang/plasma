@@ -1,7 +1,6 @@
 import numpy as np 
 import vcf
 from vcf.model import _Record
-import time ####
 
 class SubsetReader(vcf.Reader):
 	def __init__(self, **kwargs):
@@ -29,7 +28,6 @@ class SubsetReader(vcf.Reader):
 
 	def __next__(self):
 		'''Return the next record in the file.'''
-		a = time.perf_counter() ####
 		while True:
 			line = next(self.reader)
 			row = self._row_pattern.split(line.rstrip())
@@ -39,13 +37,9 @@ class SubsetReader(vcf.Reader):
 			else:
 				ID = None
 
-			# print(ID) ####
 			if ID in self.snp_subset:
 				break
 
-		# b = time.perf_counter() ####
-		# print('ab') ####
-		# print(b-a) ####
 		chrom = row[0]
 		if self._prepend_chr:
 			chrom = 'chr' + chrom
@@ -79,10 +73,6 @@ class SubsetReader(vcf.Reader):
 		if fmt is not None:
 			samples = self._parse_samples(row[9:], fmt, record)
 			record.samples = samples
-
-		# c = time.perf_counter() ####
-		# print('bc') ####
-		# print(c-b) ####
 
 		return record
 
@@ -134,44 +124,22 @@ class LocusSimulator(object):
 
 		vcf_reader = SubsetReader(filename=vcf_path, snp_subset=snp_filter, sample_subset=sample_filter)
 
-		# samples = vcf_reader.samples
-		# if sample_filter is not None:
-		# 	filter_set = set(sample_filter)
-		# 	sample_idx = [ind for ind, val in enumerate(samples) if val in filter_set]
-		# else:
-		# 	sample_idx = list(range(len(samples)))
-
 		haps = []
 		snp_ids = []
 		snp_count = 0
 
 		region = vcf_reader.fetch(self.chrom, self.start, self.end)
-		# region = list(region) ####
-		# b = time.perf_counter() ####
 		for record in region:
-			# a = time.perf_counter() ####
-			# print('a') ####
-			# print(a - b) ####
 			chr_rec = record.CHROM
 			pos = int(record.POS) + 1
-			# if pos % 10 == 0: ####
-			# 	print(pos) ####
 
 			if record.ID == ".":
 				snp_id = "{0}.{1}".format(chr_rec, pos)
 			else:
 				snp_id = record.ID
 
-			# if snp_id not in snp_filter:
-			# 	b = time.perf_counter() ####
-			# 	print(b - a) ####
-			# 	continue
-
 			genotypes = []
 			include_marker = True
-
-			# for ind in sample_idx:
-			# 	sample = record.samples[ind]
 
 			for sample in record.samples:
 				gen_data = sample["GT"]
@@ -184,31 +152,21 @@ class LocusSimulator(object):
 				genotypes.append(int(hap_data[1]))
 
 			if not include_marker:
-				# b = time.perf_counter() ####
-				# print(b - a) ####
 				continue
 
 			genotypes = np.array(genotypes)
 			freq = np.mean(genotypes)
 			maf = min(freq, 1 - freq)
 			if maf < maf_thresh:
-				# b = time.perf_counter() ####
-				# print(b - a) ####
 				continue
 
 			haps.append(genotypes)
 			snp_ids.append(snp_id)
 			snp_count += 1
 
-			# b = time.perf_counter() ####
 
 			if snp_count >= self.max_snps:
 				break
-
-			print(snp_count) ####
-			print(pos) ####
-
-		# print(snp_count) ####
 
 		if snp_count == 0:
 			raise ValueError("Specified region yielded no markers")
@@ -220,12 +178,8 @@ class LocusSimulator(object):
 		causal_inds = np.random.choice(self.snp_count, num_causal, replace=False)
 		self.causal_config = np.zeros(snp_count)
 		np.put(self.causal_config, causal_inds, 1)
-		# print(self.causal_config) ####
 		self.num_causal = num_causal
 
-		# print(self.haps) ####
-		# print(np.shape(self.haps)) ####
-		# print(len(sample_filter)) ####
 		haps_means = np.mean(self.haps, axis=0)
 		haps_centered = self.haps - haps_means
 		self.haps_cov = np.nan_to_num(np.cov(haps_centered.T))
@@ -328,13 +282,16 @@ class LocusSimulator(object):
 		causal_effects = np.random.normal(0, 1, num_causal)
 		causal_snps = np.zeros(self.snp_count)
 		causal_snps[causal_config.astype(bool)] = causal_effects
+		print(causal_snps) ####
 
 		var_causal_raw = causal_snps.dot(gram.dot(causal_snps))
 		scale = herit / var_causal_raw
 		causal_snps_scaled = causal_snps * np.sqrt(scale)
 
 		signal = gram.dot(causal_snps_scaled)
+		print(signal) ####
 		noise = np.random.multivariate_normal(np.zeros(self.snp_count), gram*(1-herit))
+		print(noise) ####
 		haps_var = np.diagonal(self.haps_cov)
 		z_scores = (signal + noise) * np.sqrt(self.snp_count / haps_var)
 
@@ -346,5 +303,7 @@ class LocusSimulator(object):
 			"z_gwas": z_scores,
 			"ld_gwas": corr,
 		}
+
+		raise Exception ####
 
 		return data_dict

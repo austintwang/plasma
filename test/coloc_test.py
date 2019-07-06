@@ -259,6 +259,9 @@ def run_model(inputs, model_name, model_qtl_updates):
 	clpps = model_qtl.coloc_clpps(model_gwas)
 	h0, h1, h2, h3, h4 = model_qtl.coloc_hyps(model_gwas)
 
+	print(model_name) ####
+	print(h4) ####
+
 	result = {
 		"causal_set_qtl": causal_set_qtl,
 		"causal_set_gwas": causal_set_gwas,
@@ -317,6 +320,9 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 	ppas_gwas = model_ecaviar.post_probs_gwas
 	clpps = model_ecaviar.clpp
 	h4 = model_ecaviar.h4
+
+	print("ecav") ####
+	print(h4) ####
 
 	result = {
 		"causal_set_qtl": causal_set_qtl,

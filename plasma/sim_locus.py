@@ -282,16 +282,16 @@ class LocusSimulator(object):
 		causal_effects = np.random.normal(0, 1, num_causal)
 		causal_snps = np.zeros(self.snp_count)
 		causal_snps[causal_config.astype(bool)] = causal_effects
-		print(causal_snps) ####
+		# print(causal_snps) ####
 
 		var_causal_raw = causal_snps.dot(gram.dot(causal_snps)) / self.snp_count
 		scale = herit / var_causal_raw
 		causal_snps_scaled = causal_snps * np.sqrt(scale)
 
 		signal = gram.dot(causal_snps_scaled)
-		print(signal) ####
+		# print(signal) ####
 		noise = np.random.multivariate_normal(np.zeros(self.snp_count), gram*(1-herit))
-		print(noise) ####
+		# print(noise) ####
 		haps_var = np.diagonal(self.haps_cov)
 		z_scores = (signal + noise) * np.sqrt(self.snp_count / haps_var)
 
@@ -304,6 +304,6 @@ class LocusSimulator(object):
 			"ld_gwas": corr,
 		}
 
-		raise Exception ####
+		# raise Exception ####
 
 		return data_dict

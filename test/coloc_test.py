@@ -260,7 +260,8 @@ def run_model(inputs, model_name, model_qtl_updates):
 	h0, h1, h2, h3, h4 = model_qtl.coloc_hyps(model_gwas)
 
 	print(model_name) ####
-	print(clpps) ####
+	print(ppas_qtl) ####
+	print(ppas_gwas) ####
 
 	result = {
 		"causal_set_qtl": causal_set_qtl,
@@ -322,7 +323,8 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 	h4 = model_ecaviar.h4
 
 	print("ecav") ####
-	print(clpps) ####
+	print(ppas_qtl) ####
+	print(ppas_gwas) ####
 
 	result = {
 		"causal_set_qtl": causal_set_qtl,

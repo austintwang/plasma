@@ -290,10 +290,10 @@ class LocusSimulator(object):
 
 		signal = gram.dot(causal_snps_scaled)
 		# print(signal) ####
-		noise = np.random.multivariate_normal(np.zeros(self.snp_count), gram*(1-herit))
+		noise = np.random.multivariate_normal(np.zeros(self.snp_count), gram * (1-herit))
 		# print(noise) ####
 		haps_var = np.diagonal(self.haps_cov)
-		z_scores = (signal + noise) * np.sqrt(self.snp_count / haps_var)
+		z_scores = (signal + noise) / np.sqrt(self.snp_count * haps_var * (1-herit))
 
 		corr = self.haps_cov / np.sqrt(np.outer(haps_var, haps_var))
 		corr = np.nan_to_num(corr)

@@ -234,7 +234,7 @@ def run_model(inputs, model_name, model_qtl_updates):
 		"total_exp_herit_prior": inputs_gwas["herit_gwas"],
 		"total_exp_stats": inputs_gwas["z_gwas"],
 		"total_exp_corr": inputs_gwas["ld_gwas"],
-		"num_ppl": inputs_qtl["num_samples_gwas"],
+		"num_ppl": inputs_gwas["num_samples_gwas"],
 		"qtl_only": True
 	}
 	inputs_gwas.update(gwas_updates)
@@ -260,6 +260,8 @@ def run_model(inputs, model_name, model_qtl_updates):
 	h0, h1, h2, h3, h4 = model_qtl.coloc_hyps(model_gwas)
 
 	print(model_name) ####
+	print(model_qtl.imbalance_stats) ####
+	print(model_qtl.total_exp_stats) ####
 	print(ppas_qtl) ####
 	print(ppas_gwas) ####
 
@@ -299,7 +301,7 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 		"total_exp_herit_prior": inputs_gwas["herit_gwas"],
 		"total_exp_stats": inputs_gwas["z_gwas"],
 		"total_exp_corr": inputs_gwas["ld_gwas"],
-		"num_ppl": inputs_qtl["num_samples_gwas"],
+		"num_ppl": inputs_gwas["num_samples_gwas"],
 		"qtl_only": True
 	}
 	inputs_gwas.update(gwas_updates)

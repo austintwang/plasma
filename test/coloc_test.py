@@ -328,8 +328,10 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 	h4 = model_ecaviar.h4
 
 	# print("ecav") ####
-	# print(ppas_qtl) ####
-	# print(ppas_gwas) ####
+	print(ppas_qtl) ####
+	print(np.sum(ppas_qtl)) ####
+	print(ppas_gwas) ####
+	print(np.sum(ppas_gwas)) ####
 	# print(clpps) ####
 	# print(h4) ####
 

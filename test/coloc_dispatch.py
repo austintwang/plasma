@@ -31,7 +31,7 @@ class Dispatcher(object):
 			self.jobs.append(job_args)
 
 	def submit(self):
-		# raise Exception ####
+		raise Exception ####
 		for i in jobs:
 			subprocess.call(i)
 
@@ -165,6 +165,7 @@ if __name__ == '__main__':
 	gwas_sizes = [500000, 200000, 100000, 50000, 10000]
 
 	gwas_herits = [.01/100, .05/1000]
+	gwas_herits = [.01] ####
 	test_shared_causal(
 		disp, 
 		data_info,

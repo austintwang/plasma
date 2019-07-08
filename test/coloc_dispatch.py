@@ -165,7 +165,7 @@ if __name__ == '__main__':
 	gwas_sizes = [500000, 200000, 100000, 50000, 10000]
 
 	gwas_herits = [.01/100, .05/1000]
-	gwas_herits = [.01] ####
+	gwas_herits = [.1] ####
 	test_shared_causal(
 		disp, 
 		data_info,

@@ -288,11 +288,11 @@ class LocusSimulator(object):
 		scale = herit / var_causal_raw
 		causal_snps_scaled = causal_snps * np.sqrt(scale)
 
-		print(causal_snps_scaled) ####
+		# print(causal_snps_scaled) ####
 		signal = gram.dot(causal_snps_scaled)
-		print(signal) ####
+		# print(signal) ####
 		noise = np.random.multivariate_normal(np.zeros(self.snp_count), gram * (1-herit))
-		print(noise) ####
+		# print(noise) ####
 		haps_var = np.diagonal(self.haps_cov)
 		z_scores = (signal + noise) / np.sqrt(self.snp_count * haps_var * (1-herit))
 

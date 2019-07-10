@@ -13,6 +13,7 @@ except ImportError:
 	import pickle
 
 def load_data(data_dir, test_name):
+	print(os.listdir(data_dir)) ####
 	filenames = [i for i in os.listdir(data_dir) if i.endswith(test_name + ".pickle")]
 	data_list = []
 	for i in filenames:

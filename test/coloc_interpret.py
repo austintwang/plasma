@@ -16,7 +16,7 @@ def load_data(data_dir, test_name):
 	filenames = [i for i in os.listdir(data_dir) if i.endswith(test_name + ".pickle")]
 	data_list = []
 	for i in filenames:
-		# print(i) ####
+		print(i) ####
 		with open(i, "rb") as data_file:
 			data = pickle.load(data_file)
 		data_list.extend(data)

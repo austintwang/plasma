@@ -177,7 +177,7 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 					snp_filter=snp_filter,
 					maf_thresh=params["maf_thresh"]
 				)
-		except ValueError, TimeoutException:
+		except (ValueError, TimeoutException):
 			continue
 		if locus.snp_count < 10:
 			continue

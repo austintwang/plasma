@@ -72,8 +72,10 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	while True:
-		gc.collect()
 		try:
+			print("a") ####
+			gc.collect()
+			print("b") ####
 			with time_limit(100):
 				locus = LocusSimulator(
 					vcf_path, 

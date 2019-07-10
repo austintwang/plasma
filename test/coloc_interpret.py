@@ -13,17 +13,17 @@ except ImportError:
 	import pickle
 
 def load_data(data_dir, test_name):
-	print(os.listdir(data_dir)) ####
+	# print(os.listdir(data_dir)) ####
 	filenames = [os.path.join(data_dir, i) for i in os.listdir(data_dir) if i.endswith(".pickle")]
 	data_list = []
 	for i in filenames:
-		print(i) ####
+		# print(i) ####
 		with open(i, "rb") as data_file:
 			data = pickle.load(data_file)
 		data_list.extend(data)
 
 	data_df = pd.DataFrame.from_records(data_list)
-	print(data_df.columns.values) ####
+	# print(data_df.columns.values) ####
 	return data_df
 
 def make_heatmap(
@@ -104,6 +104,7 @@ def interpret_shared(
 				& (df["herit_gwas"] == h)
 				& (df["complete"] == True)
 			]
+			print(df_model.columns.values) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,
@@ -112,6 +113,7 @@ def interpret_shared(
 				}, 
 				inplace=True
 			)
+			print(df_model.columns.values) ####
 			model_name = "PLASMA/C-J"
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(h))

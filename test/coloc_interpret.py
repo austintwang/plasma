@@ -13,15 +13,16 @@ except ImportError:
 	import pickle
 
 def load_data(data_dir, test_name):
-	filenames = [i for i in os.listdir() if i.endswith(test_name + ".pickle")]
+	filenames = [i for i in os.listdir(data_dir) if i.endswith(test_name + ".pickle")]
 	data_list = []
 	for i in filenames:
+		# print(i) ####
 		with open(i, "rb") as data_file:
 			data = pickle.load(data_file)
 		data_list.extend(data)
 
 	data_df = pd.DataFrame.from_records(data_list)
-	print(data_df.columns.values)
+	print(data_df.columns.values) ####
 	return data_df
 
 def make_heatmap(

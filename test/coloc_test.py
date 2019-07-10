@@ -267,6 +267,11 @@ def run_model(inputs, model_name, model_qtl_updates):
 	# print(ppas_gwas) ####
 	print(clpps) ####
 	print(h4) ####
+	if model_name == "eqtl": ####
+		print(model_qtl.beta) ####
+		print(model_qtl.total_exp_stats) ####
+		print(clpps) ####
+		print(h4) ####
 
 	result = {
 		"causal_set_qtl": causal_set_qtl,
@@ -327,13 +332,13 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 	clpps = model_ecaviar.clpp
 	h4 = model_ecaviar.h4
 
-	print("ecav") ####
+	# print("ecav") ####
 	# print(ppas_qtl) ####
 	# print(np.sum(ppas_qtl)) ####
 	# print(ppas_gwas) ####
 	# print(np.sum(ppas_gwas)) ####
-	print(clpps) ####
-	print(h4) ####
+	# print(clpps) ####
+	# print(h4) ####
 
 	result = {
 		"causal_set_qtl": causal_set_qtl,

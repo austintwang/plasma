@@ -262,9 +262,9 @@ def run_model(inputs, model_name, model_qtl_updates):
 	print(model_name) ####
 	# print(model_qtl.imbalance_stats) ####
 	# print(model_qtl.total_exp_stats) ####
-	print(ppas_qtl) ####
-	print(inputs_gwas["z_gwas"]) ####
-	print(ppas_gwas) ####
+	# print(ppas_qtl) ####
+	# print(inputs_gwas["z_gwas"]) ####
+	# print(ppas_gwas) ####
 	print(clpps) ####
 	print(h4) ####
 
@@ -328,10 +328,10 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 	h4 = model_ecaviar.h4
 
 	print("ecav") ####
-	print(ppas_qtl) ####
+	# print(ppas_qtl) ####
 	# print(np.sum(ppas_qtl)) ####
-	print(ppas_gwas) ####
-	print(np.sum(ppas_gwas)) ####
+	# print(ppas_gwas) ####
+	# print(np.sum(ppas_gwas)) ####
 	print(clpps) ####
 	print(h4) ####
 

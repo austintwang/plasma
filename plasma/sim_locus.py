@@ -214,6 +214,8 @@ class LocusSimulator(object):
 		causal_snps = np.zeros(self.snp_count)
 		causal_snps[causal_config.astype(bool)] = causal_effects
 
+		print(herit_qtl) ####
+
 		prop_noise_eqtl = 1 - herit_qtl
 		prop_noise_ase = 1 - herit_as
 
@@ -237,6 +239,8 @@ class LocusSimulator(object):
 		exp_noise_var = ideal_exp_var * (prop_noise_eqtl / (1 - prop_noise_eqtl))
 
 		total_exp = np.random.normal(total_exp_ideal, np.sqrt(exp_noise_var))
+		print(total_exp_ideal) ####
+		print(total_exp) ####
 		
 		betas = (1 / overdispersion - 1) * (1 / (1 + np.exp(imbalance)))
 		alphas = (1 / overdispersion - 1) * (1 / (1 + np.exp(-imbalance)))

@@ -343,9 +343,10 @@ class Finemap(object):
 		genotypes_combT = genotypes_ctrd.T
 		denominator = self._beta_normalizer
 
-		varbeta = denominator * denominator * (
-			(genotypes_combT * genotypes_combT).sum(1) * self.exp_errors
-		)
+		# varbeta = denominator * denominator * (
+		# 	(genotypes_combT * genotypes_combT).sum(1) * self.exp_errors
+		# )
+		varbeta = denominator * self.exp_errors
 		self.total_exp_stats = self.beta / np.sqrt(varbeta)
 
 	def _calc_total_exp_corr(self):

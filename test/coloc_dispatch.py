@@ -54,14 +54,14 @@ def test_shared_causal(
 		"num_samples_gwas": None,
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
-		"herit_qtl": 0.05,
+		"herit_qtl": 0.15,
 		"herit_as": 0.4,
 		"herit_gwas": None,
 		"std_al_dev": 0.7,
 		"num_causal": 1,
 		"coverage": 100,
 		"search_mode": "exhaustive",
-		"min_causal": 1,
+		"min_causal": 0,
 		"max_causal": 1,
 		"test_name": None,
 		"confidence": 0.95,
@@ -104,7 +104,7 @@ def test_unshared_corr(
 		"num_samples_gwas": None,
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
-		"herit_qtl": 0.05,
+		"herit_qtl": 0.15,
 		"herit_as": 0.4,
 		"herit_gwas": .01/100,
 		"corr_thresh": None,
@@ -112,7 +112,7 @@ def test_unshared_corr(
 		"num_causal": 1,
 		"coverage": 100,
 		"search_mode": "exhaustive",
-		"min_causal": 1,
+		"min_causal": 0,
 		"max_causal": 1,
 		"test_name": None,
 		"confidence": 0.95,
@@ -165,7 +165,7 @@ if __name__ == '__main__':
 	gwas_sizes = [500000, 200000, 100000, 50000, 10000]
 
 	gwas_herits = [.01/100, .05/1000]
-	gwas_herits = [.1] ####
+	# gwas_herits = [.1] ####
 	test_shared_causal(
 		disp, 
 		data_info,

@@ -113,9 +113,9 @@ class LocusSimulator(object):
 			self.max_snps = np.inf
 
 		if snp_filter is not None:
-			print("a") ####
+			# print("a") ####
 			snp_filter = set(snp_filter)
-			print("b") ####
+			# print("b") ####
 		else:
 			snp_filter = Universe()
 

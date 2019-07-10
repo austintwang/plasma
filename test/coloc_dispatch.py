@@ -72,6 +72,8 @@ def test_shared_causal(
 		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
 	}
 	out_dir = os.path.join(out_dir_base, "shared")
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
 
 	for i in qtl_sizes:
 		for j in gwas_sizes:
@@ -123,6 +125,8 @@ def test_unshared_corr(
 		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
 	}
 	out_dir = os.path.join(out_dir_base, "corr")
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
 
 	for i in qtl_sizes:
 		for j in gwas_sizes:
@@ -159,8 +163,6 @@ if __name__ == '__main__':
 	if not os.path.exists(params_dir):
 		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim_coloc/outs/"
-	if not os.path.exists(out_dir_base):
-		os.makedirs(out_dir_base)
 
 	qtl_sizes = [10, 50, 100, 200, 500]
 	gwas_sizes = [10000, 50000, 100000, 200000, 500000]

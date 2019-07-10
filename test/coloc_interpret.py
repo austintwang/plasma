@@ -44,7 +44,8 @@ def make_heatmap(
 		columns=var_col, 
 		aggfunc=aggfunc
 	)
-
+	print(df) ####
+	print(heat_data) ####S
 	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True)
 	plt.title(title)
 	plt.savefig(result_path)

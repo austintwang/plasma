@@ -214,7 +214,7 @@ class LocusSimulator(object):
 		causal_snps = np.zeros(self.snp_count)
 		causal_snps[causal_config.astype(bool)] = causal_effects
 
-		print(herit_qtl) ####
+		# print(herit_qtl) ####
 
 		prop_noise_eqtl = 1 - herit_qtl
 		prop_noise_ase = 1 - herit_as

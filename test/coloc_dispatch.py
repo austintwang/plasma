@@ -31,7 +31,7 @@ class Dispatcher(object):
 			self.jobs.append(job_args)
 
 	def submit(self):
-		raise Exception ####
+		# raise Exception ####
 		for i in jobs:
 			subprocess.call(i)
 

@@ -270,8 +270,11 @@ def run_model(inputs, model_name, model_qtl_updates):
 	if model_name == "eqtl": ####
 		print(model_qtl.beta) ####
 		print(model_qtl.total_exp_stats) ####
-		print(np.sum(ppas_qtl)) ####
-		print(np.corrcoef(inputs_gwas["z_gwas"], model_qtl.total_exp_stats)) ####
+		print(model_qtl.total_exp_stats[inputs["causal_config_qtl"]])
+		print(ppas_gwas) ####
+		print(ppas_gwas[inputs["causal_config_qtl"]])
+		# print(np.sum(ppas_qtl)) ####
+		# print(np.corrcoef(inputs_gwas["z_gwas"], model_qtl.total_exp_stats)) ####
 		print(clpps) ####
 		print(h4) ####
 

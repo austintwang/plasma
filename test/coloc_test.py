@@ -271,6 +271,7 @@ def run_model(inputs, model_name, model_qtl_updates):
 		print(model_qtl.beta) ####
 		print(model_qtl.total_exp_stats) ####
 		print(model_qtl.total_exp_stats[inputs["causal_config_qtl"].astype(bool)])
+		print(ppas_qtl[inputs["causal_config_qtl"].astype(bool)]) ####
 		print(ppas_gwas) ####
 		print(ppas_gwas[inputs["causal_config_qtl"].astype(bool)])
 		# print(np.sum(ppas_qtl)) ####

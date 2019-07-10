@@ -259,14 +259,14 @@ def run_model(inputs, model_name, model_qtl_updates):
 	clpps = model_qtl.coloc_clpps(model_gwas)
 	h0, h1, h2, h3, h4 = model_qtl.coloc_hyps(model_gwas)
 
-	print(model_name) ####
+	# print(model_name) ####
 	# print(model_qtl.imbalance_stats) ####
-	print(model_qtl.total_exp_stats) ####
+	# print(model_qtl.total_exp_stats) ####
 	# print(ppas_qtl) ####
 	# print(inputs_gwas["z_gwas"]) ####
 	# print(ppas_gwas) ####
-	print(clpps) ####
-	print(h4) ####
+	# print(clpps) ####
+	# print(h4) ####
 	if model_name == "eqtl": ####
 		print(model_qtl.beta) ####
 		print(model_qtl.total_exp_stats) ####

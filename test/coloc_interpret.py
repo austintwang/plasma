@@ -88,7 +88,7 @@ def interpret_shared(
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "full_h_{0}.svg".format(h))
 			make_heatmap(
-				df, 
+				df_model, 
 				var_row, 
 				var_col, 
 				response, 
@@ -104,7 +104,7 @@ def interpret_shared(
 				& (df["herit_gwas"] == h)
 				& (df["complete"] == True)
 			]
-			print(df_model.columns.values) ####
+			# print(df_model.columns.values) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,
@@ -113,12 +113,12 @@ def interpret_shared(
 				}, 
 				inplace=True
 			)
-			print(df_model.columns.values) ####
+			# print(df_model.columns.values) ####
 			model_name = "PLASMA/C-J"
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(h))
 			make_heatmap(
-				df, 
+				df_model, 
 				var_row, 
 				var_col, 
 				response, 
@@ -146,7 +146,7 @@ def interpret_shared(
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "ase_h_{0}.svg".format(h))
 			make_heatmap(
-				df, 
+				df_model, 
 				var_row, 
 				var_col, 
 				response, 
@@ -174,7 +174,7 @@ def interpret_shared(
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "ecav_h_{0}.svg".format(h))
 			make_heatmap(
-				df, 
+				df_model, 
 				var_row, 
 				var_col, 
 				response, 
@@ -202,7 +202,7 @@ def interpret_shared(
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "eqtl_h_{0}.svg".format(h))
 			make_heatmap(
-				df, 
+				df_model, 
 				var_row, 
 				var_col, 
 				response, 

@@ -6,6 +6,7 @@ import traceback
 import pickle
 import signal
 from contextlib import contextmanager
+import gc
 
 import numpy as np
 import pandas as pd
@@ -71,6 +72,7 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 
 	while True:
+		gc.collect()
 		try:
 			with time_limit(100):
 				locus = LocusSimulator(
@@ -113,6 +115,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 
 	while True:
 		try:
+			gc.collect()
 			with time_limit(100):
 				locus = LocusSimulator(
 					vcf_path, 
@@ -165,6 +168,7 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	while max_corr < params["corr_thresh"]:
 		chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 		try:
+			gc.collect()
 			with time_limit(100):
 				locus = LocusSimulator(
 					vcf_path, 

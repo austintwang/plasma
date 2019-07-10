@@ -17,7 +17,8 @@ def load_data(data_dir, test_name):
 	data_list = []
 	for i in filenames:
 		with open(i, "rb") as data_file:
-			data_list.extend(data_file)
+			data = pickle.load(data_file)
+		data_list.extend(data)
 
 	data_df = pd.Dataframe.from_records(data_list)
 	return data_df
@@ -80,7 +81,7 @@ def interpret_shared(
 				}, 
 				inplace=True
 			)
-			model_name = "PLASMA-JC"
+			model_name = "PLASMA/C-JC"
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "full_h_{0}.svg".format(h))
 			make_heatmap(
@@ -108,7 +109,7 @@ def interpret_shared(
 				}, 
 				inplace=True
 			)
-			model_name = "PLASMA-JI"
+			model_name = "PLASMA/C-J"
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(h))
 			make_heatmap(
@@ -136,7 +137,7 @@ def interpret_shared(
 				}, 
 				inplace=True
 			)
-			model_name = "PLASMA-AS"
+			model_name = "PLASMA/C-AS"
 			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
 			result_path = os.path.join(res_dir, "ase_h_{0}.svg".format(h))
 			make_heatmap(

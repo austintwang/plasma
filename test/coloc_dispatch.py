@@ -185,16 +185,16 @@ if __name__ == '__main__':
 	)
 
 	ld_thresh = [0., 0.2, 0.4, 0.8]
-	test_unshared_corr(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		qtl_sizes, 
-		gwas_sizes, 
-		ld_thresh, 
-		num_trials,
-		script_path,
-	)
+	# test_unshared_corr(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	qtl_sizes, 
+	# 	gwas_sizes, 
+	# 	ld_thresh, 
+	# 	num_trials,
+	# 	script_path,
+	# )
 
 	disp.submit()

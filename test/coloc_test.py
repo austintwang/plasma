@@ -4,6 +4,8 @@ import os
 import random
 import traceback
 import pickle
+import signal
+from contextlib import contextmanager
 
 import numpy as np
 import pandas as pd
@@ -41,6 +43,20 @@ CHROM_LENS = [
 	50818468,
 ]
 
+class TimeoutException(Exception): 
+	pass
+
+@contextmanager
+def time_limit(seconds):
+	def signal_handler(signum, frame):
+		raise TimeoutException()
+	signal.signal(signal.SIGALRM, signal_handler)
+	signal.alarm(seconds)
+	try:
+		yield
+	finally:
+		signal.alarm(0)
+
 def draw_region(vcf_dir, vcf_name_template):
 	regions = [i - 1000000 for i in CHROM_LENS]
 	weights = np.array(regions) / np.sum(regions)
@@ -56,18 +72,19 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 
 	while True:
 		try:
-			locus = LocusSimulator(
-				vcf_path, 
-				chrom_num, 
-				start, 
-				params["num_causal"],
-				region_size=params["region_size"],
-				max_snps=params["max_snps"],
-				sample_filter=sample_filter,
-				snp_filter=snp_filter,
-				maf_thresh=params["maf_thresh"]
-			)
-		except ValueError:
+			with time_limit(100):
+				locus = LocusSimulator(
+					vcf_path, 
+					chrom_num, 
+					start, 
+					params["num_causal"],
+					region_size=params["region_size"],
+					max_snps=params["max_snps"],
+					sample_filter=sample_filter,
+					snp_filter=snp_filter,
+					maf_thresh=params["maf_thresh"]
+				)
+		except ValueError, TimeoutException:
 			continue
 		if locus.snp_count >= 10:
 			break
@@ -96,18 +113,19 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 
 	while True:
 		try:
-			locus = LocusSimulator(
-				vcf_path, 
-				chrom_num, 
-				start, 
-				params["num_causal"],
-				region_size=params["region_size"],
-				max_snps=params["max_snps"],
-				sample_filter=sample_filter,
-				snp_filter=snp_filter,
-				maf_thresh=params["maf_thresh"]
-			)
-		except ValueError:
+			with time_limit(100):
+				locus = LocusSimulator(
+					vcf_path, 
+					chrom_num, 
+					start, 
+					params["num_causal"],
+					region_size=params["region_size"],
+					max_snps=params["max_snps"],
+					sample_filter=sample_filter,
+					snp_filter=snp_filter,
+					maf_thresh=params["maf_thresh"]
+				)
+		except ValueError, TimeoutException:
 			continue
 		if locus.snp_count >= 10:
 			break
@@ -147,18 +165,19 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	while max_corr < params["corr_thresh"]:
 		chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 		try:
-			locus = LocusSimulator(
-				vcf_path, 
-				chrom_num, 
-				start, 
-				1,
-				region_size=params["region_size"],
-				max_snps=params["max_snps"],
-				sample_filter=sample_filter,
-				snp_filter=snp_filter,
-				maf_thresh=params["maf_thresh"]
-			)
-		except ValueError:
+			with time_limit(100):
+				locus = LocusSimulator(
+					vcf_path, 
+					chrom_num, 
+					start, 
+					1,
+					region_size=params["region_size"],
+					max_snps=params["max_snps"],
+					sample_filter=sample_filter,
+					snp_filter=snp_filter,
+					maf_thresh=params["maf_thresh"]
+				)
+		except ValueError, TimeoutException:
 			continue
 		if locus.snp_count < 10:
 			continue

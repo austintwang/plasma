@@ -54,7 +54,7 @@ def interpret_shared(
 		res_dir_base
 	):
 	data_dir = os.path.join(data_dir_base, "shared")
-	df = load_data(data_dir, test_name)
+	df = load_data(data_dir, "shared")
 
 	res_dir = os.path.join(res_dir_base, "shared")
 	if not os.path.exists(res_dir):

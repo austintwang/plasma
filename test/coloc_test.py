@@ -259,25 +259,25 @@ def run_model(inputs, model_name, model_qtl_updates):
 	clpps = model_qtl.coloc_clpps(model_gwas)
 	h0, h1, h2, h3, h4 = model_qtl.coloc_hyps(model_gwas)
 
-	# print(model_name) ####
+	print(model_name) ####
 	# print(model_qtl.imbalance_stats) ####
 	# print(model_qtl.total_exp_stats) ####
 	# print(ppas_qtl) ####
 	# print(inputs_gwas["z_gwas"]) ####
 	# print(ppas_gwas) ####
 	# print(clpps) ####
-	# print(h4) ####
-	if model_name == "eqtl": ####
-		print(model_qtl.beta) ####
-		print(model_qtl.total_exp_stats) ####
-		print(model_qtl.total_exp_stats[inputs["causal_config_qtl"].astype(bool)])
-		print(ppas_qtl[inputs["causal_config_qtl"].astype(bool)]) ####
-		print(ppas_gwas) ####
-		print(ppas_gwas[inputs["causal_config_qtl"].astype(bool)])
+	print(h4) ####
+	# if model_name == "eqtl": ####
+	# 	print(model_qtl.beta) ####
+	# 	print(model_qtl.total_exp_stats) ####
+	# 	print(model_qtl.total_exp_stats[inputs["causal_config_qtl"].astype(bool)])
+	# 	print(ppas_qtl[inputs["causal_config_qtl"].astype(bool)]) ####
+	# 	print(ppas_gwas) ####
+	# 	print(ppas_gwas[inputs["causal_config_qtl"].astype(bool)])
 		# print(np.sum(ppas_qtl)) ####
 		# print(np.corrcoef(inputs_gwas["z_gwas"], model_qtl.total_exp_stats)) ####
-		print(clpps) ####
-		print(h4) ####
+		# print(clpps) ####
+		# print(h4) ####
 
 	result = {
 		"causal_set_qtl": causal_set_qtl,
@@ -338,13 +338,13 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 	clpps = model_ecaviar.clpp
 	h4 = model_ecaviar.h4
 
-	# print("ecav") ####
+	print("ecav") ####
 	# print(ppas_qtl) ####
 	# print(np.sum(ppas_qtl)) ####
 	# print(ppas_gwas) ####
 	# print(np.sum(ppas_gwas)) ####
 	# print(clpps) ####
-	# print(h4) ####
+	print(h4) ####
 
 	result = {
 		"causal_set_qtl": causal_set_qtl,

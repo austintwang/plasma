@@ -6,7 +6,7 @@ import traceback
 import pickle
 import signal
 from contextlib import contextmanager
-import gc
+# import gc
 
 import numpy as np
 import pandas as pd
@@ -69,13 +69,12 @@ def draw_region(vcf_dir, vcf_name_template):
 	return chrom, chrom_num, start, vcf_path
 
 def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
-	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
-
 	while True:
 		try:
-			print("a") ####
-			gc.collect()
-			print("b") ####
+			chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
+			# print("a") ####
+			# gc.collect()
+			# print("b") ####
 			with time_limit(100):
 				locus = LocusSimulator(
 					vcf_path, 
@@ -113,11 +112,10 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
 def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
-	chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
-
 	while True:
 		try:
-			gc.collect()
+			chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
+			# gc.collect()
 			with time_limit(100):
 				locus = LocusSimulator(
 					vcf_path, 
@@ -170,7 +168,7 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	while max_corr < params["corr_thresh"]:
 		chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 		try:
-			gc.collect()
+			# gc.collect()
 			with time_limit(100):
 				locus = LocusSimulator(
 					vcf_path, 

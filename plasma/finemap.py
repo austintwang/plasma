@@ -317,7 +317,7 @@ class Finemap(object):
 		self.exp_errors = np.sum(
 			residuals * residuals, 
 			axis=0
-		) / (self.num_snps - 1)
+		) / (self.num_ppl - 1)
 
 	def _calc_total_exp_stats(self):
 		"""

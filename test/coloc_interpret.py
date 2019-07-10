@@ -14,7 +14,7 @@ except ImportError:
 
 def load_data(data_dir, test_name):
 	print(os.listdir(data_dir)) ####
-	filenames = [i for i in os.listdir(data_dir) if i.endswith(".pickle")]
+	filenames = [os.path.join(data_dir, i) for i in os.listdir(data_dir) if i.endswith(".pickle")]
 	data_list = []
 	for i in filenames:
 		print(i) ####

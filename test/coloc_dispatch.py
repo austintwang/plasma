@@ -32,7 +32,7 @@ class Dispatcher(object):
 
 	def submit(self):
 		# raise Exception ####
-		for i in jobs:
+		for i in self.jobs:
 			subprocess.call(i)
 
 def test_shared_causal(

@@ -294,7 +294,7 @@ class Finemap(object):
 
 		genotypes_comb = self.genotypes_comb
 		genotype_means = np.mean(genotypes_comb, axis=0)
-		exp_mean = np.sum(self.total_exp) / self.num_snps
+		exp_mean = np.mean(self.total_exp)
 		genotypes_ctrd = genotypes_comb - genotype_means
 		denominator = 1 / (genotypes_ctrd * genotypes_ctrd).sum(0)
 		

@@ -54,7 +54,7 @@ def test_shared_causal(
 		"num_samples_gwas": None,
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
-		"herit_qtl": 0.5,
+		"herit_qtl": 0.99,
 		"herit_as": 0.4,
 		"herit_gwas": None,
 		"std_al_dev": 0.7,

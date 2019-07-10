@@ -21,6 +21,7 @@ def load_data(data_dir, test_name):
 		data_list.extend(data)
 
 	data_df = pd.DataFrame.from_records(data_list)
+	print(data_df.columns.values)
 	return data_df
 
 def make_heatmap(

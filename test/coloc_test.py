@@ -271,7 +271,7 @@ def run_model(inputs, model_name, model_qtl_updates):
 		print(model_qtl.beta) ####
 		print(model_qtl.total_exp_stats) ####
 		print(np.sum(ppas_qtl)) ####
-		print(np.corr(inputs_gwas["z_gwas"], model_qtl.total_exp_stats)) ####
+		print(np.corrcoef(inputs_gwas["z_gwas"], model_qtl.total_exp_stats)) ####
 		print(clpps) ####
 		print(h4) ####
 

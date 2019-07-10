@@ -84,7 +84,7 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 					snp_filter=snp_filter,
 					maf_thresh=params["maf_thresh"]
 				)
-		except ValueError, TimeoutException:
+		except (ValueError, TimeoutException):
 			continue
 		if locus.snp_count >= 10:
 			break
@@ -125,7 +125,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 					snp_filter=snp_filter,
 					maf_thresh=params["maf_thresh"]
 				)
-		except ValueError, TimeoutException:
+		except (ValueError, TimeoutException):
 			continue
 		if locus.snp_count >= 10:
 			break

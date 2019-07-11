@@ -109,6 +109,7 @@ def interpret_shared(
 			# print(df) ####
 			print(df.loc[
 				(df["model"] == "indep")
+				& (df["herit_gwas"] == h)
 			]) ####
 			print(df_model) ####
 			df_model.rename(

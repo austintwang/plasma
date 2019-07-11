@@ -281,9 +281,9 @@ def interpret_corr(
 			# 	(df["model"] == "indep")
 			# 	& (df["corr_thresh"] == 0.1)
 			# ]) ####
-			print(np.unique(df.corr_thresh)) ####
-			print(df.loc[df["complete"] == False].traceback[19999])
-			print(df_model) ####
+			# print(np.unique(df.corr_thresh)) ####
+			# print(df.loc[df["complete"] == False].traceback[19999]) ####
+			# print(df_model) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,

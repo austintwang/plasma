@@ -279,6 +279,7 @@ def interpret_corr(
 			# print(df) ####
 			print(df.loc[
 				(df["model"] == "indep")
+				& (df["corr_thresh"] == l)
 			]) ####
 			print(df_model) ####
 			df_model.rename(

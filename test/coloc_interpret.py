@@ -107,7 +107,7 @@ def interpret_shared(
 			]
 			# print(df_model.columns.values) ####
 			print(df) ####
-			print(df.model) ####
+			print(df_model) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,

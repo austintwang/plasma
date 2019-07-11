@@ -106,7 +106,10 @@ def interpret_shared(
 				& (df["complete"] == True)
 			]
 			# print(df_model.columns.values) ####
-			print(df) ####
+			# print(df) ####
+			print(df.loc[
+				(df["model"] == "indep")
+			]) ####
 			print(df_model) ####
 			df_model.rename(
 				columns={

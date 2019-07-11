@@ -248,8 +248,6 @@ def interpret_corr(
 				& (df["corr_thresh"] == l)
 				& (df["complete"] == True)
 			]
-			print(df) ####
-			print(df_model) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,
@@ -278,6 +276,8 @@ def interpret_corr(
 				& (df["corr_thresh"] == l)
 				& (df["complete"] == True)
 			]
+			print(df) ####
+			print(df_model) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,

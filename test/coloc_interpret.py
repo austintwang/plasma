@@ -282,7 +282,7 @@ def interpret_corr(
 			# 	& (df["corr_thresh"] == 0.1)
 			# ]) ####
 			print(np.unique(df.corr_thresh)) ####
-			print(df.loc[df["corr_thresh"] == np.nan].traceback)
+			print(df.loc[df["complete"] == False].traceback)
 			print(df_model) ####
 			df_model.rename(
 				columns={

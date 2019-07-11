@@ -277,10 +277,11 @@ def interpret_corr(
 				& (df["complete"] == True)
 			]
 			# print(df) ####
-			print(df.loc[
-				(df["model"] == "indep")
-				& (df["corr_thresh"] == 0.1)
-			]) ####
+			# print(df.loc[
+			# 	(df["model"] == "indep")
+			# 	& (df["corr_thresh"] == 0.1)
+			# ]) ####
+			print(df.corr_thresh) ####
 			print(df_model) ####
 			df_model.rename(
 				columns={

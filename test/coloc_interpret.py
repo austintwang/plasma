@@ -67,6 +67,7 @@ def interpret_shared(
 	var_row = "GWAS Sample Size"
 	var_col = "QTL Sample Size"
 	response = "Colocalization Score (PP4)"
+	title_base = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}"
 
 	sns.set(font="Roboto")
 
@@ -86,7 +87,7 @@ def interpret_shared(
 				inplace=True
 			)
 			model_name = "PLASMA/C-JC"
-			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
+			title = title_base.format(response, model_name, h)
 			result_path = os.path.join(res_dir, "full_h_{0}.svg".format(h))
 			make_heatmap(
 				df_model, 
@@ -107,11 +108,11 @@ def interpret_shared(
 			]
 			# print(df_model.columns.values) ####
 			# print(df) ####
-			print(df.loc[
-				(df["model"] == "indep")
-				& (df["complete"] == True)
-			]) ####
-			print(df_model) ####
+			# print(df.loc[
+			# 	(df["model"] == "indep")
+			# 	& (df["complete"] == True)
+			# ]) ####
+			# print(df_model) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,
@@ -122,7 +123,7 @@ def interpret_shared(
 			)
 			# print(df_model.columns.values) ####
 			model_name = "PLASMA/C-J"
-			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
+			title = title_base.format(response, model_name, h)
 			result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(h))
 			make_heatmap(
 				df_model, 
@@ -150,7 +151,7 @@ def interpret_shared(
 				inplace=True
 			)
 			model_name = "PLASMA/C-AS"
-			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
+			title = title_base.format(response, model_name, h)
 			result_path = os.path.join(res_dir, "ase_h_{0}.svg".format(h))
 			make_heatmap(
 				df_model, 
@@ -178,7 +179,7 @@ def interpret_shared(
 				inplace=True
 			)
 			model_name = "eCAVIAR"
-			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
+			title = title_base.format(response, model_name, h)
 			result_path = os.path.join(res_dir, "ecav_h_{0}.svg".format(h))
 			make_heatmap(
 				df_model, 
@@ -206,8 +207,170 @@ def interpret_shared(
 				inplace=True
 			)
 			model_name = "QTL-Only"
-			title = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}".format(response, model_name, h)
+			title = title_base.format(response, model_name, h)
 			result_path = os.path.join(res_dir, "eqtl_h_{0}.svg".format(h))
+			make_heatmap(
+				df_model, 
+				var_row, 
+				var_col, 
+				response, 
+				model_name, 
+				title, 
+				result_path, 
+				aggfunc="mean",
+				fmt='.2g'
+			)
+
+def interpret_corr(
+		data_dir_base, 
+		ld_thresh, 
+		model_flavors,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "corr")
+	df = load_data(data_dir, "corr")
+
+	res_dir = os.path.join(res_dir_base, "corr")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_row = "GWAS Sample Size"
+	var_col = "QTL Sample Size"
+	response = "Colocalization Score (PP4)"
+	title_base = "Mean {0} for Unshared Causal Markers\n{1} Model, LD Threshold = {2:.0E}"
+
+	sns.set(font="Roboto")
+
+	for l in ld_thresh:
+		if "full" in model_flavors:
+			df_model = df.loc[
+				(df["model"] == "full")
+				& (df["corr_thresh"] == l)
+				& (df["complete"] == True)
+			]
+			df_model.rename(
+				columns={
+					"num_samples_gwas": var_row,
+					"num_samples_qtl": var_col,
+					"h4": response,
+				}, 
+				inplace=True
+			)
+			model_name = "PLASMA/C-JC"
+			title = title_base.format(response, model_name, l)
+			result_path = os.path.join(res_dir, "full_h_{0}.svg".format(l))
+			make_heatmap(
+				df_model, 
+				var_row, 
+				var_col, 
+				response, 
+				model_name, 
+				title, 
+				result_path, 
+				aggfunc="mean",
+				fmt='.2g'
+			)
+		if "indep" in model_flavors:
+			df_model = df.loc[
+				(df["model"] == "indep")
+				& (df["corr_thresh"] == l)
+				& (df["complete"] == True)
+			]
+			df_model.rename(
+				columns={
+					"num_samples_gwas": var_row,
+					"num_samples_qtl": var_col,
+					"h4": response,
+				}, 
+				inplace=True
+			)
+			model_name = "PLASMA/C-J"
+			title = title_base.format(response, model_name, l)
+			result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(l))
+			make_heatmap(
+				df_model, 
+				var_row, 
+				var_col, 
+				response, 
+				model_name, 
+				title, 
+				result_path, 
+				aggfunc="mean",
+				fmt='.2g'
+			)
+		if "ase" in model_flavors:
+			df_model = df.loc[
+				(df["model"] == "ase")
+				& (df["corr_thresh"] == l)
+				& (df["complete"] == True)
+			]
+			df_model.rename(
+				columns={
+					"num_samples_gwas": var_row,
+					"num_samples_qtl": var_col,
+					"h4": response,
+				}, 
+				inplace=True
+			)
+			model_name = "PLASMA/C-AS"
+			title = title_base.format(response, model_name, l)
+			result_path = os.path.join(res_dir, "ase_h_{0}.svg".format(l))
+			make_heatmap(
+				df_model, 
+				var_row, 
+				var_col, 
+				response, 
+				model_name, 
+				title, 
+				result_path, 
+				aggfunc="mean",
+				fmt='.2g'
+			)
+		if "ecav" in model_flavors:
+			df_model = df.loc[
+				(df["model"] == "ecav")
+				& (df["corr_thresh"] == l)
+				& (df["complete"] == True)
+			]
+			df_model.rename(
+				columns={
+					"num_samples_gwas": var_row,
+					"num_samples_qtl": var_col,
+					"h4": response,
+				}, 
+				inplace=True
+			)
+			model_name = "eCAVIAR"
+			title = title_base.format(response, model_name, l)
+			result_path = os.path.join(res_dir, "ecav_h_{0}.svg".format(l))
+			make_heatmap(
+				df_model, 
+				var_row, 
+				var_col, 
+				response, 
+				model_name, 
+				title, 
+				result_path, 
+				aggfunc="mean",
+				fmt='.2g'
+			)
+		if "eqtl" in model_flavors:
+			df_model = df.loc[
+				(df["model"] == "eqtl")
+				& (df["corr_thresh"] == l)
+				& (df["complete"] == True)
+			]
+			df_model.rename(
+				columns={
+					"num_samples_gwas": var_row,
+					"num_samples_qtl": var_col,
+					"h4": response,
+				}, 
+				inplace=True
+			)
+			model_name = "QTL-Only"
+			title = title_base.format(response, model_name, l)
+			result_path = os.path.join(res_dir, "eqtl_h_{0}.svg".format(l))
 			make_heatmap(
 				df_model, 
 				var_row, 
@@ -225,5 +388,8 @@ if __name__ == '__main__':
 	res_dir_base = "/agusevlab/awang/ase_finemap_results/sim_coloc/"
 	model_flavors = set(["indep", "eqtl", "ase", "ecav"])
 
-	gwas_herits = [.01/100, .05/1000]
-	interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)
+	# gwas_herits = [.01/100, .05/1000]
+	# interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)
+
+	ld_thresh = [0., 0.2, 0.4, 0.8]
+	interpret_shared(data_dir_base, ld_thresh, model_flavors, res_dir_base)

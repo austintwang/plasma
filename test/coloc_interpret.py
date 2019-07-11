@@ -248,6 +248,8 @@ def interpret_corr(
 				& (df["corr_thresh"] == l)
 				& (df["complete"] == True)
 			]
+			print(df) ####
+			print(df_model) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,
@@ -258,7 +260,7 @@ def interpret_corr(
 			)
 			model_name = "PLASMA/C-JC"
 			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "full_h_{0}.svg".format(l))
+			result_path = os.path.join(res_dir, "full_h=l_{0}.svg".format(l))
 			make_heatmap(
 				df_model, 
 				var_row, 
@@ -286,7 +288,7 @@ def interpret_corr(
 			)
 			model_name = "PLASMA/C-J"
 			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(l))
+			result_path = os.path.join(res_dir, "indep_l_{0}.svg".format(l))
 			make_heatmap(
 				df_model, 
 				var_row, 
@@ -314,7 +316,7 @@ def interpret_corr(
 			)
 			model_name = "PLASMA/C-AS"
 			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "ase_h_{0}.svg".format(l))
+			result_path = os.path.join(res_dir, "ase_l_{0}.svg".format(l))
 			make_heatmap(
 				df_model, 
 				var_row, 
@@ -342,7 +344,7 @@ def interpret_corr(
 			)
 			model_name = "eCAVIAR"
 			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "ecav_h_{0}.svg".format(l))
+			result_path = os.path.join(res_dir, "ecav_l_{0}.svg".format(l))
 			make_heatmap(
 				df_model, 
 				var_row, 
@@ -370,7 +372,7 @@ def interpret_corr(
 			)
 			model_name = "QTL-Only"
 			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "eqtl_h_{0}.svg".format(l))
+			result_path = os.path.join(res_dir, "eqtl_l_{0}.svg".format(l))
 			make_heatmap(
 				df_model, 
 				var_row, 

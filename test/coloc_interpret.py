@@ -281,7 +281,7 @@ def interpret_corr(
 			# 	(df["model"] == "indep")
 			# 	& (df["corr_thresh"] == 0.1)
 			# ]) ####
-			print(df.corr_thresh) ####
+			print(set(df.corr_thresh)) ####
 			print(df_model) ####
 			df_model.rename(
 				columns={

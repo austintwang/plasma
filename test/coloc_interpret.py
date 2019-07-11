@@ -44,8 +44,8 @@ def make_heatmap(
 		columns=var_col, 
 		aggfunc=aggfunc
 	)
-	print(df) ####
-	print(heat_data) ####S
+	# print(df) ####
+	# print(heat_data) ####
 	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True)
 	plt.title(title)
 	plt.savefig(result_path)
@@ -106,6 +106,8 @@ def interpret_shared(
 				& (df["complete"] == True)
 			]
 			# print(df_model.columns.values) ####
+			print(df) ####
+			print(df.model) ####
 			df_model.rename(
 				columns={
 					"num_samples_gwas": var_row,

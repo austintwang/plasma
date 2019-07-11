@@ -164,7 +164,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
 def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
-	max_corr = 0.
+	max_corr = -1
 	while max_corr < params["corr_thresh"]:
 		chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 		try:

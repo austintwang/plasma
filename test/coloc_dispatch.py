@@ -39,11 +39,16 @@ class Dispatcher(object):
 		# raise Exception ####
 		for i in self.jobs:
 			while True:
-				out = subprocess.run(i, check=True).stdout
-				if out != timeout:
+				try:
+					submission = subprocess.run(i, check=True)
 					break
-				else:
-					print("Retrying Submit")
+				except subprocess.CalledProcessError as e:
+					if e.stderr == timeout:
+						print("Retrying Submit")
+						continue
+					else:
+						raise e
+					
 				
 
 def test_shared_causal(

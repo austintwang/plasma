@@ -200,7 +200,7 @@ class LocusSimulator(object):
 		mult = (num_samples * 2) // self.num_samples
 		rem = (num_samples * 2) % self.num_samples
 		blocks = []
-		for _ in mult:
+		for _ in range(mult):
 			blocks.append(np.arange(self.num_samples))
 		blocks.append(np.random.choice(self.num_samples, rem, replace=False))
 		haps_idx = np.concatenate(blocks)

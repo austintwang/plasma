@@ -35,9 +35,16 @@ class Dispatcher(object):
 			self.jobs.append(job_args)
 
 	def submit(self):
+		timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
 		# raise Exception ####
 		for i in self.jobs:
-			subprocess.call(i)
+			while True:
+				out = subprocess.run(i, check=True).stdout
+				if out != timeout:
+					break
+				else:
+					print("Retrying Submit")
+				
 
 def test_shared_causal(
 	disp, 
@@ -186,16 +193,16 @@ if __name__ == '__main__':
 	)
 
 	ld_thresh = [0., 0.2, 0.4, 0.8]
-	# test_unshared_corr(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	qtl_sizes, 
-	# 	gwas_sizes, 
-	# 	ld_thresh, 
-	# 	num_trials,
-	# 	script_path,
-	# )
+	test_unshared_corr(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		qtl_sizes, 
+		gwas_sizes, 
+		ld_thresh, 
+		num_trials,
+		script_path,
+	)
 
 	disp.submit()

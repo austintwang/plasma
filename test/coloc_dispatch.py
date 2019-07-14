@@ -112,7 +112,7 @@ def test_unshared_corr(
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
 		"herit_as": 0.4,
-		"herit_gwas": .01/100,
+		"herit_gwas": 0.001,
 		"corr_thresh": None,
 		"std_al_dev": 0.7,
 		"num_causal": 1,
@@ -164,13 +164,14 @@ if __name__ == '__main__':
 		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim_coloc/outs/"
 
-	qtl_sizes = [10, 50, 100, 200, 500]
-	gwas_sizes = [10000, 50000, 100000, 200000, 500000]
+	# qtl_sizes = [10, 50, 100, 200, 500]
+	# gwas_sizes = [10000, 50000, 100000, 200000, 500000]
 
-	qtl_sizes = [500, 200, 100, 50, 10]
+	qtl_sizes = [1000, 500, 200, 100, 50, 10]
 	gwas_sizes = [500000, 200000, 100000, 50000, 10000]
 
-	gwas_herits = [.01/100, .05/1000]
+	# gwas_herits = [.01/100, .05/1000]
+	gwas_herits = [0.001, 0.0001]
 	# gwas_herits = [.1] ####
 	# test_shared_causal(
 	# 	disp, 

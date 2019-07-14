@@ -188,7 +188,7 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 
 		covdiag = np.diag(locus.haps_cov)
 		corr = locus.haps_cov / np.sqrt(np.outer(covdiag, covdiag))
-		print(corr) ####
+		# print(corr) ####
 		np.fill_diagonal(corr, -1.) 
 
 		max_idx = np.unravel_index(np.argmax(corr, axis=None), corr.shape)

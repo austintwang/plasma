@@ -40,7 +40,7 @@ class Dispatcher(object):
 		for i in self.jobs:
 			while True:
 				try:
-					submission = subprocess.run(i, capture_output=True, check=True)
+					submission = subprocess.run(i, capture_output=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 					break
 				except subprocess.CalledProcessError as e:
 					print(e.stdout) ####

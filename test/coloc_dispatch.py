@@ -173,29 +173,29 @@ if __name__ == '__main__':
 	# gwas_herits = [.01/100, .05/1000]
 	gwas_herits = [0.001, 0.0001]
 	# gwas_herits = [.1] ####
-	# test_shared_causal(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	qtl_sizes, 
-	# 	gwas_sizes, 
-	# 	gwas_herits, 
-	# 	num_trials,
-	# 	script_path,
-	# )
-
-	ld_thresh = [0., 0.2, 0.4, 0.8]
-	test_unshared_corr(
+	test_shared_causal(
 		disp, 
 		data_info,
 		params_dir, 
 		out_dir_base, 
 		qtl_sizes, 
 		gwas_sizes, 
-		ld_thresh, 
+		gwas_herits, 
 		num_trials,
 		script_path,
 	)
+
+	ld_thresh = [0., 0.2, 0.4, 0.8]
+	# test_unshared_corr(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	qtl_sizes, 
+	# 	gwas_sizes, 
+	# 	ld_thresh, 
+	# 	num_trials,
+	# 	script_path,
+	# )
 
 	disp.submit()

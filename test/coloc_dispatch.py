@@ -201,7 +201,7 @@ if __name__ == '__main__':
 		script_path,
 	)
 
-	ld_thresh = [0., 0.2, 0.4, 0.8]
+	ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
 	test_unshared_corr(
 		disp, 
 		data_info,

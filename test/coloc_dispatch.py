@@ -41,11 +41,11 @@ class Dispatcher(object):
 			while True:
 				try:
 					submission = subprocess.run(i, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-					print(str(submission.stdout, 'utf-8'))
+					print(str(submission.stdout, 'utf-8').rstrip())
 					break
 				except subprocess.CalledProcessError as e:
 					# print(e.stdout) ####
-					err = str(e.stderr, 'utf-8')
+					err = str(e.stderr, 'utf-8').rstrip()
 					print(err)
 					if err == timeout:
 						print("Retrying Submit")

@@ -197,12 +197,12 @@ class LocusSimulator(object):
 			overdispersion,
 			causal_override=None
 		):
-		mult = num_samples // self.num_samples
-		rem = num_samples % self.num_samples
+		mult = (num_samples * 2) // self.num_samples
+		rem = (num_samples * 2) % self.num_samples
 		blocks = []
 		for _ in mult:
 			blocks.append(np.arange(self.num_samples))
-		blocks.append(np.random.choice(self.num_samples, rem * 2, replace=False))
+		blocks.append(np.random.choice(self.num_samples, rem, replace=False))
 		haps_idx = np.concatenate(blocks)
 		haps_sampled = self.haps[haps_idx]
 		np.random.shuffle(haps_sampled)

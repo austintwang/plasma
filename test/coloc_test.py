@@ -452,7 +452,7 @@ def coloc_test(
 			# print(inputs["hap_A"].shape()) ####
 
 		except Exception as e:
-			# raise ####
+			raise ####
 			trace = traceback.format_exc()
 			message = repr(e)
 			result = {"complete": False, "error": message, "traceback": trace}
@@ -484,7 +484,7 @@ def coloc_test(
 				model_qtl_updates = {}
 				result_full = run_model(inputs, "full", model_qtl_updates)
 			except Exception as e:
-				# raise ####
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_full = {
@@ -501,7 +501,7 @@ def coloc_test(
 				model_qtl_updates = {"cross_corr_prior": 0.}
 				result_indep = run_model(inputs, "indep", model_qtl_updates)
 			except Exception as e:
-				# raise ####
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_indep = {
@@ -518,7 +518,7 @@ def coloc_test(
 				model_qtl_updates = {"as_only": True}
 				result_ase = run_model(inputs, "ase", model_qtl_updates)
 			except Exception as e:
-				# raise ####
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_ase = {
@@ -535,7 +535,7 @@ def coloc_test(
 				model_qtl_updates = {"qtl_only": True}
 				result_ecav = run_ecav(inputs, "ecav", model_qtl_updates)
 			except Exception as e:
-				# raise ####
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_ecav = {
@@ -552,7 +552,7 @@ def coloc_test(
 				model_qtl_updates = {"qtl_only": True}
 				result_eqtl = run_model(inputs, "eqtl", model_qtl_updates)
 			except Exception as e:
-				# raise ####
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_eqtl = {

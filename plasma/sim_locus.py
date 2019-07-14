@@ -176,6 +176,7 @@ class LocusSimulator(object):
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)
 		self.snp_count = snp_count
+		self.num_samples = np.shape(self.haps)[0]
 
 		causal_inds = np.random.choice(self.snp_count, num_causal, replace=False)
 		self.causal_config = np.zeros(snp_count)
@@ -196,7 +197,13 @@ class LocusSimulator(object):
 			overdispersion,
 			causal_override=None
 		):
-		haps_idx = np.random.choice(np.shape(self.haps)[0], num_samples * 2, replace=False)
+		mult = num_samples // self.num_samples
+		rem = num_samples % self.num_samples
+		blocks = []
+		for _ in mult:
+			blocks.append(np.arange(self.num_samples))
+		blocks.append(np.random.choice(self.num_samples, rem * 2, replace=False))
+		haps_idx = np.concatenate(blocks)
 		haps_sampled = self.haps[haps_idx]
 		np.random.shuffle(haps_sampled)
 		hap_A = haps_sampled[:num_samples]

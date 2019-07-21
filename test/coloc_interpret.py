@@ -26,8 +26,35 @@ def load_data(data_dir, test_name):
 	# print(data_df.columns.values) ####
 	return data_df
 
+def roc(ppt, ppf):
+	pp = [(i, True) for i in ppt]
+	pp.extend([(i, False) for i in ppf])
+	pp.sort(reverse=True)
+
+	t_tot = np.size(ppt)
+	f_tot = np.size(ppf)
+	
+	coords = [(0.,0.),]
+	t_num = 0
+	f_num = 0
+	for i in pp:
+		if i[1]:
+			t_num += 1
+		else:
+			f_num += 1
+	coord = (t_num / t_tot, f_num / f_tot)
+	coords.append(coord)
+
+	x, y = zip(*coords)
+	auroc = np.trapz(y, x=x)
+
+	return x, y, auroc
+
 def make_heatmap(
-		df, 
+		df_main,
+		df_rmargin,
+		df_cmargin, 
+		df_tmargin,
 		var_row, 
 		var_col, 
 		response, 
@@ -37,8 +64,29 @@ def make_heatmap(
 		aggfunc="mean",
 		fmt='.2g'
 	):
-	heat_data = pd.pivot_table(
+	heat_data_main = pd.pivot_table(
 		df, 
+		values=response, 
+		index=var_row, 
+		columns=var_col, 
+		aggfunc=aggfunc
+	)
+	heat_data_rmargin = pd.pivot_table(
+		df_rmargin, 
+		values=response, 
+		index=var_row, 
+		columns=var_col, 
+		aggfunc=aggfunc
+	)
+	heat_data_cmargin = pd.pivot_table(
+		df_cmargin, 
+		values=response, 
+		index=var_row, 
+		columns=var_col, 
+		aggfunc=aggfunc
+	)
+	heat_data_tmargin = pd.pivot_table(
+		df_tmargin, 
 		values=response, 
 		index=var_row, 
 		columns=var_col, 

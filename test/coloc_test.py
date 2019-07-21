@@ -47,6 +47,17 @@ CHROM_LENS = [
 class TimeoutException(Exception): 
 	pass
 
+class DummyFinemap(Finemap):
+	def __init__(self, ppas, causal_set):
+		self.ppas = ppas
+		self.causal_set = causal_set
+
+	def get_ppas(self):
+		return self.ppas
+
+	def get_causal_set(self, confidence):
+		return self.causal_set
+
 @contextmanager
 def time_limit(seconds):
 	def signal_handler(signum, frame):
@@ -228,58 +239,68 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
 def run_model(inputs, model_name, model_qtl_updates):
-	inputs_qtl = inputs.copy()
-	qtl_updates = {
-		"total_exp_herit_prior": inputs_qtl["herit_qtl"],
-		"imbalance_herit_prior": inputs_qtl["herit_as"],
-		"num_ppl": inputs_qtl["num_samples_qtl"],
-	}
-	inputs_qtl.update(qtl_updates)
-	inputs_qtl.update(model_qtl_updates)
+	if inputs["num_samples_qtl"] == "Perfect":
+		causal_set_qtl = inputs["causal_config_qtl"]
+		ppas_qtl = inputs["causal_config_qtl"]
+		model_qtl = DummyFinemap(ppas_qtl, causal_set_qtl)
+	else:
+		inputs_qtl = inputs.copy()
+		qtl_updates = {
+			"total_exp_herit_prior": inputs_qtl["herit_qtl"],
+			"imbalance_herit_prior": inputs_qtl["herit_as"],
+			"num_ppl": inputs_qtl["num_samples_qtl"],
+		}
+		inputs_qtl.update(qtl_updates)
+		inputs_qtl.update(model_qtl_updates)
 
-	model_qtl = Finemap(**inputs_qtl)
-	model_qtl.initialize()
+		model_qtl = Finemap(**inputs_qtl)
+		model_qtl.initialize()
 
-	if inputs_qtl["search_mode"] == "exhaustive":
-		model_qtl.search_exhaustive(inputs["min_causal"], inputs["max_causal"])
-	elif inputs_qtl["search_mode"] == "shotgun":
-		model_qtl.search_shotgun(
-			inputs_qtl["min_causal"], 
-			inputs_qtl["max_causal"], 
-			inputs_qtl["prob_threshold"], 
-			inputs_qtl["streak_threshold"], 
-			inputs_qtl["search_iterations"]
-		)
+		if inputs_qtl["search_mode"] == "exhaustive":
+			model_qtl.search_exhaustive(inputs["min_causal"], inputs["max_causal"])
+		elif inputs_qtl["search_mode"] == "shotgun":
+			model_qtl.search_shotgun(
+				inputs_qtl["min_causal"], 
+				inputs_qtl["max_causal"], 
+				inputs_qtl["prob_threshold"], 
+				inputs_qtl["streak_threshold"], 
+				inputs_qtl["search_iterations"]
+			)
 
-	causal_set_qtl = model_qtl.get_causal_set(inputs_qtl["confidence"])
-	ppas_qtl = model_qtl.get_ppas()
+		causal_set_qtl = model_qtl.get_causal_set(inputs_qtl["confidence"])
+		ppas_qtl = model_qtl.get_ppas()
 
-	inputs_gwas = inputs.copy()
-	gwas_updates = {
-		"total_exp_herit_prior": inputs_gwas["herit_gwas"],
-		"total_exp_stats": inputs_gwas["z_gwas"],
-		"total_exp_corr": inputs_gwas["ld_gwas"],
-		"num_ppl": inputs_gwas["num_samples_gwas"],
-		"qtl_only": True
-	}
-	inputs_gwas.update(gwas_updates)
+	if inputs["num_samples_gwas"] == "Perfect":
+		causal_set_gwas = inputs["causal_config_gwas"]
+		ppas_gwas = inputs["causal_config_gwas"]
+		model_gwas = DummyFinemap(ppas_gwas, causal_set_gwas)
+	else:
+		inputs_gwas = inputs.copy()
+		gwas_updates = {
+			"total_exp_herit_prior": inputs_gwas["herit_gwas"],
+			"total_exp_stats": inputs_gwas["z_gwas"],
+			"total_exp_corr": inputs_gwas["ld_gwas"],
+			"num_ppl": inputs_gwas["num_samples_gwas"],
+			"qtl_only": True
+		}
+		inputs_gwas.update(gwas_updates)
 
-	model_gwas = Finemap(**inputs_gwas)
-	model_gwas.initialize()
+		model_gwas = Finemap(**inputs_gwas)
+		model_gwas.initialize()
 
-	if inputs_gwas["search_mode"] == "exhaustive":
-		model_gwas.search_exhaustive(inputs["min_causal"], inputs["max_causal"])
-	elif inputs_gwas["search_mode"] == "shotgun":
-		model_gwas.search_shotgun(
-			inputs_gwas["min_causal"], 
-			inputs_gwas["max_causal"], 
-			inputs_gwas["prob_threshold"], 
-			inputs_gwas["streak_threshold"], 
-			inputs_gwas["search_iterations"]
-		)
+		if inputs_gwas["search_mode"] == "exhaustive":
+			model_gwas.search_exhaustive(inputs["min_causal"], inputs["max_causal"])
+		elif inputs_gwas["search_mode"] == "shotgun":
+			model_gwas.search_shotgun(
+				inputs_gwas["min_causal"], 
+				inputs_gwas["max_causal"], 
+				inputs_gwas["prob_threshold"], 
+				inputs_gwas["streak_threshold"], 
+				inputs_gwas["search_iterations"]
+			)
 
-	causal_set_gwas = model_gwas.get_causal_set(inputs_qtl["confidence"])
-	ppas_gwas = model_gwas.get_ppas()
+		causal_set_gwas = model_gwas.get_causal_set(inputs_qtl["confidence"])
+		ppas_gwas = model_gwas.get_ppas()
 
 	clpps = model_qtl.coloc_clpps(model_gwas)
 	h0, h1, h2, h3, h4 = model_qtl.coloc_hyps(model_gwas)
@@ -360,8 +381,19 @@ def run_ecav(inputs, model_name, model_qtl_updates):
 	causal_set_gwas = model_ecaviar.causal_set_gwas
 	ppas_qtl = model_ecaviar.post_probs_qtl
 	ppas_gwas = model_ecaviar.post_probs_gwas
-	clpps = model_ecaviar.clpp
-	h4 = model_ecaviar.h4
+
+	if (inputs["num_samples_qtl"] == "Perfect") and (inputs["num_samples_gwas"] == "Perfect"):
+		clpps = inputs["causal_config_qtl"] * inputs["causal_config_gwas"]
+		h4 = np.sum(clpps)
+	elif inputs["num_samples_qtl"] == "Perfect":
+		clpps = inputs["causal_config_qtl"] * ppas_gwas
+		h4 = np.sum(clpps)
+	elif inputs["num_samples_gwas"] == "Perfect":
+		clpps = inputs["causal_config_gwas"] * ppas_qtl
+		h4 = np.sum(clpps)
+	else:
+		clpps = model_ecaviar.clpp
+		h4 = model_ecaviar.h4
 
 	# print("ecav") ####
 	# print(ppas_qtl) ####

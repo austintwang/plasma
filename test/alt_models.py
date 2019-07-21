@@ -5,20 +5,20 @@ import random
 import string
 import numpy as np
 
-class EvalCaviar(object):
+from . import Finemap
+
+class EvalCaviar(Finemap):
 	cav_dir_path = "/agusevlab/awang/caviar"
 	caviar_path = "CAVIAR"
 	temp_path = os.path.join(cav_dir_path, "temp")
 	
-	def __init__(self, fm, confidence, max_causal):
-		self.confidence = confidence
-		self.max_causal = max_causal
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
 
-		self.num_snps = max(fm.num_snps_imbalance, fm.num_snps_total_exp)
-		self.causal_status_prior = fm.causal_status_prior
-		self.total_exp_stats = fm.total_exp_stats
-		self.corr = fm.total_exp_corr
-		self.ncp = np.sqrt(fm.imbalance_var_prior)
+	def initialize(self):
+		super().initialize()
+
+		self.ncp = np.sqrt(self.imbalance_var_prior)
 
 		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
 		self.rsid_map = dict(list(zip(self.rsids, list(range(self.num_snps)))))
@@ -41,15 +41,21 @@ class EvalCaviar(object):
 		self.z_scores = self.total_exp_stats.tolist()
 		self.ld = self.corr.tolist()
 
-	def run(self):
+	def search_exhuastive(self, min_causal, max_causal):
+		self.min_causal = min_causal
+
+	def search_shotgun(self, min_causal, max_causal, *args):
+		self.search_exhuastive(min_causal, max_causal)
+
+	def get_causal_set(self, confidence):
 		self.params = [
 			self.caviar_path,
 			"-o", self.output_filename_base,
 			"-l", self.ld_path,
 			"-z", self.z_path,
-			"-r", str(self.confidence),
+			"-r", str(confidence),
 			"-c", str(self.max_causal),
-			"-n", str(self.ncp)
+			# "-n", str(self.ncp)
 		]
 
 		with open(self.z_path, "w") as zfile:
@@ -79,13 +85,18 @@ class EvalCaviar(object):
 
 		shutil.rmtree(self.output_path)
 
-class EvalCaviarASE(object):
-	def __init__(self, fm, confidence, max_causal):
-		self.total_exp_stats = fm.total_exp_stats
-		self.corr = fm.total_exp_corr
+		return self.causal_set
 
-		self.imbalance = fm.imbalance
-		self.phases = fm.phases
+	def get_ppas(self):
+		return self.post_probs
+
+
+class EvalCaviarASE(Finemap):
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+
+	def initialize(self):
+		super().initialize()
 
 		self.phases_abs = np.absolute(self.phases)
 		self.ase = np.logical_or(
@@ -108,26 +119,11 @@ class EvalCaviarASE(object):
 			* (self.num_bal + self.num_imb)
 			/ (self.num_bal * self.num_imb)
 		)
-		# print(self.hets_tot) ####
-		# print(self.num_bal) ####
-		# print(self.num_imb) ####
-		# print(self.ase_std) ####
 
 		self.ase_stats = (self.hets_imb - self.hets_bal) / self.ase_std
-
-		# print(self.ase_stats) ####
-		# print(self.total_exp_stats) ####
 		
 		self.stats_1 = (self.total_exp_stats + self.ase_stats) / np.sqrt(2)
 		self.stats_2 = (self.total_exp_stats - self.ase_stats) / np.sqrt(2)
-
-		# print(self.stats_1) ####
-		# print(self.stats_2) ####
-
-		# print(fm.imbalance_stats) ####
-
-		# raise Exception ####
-
 
 		means = np.mean(self.phases_abs, axis=0)
 		phases_centered = self.phases_abs - means
@@ -142,19 +138,29 @@ class EvalCaviarASE(object):
 
 		self.ncp = 1
 
-		self.eval1 = EvalCaviar(fm, confidence, max_causal)
+		self.eval1 = EvalCaviar(**kwargs)
+		self.eval1.initialize()
 		self.eval1.ld = self.ld.tolist()
 		self.eval1.z_scores = self.stats_1.tolist()
 		self.eval1.ncp = self.ncp
 
-		self.eval2 = EvalCaviar(fm, confidence, max_causal)
+		self.eval2 = EvalCaviar(**kwargs)
+		self.eval2.initialize()
 		self.eval2.ld = self.ld.tolist()
 		self.eval2.z_scores = self.stats_2.tolist()
 		self.eval2.ncp = self.ncp
 
-	def run(self):
-		self.eval1.run()
-		self.eval2.run()
+	def search_exhuastive(self, min_causal, max_causal):
+		self.min_causal = min_causal
+		self.eval1.search_exhuastive(min_causal, max_causal)
+		self.eval2.search_exhuastive(min_causal, max_causal)
+
+	def search_shotgun(self, min_causal, max_causal, *args):
+		self.search_exhuastive(min_causal, max_causal)
+
+	def get_causal_set(self, confidence):
+		self.eval1.get_causal_set(confidence)
+		self.eval2.get_causal_set(confidence)
 
 		set1 = self.eval1.causal_set
 		set2 = self.eval2.causal_set
@@ -168,6 +174,9 @@ class EvalCaviarASE(object):
 		else:
 			self.causal_set = set2
 			self.post_probs = ppa2
+
+	def get_ppas(self):
+		return self.post_probs
 
 class EvalECaviar(object):
 	cav_dir_path = "/agusevlab/awang/caviar"

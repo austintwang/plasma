@@ -4,6 +4,8 @@ import shutil
 import random
 import string
 import numpy as np
+import copy
+import vcf
 
 from . import Finemap
 
@@ -298,3 +300,226 @@ class EvalECaviar(object):
 		# raise Exception ####
 		shutil.rmtree(self.output_path)
 
+class EvalFm(Finemap):
+	fm_dir_path = "/agusevlab/awang/finemap"
+	fm_path = "CAVIAR"
+	temp_path = os.path.join(fm_dir_path, "temp")
+	
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+
+	def initialize(self):
+		super().initialize()
+
+		self.ncp = np.sqrt(self.imbalance_var_prior)
+
+		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
+		self.rsid_map = dict(list(zip(self.rsids, list(range(self.num_snps)))))
+
+		self.output_name = ''.join(
+			random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+		)
+		self.output_path = os.path.join(self.temp_path, self.output_name)
+		os.makedirs(self.output_path)
+		self.output_filename_base = os.path.join(self.output_path, self.output_name)
+
+		self.master_path = os.path.join(self.output_path, "master.txt")
+		self.z_path = os.path.join(self.output_path, self.output_name + ".z")
+		self.ld_path = os.path.join(self.output_path, self.output_name + ".ld")
+		self.set_path = os.path.join(self.output_path, self.output_name + ".cred")
+		self.post_path = os.path.join(self.output_path, self.output_name + ".snp")
+
+		self.causal_set = np.zeros(self.num_snps)
+		self.post_probs = np.zeros(self.num_snps)
+
+		freq = (np.mean(self.hap_A, axis=0) + np.mean(self.hap_B, axis=0)) / 2.
+		self.maf = np.fmin(freq, 1 - freq)
+		self.betas = self.beta.tolist()
+		self.se = (self.beta / self.imbalance_stats).tolist()
+		self.ld = self.corr.tolist()
+
+	def search_exhuastive(self, min_causal, max_causal):
+		command_params = [
+			self.fm_path,
+			"--in-files", self.master_path,
+			"--n-causal-snps", str(self.max_causal),
+		]
+		self._run_fm(command_params)
+
+	def search_shotgun(self, min_causal, max_causal, prob_threshold, streak_threshold, num_iterations):
+		command_params = [
+			self.fm_path,
+			"--in-files", self.master_path,
+			"--n-causal-snps", str(self.max_causal),
+			"--n-convergence", str(streak_threshold),
+			"--n-iterations", str(num_iterations),
+			"--prob-tol", str(prob_threshold),
+			"--sss"
+		]
+		self._run_fm(command_params)
+
+	def _run_fm(self, command_params):
+		master_header = "z;ld;snp;config;cred;log;n_samples"
+		master_content = "{0}.z;{0}.ld;{0}.snp;{0}.config;{0}.cred;{0}.log;{1}".format(self.output_name, self.num_ppl)
+		with open(self.master_path, "w") as masterfile:
+			masterfile.writelines([master_header, master_content])
+
+		z_header = "rsid chromosome position allele1 allele2 maf beta se"
+		z_template = "{0} 1 1 A T {1} {2} {3}"
+		with open(self.z_path, "w") as zfile:
+			zlines = [z_header]
+			zlines.extend([z_template.format(*i) for i in zip(self.rsids, self.maf, self.betas, self.se)])
+			zfile.writelines(zlines)
+
+		with open(self.ld_path, "w") as ldfile:
+			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
+			ldfile.write(ldstr)
+
+		out = subprocess.check_output(command_params)
+
+		with open(self.set_path) as setfile:
+			ids = setfile.read().splitlines()[1].split()
+
+		for i in ids:
+			self.causal_set[self.rsid_map[i]] = 1
+
+		post_df = pd.read_csv(self.post_path)
+		self.post_probs = post_df["prob"].to_numpy()
+
+		shutil.rmtree(self.output_path)
+
+	def get_causal_set(self, confidence):
+		return self.causal_set
+
+	def get_ppas(self):
+		return self.post_probs
+
+class EvalRasqual(Finemap):
+	rasqual_dir_path = "/agusevlab/awang/finemap"
+	rasqual_path = "CAVIAR"
+	rasqual_script_path = "CAVIAR"
+	r_path = "CAVIAR"
+	temp_path = os.path.join(rasqual_dir_path, "temp")
+
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+		self.vcf_reader = kwargs.get("vcf_reader", None)
+		self.records = kwargs.get("records", None)
+		self.snp_ids = kwargs.get("snp_ids", None)
+
+	def initialize(self):
+		self._calc_num_ppl()
+		self._calc_num_snps()
+		self._calc_causal_status_prior()
+		self._calc_phases()
+		self._calc_total_exp()
+		self._calc_corr_stats()
+		self._calc_imbalance_var_prior()
+		self._calc_imbalance_corr()
+
+		self.rsid_map = dict(list(zip(self.snp_ids, list(range(self.num_snps)))))
+
+		self.output_name = ''.join(
+			random.choice(string.ascii_uppercase + string.digits) for _ in range(10)
+		)
+		self.output_path = os.path.join(self.temp_path, self.output_name)
+		os.makedirs(self.output_path)
+		self.output_filename_base = os.path.join(self.output_path, self.output_name)
+
+		self.records_sim = copy.deepcopy(self.records)
+
+		num_hets = np.count_nonzero(self.phases, axis=1)
+		het_idx = np.argwhere(self.phases)
+
+		for smp, snp in het_idx:
+			record = self.records_sim[snp]
+			sample = records_sim.samples[smp]
+			gen_data = sample["GT"]
+			hap_data = gen_data.split("|")
+
+			reads = (0, 0)
+			reads[hap_data[0]] = self.counts_A // num_hets[smp]
+			reads[hap_data[1]] = self.counts_B // num_hets[smp]
+			sample["AS"] = reads
+
+		total_exp_scaled = self.total_exp * 50
+		total_exp_off = total_exp_scaled - np.amain(total_exp_scaled)
+		counts_data = "\t".join([self.output_name] + list(total_exp_off))
+
+		self.vcf_path = os.path.join(self.output_path, "data.vcf")
+		self.counts_path = os.path.join(self.output_path, "Y.txt")
+		self.counts_bin_path = os.path.join(self.output_path, "Y.bin")
+		self.offset_path = os.path.join(self.output_path, "K.txt")
+		self.offset_bin_path = os.path.join(self.output_path, "K.bin")
+		self.output_path = os.path.join(self.output_path, "output.txt")
+
+		with open(self.vcf_path) as vcf_file:
+			vcf_writer = vcf.Writer(vcf_file, self.vcf_reader)
+			for record in self.records_sim:
+				vcf_writer.write_record(record)
+
+		with open(self.counts_path, "w") as counts_file:
+			counts_file.writelines([counts_data])
+
+		offset_script_path = os.path.join(rasqual_script_path, "makeOffset.R")
+		offset_params = [
+			self.r_path,
+			"--vanilla"
+			offset_script_path,
+			self.offset_path,
+			self.counts_path,
+		]
+		offset_out = subprocess.check_output(offset_params)
+
+		bin_script_path = os.path.join(rasqual_script_path, "txt2bin.R")
+		bin_params = [
+			self.r_path,
+			"--vanilla"
+			bin_script_path,
+			self.counts_path,
+			self.offset_path,
+		]
+		bin_out = subprocess.check_output(bin_params)
+
+		rasqual_params = [
+			self.rasqual_path,
+			self.vcf_path,
+			"-y",
+			self.counts_bin_path,
+			"-k",
+			self.offset_bin_path,
+			"-n",
+			str(self.num_ppl),
+			"-j",
+			"1",
+			"-l"
+			str(self.num_snps),
+			"-m",
+			str(self.num_snps),
+			"-f",
+			self.output_name,
+		]
+		rasqual_out = subprocess.check_output(rasqual_params)
+		rasqual_res = rasqual_out.decode('UTF-8').rstrip().split("\n")
+
+		z_scores = np.zeros(self.num_snps)
+		for i in rasqual_res:
+			entries = i.split("\t")
+			rsid = entries[1]
+			chisq = float(entries[10])
+			pi = float(entries[11])
+
+			if pi >= 0.5:
+				z_scr = np.sqrt(chisq)
+			else:
+				z_scr = -np.sqrt(chisq)
+
+			z_scores[self.rsid_map[rsid]] = z_scr
+
+		self.imbalance_stats = z_scores
+
+
+
+
+
+	

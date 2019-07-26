@@ -50,6 +50,7 @@ class LocusSimulator(object):
 
 		vcf_reader = SubsetReader(filename=vcf_path, snp_subset=snp_filter, sample_subset=sample_filter)
 
+		records = []
 		haps = []
 		snp_ids = []
 		snp_count = 0
@@ -86,6 +87,7 @@ class LocusSimulator(object):
 			if maf < maf_thresh:
 				continue
 
+			records.append(record)
 			haps.append(genotypes)
 			snp_ids.append(snp_id)
 			snp_count += 1
@@ -97,6 +99,8 @@ class LocusSimulator(object):
 		if snp_count == 0:
 			raise ValueError("Specified region yielded no markers")
 
+		self.vcf_reader = vcf_reader
+		self.records = records
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)
 		self.snp_count = snp_count

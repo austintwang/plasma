@@ -518,6 +518,8 @@ class EvalRasqual(Finemap):
 
 		self.imbalance_stats = z_scores
 
+		shutil.rmtree(self.output_path)
+
 
 
 

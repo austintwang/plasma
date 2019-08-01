@@ -168,8 +168,8 @@ def plot_lds(res_dict, output_dir):
 		e_p = np.linalg.eigvals(p)
 		l_p = "Phasing LD"
 
-		f_tmp = "LD Correlations\n{0} LD vs. {1} LD, {2} Samples"
-		e_tmp = "LD Eigenvalues\n{0} LD vs. {1} LD, {2} Samples"
+		f_tmp = "LD Correlations\n{0} vs. {1}, {2} Samples"
+		e_tmp = "LD Eigenvalues\n{0} vs. {1}, {2} Samples"
 
 		f_f = "corr_{0}_{1}_{2}.svg"
 		e_f = "eigs_{0}_{1}_{2}.svg"
@@ -181,7 +181,7 @@ def plot_lds(res_dict, output_dir):
 		plot_scatter(e_h, e_p, l_h, l_p, e_tmp.format(l_h, l_p, k), e_f.format("h", "p", k), output_dir)
 
 		plot_scatter(f_d, f_p, l_d, l_p, f_tmp.format(l_d, l_p, k), f_f.format("d", "p", k), output_dir)
-		plot_scatter(e_d, e_p, l_d, l_p, e_tmp.format(l_d, l_p, k), f_f.format("d", "p", k), output_dir)
+		plot_scatter(e_d, e_p, l_d, l_p, e_tmp.format(l_d, l_p, k), e_f.format("d", "p", k), output_dir)
 
 
 if __name__ == '__main__':

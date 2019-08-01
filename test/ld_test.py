@@ -115,6 +115,8 @@ def sim_ld(locus, sample_sizes):
 		haps_corr = haps_cov / np.sqrt(np.outer(haps_var, haps_var))
 		haps_corr = np.nan_to_num(haps_corr)
 		np.fill_diagonal(haps_corr, 1.0)
+		print(haps_sampled) ####
+		print(haps_corr) ####
 
 		dosage = hap_A + hap_B
 		dosage_means = np.mean(dosage, axis=0)

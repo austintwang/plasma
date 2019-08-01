@@ -11,10 +11,6 @@ import traceback
 import pickle
 import signal
 from contextlib import contextmanager
-# import gc
-
-import numpy as np
-import pandas as pd
 
 
 if __name__ == '__main__' and __package__ is None:
@@ -185,9 +181,9 @@ def plot_lds(res_dict, output_dir):
 
 
 if __name__ == '__main__':
-	vcf_dir = "/agusevlab/awang/job_data/sim_coloc/vcfs/",
-	vcf_name_template = "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz",
-	sample_filter_path = "/agusevlab/awang/job_data/sim_coloc/vcfs/integrated_call_samples_v3.20130502.ALL.panel",
+	vcf_dir = "/agusevlab/awang/job_data/sim_coloc/vcfs/"
+	vcf_name_template = "ALL.{0}.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.gz"
+	sample_filter_path = "/agusevlab/awang/job_data/sim_coloc/vcfs/integrated_call_samples_v3.20130502.ALL.panel"
 	snp_filter_path = "/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
 
 	output_dir = "/agusevlab/awang/ase_finemap_results/Simulations/ld/"

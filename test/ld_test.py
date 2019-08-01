@@ -207,7 +207,7 @@ if __name__ == '__main__':
 		].to_numpy().flatten()
 	)
 
-	with open(params["snp_filter_path"], "rb") as snp_filter_file:
+	with open(snp_filter_path, "rb") as snp_filter_file:
 		snp_filter = pickle.load(snp_filter_file)
 
 	locus = draw_locus(vcf_dir, vcf_name_template, sample_filter, snp_filter, region_size, max_snps, maf_thresh)

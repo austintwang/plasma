@@ -97,7 +97,7 @@ def sim_ld(locus, sample_sizes):
 	res_dict = {}
 	for s in sample_sizes:
 		mult = (s * 2) // locus.num_samples
-		rem = (num_samples * 2) % locus.num_samples
+		rem = (s * 2) % locus.num_samples
 		blocks = []
 		for _ in range(mult):
 			blocks.append(np.arange(locus.num_samples))

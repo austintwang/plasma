@@ -464,7 +464,7 @@ class Rasqual(Finemap):
 		offset_script_path = os.path.join(rasqual_script_path, "makeOffset.R")
 		offset_params = [
 			self.r_path,
-			"--vanilla"
+			"--vanilla",
 			offset_script_path,
 			self.offset_path,
 			self.counts_path,
@@ -474,7 +474,7 @@ class Rasqual(Finemap):
 		bin_script_path = os.path.join(rasqual_script_path, "txt2bin.R")
 		bin_params = [
 			self.r_path,
-			"--vanilla"
+			"--vanilla",
 			bin_script_path,
 			self.counts_path,
 			self.offset_path,
@@ -492,7 +492,7 @@ class Rasqual(Finemap):
 			str(self.num_ppl),
 			"-j",
 			"1",
-			"-l"
+			"-l",
 			str(self.num_snps),
 			"-m",
 			str(self.num_snps),

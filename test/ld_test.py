@@ -13,12 +13,13 @@ import pickle
 import signal
 from contextlib import contextmanager
 
-
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'test'
 	import sys
 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 	sys.path.insert(0, "/agusevlab/awang/plasma")
+
+from . import LocusSimulator
 
 CHROM_LENS = [
 	248956422,

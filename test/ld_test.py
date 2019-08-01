@@ -112,7 +112,7 @@ def sim_ld(locus, sample_sizes):
 		haps_centered = haps_sampled - haps_mean
 		haps_cov = np.nan_to_num(np.cov(haps_centered.T))
 		haps_var = np.diagonal(haps_cov)
-		haps_corr = locus.haps_cov / np.sqrt(np.outer(haps_var, haps_var))
+		haps_corr = haps_cov / np.sqrt(np.outer(haps_var, haps_var))
 		haps_corr = np.nan_to_num(haps_corr)
 		np.fill_diagonal(haps_corr, 1.0)
 
@@ -191,7 +191,7 @@ if __name__ == '__main__':
 	output_dir = "/agusevlab/awang/ase_finemap_results/Simulations/ld/"
 
 	region_size = None
-	max_snps = 1000
+	max_snps = 100
 	maf_thresh = .01
 
 	sample_sizes = [1000, 500, 200, 100, 50, 10]

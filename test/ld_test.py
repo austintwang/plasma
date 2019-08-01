@@ -115,8 +115,8 @@ def sim_ld(locus, sample_sizes):
 		haps_corr = haps_cov / np.sqrt(np.outer(haps_var, haps_var))
 		haps_corr = np.nan_to_num(haps_corr)
 		np.fill_diagonal(haps_corr, 1.0)
-		print(haps_sampled) ####
-		print(haps_corr) ####
+		# print(haps_sampled) ####
+		# print(haps_corr) ####
 
 		dosage = hap_A + hap_B
 		dosage_means = np.mean(dosage, axis=0)
@@ -153,17 +153,17 @@ def plot_lds(res_dict, output_dir):
 	sns.set(style="whitegrid", font="Roboto")
 
 	for k, v in res_dict.items():
-		h = k["haps"]
+		h = v["haps"]
 		f_h = h.flatten()
 		e_h = np.linalg.eigvals(h)
 		l_h = "Haplotype LD"
 
-		d = k["dosage"]
+		d = v["dosage"]
 		f_d = d.flatten()
 		e_d = np.linalg.eigvals(d)
 		l_d = "Dosage LD"
 
-		p = k["haps"]
+		p = v["haps"]
 		f_p = haps.flatten()
 		e_p = np.linalg.eigvals(p)
 		l_p = "Phasing LD"

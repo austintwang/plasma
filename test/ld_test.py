@@ -163,7 +163,7 @@ def plot_lds(res_dict, output_dir):
 		e_d = np.linalg.eigvals(d)
 		l_d = "Dosage LD"
 
-		p = v["haps"]
+		p = v["phases"]
 		f_p = p.flatten()
 		e_p = np.linalg.eigvals(p)
 		l_p = "Phasing LD"

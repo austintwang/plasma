@@ -121,7 +121,7 @@ def sim_ld(locus, sample_sizes):
 		dosage_centered = dosage - dosage_means
 		dosage_cov = np.nan_to_num(np.cov(dosage_centered.T))
 		dosage_var = np.diagonal(dosage_cov)
-		dosage_corr = dosages_cov / np.sqrt(np.outer(dosage_var, dosage_var))
+		dosage_corr = dosage_cov / np.sqrt(np.outer(dosage_var, dosage_var))
 		dosage_corr = np.nan_to_num(dosage_corr)
 		np.fill_diagonal(dosage_corr, 1.0)
 

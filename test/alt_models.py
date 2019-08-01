@@ -9,7 +9,7 @@ import vcf
 
 from . import Finemap
 
-class EvalCaviar(Finemap):
+class Caviar(Finemap):
 	cav_dir_path = "/agusevlab/awang/caviar"
 	caviar_path = "CAVIAR"
 	temp_path = os.path.join(cav_dir_path, "temp")
@@ -93,7 +93,7 @@ class EvalCaviar(Finemap):
 		return self.post_probs
 
 
-class EvalCaviarASE(Finemap):
+class CaviarASE(Finemap):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 
@@ -180,7 +180,7 @@ class EvalCaviarASE(Finemap):
 	def get_ppas(self):
 		return self.post_probs
 
-class EvalECaviar(object):
+class ECaviar(object):
 	cav_dir_path = "/agusevlab/awang/caviar"
 	caviar_path = "eCAVIAR"
 	temp_path = os.path.join(cav_dir_path, "temp")
@@ -300,7 +300,7 @@ class EvalECaviar(object):
 		# raise Exception ####
 		shutil.rmtree(self.output_path)
 
-class EvalFm(Finemap):
+class FmBenner(Finemap):
 	fm_dir_path = "/agusevlab/awang/finemap"
 	fm_path = "CAVIAR"
 	temp_path = os.path.join(fm_dir_path, "temp")
@@ -394,7 +394,7 @@ class EvalFm(Finemap):
 	def get_ppas(self):
 		return self.post_probs
 
-class EvalRasqual(Finemap):
+class Rasqual(Finemap):
 	rasqual_dir_path = "/agusevlab/awang/finemap"
 	rasqual_path = "CAVIAR"
 	rasqual_script_path = "CAVIAR"

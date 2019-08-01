@@ -105,8 +105,8 @@ def sim_ld(locus, sample_sizes):
 		haps_idx = np.concatenate(blocks)
 		haps_sampled = locus.haps[haps_idx]
 		np.random.shuffle(haps_sampled)
-		hap_A = haps_sampled[:num_samples]
-		hap_B = haps_sampled[num_samples:]
+		hap_A = haps_sampled[:s]
+		hap_B = haps_sampled[s:]
 
 		haps_mean = np.mean(haps_sampled, axis=0)
 		haps_centered = haps_sampled - haps_mean

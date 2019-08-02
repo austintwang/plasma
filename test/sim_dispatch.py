@@ -52,197 +52,163 @@ class Dispatcher(object):
 						continue
 					else:
 						raise e
-					
-def test_dev_cov_display():
-	params = {
-		"num_snps": 90,
-		"num_ppl": 95,
-		"overdispersion": 0.05,
-		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.6,
-		"std_fraction": None,
-		"num_causal": 1,
-		"coverage": None,
-		"search_mode": "exhaustive",
-		"min_causal": 1,
-		"max_causal": 2,
-		"primary_var": "std_fraction",
-		"primary_var_display": "Standard Allelic Deviation",
-		"secondary_var": "coverage",
-		"secondary_var_display": "Coverage",
-		"test_count": 4,
-		"test_count_primary": 2,
-		"test_count_secondary": 2,
-		"test_name": "dummy_test_2d",
-		"iterations": 50,
-		"confidence": 0.95
-	}
-	
-	ptests = [0.6, 0.8 ]
-	stests = [10, 100]
-	
-	bm = Benchmark2d(params)
-	for s in stests:
-		for p in ptests:
-			bm.test(std_fraction=p, coverage=s)
-	bm.output_summary()
 
-def test_dev_cov():
-	params = {
-		"num_snps": 100,
-		"num_ppl": 95,
+def test_dev_cov(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	std_al_dev,
+	coverage, 
+	num_trials,
+	script_path
+):
+	params_base = {
+		"test_type": "dev_cov",
+		"region_size": None,
+		"max_snps": 100,
+		"num_samples": 100,
+		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
-		"herit_eqtl": 0.05,
-		"herit_ase": 0.4,
-		"std_fraction": None,
+		"herit_qtl": 0.05,
+		"herit_as": 0.4,
+		"std_al_dev": None,
 		"num_causal": 1,
 		"coverage": None,
 		"search_mode": "exhaustive",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": None, 
 		"min_causal": 1,
 		"max_causal": 1,
-		"primary_var": "std_fraction",
-		"primary_var_display": "AS Variance (Standard Allelic Deviation)",
-		"secondary_var": "coverage",
-		"secondary_var_display": "Mean Coverage",
-		"test_count": 54,
-		"test_count_primary": 9,
-		"test_count_secondary": 6,
-		"test_name": "fraction_vs_coverage",
-		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
-		"iterations": 500,
+		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "acav"])
+		"model_flavors": set(["indep", "eqtl", "ase", "acav", "rasq", "bfm"])
 	}
-	
-	ptests = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-	stests = [10, 20, 50, 100, 500, 1000]
-	
-	bm = Benchmark2d(params)
-	for s in stests:
-		for p in ptests:
-			bm.test(std_fraction=p, coverage=s)
-	bm.output_summary()		
+	params_base.update(data_info)
 
-def test_dev_herit():
-	params = {
-		"num_snps": 100,
-		"num_ppl": 95,
+	out_dir = os.path.join(out_dir_base, params_base["test_type"])
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	for i in std_al_dev:
+		for j in coverage:
+			test_name = "s_{0}_c_{1}_shared".format(i, j)
+			param_updates = {
+				"test_name": test_name,
+				"std_al_dev": i,
+				"coverage": j,
+			}
+			params = params_base.copy()
+			params.update(param_updates)
+			params.update(data_info)
+			params_path = os.path.join(params_dir, test_name + ".pickle")
+			disp.add_job(out_dir, params_path, params, num_trials)
+
+def test_dev_herit(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	std_al_dev,
+	herit_as, 
+	num_trials,
+	script_path
+):
+	params_base = {
+		"test_type": "dev_herit",
+		"region_size": None,
+		"max_snps": 100,
+		"num_samples": 100,
+		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
-		"herit_eqtl": 0.05,
-		"herit_ase": None,
-		"std_fraction": None,
+		"herit_qtl": 0.05,
+		"herit_as": None,
+		"std_al_dev": None,
 		"num_causal": 1,
 		"coverage": 100,
 		"search_mode": "exhaustive",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": None, 
 		"min_causal": 1,
 		"max_causal": 1,
-		"primary_var": "std_fraction",
-		"primary_var_display": "AS Variance (Standard Allelic Deviation)",
-		"secondary_var": "herit_ase",
-		"secondary_var_display": "ASE Heritability",
-		"test_count": 54,
-		"test_count_primary": 9,
-		"test_count_secondary": 6,
-		"test_name": "fraction_vs_ase_noise",
-		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
-		"iterations": 500,
+		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "acav"])
+		"model_flavors": set(["indep", "eqtl", "ase", "acav", "rasq", "bfm"])
 	}
-	
-	ptests = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95 ]
-	stests = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-	
-	bm = Benchmark2d(params)
-	for s in stests:
-		for p in ptests:
-			bm.test(std_fraction=p, herit_ase=s)
-	bm.output_summary()
+	params_base.update(data_info)
 
-def test_multi_cv():
-	params = {
-		"num_snps": 100,
-		"num_ppl": 95,
+	out_dir = os.path.join(out_dir_base, params_base["test_type"])
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	for i in std_al_dev:
+		for j in herit_as:
+			test_name = "s_{0}_h_{1}_shared".format(i, j)
+			param_updates = {
+				"test_name": test_name,
+				"std_al_dev": i,
+				"herit_as": j,
+			}
+			params = params_base.copy()
+			params.update(param_updates)
+			params.update(data_info)
+			params_path = os.path.join(params_dir, test_name + ".pickle")
+			disp.add_job(out_dir, params_path, params, num_trials)
+
+def test_multi_cv(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	causal_vars, 
+	num_trials,
+	script_path,
+):
+	params_base = {
+		"test_type": "multi_cv",
+		"region_size": None,
+		"max_snps": 100,
+		"num_samples": 100,
+		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
-		"herit_eqtl": 0.05,
-		"herit_ase": 0.4,
-		"herit_ase_manual": 0.1,
-		"std_fraction": 0.65,
-		"min_causal": 1,
+		"herit_qtl": 0.05,
+		"herit_as": 0.4,
+		"herit_as_man": 0.1,
+		"std_al_dev": 0.7,
+		"num_causal": None,
 		"coverage": 100,
 		"search_mode": "shotgun",
 		"prob_threshold": 0.001,
 		"streak_threshold": 1000,
 		"search_iterations": None, 
+		"min_causal": 1,
 		"max_causal": None,
-		"num_causal": None,
-		"primary_var": "num_causal",
-		"primary_var_display": "Number of Causal Variants",
-		"test_count": 1,
-		"test_name": "multi_cv",
-		"test_path": "/home/austin/Documents/Gusev/Results/ase_finemap_results/Simulations",
-		"iterations": 500,
-		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase"]) 
-	}
-	tests = [2]
-	bm = Benchmark(params)
-	for t in tests:
-		it = int(spm.comb(params["num_snps"], t))
-		bm.test(max_causal=t+1, num_causal=t, search_iterations=it)
-	bm.output_summary()
-
-def test_shared_causal(
-	disp, 
-	data_info,
-	params_dir, 
-	out_dir_base, 
-	qtl_sizes, 
-	gwas_sizes, 
-	gwas_herits, 
-	num_trials,
-	script_path,
-):
-	params_base = {
-		"test_type": "shared",
-		"region_size": 200000,
-		"max_snps": 1000,
-		"num_samples_qtl": None,
-		"num_samples_gwas": None,
-		"maf_thresh": 0.01,
-		"overdispersion": 0.05,
-		"herit_qtl": 0.05,
-		"herit_as": 0.4,
-		"herit_gwas": None,
-		"std_al_dev": 0.7,
-		"num_causal": 1,
-		"coverage": 100,
-		"search_mode": "exhaustive",
-		"min_causal": 0,
-		"max_causal": 1,
 		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
+		"model_flavors": set(["indep", "eqtl", "ase", "acav", "bfm"])
 	}
-	out_dir = os.path.join(out_dir_base, "shared")
+	params_base.update(data_info)
+
+	out_dir = os.path.join(out_dir_base, params_base["test_type"])
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
-	for i in qtl_sizes:
-		for j in gwas_sizes:
-			for k in gwas_herits:
-				test_name = "q_{0}_g_{1}_h_{2}_shared".format(i, j, k)
-				param_updates = {
-					"test_name": test_name,
-					"num_samples_qtl": i,
-					"num_samples_gwas": j,
-					"herit_gwas": k,
-				}
-				params = params_base.copy()
-				params.update(param_updates)
-				params.update(data_info)
-				params_path = os.path.join(params_dir, test_name + ".pickle")
-				disp.add_job(out_dir, params_path, params, num_trials)
+	for i in causal_vars:
+		test_name = "k_{0}_shared".format(i)
+		it = int(spm.comb(params_base["max_snps"], i))
+		param_updates = {
+			"test_name": test_name,
+			"max_causal": i + 1,
+			"num_causal": i,
+			"search_iterations": it,
+		}
+		params = params_base.copy()
+		params.update(param_updates)
+		params.update(data_info)
+		params_path = os.path.join(params_dir, test_name + ".pickle")
+		disp.add_job(out_dir, params_path, params, num_trials)
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))

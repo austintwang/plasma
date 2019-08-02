@@ -123,7 +123,9 @@ class LocusSimulator(object):
 			herit_qtl,
 			herit_as,
 			overdispersion,
-			causal_override=None
+			causal_override=None,
+			switch_error=0.,
+			blip_error=0.,
 		):
 		mult = (num_samples * 2) // self.num_samples
 		rem = (num_samples * 2) % self.num_samples
@@ -136,6 +138,24 @@ class LocusSimulator(object):
 		np.random.shuffle(haps_sampled)
 		hap_A = haps_sampled[:num_samples]
 		hap_B = haps_sampled[num_samples:]
+
+		if switch_error > 0:
+			switches = np.logical_and(
+				(hap_A != hap_B), 
+				np.random.choice([True, False], hap_A.shape(), p=[switch_error, 1-switch_error])
+			)
+			switch_idx = np.argwhere(switches)
+			for r, c in switch_idx:
+				hap_A[r, c:], hap_B[r, c:] = hap_B[r, c:], hap_A[r, c:].copy()
+
+		if blip_error > 0:
+			blips = np.logical_and(
+				(hap_A != hap_B), 
+				np.random.choice([True, False], hap_A.shape(), p=[blip_error, 1-blip_error])
+			)
+			blip_idx = np.argwhere(blips)
+			for r, c in blip_idx:
+				hap_A[r, c], hap_B[r, c] = hap_B[r, c], hap_A[r, c].copy()
 
 		genotypes_comb = hap_A + hap_B
 		phases = hap_A - hap_B

@@ -445,7 +445,7 @@ class Rasqual(Finemap):
 			print(record.samples) ####
 			sample = record.samples[smp]
 			gen_data = sample["GT"]
-			print(sample.data) ####
+			print(sample.data["GT"]) ####
 			print(gen_data) ####
 			hap_data = gen_data.split("|")
 

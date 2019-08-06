@@ -499,6 +499,7 @@ class Rasqual(Finemap):
 			"-f",
 			self.output_name,
 		]
+		print(" ".join(rasqual_params)) ####
 		rasqual_out = subprocess.check_output(rasqual_params)
 		rasqual_res = rasqual_out.decode('UTF-8').rstrip().split("\n")
 		print("\n".join(rasqual_res)) ####

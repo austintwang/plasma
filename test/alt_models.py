@@ -442,7 +442,7 @@ class Rasqual(Finemap):
 
 		for smp, snp in het_idx:
 			record = self.records_sim[snp]
-			print(record.samples) ####
+			# print(record.samples) ####
 			sample = record.samples[smp]
 			gen_data = sample["GT"]
 			print(sample.data["GT"]) ####
@@ -455,7 +455,7 @@ class Rasqual(Finemap):
 			sample["AS"] = reads
 
 		total_exp_scaled = self.total_exp * 50
-		total_exp_off = total_exp_scaled - np.amain(total_exp_scaled)
+		total_exp_off = total_exp_scaled - np.amin(total_exp_scaled)
 		counts_data = "\t".join([self.output_name] + list(total_exp_off))
 
 		self.vcf_path = os.path.join(self.output_path, "data.vcf")

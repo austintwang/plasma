@@ -407,6 +407,7 @@ class Rasqual(Finemap):
 		self.records = kwargs.get("records", None)
 		self.snp_ids = kwargs.get("snp_ids", None)
 		print("test1") ####
+		raise Exception ####
 
 	def initialize(self):
 		print("test2") ####

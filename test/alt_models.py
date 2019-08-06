@@ -136,7 +136,7 @@ class CaviarASE(Finemap):
 		self.ld_ase = np.nan_to_num(corr)
 		np.fill_diagonal(self.ld_ase, 1.0)
 
-		self.ld = (self.corr + self.ld_ase) / 2
+		self.ld = (self.corr_shared + self.ld_ase) / 2
 
 		self.ncp = 1
 

@@ -152,6 +152,7 @@ class CaviarASE(Finemap):
 
 	def search_exhuastive(self, min_causal, max_causal):
 		self.min_causal = min_causal
+		self.max_causal = max_causal
 		self.eval1.search_exhuastive(min_causal, max_causal)
 		self.eval2.search_exhuastive(min_causal, max_causal)
 

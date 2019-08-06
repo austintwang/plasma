@@ -141,7 +141,7 @@ def run_model(model_cls, inputs, model_name, model_updates):
 				inputs_model["streak_threshold"], 
 				inputs_model["search_iterations"]
 			)
-		causal_config = params["causal_config"]
+		causal_config = inputs_model["causal_config"]
 
 		causal_set = model_qtl.get_causal_set(inputs_model["confidence"])
 		ppas = model_qtl.get_ppas()

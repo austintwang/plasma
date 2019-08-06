@@ -51,6 +51,7 @@ class Caviar(Finemap):
 		self.search_exhuastive(min_causal, max_causal)
 
 	def get_causal_set(self, confidence):
+		print(self.max_causal) ####
 		self.params = [
 			self.caviar_path,
 			"-o", self.output_filename_base,

@@ -315,12 +315,12 @@ def sim_test(
 		if "acav" in model_flavors:
 			try:
 				param_updates = {}
-				result_ecav = run_model(CaviarASE, inputs, "acav", param_updates)
+				result_acav = run_model(CaviarASE, inputs, "acav", param_updates)
 			except Exception as e:
 				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
-				result_ecav = {
+				result_acav = {
 					"model": "acav",
 					"complete": False, 
 					"error": message, 

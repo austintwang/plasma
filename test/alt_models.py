@@ -43,16 +43,16 @@ class Caviar(Finemap):
 		self.z_scores = self.total_exp_stats.tolist()
 		self.ld = self.total_exp_corr.tolist()
 
-	def search_exhuastive(self, min_causal, max_causal):
+	def search_exhaustive(self, min_causal, max_causal):
 		self.min_causal = min_causal
 		self.max_causal = max_causal
-		print("testc") ####
+		# print("testc") ####
 
 	def search_shotgun(self, min_causal, max_causal, *args):
-		self.search_exhuastive(min_causal, max_causal)
+		self.search_exhaustive(min_causal, max_causal)
 
 	def get_causal_set(self, confidence):
-		print(self.max_causal) ####
+		# print(self.max_causal) ####
 		self.params = [
 			self.caviar_path,
 			"-o", self.output_filename_base,
@@ -152,14 +152,14 @@ class CaviarASE(Finemap):
 		self.eval2.total_exp_corr = self.ld
 		self.eval2.total_exp_stats = self.stats_2
 
-	def search_exhuastive(self, min_causal, max_causal):
+	def search_exhaustive(self, min_causal, max_causal):
 		self.min_causal = min_causal
 		self.max_causal = max_causal
-		self.eval1.search_exhuastive(min_causal, max_causal)
-		self.eval2.search_exhuastive(min_causal, max_causal)
+		self.eval1.search_exhaustive(min_causal, max_causal)
+		self.eval2.search_exhaustive(min_causal, max_causal)
 
 	def search_shotgun(self, min_causal, max_causal, *args):
-		self.search_exhuastive(min_causal, max_causal)
+		self.search_exhaustive(min_causal, max_causal)
 
 	def get_causal_set(self, confidence):
 		self.eval1.get_causal_set(confidence)
@@ -339,7 +339,7 @@ class FmBenner(Finemap):
 		self.se = (self.beta / self.imbalance_stats).tolist()
 		self.ld = self.corr.tolist()
 
-	def search_exhuastive(self, min_causal, max_causal):
+	def search_exhaustive(self, min_causal, max_causal):
 		command_params = [
 			self.fm_path,
 			"--in-files", self.master_path,

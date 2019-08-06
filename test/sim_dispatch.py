@@ -36,8 +36,9 @@ class Dispatcher(object):
 
 	def submit(self):
 		timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
-		# raise Exception ####
 		for i in self.jobs:
+			print(" ".join(i)) ####
+			raise Exception ####
 			while True:
 				try:
 					submission = subprocess.run(i, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -93,7 +94,7 @@ def test_dev_cov(
 
 	for i in std_al_dev:
 		for j in coverage:
-			test_name = "s_{0}_c_{1}_shared".format(i, j)
+			test_name = "s_{0}_c_{1}".format(i, j)
 			param_updates = {
 				"test_name": test_name,
 				"std_al_dev": i,
@@ -145,7 +146,7 @@ def test_dev_herit(
 
 	for i in std_al_dev:
 		for j in herit_as:
-			test_name = "s_{0}_h_{1}_shared".format(i, j)
+			test_name = "s_{0}_h_{1}".format(i, j)
 			param_updates = {
 				"test_name": test_name,
 				"std_al_dev": i,
@@ -196,7 +197,7 @@ def test_multi_cv(
 		os.makedirs(out_dir)
 
 	for i in causal_vars:
-		test_name = "k_{0}_shared".format(i)
+		test_name = "k_{0}".format(i)
 		it = int(spm.comb(params_base["max_snps"], i))
 		param_updates = {
 			"test_name": test_name,
@@ -210,10 +211,60 @@ def test_multi_cv(
 		params_path = os.path.join(params_dir, test_name + ".pickle")
 		disp.add_job(out_dir, params_path, params, num_trials)
 
+def test_imperfect_phs(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	phs_errors, 
+	num_trials,
+	script_path
+):
+	params_base = {
+		"test_type": "imperfect_phs",
+		"region_size": None,
+		"max_snps": 100,
+		"num_samples": 100,
+		"maf_thresh": 0.01,
+		"overdispersion": 0.05,
+		"herit_qtl": 0.05,
+		"herit_as": 0.4,
+		"std_al_dev": 0.7,
+		"num_causal": 1,
+		"coverage": 100,
+		"search_mode": "exhaustive",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": None, 
+		"min_causal": 1,
+		"max_causal": 1,
+		"test_name": None,
+		"confidence": 0.95,
+		"model_flavors": set(["indep", "ase", "rasq"])
+	}
+	params_base.update(data_info)
+
+	out_dir = os.path.join(out_dir_base, params_base["test_type"])
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	for s, b in phs_errors:
+		test_name = "s_{0}_b_{1}".format(i, j)
+		param_updates = {
+			"test_name": test_name,
+			"switch_error": s,
+			"blip_error": b,
+		}
+		params = params_base.copy()
+		params.update(param_updates)
+		params.update(data_info)
+		params_path = os.path.join(params_dir, test_name + ".pickle")
+		disp.add_job(out_dir, params_path, params, num_trials)
+
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
-	script_path = os.path.join(curr_path, "coloc_test.py")
+	script_path = os.path.join(curr_path, "sim_test.py")
 	batch_size = 10
 	num_trials = 50
 
@@ -225,43 +276,22 @@ if __name__ == '__main__':
 		"sample_filter_path": "/agusevlab/awang/job_data/sim_coloc/vcfs/integrated_call_samples_v3.20130502.ALL.panel",
 		"snp_filter_path": "/agusevlab/awang/job_data/sim_coloc/1000g/snp_filter.pickle"
 	}
-	params_dir = "/agusevlab/awang/job_data/sim_coloc/params/"
+	params_dir = "/agusevlab/awang/job_data/sim/params/"
 	if not os.path.exists(params_dir):
 		os.makedirs(params_dir)
-	out_dir_base = "/agusevlab/awang/job_data/sim_coloc/outs/"
+	out_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 
-	# qtl_sizes = [10, 50, 100, 200, 500]
-	# gwas_sizes = [10000, 50000, 100000, 200000, 500000]
-
-	qtl_sizes = [1000, 500, 200, 100, 50, 10]
-	gwas_sizes = [500000, 200000, 100000, 50000, 10000]
-
-	# gwas_herits = [.01/100, .05/1000]
-	gwas_herits = [0.001, 0.0001]
-	# gwas_herits = [.1] ####
-	test_shared_causal(
+	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	coverage = [10, 20, 50, 100, 500, 1000]
+	test_dev_cov(
 		disp, 
 		data_info,
 		params_dir, 
 		out_dir_base, 
-		qtl_sizes, 
-		gwas_sizes, 
-		gwas_herits, 
+		std_al_dev,
+		coverage, 
 		num_trials,
-		script_path,
-	)
-
-	ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
-	test_unshared_corr(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		qtl_sizes, 
-		gwas_sizes, 
-		ld_thresh, 
-		num_trials,
-		script_path,
+		script_path
 	)
 
 	disp.submit()

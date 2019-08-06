@@ -107,6 +107,8 @@ def sim_random(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
 		params["herit_qtl"],
 		params["herit_as"],
 		params["overdispersion"],
+		switch_error=params.get("switch_error", 0.),
+		blip_error=params.get("blip_error", 0.)
 	)
 
 	return locus, qtl_data
@@ -139,14 +141,23 @@ def run_model(model_cls, inputs, model_name, model_updates):
 				inputs_model["streak_threshold"], 
 				inputs_model["search_iterations"]
 			)
+		causal_config = params["causal_config"]
 
 		causal_set = model_qtl.get_causal_set(inputs_model["confidence"])
 		ppas = model_qtl.get_ppas()
+		recall = 1
+		for i in np.nonzero(causal_config)[0]:
+			if causal_set[i] != 1:
+				recall = 0
+		selections = np.flip(np.argsort(ppas))
+		causals = causal_config[selections]
+		inclusion = np.cumsum(causals) / np.sum(causal_config)
 
 	result = {
-		"causal_set": causal_set_qtl,
-		"ppas": ppas_qtl,
-		"clpps": clpps,
+		"causal_set": causal_set,
+		"ppas": ppas,
+		"recall": recall,
+		"inclusion": inclusion
 	}
 
 	result.update(inputs)

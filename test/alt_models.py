@@ -395,10 +395,10 @@ class FmBenner(Finemap):
 		return self.post_probs
 
 class Rasqual(Finemap):
-	rasqual_dir_path = "/agusevlab/awang/finemap"
-	rasqual_path = "CAVIAR"
-	rasqual_script_path = "CAVIAR"
-	r_path = "CAVIAR"
+	rasqual_dir_path = "/agusevlab/awang/rasqual"
+	rasqual_path = "rasqual"
+	rasqual_script_path = "/agusevlab/awang/rasqual/R"
+	r_path = "Rscript"
 	temp_path = os.path.join(rasqual_dir_path, "temp")
 
 	def __init__(self, **kwargs):

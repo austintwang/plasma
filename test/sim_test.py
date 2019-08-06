@@ -349,7 +349,7 @@ def sim_test(
 		if "cav" in model_flavors:
 			try:
 				param_updates = {"qtl_only": True}
-				result_ecav = run_model(Caviar, inputs, "ecav", param_updates)
+				result_ecav = run_model(Caviar, inputs, "cav", param_updates)
 			except Exception as e:
 				raise ####
 				trace = traceback.format_exc()
@@ -366,7 +366,7 @@ def sim_test(
 		if "rasq" in model_flavors:
 			try:
 				param_updates = {"as_only": True}
-				result_rasq = run_model(Rasqual, inputs, "ecav", param_updates)
+				result_rasq = run_model(Rasqual, inputs, "rasq", param_updates)
 			except Exception as e:
 				raise ####
 				trace = traceback.format_exc()
@@ -383,7 +383,7 @@ def sim_test(
 		if "fmb" in model_flavors:
 			try:
 				param_updates = {"qtl_only": True}
-				result_fmb = run_model(FmBenner, inputs, "ecav", param_updates)
+				result_fmb = run_model(FmBenner, inputs, "fmb", param_updates)
 			except Exception as e:
 				raise ####
 				trace = traceback.format_exc()

@@ -178,6 +178,9 @@ class CaviarASE(Finemap):
 			self.causal_set = set2
 			self.post_probs = ppa2
 
+		print(set1) ####
+		print(set2) ####
+
 	def get_ppas(self):
 		return self.post_probs
 

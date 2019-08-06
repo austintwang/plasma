@@ -217,7 +217,6 @@ def sim_test(
 				"causal_config": locus.causal_config,
 			}
 			sim_data.update(qtl_data)
-			sim_data.update(gwas_data)
 
 			inputs = params.copy()
 			inputs.update(sim_data)

@@ -140,13 +140,13 @@ class CaviarASE(Finemap):
 
 		self.ncp = 1
 
-		self.eval1 = EvalCaviar(**kwargs)
+		self.eval1 = Caviar(**kwargs)
 		self.eval1.initialize()
 		self.eval1.ld = self.ld.tolist()
 		self.eval1.z_scores = self.stats_1.tolist()
 		self.eval1.ncp = self.ncp
 
-		self.eval2 = EvalCaviar(**kwargs)
+		self.eval2 = Caviar(**kwargs)
 		self.eval2.initialize()
 		self.eval2.ld = self.ld.tolist()
 		self.eval2.z_scores = self.stats_2.tolist()

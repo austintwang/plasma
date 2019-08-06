@@ -441,11 +441,11 @@ class Rasqual(Finemap):
 		het_idx = np.argwhere(self.phases)
 
 		for smp, snp in het_idx:
-			record = self.records_sim[snp]
+			record = self.records[snp]
 			# print(record.samples) ####
 			sample = record.samples[smp]
 			gen_data = sample["GT"]
-			print(sample.data["GT"]) ####
+			# print(sample.data["GT"]) ####
 			print(gen_data) ####
 			hap_data = gen_data.split("|")
 

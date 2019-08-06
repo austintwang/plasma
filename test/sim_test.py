@@ -132,7 +132,7 @@ def run_model(model_cls, inputs, model_name, model_updates):
 		model.initialize()
 
 		if inputs_model["search_mode"] == "exhaustive":
-			inputs_model.search_exhaustive(inputs["min_causal"], inputs["max_causal"])
+			model.search_exhaustive(inputs["min_causal"], inputs["max_causal"])
 		elif inputs_model["search_mode"] == "shotgun":
 			model.search_shotgun(
 				inputs_model["min_causal"], 

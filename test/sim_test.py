@@ -411,7 +411,7 @@ if __name__ == '__main__':
 	batch_size = int(sys.argv[2])
 	batch_num = int(sys.argv[3])
 	params_path = sys.argv[4]
-	coloc_test(
+	sim_test(
 		out_dir, 
 		batch_size, 
 		batch_num, 

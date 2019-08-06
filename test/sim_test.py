@@ -143,8 +143,8 @@ def run_model(model_cls, inputs, model_name, model_updates):
 			)
 		causal_config = inputs_model["causal_config"]
 
-		causal_set = model_qtl.get_causal_set(inputs_model["confidence"])
-		ppas = model_qtl.get_ppas()
+		causal_set = model.get_causal_set(inputs_model["confidence"])
+		ppas = model.get_ppas()
 		recall = 1
 		for i in np.nonzero(causal_config)[0]:
 			if causal_set[i] != 1:

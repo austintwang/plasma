@@ -366,6 +366,7 @@ def sim_test(
 		if "rasq" in model_flavors:
 			try:
 				param_updates = {"as_only": True}
+				print("test0") ####
 				result_rasq = run_model(Rasqual, inputs, "rasq", param_updates)
 			except Exception as e:
 				raise ####

@@ -406,7 +406,7 @@ class Rasqual(Finemap):
 		self.vcf_reader = kwargs.get("vcf_reader", None)
 		self.records = kwargs.get("records", None)
 		self.snp_ids = kwargs.get("snp_ids", None)
-		print("test1") ###
+		print("test1") ####
 
 	def initialize(self):
 		print("test2") ####

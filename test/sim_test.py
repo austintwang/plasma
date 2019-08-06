@@ -327,7 +327,7 @@ def sim_test(
 					"traceback": trace
 				}
 			finally:
-				output.append(result_ecav)
+				output.append(result_acav)
 			
 		if "eqtl" in model_flavors:
 			try:

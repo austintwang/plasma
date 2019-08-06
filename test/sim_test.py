@@ -128,7 +128,7 @@ def run_model(model_cls, inputs, model_name, model_updates):
 		}
 		inputs_model.update(param_renames)
 
-		model = Finemap(**inputs_model)
+		model = model_cls(**inputs_model)
 		model.initialize()
 
 		if inputs_model["search_mode"] == "exhaustive":

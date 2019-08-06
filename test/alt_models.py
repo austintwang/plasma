@@ -444,6 +444,7 @@ class Rasqual(Finemap):
 			record = self.records_sim[snp]
 			sample = record.samples[smp]
 			gen_data = sample["GT"]
+			print(gen_data) ####
 			hap_data = gen_data.split("|")
 
 			reads = (0, 0)

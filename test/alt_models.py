@@ -41,7 +41,7 @@ class Caviar(Finemap):
 		self.post_probs = np.zeros(self.num_snps)
 
 		self.z_scores = self.total_exp_stats.tolist()
-		self.ld = self.corr.tolist()
+		self.ld = self.total_exp_corr.tolist()
 
 	def search_exhuastive(self, min_causal, max_causal):
 		self.min_causal = min_causal

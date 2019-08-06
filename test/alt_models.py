@@ -442,7 +442,7 @@ class Rasqual(Finemap):
 
 		for smp, snp in het_idx:
 			record = self.records_sim[snp]
-			sample = records_sim.samples[smp]
+			sample = self.records_sim.samples[smp]
 			gen_data = sample["GT"]
 			hap_data = gen_data.split("|")
 

@@ -435,24 +435,47 @@ class Rasqual(Finemap):
 		os.makedirs(self.output_path)
 		self.output_filename_base = os.path.join(self.output_path, self.output_name)
 
-		self.records_sim = copy.deepcopy(self.records)
+		# self.records_sim = copy.deepcopy(self.records)
 
 		num_hets = np.count_nonzero(self.phases, axis=1)
-		het_idx = np.argwhere(self.phases)
+		# het_idx = np.argwhere(self.phases)
 
-		for smp, snp in het_idx:
-			record = self.records[snp]
-			print(record.samples) ####
-			sample = record.samples[smp]
-			gen_data = sample["GT"]
-			# print(sample.data["GT"]) ####
-			print(gen_data) ####
-			hap_data = gen_data.split("|")
+		as_field = vcf.parser._Format("AS", 2, "Integer", "Allele-Specific Reads")
+		self.vcf_reader.formats["AS"] = as_field
 
-			reads = (0, 0)
-			reads[hap_data[0]] = self.counts_A // num_hets[smp]
-			reads[hap_data[1]] = self.counts_B // num_hets[smp]
-			sample["AS"] = reads
+		samp_fmt = vcf.model.make_calldata_tuple(["GT", "AS"])
+		samp_fmt._types.extend(["String", "Integer"])
+		samp_fmt._nums.extend([1, 2])
+
+		for snp_idx, record in self.records:
+			record.add_format("AS")
+			for samp_idx, sample in record.sample:
+				phase = self.phases[samp_idx, snp_idx]
+				if phase != 0:
+					hap_data = (int(phase == 1), int(phase == -1))
+					gt = "{0}:{1}".format(*hap_data)
+					reads = (0, 0)
+					reads[hap_data[0]] = self.counts_A // num_hets[smp]
+					reads[hap_data[1]] = self.counts_B // num_hets[smp]
+				else:
+					dosage = self.genotypes_comb[samp_idx, snp_idx]
+					gt = "{0}:{0}".format(int(dosage > 0))
+					reads = (0, 0)
+				sample.data =  samp_fmt(gt, reads)
+
+		# for smp, snp in het_idx:
+		# 	record = self.records[snp]
+		# 	print(record.samples) ####
+		# 	sample = record.samples[smp]
+		# 	gen_data = sample["GT"]
+		# 	# print(sample.data["GT"]) ####
+		# 	print(gen_data) ####
+		# 	hap_data = gen_data.split("|")
+
+		# 	reads = (0, 0)
+		# 	reads[hap_data[0]] = self.counts_A // num_hets[smp]
+		# 	reads[hap_data[1]] = self.counts_B // num_hets[smp]
+		# 	sample["AS"] = reads
 
 		total_exp_scaled = self.total_exp * 50
 		total_exp_off = total_exp_scaled - np.amin(total_exp_scaled)

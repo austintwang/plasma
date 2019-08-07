@@ -485,7 +485,7 @@ class Rasqual(Finemap):
 
 		total_exp_scaled = self.total_exp * 50
 		total_exp_off = total_exp_scaled - np.amin(total_exp_scaled)
-		counts_data = "\t".join([self.output_name] + list(total_exp_off))
+		counts_data = "\t".join([self.output_name,] + list(total_exp_off))
 
 		self.vcf_path = os.path.join(self.output_path, "data.vcf")
 		self.counts_path = os.path.join(self.output_path, "Y.txt")

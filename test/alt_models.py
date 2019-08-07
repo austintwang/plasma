@@ -448,9 +448,10 @@ class Rasqual(Finemap):
 		samp_fmt._types.extend(["String", "Integer"])
 		samp_fmt._nums.extend([1, 2])
 
+		print(len(records)) ####
 		for snp_idx, record in enumerate(self.records):
 			record.add_format("AS")
-			print(len(record.sample)) ####
+			print(len(record.samples)) ####
 			for samp_idx, sample in enumerate(record.samples):
 				phase = self.phases[samp_idx, snp_idx]
 				if phase != 0:

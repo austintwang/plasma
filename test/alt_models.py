@@ -540,7 +540,9 @@ class Rasqual(Finemap):
 			"-m",
 			str(self.num_snps),
 			"-s",
+			str(self.locus_start),
 			"-e",
+			str(self.locus_end),
 			"-f",
 			self.output_name,
 		]

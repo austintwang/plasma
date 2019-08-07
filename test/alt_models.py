@@ -502,7 +502,7 @@ class Rasqual(Finemap):
 		with open(self.counts_path, "w") as counts_file:
 			counts_file.writelines([counts_data])
 
-		offset_script_path = os.path.join(rasqual_script_path, "makeOffset.R")
+		offset_script_path = os.path.join(self.rasqual_script_path, "makeOffset.R")
 		offset_params = [
 			self.r_path,
 			"--vanilla",
@@ -512,7 +512,7 @@ class Rasqual(Finemap):
 		]
 		offset_out = subprocess.check_output(offset_params)
 
-		bin_script_path = os.path.join(rasqual_script_path, "txt2bin.R")
+		bin_script_path = os.path.join(self.rasqual_script_path, "txt2bin.R")
 		bin_params = [
 			self.r_path,
 			"--vanilla",

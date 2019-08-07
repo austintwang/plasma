@@ -210,13 +210,14 @@ def sim_test(
 			sim_data = {
 				"sim_type": test_type,
 				"chrom": locus.chrom,
-				"locus_pos": locus.start,
+				"locus_start": locus.start,
 				"locus_size": locus.region_size,
 				"snp_ids": locus.snp_ids,
 				"num_snps": locus.snp_count,
 				"causal_config": locus.causal_config,
 				"records": locus.records,
-				"vcf_reader": locus.vcf_reader
+				"vcf_reader": locus.vcf_reader,
+				"locus_end": locus.sim_end
 			}
 			sim_data.update(qtl_data)
 

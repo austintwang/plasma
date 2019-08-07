@@ -412,6 +412,8 @@ class Rasqual(Finemap):
 		self.vcf_reader = kwargs.get("vcf_reader", None)
 		self.records = kwargs.get("records", None)
 		self.snp_ids = kwargs.get("snp_ids", None)
+		self.locus_start = kwargs.get("locus_start", None)
+		self.locus_end = kwargs.get("locus_end", None)
 		# print("test1") ####
 		# raise Exception ####
 
@@ -537,6 +539,8 @@ class Rasqual(Finemap):
 			str(self.num_snps),
 			"-m",
 			str(self.num_snps),
+			"-s",
+			"-e",
 			"-f",
 			self.output_name,
 		]

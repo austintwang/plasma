@@ -216,6 +216,7 @@ def sim_test(
 				"num_snps": locus.snp_count,
 				"causal_config": locus.causal_config,
 				"records": locus.records,
+				"vcf_reader": locus.vcf_reader
 			}
 			sim_data.update(qtl_data)
 

@@ -419,6 +419,7 @@ class Rasqual(Finemap):
 		# print("test2") ####
 		self._calc_num_ppl()
 		self._calc_num_snps()
+		self._calc_genotypes_comb()
 		self._calc_causal_status_prior()
 		self._calc_phases()
 		self._calc_total_exp()

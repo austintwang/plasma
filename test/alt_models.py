@@ -496,7 +496,7 @@ class Rasqual(Finemap):
 
 		with open(self.vcf_path, "w") as vcf_file:
 			vcf_writer = vcf.Writer(vcf_file, self.vcf_reader)
-			for record in self.records_sim:
+			for record in self.records:
 				vcf_writer.write_record(record)
 
 		with open(self.counts_path, "w") as counts_file:

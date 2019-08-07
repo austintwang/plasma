@@ -450,7 +450,7 @@ class Rasqual(Finemap):
 
 		for snp_idx, record in enumerate(self.records):
 			record.add_format("AS")
-			print(len(recored.sample)) ####
+			print(len(record.sample)) ####
 			for samp_idx, sample in enumerate(record.samples):
 				phase = self.phases[samp_idx, snp_idx]
 				if phase != 0:

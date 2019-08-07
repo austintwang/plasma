@@ -101,6 +101,8 @@ class LocusSimulator(object):
 
 		self.vcf_reader = vcf_reader
 		self.records = records
+		self.sim_end = pos
+
 		self.haps = np.array(haps).T
 		self.snp_ids = np.array(snp_ids)
 		self.snp_count = snp_count

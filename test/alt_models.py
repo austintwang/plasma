@@ -485,7 +485,7 @@ class Rasqual(Finemap):
 
 		total_exp_scaled = self.total_exp * 50
 		total_exp_off = total_exp_scaled - np.amin(total_exp_scaled)
-		counts_data = "\t".join([self.output_name] + list(total_exp_off.astype(str)))
+		counts_data = "\t".join([self.output_name] + list(total_exp_off.astype(str))) + "\n\n"
 
 		self.vcf_path = os.path.join(self.output_path, "data.vcf")
 		self.counts_path = os.path.join(self.output_path, "Y.txt")
@@ -500,7 +500,7 @@ class Rasqual(Finemap):
 				vcf_writer.write_record(record)
 
 		with open(self.counts_path, "w") as counts_file:
-			counts_file.writelines([counts_data])
+			counts_file.write(counts_data)
 
 		offset_script_path = os.path.join(self.rasqual_script_path, "makeOffset.R")
 		offset_params = [

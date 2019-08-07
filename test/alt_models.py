@@ -447,9 +447,9 @@ class Rasqual(Finemap):
 		samp_fmt._types.extend(["String", "Integer"])
 		samp_fmt._nums.extend([1, 2])
 
-		for snp_idx, record in self.records:
+		for snp_idx, record in enumerate(self.records):
 			record.add_format("AS")
-			for samp_idx, sample in record.sample:
+			for samp_idx, sample in enumerate(record.sample):
 				phase = self.phases[samp_idx, snp_idx]
 				if phase != 0:
 					hap_data = (int(phase == 1), int(phase == -1))

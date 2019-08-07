@@ -455,10 +455,11 @@ class Rasqual(Finemap):
 				if phase != 0:
 					hap_data = (int(phase == 1), int(phase == -1))
 					gt = "{0}:{1}".format(*hap_data)
-					reads = (0, 0)
+					reads = [0, 0]
 					print(self.counts_A[samp_idx] // num_hets[samp_idx]) ####
-					reads[hap_data[0]] += self.counts_A[samp_idx] // num_hets[samp_idx]
-					reads[hap_data[1]] += self.counts_B[samp_idx] // num_hets[samp_idx]
+					reads[hap_data[0]] = self.counts_A[samp_idx] // num_hets[samp_idx]
+					reads[hap_data[1]] = self.counts_B[samp_idx] // num_hets[samp_idx]
+					reads = tuple(reads)
 				else:
 					dosage = self.genotypes_comb[samp_idx, snp_idx]
 					gt = "{0}:{0}".format(int(dosage > 0))

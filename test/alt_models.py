@@ -494,7 +494,7 @@ class Rasqual(Finemap):
 		self.offset_bin_path = os.path.join(self.output_path, "K.bin")
 		self.output_path = os.path.join(self.output_path, "output.txt")
 
-		with open(self.vcf_path) as vcf_file:
+		with open(self.vcf_path, "w") as vcf_file:
 			vcf_writer = vcf.Writer(vcf_file, self.vcf_reader)
 			for record in self.records_sim:
 				vcf_writer.write_record(record)

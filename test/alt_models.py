@@ -443,16 +443,17 @@ class Rasqual(Finemap):
 
 		as_field = vcf.parser._Format("AS", 2, "Integer", "Allele-Specific Reads")
 		self.vcf_reader.formats["AS"] = as_field
+		self.vcf_reader.samples = self.vcf_reader.samples[:self.num_ppl]
 
 		samp_fmt = vcf.model.make_calldata_tuple(["GT", "AS"])
 		samp_fmt._types.extend(["String", "Integer"])
 		samp_fmt._nums.extend([1, 2])
 
-		print(len(self.records)) ####
+		# print(len(self.records)) ####
 		for snp_idx, record in enumerate(self.records):
 			record.add_format("AS")
-			print(len(record.samples)) ####
-			for samp_idx, sample in enumerate(record.samples):
+			# print(len(record.samples)) ####
+			for samp_idx, sample in enumerate(record.samples[:self.num_ppl]):
 				phase = self.phases[samp_idx, snp_idx]
 				if phase != 0:
 					hap_data = (int(phase == 1), int(phase == -1))

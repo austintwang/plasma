@@ -448,7 +448,7 @@ class Rasqual(Finemap):
 		samp_fmt._types.extend(["String", "Integer"])
 		samp_fmt._nums.extend([1, 2])
 
-		print(len(records)) ####
+		print(len(self.records)) ####
 		for snp_idx, record in enumerate(self.records):
 			record.add_format("AS")
 			print(len(record.samples)) ####

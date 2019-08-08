@@ -524,7 +524,7 @@ class Rasqual(Finemap):
 		]
 		offset_out = subprocess.check_output(offset_params)
 
-		offset_data = "\t".join([self.output_name] + list((total_exp_off*0+.01).astype(str))) + "\n\n" ####
+		offset_data = "\t".join([self.output_name] + list((total_exp_off*0+0.).astype(str))) + "\n\n" ####
 		with open(self.offset_path, "w") as offset_file: ####
 			offset_file.write(offset_data) ####
 

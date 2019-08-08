@@ -539,8 +539,8 @@ class Rasqual(Finemap):
 			"-y",
 			self.counts_bin_path,
 			"-k",
-			self.counts_bin_path, ####
-			# self.offset_bin_path,
+			# self.counts_bin_path, ####
+			self.offset_bin_path,
 			"-n",
 			str(self.num_ppl),
 			"-j",

@@ -496,7 +496,7 @@ class Rasqual(Finemap):
 		# 	sample["AS"] = reads
 
 		total_exp_scaled = self.total_exp * 50
-		total_exp_off = total_exp_scaled - np.amin(total_exp_scaled)
+		total_exp_off = total_exp_scaled - np.amin(total_exp_scaled) + 0.01
 		counts_data = "\t".join([self.output_name] + list(total_exp_off.astype(str))) + "\n\n"
 
 		self.vcf_path = os.path.join(self.output_path, "data.vcf")
@@ -524,9 +524,9 @@ class Rasqual(Finemap):
 		]
 		offset_out = subprocess.check_output(offset_params)
 
-		offset_data = "\t".join([self.output_name] + list((total_exp_off*0+0.).astype(str))) + "\n\n" ####
-		with open(self.offset_path, "w") as offset_file: ####
-			offset_file.write(offset_data) ####
+		# offset_data = "\t".join([self.output_name] + list((total_exp_off*0+0.).astype(str))) + "\n\n" ####
+		# with open(self.offset_path, "w") as offset_file: ####
+		# 	offset_file.write(offset_data) ####
 
 		bin_script_path = os.path.join(self.rasqual_script_path, "txt2bin.R")
 		bin_params = [

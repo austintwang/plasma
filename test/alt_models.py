@@ -563,6 +563,7 @@ class Rasqual(Finemap):
 			"--fix-delta",
 			"--fix-phi",
 			"--fix-theta",
+			"--fix-genotype",
 			"-VV"
 		]
 		# print(" ".join(rasqual_params)) ####

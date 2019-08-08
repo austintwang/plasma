@@ -452,10 +452,11 @@ class Rasqual(Finemap):
 		samp_fmt._nums.extend([1, 2])
 
 		# print(len(self.records)) ####
+		het_idx = np.zeros(self.num_snps)
 		for snp_idx, record in enumerate(self.records):
 			record.add_format("AS")
 			# print(len(record.samples)) ####
-			for samp_idx, sample in enumerate(record.samples[:self.num_ppl]):
+			for samp_idx, sample in enumerate(record.samples[:self.num_ppl]): 
 				phase = self.phases[samp_idx, snp_idx]
 				if phase != 0:
 					hap_data = (int(phase == 1), int(phase == -1))
@@ -463,15 +464,15 @@ class Rasqual(Finemap):
 					reads = [0, 0]
 					# print(self.counts_A[samp_idx] // num_hets[samp_idx]) ####
 					reads[hap_data[0]] = self.counts_A[samp_idx] // num_hets[samp_idx]
-					if samp_idx < self.counts_A[samp_idx] % num_hets[samp_idx]:
+					if het_idx[samp_idx] < self.counts_A[samp_idx] % num_hets[samp_idx]:
 						reads[hap_data[0]] += 1
 
 					reads[hap_data[1]] = self.counts_B[samp_idx] // num_hets[samp_idx]
-					if samp_idx < self.counts_B[samp_idx] % num_hets[samp_idx]:
+					if het_idx[samp_idx] < self.counts_B[samp_idx] % num_hets[samp_idx]:
 						reads[hap_data[1]] += 1
 
 					reads = "{0},{1}".format(*reads)
-
+					het_idx[samp_idx] += 1
 				else:
 					dosage = self.genotypes_comb[samp_idx, snp_idx]
 					gt = "{0}|{0}".format(int(dosage > 0))
@@ -563,7 +564,7 @@ class Rasqual(Finemap):
 			"--fix-delta",
 			"--fix-phi",
 			"--fix-theta",
-			"-vV"
+			"-VV"
 		]
 		# print(" ".join(rasqual_params)) ####
 		rasqual_out = subprocess.check_output(rasqual_params)

@@ -463,8 +463,15 @@ class Rasqual(Finemap):
 					reads = [0, 0]
 					# print(self.counts_A[samp_idx] // num_hets[samp_idx]) ####
 					reads[hap_data[0]] = self.counts_A[samp_idx] // num_hets[samp_idx]
+					if samp_idx < self.counts_A[samp_idx] % num_hets[samp_idx]
+						reads[hap_data[0]] += 1
+
 					reads[hap_data[1]] = self.counts_B[samp_idx] // num_hets[samp_idx]
-					reads = "{0}|{1}".format(*reads)
+					if samp_idx < self.counts_B[samp_idx] % num_hets[samp_idx]
+						reads[hap_data[1]] += 1
+
+					reads = "{0},{1}".format(*reads)
+
 				else:
 					dosage = self.genotypes_comb[samp_idx, snp_idx]
 					gt = "{0}|{0}".format(int(dosage > 0))
@@ -545,8 +552,20 @@ class Rasqual(Finemap):
 			str(self.locus_end),
 			"-f",
 			self.output_name,
+			"-a",
+			str(0),
+			"-h",
+			str(0),
+			"-q",
+			str(0),
+			"--min-coverage-depth",
+			str(0),
+			"--fix-delta",
+			"--fix-phi",
+			"--fix-theta",
+			"-vV"
 		]
-		print(" ".join(rasqual_params)) ####
+		# print(" ".join(rasqual_params)) ####
 		rasqual_out = subprocess.check_output(rasqual_params)
 		rasqual_res = rasqual_out.decode('UTF-8').rstrip().split("\n")
 		print("\n".join(rasqual_res)) ####

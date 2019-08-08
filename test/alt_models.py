@@ -539,7 +539,8 @@ class Rasqual(Finemap):
 			"-y",
 			self.counts_bin_path,
 			"-k",
-			self.offset_bin_path,
+			self.counts_bin_path, ####
+			# self.offset_bin_path,
 			"-n",
 			str(self.num_ppl),
 			"-j",
@@ -565,7 +566,7 @@ class Rasqual(Finemap):
 			"--fix-delta",
 			"--fix-phi",
 			"--fix-theta",
-			# "--fix-genotype",
+			"--fix-genotype",
 			"-VV"
 		]
 		# print(" ".join(rasqual_params)) ####

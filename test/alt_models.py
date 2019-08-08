@@ -477,7 +477,7 @@ class Rasqual(Finemap):
 					dosage = self.genotypes_comb[samp_idx, snp_idx]
 					gt = "{0}|{0}".format(int(dosage > 0))
 					reads = "0,0"
-				gt = "./." ####
+				gt = "fjmfjfjfjfj" ####
 				sample.data =  samp_fmt(gt, reads)
 
 		# for smp, snp in het_idx:

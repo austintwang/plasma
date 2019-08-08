@@ -84,7 +84,7 @@ def test_dev_cov(
 		"max_causal": 1,
 		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "acav", "rasq", "fmb"])
+		"model_flavors": set(["indep", "eqtl", "ase", "acav", "fmb"])
 	}
 	params_base.update(data_info)
 

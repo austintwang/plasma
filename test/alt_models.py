@@ -534,7 +534,6 @@ class Rasqual(Finemap):
 
 		rasqual_params = [
 			self.rasqual_path,
-			self.vcf_path,
 			"-y",
 			self.counts_bin_path,
 			"-k",
@@ -567,7 +566,9 @@ class Rasqual(Finemap):
 			"-VV"
 		]
 		# print(" ".join(rasqual_params)) ####
-		rasqual_out = subprocess.check_output(rasqual_params)
+		with open(self.vcf_path) as vcf_in:
+			rasqual_out = subprocess.check_output(rasqual_params, stdin=vcf_in)
+
 		rasqual_res = rasqual_out.decode('UTF-8').rstrip().split("\n")
 		print("\n".join(rasqual_res)) ####
 

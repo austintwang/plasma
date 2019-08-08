@@ -463,11 +463,11 @@ class Rasqual(Finemap):
 					reads = [0, 0]
 					# print(self.counts_A[samp_idx] // num_hets[samp_idx]) ####
 					reads[hap_data[0]] = self.counts_A[samp_idx] // num_hets[samp_idx]
-					if samp_idx < self.counts_A[samp_idx] % num_hets[samp_idx]
+					if samp_idx < self.counts_A[samp_idx] % num_hets[samp_idx]:
 						reads[hap_data[0]] += 1
 
 					reads[hap_data[1]] = self.counts_B[samp_idx] // num_hets[samp_idx]
-					if samp_idx < self.counts_B[samp_idx] % num_hets[samp_idx]
+					if samp_idx < self.counts_B[samp_idx] % num_hets[samp_idx]:
 						reads[hap_data[1]] += 1
 
 					reads = "{0},{1}".format(*reads)

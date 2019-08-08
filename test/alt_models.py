@@ -524,6 +524,10 @@ class Rasqual(Finemap):
 		]
 		offset_out = subprocess.check_output(offset_params)
 
+		offset_data = "\t".join([self.output_name] + list((total_exp_off*0+1).astype(str))) + "\n\n" ####
+		with open(self.offset_path, "w") as offset_file: ####
+			offset_file.write(offset_data) ####
+
 		bin_script_path = os.path.join(self.rasqual_script_path, "txt2bin.R")
 		bin_params = [
 			self.r_path,

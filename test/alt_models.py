@@ -308,7 +308,7 @@ class ECaviar(object):
 
 class FmBenner(Finemap):
 	fm_dir_path = "/agusevlab/awang/finemap"
-	fm_path = "CAVIAR"
+	fm_path = "finemap"
 	temp_path = os.path.join(fm_dir_path, "temp")
 	
 	def __init__(self, **kwargs):
@@ -365,13 +365,13 @@ class FmBenner(Finemap):
 		self._run_fm(command_params)
 
 	def _run_fm(self, command_params):
-		master_header = "z;ld;snp;config;cred;log;n_samples"
-		master_content = "{0}.z;{0}.ld;{0}.snp;{0}.config;{0}.cred;{0}.log;{1}".format(self.output_name, self.num_ppl)
+		master_header = "z;ld;snp;config;cred;log;n_samples\n"
+		master_content = "{0}.z;{0}.ld;{0}.snp;{0}.config;{0}.cred;{0}.log;{1}\n".format(self.output_name, self.num_ppl)
 		with open(self.master_path, "w") as masterfile:
 			masterfile.writelines([master_header, master_content])
 
-		z_header = "rsid chromosome position allele1 allele2 maf beta se"
-		z_template = "{0} 1 1 A T {1} {2} {3}"
+		z_header = "rsid chromosome position allele1 allele2 maf beta se\n"
+		z_template = "{0} 1 1 A T {1} {2} {3}\n"
 		with open(self.z_path, "w") as zfile:
 			zlines = [z_header]
 			zlines.extend([z_template.format(*i) for i in zip(self.rsids, self.maf, self.betas, self.se)])
@@ -384,7 +384,9 @@ class FmBenner(Finemap):
 		out = subprocess.check_output(command_params)
 
 		with open(self.set_path) as setfile:
-			ids = setfile.read().splitlines()[1].split()
+			setdata = setfile.read()
+		print(setdata) ####
+		ids = setdata.splitlines()[1].split()
 
 		for i in ids:
 			self.causal_set[self.rsid_map[i]] = 1
@@ -583,8 +585,8 @@ class Rasqual(Finemap):
 		for i in rasqual_res:
 			entries = i.split("\t")
 			rsid = entries[1]
-			chisq = float(entries[10])
-			pi = float(entries[11])
+			chisq = np.nan_to_num(float(entries[10]))
+			pi = np.nan_to_num(float(entries[11]))
 
 			if pi >= 0.5:
 				z_scr = np.sqrt(chisq)

@@ -596,6 +596,8 @@ class Rasqual(Finemap):
 		self.imbalance_stats = z_scores
 		print(z_scores) ####
 
+		self.evaluator = Evaluator(self)
+
 		shutil.rmtree(self.output_path)
 
 

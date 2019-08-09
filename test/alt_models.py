@@ -504,7 +504,6 @@ class Rasqual(Finemap):
 		self.counts_bin_path = os.path.join(self.output_path, "Y.bin")
 		self.offset_path = os.path.join(self.output_path, "K.txt")
 		self.offset_bin_path = os.path.join(self.output_path, "K.bin")
-		self.output_path = os.path.join(self.output_path, "output.txt")
 
 		with open(self.vcf_path, "w") as vcf_file:
 			vcf_writer = vcf.Writer(vcf_file, self.vcf_reader)
@@ -578,7 +577,7 @@ class Rasqual(Finemap):
 			rasqual_out = subprocess.check_output(rasqual_params, stdin=vcf_in)
 
 		rasqual_res = rasqual_out.decode('UTF-8').rstrip().split("\n")
-		print("\n".join(rasqual_res)) ####
+		# print("\n".join(rasqual_res)) ####
 
 		z_scores = np.zeros(self.num_snps)
 		for i in rasqual_res:
@@ -595,6 +594,7 @@ class Rasqual(Finemap):
 			z_scores[self.rsid_map[rsid]] = z_scr
 
 		self.imbalance_stats = z_scores
+		print(z_scores) ####
 
 		shutil.rmtree(self.output_path)
 

@@ -570,7 +570,7 @@ class Rasqual(Finemap):
 			"--fix-phi",
 			"--fix-theta",
 			"--fix-genotype",
-			"-VV"
+			# "-VV"
 		]
 		# print(" ".join(rasqual_params)) ####
 		with open(self.vcf_path) as vcf_in:

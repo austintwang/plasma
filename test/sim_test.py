@@ -154,6 +154,7 @@ def run_model(model_cls, inputs, model_name, model_updates):
 		inclusion = np.cumsum(causals) / np.sum(causal_config)
 	
 	print(model_name) ####
+	print(inclusion[0]) ####
 	print(np.nonzero(np.diff(inclusion))) ####
 
 	result = {

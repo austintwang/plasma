@@ -7,7 +7,7 @@ import numpy as np
 import copy
 import vcf
 
-from . import Finemap, EvalCaviar
+from . import Finemap, EvalCaviar, Evaluator
 
 class Caviar(Finemap):
 	cav_dir_path = "/agusevlab/awang/caviar"

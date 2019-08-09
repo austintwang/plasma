@@ -26,6 +26,108 @@ def load_data(data_dir, test_name):
 	# print(data_df.columns.values) ####
 	return data_df
 
+
+
+def make_distplot(
+		df,
+		var, 
+		models, 
+		title, 
+		result_path, 
+		model_colors
+	):
+
+	sns.set(style="whitegrid", font="Roboto")
+	for m in models:
+		try:
+			model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
+			sns.distplot(
+				model_data,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False},
+				label="m"
+			)
+		except Exception:
+			pass
+
+
+
+	if "full" in model_flavors:
+		try:
+			sns.distplot(
+				set_sizes_full,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False},
+				label="PLASMA-JC"
+			)
+		except Exception:
+			pass
+	if "indep" in model_flavors:
+		try:
+			sns.distplot(
+				set_sizes_indep,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False},
+				label="PLASMA-JI"			
+			)
+		except Exception:
+			pass
+	if "ase" in model_flavors:
+		try:
+			sns.distplot(
+				set_sizes_ase,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False},
+				label="PLASMA-AS"			
+			)
+		except Exception:
+			pass
+	if "acav" in model_flavors:
+		try:
+			sns.distplot(
+				set_sizes_caviar_ase,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False},
+				label="CAVIAR-ASE"			
+			)
+		except Exception:
+			pass
+	if "eqtl" in model_flavors:
+		try:
+			sns.distplot(
+				set_sizes_eqtl,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False},
+				label="QTL-Only"			
+			)
+		except Exception:
+			pass
+	if "cav" in model_flavors:
+		try:
+			sns.distplot(
+				set_sizes_caviar,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False},
+				label="CAVIAR"			
+			)
+		except Exception:
+			pass
+
+	plt.xlim(0, self.params["num_snps"])
+	plt.legend(title="Model")
+	plt.xlabel(var)
+	plt.ylabel("Density")
+	plt.title(title)
+	plt.savefig(result_path)
+	plt.clf()
+
 def make_heatmap(
 		df,
 		var_row, 

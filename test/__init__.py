@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from plasma import Finemap, LocusSimulator
+from plasma import Finemap, LocusSimulator, Evaluator
 from .haplotypes import Haplotypes
 from .sim_ase import SimAse
 from .eval_caviar import EvalCaviar, EvalCaviarASE, EvalECaviar

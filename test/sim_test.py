@@ -409,6 +409,8 @@ def sim_test(
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
+	inputs.pop("vcf_reader")
+
 	output_name = "{0}_out_{1}.pickle".format(params["test_name"], batch_num)
 	output_return = os.path.join(out_dir, output_name)
 	with open(output_return, "wb") as output_file:

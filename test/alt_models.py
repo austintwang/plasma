@@ -431,6 +431,7 @@ class Rasqual(Finemap):
 		self._calc_imbalance_var_prior()
 		self._calc_total_exp_var_prior()
 		self._calc_imbalance_corr()
+		self._calc_cross_corr()
 
 		self.rsid_map = dict(list(zip(self.snp_ids, list(range(self.num_snps)))))
 

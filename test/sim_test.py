@@ -165,6 +165,7 @@ def run_model(model_cls, inputs, model_name, model_updates):
 	}
 
 	result.update(inputs)
+	result.pop("vcf_reader")
 	result["model"] = model_name
 	result["complete"] = True
 	return result
@@ -408,8 +409,6 @@ def sim_test(
 			
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
-
-	inputs.pop("vcf_reader")
 
 	output_name = "{0}_out_{1}.pickle".format(params["test_name"], batch_num)
 	output_return = os.path.join(out_dir, output_name)

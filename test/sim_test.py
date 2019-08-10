@@ -376,7 +376,7 @@ def sim_test(
 				param_updates = {"as_only": True}
 				# print("test0") ####
 				result_rasq = run_model(Rasqual, inputs, "rasq", param_updates)
-				print(result_rasq) ####
+				# print(result_rasq) ####
 			except Exception as e:
 				raise ####
 				trace = traceback.format_exc()

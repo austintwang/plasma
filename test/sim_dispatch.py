@@ -135,7 +135,7 @@ def test_mainfig(
 		"max_causal": 1,
 		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "acav", "fmb", "rasq"])
+		"model_flavors": set(["indep", "eqtl", "ase", "acav", "cav", "fmb", "rasq"])
 	}
 	params_base.update(data_info)
 

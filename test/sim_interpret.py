@@ -12,6 +12,8 @@ try:
 except ImportError:
 	import pickle
 
+MODEL
+
 def load_data(data_dir, test_name):
 	# print(os.listdir(data_dir)) ####
 	filenames = [os.path.join(data_dir, i) for i in os.listdir(data_dir) if i.endswith(".pickle")]
@@ -29,11 +31,11 @@ def load_data(data_dir, test_name):
 def make_distplot(
 		df,
 		var, 
-		num_snps
 		models, 
 		model_colors
 		title, 
-		result_path
+		result_path,
+		num_snps
 	):
 
 	sns.set(style="whitegrid", font="Roboto")
@@ -51,7 +53,7 @@ def make_distplot(
 		except Exception:
 			pass
 
-	plt.xlim(0, self.params["num_snps"])
+	plt.xlim(0, num_snps)
 	plt.legend(title="Model")
 	plt.xlabel(var)
 	plt.ylabel("Density")
@@ -59,12 +61,57 @@ def make_distplot(
 	plt.savefig(result_path)
 	plt.clf()
 
-def make_avg_lineplot():
+def make_avg_lineplot(
+		df,
+		var, 
+		models, 
+		model_colors
+		title, 
+		result_path,
+		num_snps
+	):
+	inclusions_dict = {
+		"Number of Selected Markers": [],
+		var: [],
+		"Model": []
+	}
+	for m in models:
+		try:
+			inclusion_data = df.loc[df["model"] == m, [var]].to_numpy()
+			inclusion_agg = list(np.mean(axis=0))
+			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
+			inclusions_dict[var].extend(inclusion_agg)
+			inclusions_dict["Model"].extend(num_snps * ["PLASMA-JC"])
+		except Exception:
+			pass
+
+	inclusions_df = pd.DataFrame(inclusions_dict)
+
 	sns.set(style="whitegrid", font="Roboto")
-	sns.lineplot(x="Number of Selected Markers", y="Inclusion Rate", hue="Model", data=inclusions_df)
-	plt.ylim(0., None)
-	plt.title("Inclusion Rate vs. Selection Size, {0} = {1}".format(title_var, var_value))
-	plt.savefig(os.path.join(out_dir, "inclusion.svg"))
+
+	sns.lineplot(x="Number of Selected Markers", y=var, hue="Model", data=inclusions_df)
+	plt.ylim(0., num_snps)
+	plt.title(title)
+	plt.savefig(result_path)
+	plt.clf()
+
+def make_thresh_barplot(
+		df,
+		var, 
+		models, 
+		threshs,
+		title, 
+		result_path,
+		num_snps
+	):
+	sns.set(style="whitegrid", font="Roboto")
+	palette = sns.cubehelix_palette(len(threshs))
+	for i, t in enumerate(threshs):
+		estimator = lambda x: np.mean((x <= t).astype(int))
+		sns.barplot(x=var, y="Model", data=df, label=t, order=models, color=palette[-i-1])
+
+	plt.title(title)
+	plt.savefig(result_path)
 	plt.clf()
 
 def make_heatmap(

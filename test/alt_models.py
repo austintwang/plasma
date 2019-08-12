@@ -349,6 +349,7 @@ class FmBenner(Finemap):
 			self.fm_path,
 			"--in-files", self.master_path,
 			"--n-causal-snps", str(max_causal),
+			"--sss"
 		]
 		self._run_fm(command_params)
 

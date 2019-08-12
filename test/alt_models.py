@@ -343,7 +343,7 @@ class FmBenner(Finemap):
 		self.maf = np.fmin(freq, 1 - freq)
 		self.betas = self.beta.tolist()
 		self.se = (self.beta / self.total_exp_stats).tolist()
-		self.ld = self.total_exp_corr.tolist()
+		self.ld =(self.total_exp_corr * 0.999).tolist()
 
 	def search_exhaustive(self, min_causal, max_causal):
 		command_params = [
@@ -401,13 +401,13 @@ class FmBenner(Finemap):
 		# print(setdata) ####
 		# ids = setdata.splitlines()[1].split()
 		set_df = pd.read_csv(self.set_path, sep=" ")
-		print(set_df) ####
+		# print(set_df) ####
 		set_ids = set_df.iloc[:, 1]
 		for i in set_ids:
 			self.causal_set[self.rsid_map[i]] = 1
 
-		post_df = pd.read_csv(self.post_path)
-		print(post_df) ####
+		post_df = pd.read_csv(self.post_path, sep=" ")
+		# print(post_df) ####
 		self.post_probs = post_df["prob"].to_numpy()
 
 		shutil.rmtree(self.output_path)

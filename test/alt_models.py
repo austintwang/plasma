@@ -20,7 +20,7 @@ class Caviar(Finemap):
 	def initialize(self):
 		super().initialize()
 
-		self.ncp = np.sqrt(self.imbalance_var_prior)
+		self.ncp = np.sqrt(self.total_exp_var_prior)
 
 		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
 		self.rsid_map = dict(list(zip(self.rsids, list(range(self.num_snps)))))
@@ -317,7 +317,7 @@ class FmBenner(Finemap):
 	def initialize(self):
 		super().initialize()
 
-		self.ncp = np.sqrt(self.imbalance_var_prior)
+		self.ncp = np.sqrt(self.total_exp_var_prior)
 
 		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
 		self.rsid_map = dict(list(zip(self.rsids, list(range(self.num_snps)))))
@@ -341,7 +341,7 @@ class FmBenner(Finemap):
 		freq = (np.mean(self.hap_A, axis=0) + np.mean(self.hap_B, axis=0)) / 2.
 		self.maf = np.fmin(freq, 1 - freq)
 		self.betas = self.beta.tolist()
-		self.se = (self.beta / self.imbalance_stats).tolist()
+		self.se = (self.beta / self.total_exp_stats).tolist()
 		self.ld = self.corr.tolist()
 
 	def search_exhaustive(self, min_causal, max_causal):

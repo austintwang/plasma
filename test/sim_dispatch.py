@@ -37,8 +37,8 @@ class Dispatcher(object):
 	def submit(self):
 		timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
 		for i in self.jobs:
-			print(" ".join(i)) ####
-			raise Exception ####
+			# print(" ".join(i)) ####
+			# raise Exception ####
 			while True:
 				try:
 					submission = subprocess.run(i, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -105,6 +105,55 @@ def test_dev_cov(
 			params.update(data_info)
 			params_path = os.path.join(params_dir, test_name + ".pickle")
 			disp.add_job(out_dir, params_path, params, num_trials)
+
+def test_mainfig(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	std_al_dev,
+	num_trials,
+	script_path
+):
+	params_base = {
+		"test_type": "mainfig",
+		"region_size": None,
+		"max_snps": 100,
+		"num_samples": 100,
+		"maf_thresh": 0.01,
+		"overdispersion": 0.05,
+		"herit_qtl": 0.05,
+		"herit_as": 0.4,
+		"std_al_dev": None,
+		"num_causal": 1,
+		"coverage": 100,
+		"search_mode": "exhaustive",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": None, 
+		"min_causal": 1,
+		"max_causal": 1,
+		"test_name": None,
+		"confidence": 0.95,
+		"model_flavors": set(["indep", "eqtl", "ase", "acav", "fmb", "rasq"])
+	}
+	params_base.update(data_info)
+
+	out_dir = os.path.join(out_dir_base, params_base["test_type"])
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	for i in std_al_dev:
+		test_name = "s_{0}".format(i)
+		param_updates = {
+			"test_name": test_name,
+			"std_al_dev": i,
+		}
+		params = params_base.copy()
+		params.update(param_updates)
+		params.update(data_info)
+		params_path = os.path.join(params_dir, test_name + ".pickle")
+		disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_dev_herit(
 	disp, 
@@ -265,8 +314,8 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 10
-	num_trials = 50
+	batch_size = 1
+	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)
 
@@ -281,17 +330,28 @@ if __name__ == '__main__':
 		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 
-	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-	coverage = [10, 20, 50, 100, 500, 1000]
-	test_dev_cov(
+	std_al_dev = [0.6, 0.8]
+	test_mainfig(
 		disp, 
 		data_info,
 		params_dir, 
 		out_dir_base, 
 		std_al_dev,
-		coverage, 
 		num_trials,
 		script_path
 	)
+
+	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	# coverage = [10, 20, 50, 100, 500, 1000]
+	# test_dev_cov(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	std_al_dev,
+	# 	coverage, 
+	# 	num_trials,
+	# 	script_path
+	# )
 
 	disp.submit()

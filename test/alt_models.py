@@ -407,7 +407,7 @@ class FmBenner(Finemap):
 			self.causal_set[self.rsid_map[i]] = 1
 
 		post_df = pd.read_csv(self.post_path, sep=" ")
-		# print(post_df) ####
+		print(post_df) ####
 		self.post_probs = post_df["prob"].to_numpy()
 
 		shutil.rmtree(self.output_path)

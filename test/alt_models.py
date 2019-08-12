@@ -410,7 +410,7 @@ class FmBenner(Finemap):
 		# print(post_df) ####
 		# print(post_df.columns) ####
 		post_ids = post_df.loc[:,["rsid", "prob"]]
-		for i in post_ids:
+		for i in post_ids.itertuples():
 			self.post_probs[self.rsid_map[i.rsid]] = i.prob
 
 		shutil.rmtree(self.output_path)

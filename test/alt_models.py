@@ -367,7 +367,16 @@ class FmBenner(Finemap):
 
 	def _run_fm(self, command_params):
 		master_header = "z;ld;snp;config;cred;log;n_samples\n"
-		master_content = "{0}.z;{0}.ld;{0}.snp;{0}.config;{0}.cred;{0}.log;{1}\n".format(self.output_name, self.num_ppl)
+		master_info = (
+			self.z_path,
+			self.ld_path,
+			self.post_path,
+			os.path.join(self.output_path, self.output_name + ".config"),
+			self.set_path,
+			os.path.join(self.output_path, self.output_name + ".log"),
+			str(self.num_ppl)
+		)
+		master_content = ";".join(master_info) + "\n"
 		with open(self.master_path, "w") as masterfile:
 			masterfile.writelines([master_header, master_content])
 
@@ -382,7 +391,7 @@ class FmBenner(Finemap):
 			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
 			ldfile.write(ldstr)
 
-		print(" ".join(command_params)) ####
+		# print(" ".join(command_params)) ####
 
 		out = subprocess.check_output(command_params)
 

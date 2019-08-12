@@ -6,6 +6,7 @@ import string
 import numpy as np
 import copy
 import vcf
+import pandas as pd
 
 from . import Finemap, EvalCaviar, Evaluator
 

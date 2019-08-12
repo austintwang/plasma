@@ -396,12 +396,13 @@ class FmBenner(Finemap):
 
 		out = subprocess.check_output(command_params)
 
-		with open(self.set_path) as setfile:
-			setdata = setfile.read()
+		# with open(self.set_path) as setfile:
+		# 	setdata = setfile.read()
 		# print(setdata) ####
 		# ids = setdata.splitlines()[1].split()
 		set_df = pd.read_csv(self.set_path)
-		set_ids = set_df[:, 1]
+		print(set_df) ####
+		set_ids = set_df.iloc[:, 1]
 		for i in set_ids:
 			self.causal_set[self.rsid_map[i]] = 1
 

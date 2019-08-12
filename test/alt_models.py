@@ -342,7 +342,7 @@ class FmBenner(Finemap):
 		self.maf = np.fmin(freq, 1 - freq)
 		self.betas = self.beta.tolist()
 		self.se = (self.beta / self.total_exp_stats).tolist()
-		self.ld = self.corr.tolist()
+		self.ld = self.total_exp_corr.tolist()
 
 	def search_exhaustive(self, min_causal, max_causal):
 		command_params = [

@@ -358,9 +358,9 @@ def sim_test(
 		if "cav" in model_flavors:
 			try:
 				param_updates = {"qtl_only": True}
-				result_ecav = run_model(Caviar, inputs, "cav", param_updates)
+				result_cav = run_model(Caviar, inputs, "cav", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_cav = {

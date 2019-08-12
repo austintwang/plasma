@@ -263,9 +263,9 @@ def sim_test(
 				result_eqtl = result.copy()
 				result_eqtl.update({"model": "rasq"})
 				output.append(result_eqtl)
-			if "bfm" in model_flavors:
+			if "fmb" in model_flavors:
 				result_eqtl = result.copy()
-				result_eqtl.update({"model": "bfm"})
+				result_eqtl.update({"model": "fmb"})
 				output.append(result_eqtl)
 
 			continue
@@ -360,7 +360,7 @@ def sim_test(
 				param_updates = {"qtl_only": True}
 				result_ecav = run_model(Caviar, inputs, "cav", param_updates)
 			except Exception as e:
-				# raise ####
+				raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_cav = {

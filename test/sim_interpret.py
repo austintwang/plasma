@@ -12,7 +12,17 @@ try:
 except ImportError:
 	import pickle
 
-MODEL
+pal = sns.color_palette()
+COLORMAP = {
+	"full": pal[1],
+	"indep": pal[3],
+	"ase": pal[2],
+	"acav": pal[5],
+	"eqtl": pal[0],
+	"cav": pal[7],
+	"rasq": pal[6],
+	"fmb": pal[8],
+}
 
 def load_data(data_dir, test_name):
 	# print(os.listdir(data_dir)) ####

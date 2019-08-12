@@ -381,6 +381,8 @@ class FmBenner(Finemap):
 			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
 			ldfile.write(ldstr)
 
+		print(" ".join(command_params)) ####
+
 		out = subprocess.check_output(command_params)
 
 		with open(self.set_path) as setfile:

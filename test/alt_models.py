@@ -408,7 +408,7 @@ class FmBenner(Finemap):
 
 		post_df = pd.read_csv(self.post_path, sep=" ")
 		# print(post_df) ####
-		post_ids = post_df[:,("rsid", "prob")]
+		post_ids = post_df[:,["rsid", "prob"]]
 		for rsid, post in post_ids:
 			self.post_probs[self.rsid_map[rsid]] = post
 

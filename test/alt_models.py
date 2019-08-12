@@ -348,7 +348,7 @@ class FmBenner(Finemap):
 		command_params = [
 			self.fm_path,
 			"--in-files", self.master_path,
-			"--n-causal-snps", str(self.max_causal),
+			"--n-causal-snps", str(max_causal),
 		]
 		self._run_fm(command_params)
 
@@ -356,7 +356,7 @@ class FmBenner(Finemap):
 		command_params = [
 			self.fm_path,
 			"--in-files", self.master_path,
-			"--n-causal-snps", str(self.max_causal),
+			"--n-causal-snps", str(max_causal),
 			"--n-convergence", str(streak_threshold),
 			"--n-iterations", str(num_iterations),
 			"--prob-tol", str(prob_threshold),

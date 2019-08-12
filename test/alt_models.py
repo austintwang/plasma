@@ -400,7 +400,7 @@ class FmBenner(Finemap):
 		# 	setdata = setfile.read()
 		# print(setdata) ####
 		# ids = setdata.splitlines()[1].split()
-		set_df = pd.read_csv(self.set_path)
+		set_df = pd.read_csv(self.set_path, sep=" ")
 		print(set_df) ####
 		set_ids = set_df.iloc[:, 1]
 		for i in set_ids:

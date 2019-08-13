@@ -265,7 +265,7 @@ def interpret_mainfig(
 
 		result_path = os.path.join(res_dir, "recall_s_{0}.txt".format(s))
 		write_stats_simple(
-			df,
+			df_res,
 			"recall", 
 			model_flavors,
 			NAMEMAP, 
@@ -274,7 +274,7 @@ def interpret_mainfig(
 
 		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(s))
 		write_stats(
-			df,
+			df_res,
 			var_cred, 
 			model_flavors,
 			NAMEMAP, 

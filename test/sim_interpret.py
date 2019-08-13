@@ -286,7 +286,7 @@ def interpret_mainfig(
 			var_cred, 
 			model_flavors_cred,
 			NAMEMAP, 
-			COLORMAP
+			COLORMAP,
 			title, 
 			result_path,
 			num_snps

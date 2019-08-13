@@ -274,7 +274,7 @@ def interpret_mainfig(
 		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(s))
 		write_stats(
 			df,
-			var, 
+			var_cred, 
 			model_flavors,
 			NAMEMAP, 
 			threshs,

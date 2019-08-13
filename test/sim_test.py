@@ -170,6 +170,7 @@ def run_model(model_cls, inputs, model_name, model_updates):
 
 	result.update(inputs)
 	result.pop("vcf_reader")
+	result.pop("records")
 	result["model"] = model_name
 	result["complete"] = True
 	return result

@@ -188,7 +188,8 @@ def write_stats(
 
 	for m in model_flavors:
 		lines = []
-		model_data = np.sum(np.array(df.loc[df["model"] == m, [var]].to_numpy()), axis=1)
+		model_arr = np.array([i for i in np.array(df.loc[df["model"] == m, [var]].to_numpy())])
+		model_data = np.sum(model_arr, axis=1)
 		print(model_data) ####
 		means.append(np.mean(model_data))
 		medians.append(np.median(model_data))

@@ -234,6 +234,7 @@ def interpret_mainfig(
 		titles,
 		model_flavors,
 		model_flavors_cred,
+		threshs,
 		num_snps,
 		res_dir_base
 	):
@@ -326,6 +327,7 @@ if __name__ == '__main__':
 	titles = ["Low AS Variance", "High AS Variance"]
 	model_flavors = ["indep", "eqtl", "ase", "acav", "cav", "fmb", "rasq"]
 	model_flavors_cred = ["indep", "eqtl", "ase", "acav", "cav", "fmb"]
+	threshs = [1, 5, 20, 50]
 	num_snps = 100
 	interpret_mainfig(
 		data_dir_base, 
@@ -333,6 +335,7 @@ if __name__ == '__main__':
 		titles,
 		model_flavors,
 		model_flavors_cred,
+		threshs,
 		num_snps,
 		res_dir_base
 	)

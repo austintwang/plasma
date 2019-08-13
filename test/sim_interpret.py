@@ -53,7 +53,7 @@ def make_distplot(
 		var, 
 		model_flavors,
 		model_names, 
-		model_colors
+		model_colors,
 		title, 
 		result_path,
 		num_snps

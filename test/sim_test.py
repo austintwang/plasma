@@ -153,12 +153,15 @@ def run_model(model_cls, inputs, model_name, model_updates):
 		causals = causal_config[selections]
 		inclusion = np.cumsum(causals) / np.sum(causal_config)
 	
+	causal_set_size = np.sum(causal_set)
+
 	print(model_name) ####
 	print(inclusion[0]) ####
 	print(np.nonzero(np.diff(inclusion))) ####
 	print(np.sum(causal_set)) ####
 
 	result = {
+		"causal_set_size": causal_set_size,
 		"causal_set": causal_set,
 		"ppas": ppas,
 		"recall": recall,

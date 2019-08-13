@@ -23,6 +23,16 @@ COLORMAP = {
 	"rasq": pal[6],
 	"fmb": pal[8],
 }
+NAMEMAP = {
+	"full": "PLASMA-JC",
+	"indep": "PLASMA-J",
+	"ase": "PLASMA-AS",
+	"acav": "CAVIAR-ASE",
+	"eqtl": "QTL-Only",
+	"cav": "CAVIAR",
+	"rasq": "RASQUAL+",
+	"fmb": "FINEMAP",
+}
 
 def load_data(data_dir, test_name):
 	# print(os.listdir(data_dir)) ####
@@ -41,23 +51,25 @@ def load_data(data_dir, test_name):
 def make_distplot(
 		df,
 		var, 
-		models, 
+		model_flavors,
+		model_names, 
 		model_colors
 		title, 
 		result_path,
 		num_snps
 	):
 
-	sns.set(style="whitegrid", font="Roboto")
-	for m in models:
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+	for m in model_flavors:
 		try:
-			model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
+			model_data = np.sum(df.loc[df["model"] == m, [var]].to_numpy(), axis=1)
+			#model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
 			sns.distplot(
 				model_data,
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":False},
-				label=m,
+				label=model_names[m],
 				color=model_colors[m]
 			)
 		except Exception:
@@ -68,60 +80,71 @@ def make_distplot(
 	plt.xlabel(var)
 	plt.ylabel("Density")
 	plt.title(title)
-	plt.savefig(result_path)
+	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
 def make_avg_lineplot(
 		df,
 		var, 
-		models, 
-		model_colors
+		model_flavors,
+		model_names, 
+		model_colors,
 		title, 
 		result_path,
 		num_snps
 	):
 	inclusions_dict = {
 		"Number of Selected Markers": [],
-		var: [],
+		var+" Rate": [],
 		"Model": []
 	}
-	for m in models:
+	for m in model_flavors:
 		try:
-			inclusion_data = df.loc[df["model"] == m, [var]].to_numpy()
+			inclusion_data = df.loc[df["Model"] == m, [var]].to_numpy()
 			inclusion_agg = list(np.mean(axis=0))
 			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
-			inclusions_dict[var].extend(inclusion_agg)
-			inclusions_dict["Model"].extend(num_snps * ["PLASMA-JC"])
+			inclusions_dict[var+" Rate"].extend(inclusion_agg)
+			inclusions_dict["Model"].extend(num_snps * model_names[m])
 		except Exception:
 			pass
 
 	inclusions_df = pd.DataFrame(inclusions_dict)
 
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 
-	sns.lineplot(x="Number of Selected Markers", y=var, hue="Model", data=inclusions_df)
+	palette = [model_colors[m] for m in model_flavors]
+	sns.lineplot(
+		x="Number of Selected Markers", 
+		y=var+" Rate", 
+		hue="Model", 
+		ata=inclusions_df, 
+		hue_order=model_flavors, 
+		palette=palette
+	)
 	plt.ylim(0., num_snps)
 	plt.title(title)
-	plt.savefig(result_path)
+	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
 def make_thresh_barplot(
 		df,
 		var, 
-		models, 
+		model_flavors,
+		model_names, 
 		threshs,
 		title, 
 		result_path,
 		num_snps
 	):
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 	palette = sns.cubehelix_palette(len(threshs))
 	for i, t in enumerate(threshs):
-		estimator = lambda x: np.mean((x <= t).astype(int))
-		sns.barplot(x=var, y="Model", data=df, label=t, order=models, color=palette[-i-1])
+		estimator = lambda x: np.mean((np.sum(x) <= t).astype(int))
+		chart = sns.barplot(x=var, y="Model", data=df, label=t, order=model_flavors, color=palette[-i-1])
+		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
 	plt.title(title)
-	plt.savefig(result_path)
+	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
 def make_heatmap(
@@ -145,356 +168,170 @@ def make_heatmap(
 
 	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True)
 	plt.title(title)
-	plt.savefig(result_path)
+	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
-def interpret_shared(
-		data_dir_base, 
-		gwas_herits, 
+def write_stats(
+		df,
+		var, 
 		model_flavors,
+		model_names, 
+		threshs,
+		result_path,
+	):
+
+	means = []
+	medians = []
+	stds = []
+	tres = [[] for _ in range(len(threshs))]
+
+	for m in model_flavors:
+		lines = []
+		model_data = np.sum(df.loc[df["model"] == m, [var]].to_numpy(), axis=1)
+		means.append(np.mean(model_data))
+		medians.append(np.median(model_data))
+		stds.append(np.std(model_data))
+		for i, t in enumerate(threshs):
+			under = tres[i].append(np.sum((model_data <= t).astype(int)))
+
+	header = "\t" + "\t".join(model_names[m] for m in model_flavors)
+
+	lines = []
+	lines.append(header)
+	lines.append("Mean\t{0}\n".format("\t".join(means)))
+	lines.append("Median\t{0}\n".format("\t".join(medians)))
+	lines.append("Std Dev\t{0}\n".format("\t".join(stds)))
+
+	lines.append("\nThresholds:\n")
+	lines.append(header)
+	for i, t in tres:
+		lines.append("{0}\t{1}\n".format(i, "\t".join(t)))
+
+	with open(result_path, "w") as result_file:
+		result_file.writelines(lines)
+
+def write_stats_simple(
+		df,
+		var, 
+		model_flavors,
+		model_names, 
+		result_path,
+	):
+	lines = []
+	for m in model_flavors:
+		model_data = df.loc[df["model"] == m, [var]].to_numpy()
+		mean = np.mean(model_data)
+		line = "{0}:\t{1}\n".format(model_names[m], mean)
+		lines.append(line)
+
+	with open(result_path, "w") as result_file:
+		result_file.writelines(lines)
+
+def interpret_mainfig(
+		data_dir_base, 
+		std_al_dev, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		num_snps,
 		res_dir_base
 	):
-	data_dir = os.path.join(data_dir_base, "shared")
-	df = load_data(data_dir, "shared")
+	data_dir = os.path.join(data_dir_base, "mainfig")
+	df = load_data(data_dir, "mainfig")
 
-	res_dir = os.path.join(res_dir_base, "shared")
+	res_dir = os.path.join(res_dir_base, "mainfig")
 	if not os.path.exists(res_dir):
 		os.makedirs(res_dir)
 
-	var_row = "GWAS Sample Size"
-	var_col = "QTL Sample Size"
-	response = "Colocalization Score (PP4)"
-	title_base = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}"
+	var_cred = "Credible Set Size"
+	var_inc = "Inclusion"
 
-	sns.set(font="Roboto")
+	for i, s in enumerate(std_al_dev):
+		df_res = df.loc[
+			(df["std_al_dev"] == s)
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"causal_set": var_cred,
+				"inclusion": var_inc,
+			}, 
+			inplace=True
+		)
 
-	for h in gwas_herits:
-		if "full" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "full")
-				& (df["herit_gwas"] == h)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "PLASMA/C-JC"
-			title = title_base.format(response, model_name, h)
-			result_path = os.path.join(res_dir, "full_h_{0}.svg".format(h))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "indep" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "indep")
-				& (df["herit_gwas"] == h)
-				& (df["complete"] == True)
-			]
-			# print(df_model.columns.values) ####
-			# print(df) ####
-			# print(df.loc[
-			# 	(df["model"] == "indep")
-			# 	& (df["complete"] == True)
-			# ]) ####
-			# print(df_model) ####
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			# print(df_model.columns.values) ####
-			model_name = "PLASMA/C-J"
-			title = title_base.format(response, model_name, h)
-			result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(h))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "ase" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "ase")
-				& (df["herit_gwas"] == h)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "PLASMA/C-AS"
-			title = title_base.format(response, model_name, h)
-			result_path = os.path.join(res_dir, "ase_h_{0}.svg".format(h))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "ecav" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "ecav")
-				& (df["herit_gwas"] == h)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "eCAVIAR"
-			title = title_base.format(response, model_name, h)
-			result_path = os.path.join(res_dir, "ecav_h_{0}.svg".format(h))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "eqtl" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "eqtl")
-				& (df["herit_gwas"] == h)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "QTL-Only"
-			title = title_base.format(response, model_name, h)
-			result_path = os.path.join(res_dir, "eqtl_h_{0}.svg".format(h))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
+		title = titles[i]
 
-def interpret_corr(
-		data_dir_base, 
-		ld_thresh, 
-		model_flavors,
-		res_dir_base
-	):
-	data_dir = os.path.join(data_dir_base, "corr")
-	df = load_data(data_dir, "corr")
+		result_path = os.path.join(res_dir, "recall_s_{0}.txt".format(s))
+		write_stats_simple(
+			df,
+			"recall", 
+			model_flavors,
+			model_names, 
+			result_path,
+		)
 
-	res_dir = os.path.join(res_dir_base, "corr")
-	if not os.path.exists(res_dir):
-		os.makedirs(res_dir)
+		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(s))
+		write_stats(
+			df,
+			var, 
+			model_flavors,
+			model_names, 
+			threshs,
+			result_path,
+		)
 
-	var_row = "GWAS Sample Size"
-	var_col = "QTL Sample Size"
-	response = "Colocalization Score (PP4)"
-	title_base = "Mean {0} for Unshared Causal Markers\n{1} Model, LD Threshold = {2:.0E}"
+		result_path = os.path.join(res_dir, "sets_s_{0}.svg".format(s))
+		make_distplot(
+			df_res,
+			var_cred, 
+			model_flavors_cred,
+			NAMEMAP, 
+			COLORMAP
+			title, 
+			result_path,
+			num_snps
+		)
 
-	sns.set(font="Roboto")
+		result_path = os.path.join(res_dir, "inc_s_{0}.svg".format(s))
+		make_avg_lineplot(
+			df_res,
+			var_inc, 
+			model_flavors,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
 
-	for l in ld_thresh:
-		if "full" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "full")
-				& (df["corr_thresh"] == l)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "PLASMA/C-JC"
-			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "full_h=l_{0}.svg".format(l))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "indep" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "indep")
-				& (df["corr_thresh"] == l)
-				& (df["complete"] == True)
-			]
-			# print(df) ####
-			# print(df.loc[
-			# 	(df["model"] == "indep")
-			# 	& (df["corr_thresh"] == 0.1)
-			# ]) ####
-			# print(np.unique(df.corr_thresh)) ####
-			# print(df.loc[df["complete"] == False].traceback[19999]) ####
-			# print(df_model) ####
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "PLASMA/C-J"
-			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "indep_l_{0}.svg".format(l))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "ase" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "ase")
-				& (df["corr_thresh"] == l)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "PLASMA/C-AS"
-			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "ase_l_{0}.svg".format(l))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "ecav" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "ecav")
-				& (df["corr_thresh"] == l)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "eCAVIAR"
-			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "ecav_l_{0}.svg".format(l))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
-		if "eqtl" in model_flavors:
-			df_model = df.loc[
-				(df["model"] == "eqtl")
-				& (df["corr_thresh"] == l)
-				& (df["complete"] == True)
-			]
-			df_model.rename(
-				columns={
-					"num_samples_gwas": var_row,
-					"num_samples_qtl": var_col,
-					"h4": response,
-				}, 
-				inplace=True
-			)
-			model_name = "QTL-Only"
-			title = title_base.format(response, model_name, l)
-			result_path = os.path.join(res_dir, "eqtl_l_{0}.svg".format(l))
-			make_heatmap(
-				df_model, 
-				var_row, 
-				var_col, 
-				response, 
-				model_name, 
-				title, 
-				result_path, 
-				aggfunc="mean",
-				fmt='.2g'
-			)
+		result_path = os.path.join(res_dir, "thresh_s_{0}.svg".format(s))
+		make_thresh_barplot(
+			df_res,
+			var_inc, 
+			model_flavors_cred,
+			NAMEMAP, 
+			threshs,
+			title, 
+			result_path,
+			num_snps
+		)
 
 if __name__ == '__main__':
-	data_dir_base = "/agusevlab/awang/job_data/sim_coloc/outs/"
-	res_dir_base = "/agusevlab/awang/ase_finemap_results/sim_coloc/"
-	model_flavors = set(["indep", "eqtl", "ase", "ecav"])
+	data_dir_base = "/agusevlab/awang/job_data/sim/outs/"
+	res_dir_base = "/agusevlab/awang/ase_finemap_results/sim/"
+	# model_flavors = set(["indep", "eqtl", "ase", "ecav"])
 
-	gwas_herits = [0.001, 0.0001]
-	# interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)
-
-	ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
-	interpret_corr(data_dir_base, ld_thresh, model_flavors, res_dir_base)
+	std_al_dev = [0.6, 0.8]
+	titles = ["Low AS Variance", "High AS Variance"]
+	model_flavors = ["indep", "eqtl", "ase", "acav", "cav", "fmb", "rasq"]
+	model_flavors_cred = ["indep", "eqtl", "ase", "acav", "cav", "fmb"]
+	num_snps = 100
+	interpret_mainfig(
+		data_dir_base, 
+		std_al_dev, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		num_snps,
+		res_dir_base
+	)

@@ -37,7 +37,7 @@ NAMEMAP = {
 def load_data(data_dir, test_name):
 	# print(os.listdir(data_dir)) ####
 	filenames = [os.path.join(data_dir, i) for i in os.listdir(data_dir) if i.endswith(".pickle")]
-	filenames = filenames[:5] ####
+	filenames = filenames[:2] ####
 	data_list = []
 	for i in filenames:
 		print(i) ####
@@ -267,7 +267,7 @@ def interpret_mainfig(
 			df,
 			"recall", 
 			model_flavors,
-			model_names, 
+			NAMEMAP, 
 			result_path,
 		)
 
@@ -276,7 +276,7 @@ def interpret_mainfig(
 			df,
 			var, 
 			model_flavors,
-			model_names, 
+			NAMEMAP, 
 			threshs,
 			result_path,
 		)

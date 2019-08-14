@@ -111,7 +111,7 @@ def make_avg_lineplot(
 			pass
 
 	inclusions_df = pd.DataFrame(inclusions_dict)
-	# print(inclusions_df) ####
+	print(inclusions_df) ####
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 

@@ -61,7 +61,7 @@ def make_distplot(
 	for m in model_flavors:
 		try:
 			# model_data = np.sum(df.loc[df["model"] == m, [var]].to_numpy(), axis=1)
-			model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
+			model_data = df.loc[df["Model"] == m, [var]].to_numpy().flatten()
 			sns.distplot(
 				model_data,
 				hist=False,
@@ -145,7 +145,15 @@ def make_thresh_barplot(
 	palette = sns.cubehelix_palette(len(threshs))
 	for i, t in enumerate(threshs):
 		estimator = lambda x: np.mean((np.sum(x) <= t).astype(int))
-		chart = sns.barplot(x=var, y="Model", data=df, label=t, order=model_flavors, color=palette[-i-1])
+		chart = sns.barplot(
+			x=var, 
+			y="Model", 
+			data=df, 
+			label=t, 
+			order=model_flavors, 
+			color=palette[-i-1], 
+			estimator=estimator
+		)
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
 	plt.title(title)
@@ -335,7 +343,7 @@ if __name__ == '__main__':
 	titles = ["Low AS Variance", "High AS Variance"]
 	model_flavors = ["indep", "eqtl", "ase", "acav", "cav", "fmb", "rasq"]
 	model_flavors_cred = ["indep", "eqtl", "ase", "acav", "cav", "fmb"]
-	threshs = [1, 5, 20, 50]
+	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
 	interpret_mainfig(
 		data_dir_base, 

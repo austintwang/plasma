@@ -146,7 +146,8 @@ def make_thresh_barplot(
 
 	for i, t in enumerate(threshs):
 		estimator = lambda x: np.mean((np.sum(x) <= t).astype(int))
-		print(df[var]) ####
+		# print(df[var]) ####
+		# print(df[var].dtype) ####
 		chart = sns.barplot(
 			x=var, 
 			y="Model", 
@@ -327,7 +328,7 @@ def interpret_mainfig(
 		result_path = os.path.join(res_dir, "thresh_s_{0}.svg".format(s))
 		make_thresh_barplot(
 			df_res,
-			var_inc, 
+			var_cred, 
 			model_flavors_cred,
 			NAMEMAP, 
 			threshs,
@@ -343,8 +344,8 @@ if __name__ == '__main__':
 
 	std_al_dev = [0.6, 0.8]
 	titles = ["Low AS Variance", "High AS Variance"]
-	model_flavors = ["indep", "eqtl", "ase", "acav", "cav", "fmb", "rasq"]
-	model_flavors_cred = ["indep", "eqtl", "ase", "acav", "cav", "fmb"]
+	model_flavors = ["indep", "ase", "rasq", "acav", "qtl", "fmb", "cav"]
+	model_flavors_cred = ["indep", "ase", "acav", "qtl", "fmb", "cav"]
 	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
 	interpret_mainfig(

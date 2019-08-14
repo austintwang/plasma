@@ -98,7 +98,7 @@ def make_avg_lineplot(
 	}
 	for m in model_flavors:
 		try:
-			inclusion_data = np.vstack(df.loc[df["Model"] == m, [var]].to_numpy())
+			inclusion_data = np.vstack(df.loc[df["Model"] == m, var].to_numpy())
 			inclusion_agg = list(np.mean(inclusion_data, axis=0))
 			print(inclusion_data) ####
 			print(inclusion_agg) ####

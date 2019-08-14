@@ -71,6 +71,7 @@ def make_distplot(
 				color=model_colors[m]
 			)
 		except Exception:
+			print(traceback.format_exc())
 			pass
 
 	plt.xlim(0, num_snps)
@@ -121,7 +122,7 @@ def make_avg_lineplot(
 		x="Number of Selected Markers", 
 		y=var+" Rate", 
 		hue="Model", 
-		ata=inclusions_df, 
+		data=inclusions_df, 
 		hue_order=names, 
 		palette=palette
 	)

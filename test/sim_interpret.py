@@ -144,7 +144,7 @@ def make_thresh_barplot(
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 	palette = sns.cubehelix_palette(len(threshs))
 
-	for i, t in enumerate(reverse(threshs)):
+	for i, t in enumerate(reversed(threshs)):
 		estimator = lambda x: np.mean((x <= t).astype(int))
 		# print(df[var]) ####
 		# print(df[var].dtype) ####
@@ -161,6 +161,7 @@ def make_thresh_barplot(
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
 	plt.title(title)
+	plt.legend(title="Credible Set Threshold")
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 

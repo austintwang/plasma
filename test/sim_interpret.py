@@ -202,8 +202,8 @@ def write_stats(
 		lines = []
 		# model_arr = np.array([i for i in np.array(df.loc[df["model"] == m, [var]].to_numpy())])
 		# model_data = np.sum(model_arr, axis=1)
-		model_data = df.loc[df["Model"] == m, [var]].to_numpy().flatten()
-		# print(model_data) ####
+		model_data = df.loc[df["Model"] == m, var].to_numpy()
+		print(model_data) ####
 		means.append(str(np.mean(model_data)))
 		medians.append(str(np.median(model_data)))
 		stds.append(str(np.std(model_data)))

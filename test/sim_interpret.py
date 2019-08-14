@@ -144,7 +144,7 @@ def make_thresh_barplot(
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 	palette = sns.cubehelix_palette(len(threshs))
 
-	for i, t in enumerate(threshs):
+	for i, t in enumerate(reverse(threshs)):
 		estimator = lambda x: np.mean((x <= t).astype(int))
 		# print(df[var]) ####
 		# print(df[var].dtype) ####
@@ -155,7 +155,8 @@ def make_thresh_barplot(
 			label=t, 
 			order=model_flavors, 
 			color=palette[-i-1], 
-			estimator=estimator
+			estimator=estimator,
+			ci=None
 		)
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 

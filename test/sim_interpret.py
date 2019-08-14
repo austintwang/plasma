@@ -143,8 +143,10 @@ def make_thresh_barplot(
 	):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 	palette = sns.cubehelix_palette(len(threshs))
+
 	for i, t in enumerate(threshs):
 		estimator = lambda x: np.mean((np.sum(x) <= t).astype(int))
+		print(df[var]) ####
 		chart = sns.barplot(
 			x=var, 
 			y="Model", 
@@ -203,12 +205,12 @@ def write_stats(
 		# model_arr = np.array([i for i in np.array(df.loc[df["model"] == m, [var]].to_numpy())])
 		# model_data = np.sum(model_arr, axis=1)
 		model_data = df.loc[df["Model"] == m, var].to_numpy()
-		print(model_data) ####
+		# print(model_data) ####
 		means.append(str(np.mean(model_data)))
 		medians.append(str(np.median(model_data)))
 		stds.append(str(np.std(model_data)))
 		for i, t in enumerate(threshs):
-			under = tres[i].append(str(np.sum((model_data <= t).astype(int))))
+			under = tres[i].append(str(np.mean((model_data <= t).astype(int))))
 
 	header = "\t" + "\t".join(model_names[m] for m in model_flavors) + "\n"
 

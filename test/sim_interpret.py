@@ -192,24 +192,24 @@ def write_stats(
 		# model_data = np.sum(model_arr, axis=1)
 		model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
 		# print(model_data) ####
-		means.append(np.mean(model_data))
-		medians.append(np.median(model_data))
-		stds.append(np.std(model_data))
+		means.append(str(np.mean(model_data)))
+		medians.append(str(np.median(model_data)))
+		stds.append(str(np.std(model_data)))
 		for i, t in enumerate(threshs):
-			under = tres[i].append(np.sum((model_data <= t).astype(int)))
+			under = tres[i].append(str(np.sum((model_data <= t).astype(int))))
 
 	header = "\t" + "\t".join(model_names[m] for m in model_flavors)
 
 	lines = []
 	lines.append(header)
-	lines.append("Mean\t{0}\n".format("\t".join(means.astype('|S10'))))
-	lines.append("Median\t{0}\n".format("\t".join(medians.astype('|S10'))))
-	lines.append("Std Dev\t{0}\n".format("\t".join(stds.astype('|S10'))))
+	lines.append("Mean\t{0}\n".format("\t".join(means)))
+	lines.append("Median\t{0}\n".format("\t".join(medians)))
+	lines.append("Std Dev\t{0}\n".format("\t".join(stds)))
 
 	lines.append("\nThresholds:\n")
 	lines.append(header)
 	for i, t in tres:
-		lines.append("{0}\t{1}\n".format(i, "\t".join(t.astype('|S10'))))
+		lines.append("{0}\t{1}\n".format(i, "\t".join(t)))
 
 	with open(result_path, "w") as result_file:
 		result_file.writelines(lines)

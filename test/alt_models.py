@@ -145,13 +145,13 @@ class CaviarASE(Finemap):
 
 		self.eval1 = Caviar(**self.init_args)
 		self.eval1.initialize()
-		self.eval1.total_exp_corr = self.ld
-		self.eval1.total_exp_stats = self.stats_1
+		self.eval1.ld = self.ld.tolist()
+		self.eval1.z_scores = self.stats_1.tolist()
 
 		self.eval2 = Caviar(**self.init_args)
 		self.eval2.initialize()
-		self.eval2.total_exp_corr = self.ld
-		self.eval2.total_exp_stats = self.stats_2
+		self.eval2.ld = self.ld.tolist()
+		self.eval2.z_scores = self.stats_2.tolist()
 
 	def search_exhaustive(self, min_causal, max_causal):
 		self.min_causal = min_causal

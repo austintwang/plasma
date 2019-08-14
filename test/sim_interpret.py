@@ -202,14 +202,14 @@ def write_stats(
 
 	lines = []
 	lines.append(header)
-	lines.append("Mean\t{0}\n".format("\t".join(means)))
-	lines.append("Median\t{0}\n".format("\t".join(medians)))
-	lines.append("Std Dev\t{0}\n".format("\t".join(stds)))
+	lines.append("Mean\t{0}\n".format("\t".join(means.astype('|S10'))))
+	lines.append("Median\t{0}\n".format("\t".join(medians.astype('|S10'))))
+	lines.append("Std Dev\t{0}\n".format("\t".join(stds.astype('|S10'))))
 
 	lines.append("\nThresholds:\n")
 	lines.append(header)
 	for i, t in tres:
-		lines.append("{0}\t{1}\n".format(i, "\t".join(t)))
+		lines.append("{0}\t{1}\n".format(i, "\t".join(t.astype('|S10'))))
 
 	with open(result_path, "w") as result_file:
 		result_file.writelines(lines)

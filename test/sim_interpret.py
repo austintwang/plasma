@@ -126,7 +126,7 @@ def make_avg_lineplot(
 		hue_order=names, 
 		palette=palette
 	)
-	plt.ylim(0., num_snps)
+	plt.xlim(0., num_snps)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
@@ -145,7 +145,7 @@ def make_thresh_barplot(
 	palette = sns.cubehelix_palette(len(threshs))
 
 	for i, t in enumerate(threshs):
-		estimator = lambda x: np.mean((np.sum(x) <= t).astype(int))
+		estimator = lambda x: np.mean((x <= t).astype(int))
 		# print(df[var]) ####
 		# print(df[var].dtype) ####
 		chart = sns.barplot(

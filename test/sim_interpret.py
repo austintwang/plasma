@@ -110,16 +110,18 @@ def make_avg_lineplot(
 			pass
 
 	inclusions_df = pd.DataFrame(inclusions_dict)
+	print(inclusions_df) ####
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 
 	palette = [model_colors[m] for m in model_flavors]
+	names = [model_names[m] for m in model_flavors]
 	sns.lineplot(
 		x="Number of Selected Markers", 
 		y=var+" Rate", 
 		hue="Model", 
 		ata=inclusions_df, 
-		hue_order=model_flavors, 
+		hue_order=names, 
 		palette=palette
 	)
 	plt.ylim(0., num_snps)

@@ -37,7 +37,7 @@ NAMEMAP = {
 def load_data(data_dir, test_name):
 	# print(os.listdir(data_dir)) ####
 	filenames = [os.path.join(data_dir, i) for i in os.listdir(data_dir) if i.endswith(".pickle")]
-	filenames = filenames[:2] ####
+	filenames = filenames[:50] ####
 	data_list = []
 	for i in filenames:
 		print(i) ####
@@ -63,8 +63,8 @@ def make_distplot(
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 	for m in model_flavors:
 		try:
-			model_data = np.sum(df.loc[df["model"] == m, [var]].to_numpy(), axis=1)
-			#model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
+			# model_data = np.sum(df.loc[df["model"] == m, [var]].to_numpy(), axis=1)
+			model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
 			sns.distplot(
 				model_data,
 				hist=False,
@@ -188,9 +188,10 @@ def write_stats(
 
 	for m in model_flavors:
 		lines = []
-		model_arr = np.array([i for i in np.array(df.loc[df["model"] == m, [var]].to_numpy())])
-		model_data = np.sum(model_arr, axis=1)
-		print(model_data) ####
+		# model_arr = np.array([i for i in np.array(df.loc[df["model"] == m, [var]].to_numpy())])
+		# model_data = np.sum(model_arr, axis=1)
+		model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
+		# print(model_data) ####
 		means.append(np.mean(model_data))
 		medians.append(np.median(model_data))
 		stds.append(np.std(model_data))
@@ -257,7 +258,7 @@ def interpret_mainfig(
 		]
 		df_res.rename(
 			columns={
-				"causal_set": var_cred,
+				"causal_set_size": var_cred,
 				"inclusion": var_inc,
 			}, 
 			inplace=True

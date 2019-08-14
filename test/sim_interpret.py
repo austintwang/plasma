@@ -190,7 +190,7 @@ def write_stats(
 		lines = []
 		# model_arr = np.array([i for i in np.array(df.loc[df["model"] == m, [var]].to_numpy())])
 		# model_data = np.sum(model_arr, axis=1)
-		model_data = df.loc[df["model"] == m, [var]].to_numpy().flatten()
+		model_data = df.loc[df["Model"] == m, [var]].to_numpy().flatten()
 		# print(model_data) ####
 		means.append(str(np.mean(model_data)))
 		medians.append(str(np.median(model_data)))
@@ -223,7 +223,7 @@ def write_stats_simple(
 	):
 	lines = []
 	for m in model_flavors:
-		model_data = df.loc[df["model"] == m, [var]].to_numpy()
+		model_data = df.loc[df["Model"] == m, [var]].to_numpy()
 		mean = np.mean(model_data)
 		line = "{0}:\t{1}\n".format(model_names[m], mean)
 		lines.append(line)
@@ -260,6 +260,7 @@ def interpret_mainfig(
 			columns={
 				"causal_set_size": var_cred,
 				"inclusion": var_inc,
+				"model": "Model",
 			}, 
 			inplace=True
 		)

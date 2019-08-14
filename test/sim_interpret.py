@@ -6,11 +6,8 @@ matplotlib.use('Agg')
 matplotlib.rcParams['agg.path.chunksize'] = 10000
 import seaborn as sns
 import matplotlib.pyplot as plt
-
-try:
-	import pickle as pickle
-except ImportError:
-	import pickle
+import pickle
+import traceback
 
 pal = sns.color_palette()
 COLORMAP = {
@@ -102,15 +99,16 @@ def make_avg_lineplot(
 	for m in model_flavors:
 		try:
 			inclusion_data = df.loc[df["Model"] == m, [var]].to_numpy()
-			inclusion_agg = list(np.mean(axis=0))
+			inclusion_agg = list(np.mean(inclusion_data, axis=0))
 			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict[var+" Rate"].extend(inclusion_agg)
 			inclusions_dict["Model"].extend(num_snps * model_names[m])
 		except Exception:
+			print(traceback.format_exc())
 			pass
 
 	inclusions_df = pd.DataFrame(inclusions_dict)
-	print(inclusions_df) ####
+	# print(inclusions_df) ####
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 

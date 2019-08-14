@@ -100,6 +100,8 @@ def make_avg_lineplot(
 		try:
 			inclusion_data = df.loc[df["Model"] == m, [var]].to_numpy()
 			inclusion_agg = list(np.mean(inclusion_data, axis=0))
+			print(inclusion_data) ####
+			print(inclusion_agg) ####
 			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict[var+" Rate"].extend(inclusion_agg)
 			inclusions_dict["Model"].extend(num_snps * model_names[m])
@@ -198,7 +200,7 @@ def write_stats(
 		for i, t in enumerate(threshs):
 			under = tres[i].append(str(np.sum((model_data <= t).astype(int))))
 
-	header = "\t" + "\t".join(model_names[m] for m in model_flavors)
+	header = "\t" + "\t".join(model_names[m] for m in model_flavors) + "\n"
 
 	lines = []
 	lines.append(header)
@@ -209,7 +211,7 @@ def write_stats(
 	lines.append("\nThresholds:\n")
 	lines.append(header)
 	for i, t in enumerate(tres):
-		lines.append("{0}\t{1}\n".format(i, "\t".join(t)))
+		lines.append("{0}\t{1}\n".format(threshs[i], "\t".join(t)))
 
 	with open(result_path, "w") as result_file:
 		result_file.writelines(lines)

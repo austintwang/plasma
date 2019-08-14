@@ -208,7 +208,7 @@ def write_stats(
 
 	lines.append("\nThresholds:\n")
 	lines.append(header)
-	for i, t in tres:
+	for i, t in enumerate(tres):
 		lines.append("{0}\t{1}\n".format(i, "\t".join(t)))
 
 	with open(result_path, "w") as result_file:

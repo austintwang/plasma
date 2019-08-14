@@ -100,8 +100,9 @@ def make_avg_lineplot(
 		try:
 			inclusion_data = np.vstack(df.loc[df["Model"] == m, var].to_numpy())
 			inclusion_agg = list(np.mean(inclusion_data, axis=0))
-			print(inclusion_data) ####
-			print(inclusion_agg) ####
+			# print(inclusion_data) ####
+			# print(inclusion_agg) ####
+			print(len(inclusion_agg)) ####
 			inclusions_dict["Number of Selected Markers"].extend(list(range(1, num_snps+1)))
 			inclusions_dict[var+" Rate"].extend(inclusion_agg)
 			inclusions_dict["Model"].extend(num_snps * model_names[m])

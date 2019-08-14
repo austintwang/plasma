@@ -34,10 +34,10 @@ NAMEMAP = {
 def load_data(data_dir, test_name):
 	# print(os.listdir(data_dir)) ####
 	filenames = [os.path.join(data_dir, i) for i in os.listdir(data_dir) if i.endswith(".pickle")]
-	filenames = filenames[:50] ####
+	# filenames = filenames[:50] ####
 	data_list = []
 	for i in filenames:
-		print(i) ####
+		# print(i) ####
 		with open(i, "rb") as data_file:
 			data = pickle.load(data_file)
 		data_list.extend(data)

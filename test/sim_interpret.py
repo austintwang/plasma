@@ -75,7 +75,7 @@ def make_distplot(
 			pass
 
 	plt.xlim(0, num_snps)
-	plt.legend(title="Model")
+	plt.legend()
 	plt.xlabel(var)
 	plt.ylabel("Density")
 	plt.title(title)
@@ -126,6 +126,8 @@ def make_avg_lineplot(
 		hue_order=names, 
 		palette=palette
 	)
+	handles, labels = ax.get_legend_handles_labels()
+	ax.legend(handles=handles[1:], labels=labels[1:])
 	plt.xlim(0., num_snps)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
@@ -154,14 +156,14 @@ def make_thresh_barplot(
 			data=df, 
 			label=t, 
 			order=model_flavors, 
-			color=palette[-i-1], 
+			color=palette[i], 
 			estimator=estimator,
 			ci=None
 		)
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
 	plt.title(title)
-	plt.legend(title="Credible Set Threshold")
+	plt.legend()
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 

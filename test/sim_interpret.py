@@ -57,7 +57,7 @@ def make_distplot(
 		num_snps
 	):
 
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
 	for m in model_flavors:
 		try:
 			# model_data = np.sum(df.loc[df["model"] == m, [var]].to_numpy(), axis=1)
@@ -78,6 +78,33 @@ def make_distplot(
 	plt.legend()
 	plt.xlabel(var)
 	plt.ylabel("Density")
+	plt.title(title)
+	plt.savefig(result_path, bbox_inches='tight')
+	plt.clf()
+
+def make_violin(
+		df,
+		var, 
+		model_flavors,
+		model_names, 
+		model_colors,
+		title, 
+		result_path,
+		num_snps
+	):
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+
+	palette = [model_colors[m] for m in model_flavors]
+	names = [model_names[m] for m in model_flavors]
+	sns.violinplot(
+		x=var, 
+		y="Model", 
+		data=df, 
+		order=names, 
+		palette=palette,
+		cut=0
+	)
+	plt.xlim(0., num_snps)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
@@ -114,7 +141,8 @@ def make_avg_lineplot(
 	inclusions_df = pd.DataFrame(inclusions_dict)
 	# print(inclusions_df) ####
 
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+	fig, ax = plt.subplots()
 
 	palette = [model_colors[m] for m in model_flavors]
 	names = [model_names[m] for m in model_flavors]
@@ -143,7 +171,7 @@ def make_thresh_barplot(
 		result_path,
 		num_snps
 	):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
 	palette = sns.cubehelix_palette(len(threshs))
 
 	for i, t in enumerate(reversed(threshs)):
@@ -151,7 +179,7 @@ def make_thresh_barplot(
 		# print(df[var]) ####
 		# print(df[var].dtype) ####
 		chart = sns.barplot(
-			x=var, 
+			x="Proportion of Loci", 
 			y="Model", 
 			data=df, 
 			label=t, 
@@ -163,7 +191,7 @@ def make_thresh_barplot(
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
 	plt.title(title)
-	plt.legend()
+	# plt.legend()
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
@@ -306,7 +334,17 @@ def interpret_mainfig(
 		)
 
 		result_path = os.path.join(res_dir, "sets_s_{0}.svg".format(s))
-		make_distplot(
+		# make_distplot(
+		# 	df_res,
+		# 	var_cred, 
+		# 	model_flavors_cred,
+		# 	NAMEMAP, 
+		# 	COLORMAP,
+		# 	title, 
+		# 	result_path,
+		# 	num_snps
+		# )
+		make_violin(
 			df_res,
 			var_cred, 
 			model_flavors_cred,

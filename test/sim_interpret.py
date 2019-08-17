@@ -94,18 +94,19 @@ def make_violin(
 	):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
 
-
 	palette = [model_colors[m] for m in model_flavors]
 	names = [model_names[m] for m in model_flavors]
-	sns.violinplot(
+	chart = sns.violinplot(
 		x=var, 
 		y="Model", 
 		data=df, 
-		order=names, 
+		order=model_flavors, 
 		palette=palette,
 		cut=0
 	)
 	plt.xlim(0., num_snps)
+	chart.set_yticklabels([model_names[m] for m in model_flavors])
+	plt.ylabel("")
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
@@ -158,6 +159,7 @@ def make_avg_lineplot(
 	handles, labels = ax.get_legend_handles_labels()
 	ax.legend(handles=handles[1:], labels=labels[1:])
 	plt.xlim(0., num_snps)
+	plt.ylabel("")
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()

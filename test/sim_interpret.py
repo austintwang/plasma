@@ -197,7 +197,7 @@ def make_thresh_barplot(
 	for i, t in enumerate(thresh_data[:-1]):
 		for j, x in enumerate(t):
 			xval = float(x)
-			if i > 0 and (xval - thresh_data[i-1][j]) >= 0.1:
+			if i > 0 and (xval - float(thresh_data[i-1][j])) >= 0.1:
 				chart.text(
 					xval,
 					model_names[model_flavors[j]],

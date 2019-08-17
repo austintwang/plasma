@@ -204,10 +204,10 @@ def make_thresh_barplot(
 						xval,
 						model_flavors.index(thresh_data_models[j]),
 						threshs[i],
-						size="small",
+						size="x-small",
 						ha="center",
 						va="center",
-						bbox={"boxstyle":"circle", "pad":1, "fc":"white", "ec":"white"}
+						bbox={"boxstyle":"circle", "pad":.2, "fc":"white", "ec":"white"}
 					)
 
 	plt.ylabel("")

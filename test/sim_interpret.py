@@ -170,6 +170,7 @@ def make_thresh_barplot(
 		model_names, 
 		threshs,
 		thresh_data,
+		thresh_data_models,
 		title, 
 		result_path,
 		num_snps
@@ -196,17 +197,18 @@ def make_thresh_barplot(
 
 	for i, t in enumerate(thresh_data[:-1]):
 		for j, x in enumerate(t):
-			xval = float(x)
-			if i > 0 and (xval - float(thresh_data[i-1][j])) >= 0.1:
-				chart.text(
-					xval,
-					model_names[model_flavors[j]],
-					t,
-					size="small",
-					ha="center",
-					va="center",
-					bbox={"boxstyle":"circle", "pad":1, "fc":"white", "ec":"white"}
-				)
+			if thresh_data_models[j] in model_flavors:
+				xval = float(x)
+				if i > 0 and (xval - float(thresh_data[i-1][j])) >= 0.1:
+					chart.text(
+						xval,
+						model_names[thresh_data_models[j]],
+						t,
+						size="small",
+						ha="center",
+						va="center",
+						bbox={"boxstyle":"circle", "pad":1, "fc":"white", "ec":"white"}
+					)
 
 	plt.ylabel("")
 	plt.title(title)
@@ -396,6 +398,7 @@ def interpret_mainfig(
 			NAMEMAP, 
 			threshs,
 			thresh_data,
+			model_flavors,
 			title, 
 			result_path,
 			num_snps

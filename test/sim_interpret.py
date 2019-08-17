@@ -94,6 +94,7 @@ def make_violin(
 	):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
 
+
 	palette = [model_colors[m] for m in model_flavors]
 	names = [model_names[m] for m in model_flavors]
 	sns.violinplot(

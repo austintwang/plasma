@@ -199,7 +199,7 @@ def make_thresh_barplot(
 		for j, x in enumerate(t):
 			if thresh_data_models[j] in model_flavors:
 				xval = float(x)
-				if i == 0 or (xval - float(thresh_data[i-1][j])) >= 0.05:
+				if (i == 0 and xval > 0.05) or (xval - float(thresh_data[i-1][j])) >= 0.05:
 					chart.text(
 						xval,
 						model_flavors.index(thresh_data_models[j]),
@@ -207,7 +207,7 @@ def make_thresh_barplot(
 						size="xx-small",
 						ha="center",
 						va="center",
-						bbox={"boxstyle":"circle", "pad":.2, "fc":"white", "ec":"white"}
+						bbox={"boxstyle":"circle", "pad":.3, "fc":"white", "ec":"white"}
 					)
 
 	plt.ylabel("")

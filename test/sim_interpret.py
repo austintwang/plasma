@@ -202,7 +202,7 @@ def make_thresh_barplot(
 				if i > 0 and (xval - float(thresh_data[i-1][j])) >= 0.1:
 					chart.text(
 						xval,
-						model_names[thresh_data_models[j]],
+						thresh_data_models[j],
 						t,
 						size="small",
 						ha="center",

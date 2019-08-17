@@ -180,7 +180,7 @@ def make_thresh_barplot(
 		# print(df[var]) ####
 		# print(df[var].dtype) ####
 		chart = sns.barplot(
-			x="Proportion of Loci", 
+			x=var, 
 			y="Model", 
 			data=df, 
 			label=t, 
@@ -189,6 +189,7 @@ def make_thresh_barplot(
 			estimator=estimator,
 			ci=None
 		)
+		plt.xlabel("Proportion of Loci")
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
 	plt.title(title)

@@ -203,7 +203,7 @@ def make_thresh_barplot(
 					chart.text(
 						xval,
 						model_flavors.index(thresh_data_models[j]),
-						t,
+						threshs[i],
 						size="small",
 						ha="center",
 						va="center",

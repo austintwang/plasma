@@ -159,7 +159,6 @@ def make_avg_lineplot(
 	handles, labels = ax.get_legend_handles_labels()
 	ax.legend(handles=handles[1:], labels=labels[1:])
 	plt.xlim(0., num_snps)
-	plt.ylabel("")
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
@@ -170,6 +169,7 @@ def make_thresh_barplot(
 		model_flavors,
 		model_names, 
 		threshs,
+		thresh_data,
 		title, 
 		result_path,
 		num_snps
@@ -194,6 +194,20 @@ def make_thresh_barplot(
 		plt.xlabel("Proportion of Loci")
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
+	for i, t in enumerate(thresh_data[:-1]):
+		for j, x in enumerate(t):
+			if i > 0 and (x - thresh_data[i-1][j]) >= 0.1:
+				chart.text(
+					x,
+					model_names[model_flavors[j]],
+					t,
+					size="small",
+					ha="center",
+					va="center",
+					bbox={"boxstyle":"circle", "pad":1, "fc":"white", "ec":"white"}
+				)
+
+	plt.ylabel("")
 	plt.title(title)
 	# plt.legend()
 	plt.savefig(result_path, bbox_inches='tight')
@@ -265,6 +279,8 @@ def write_stats(
 	with open(result_path, "w") as result_file:
 		result_file.writelines(lines)
 
+	return tres
+
 def write_stats_simple(
 		df,
 		var, 
@@ -328,7 +344,7 @@ def interpret_mainfig(
 		)
 
 		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(s))
-		write_stats(
+		thresh_data = write_stats(
 			df_res,
 			var_cred, 
 			model_flavors,
@@ -378,6 +394,7 @@ def interpret_mainfig(
 			model_flavors_cred,
 			NAMEMAP, 
 			threshs,
+			thresh_data,
 			title, 
 			result_path,
 			num_snps

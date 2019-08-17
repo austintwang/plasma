@@ -17,12 +17,20 @@ class Finemap(object):
 		self.num_ppl = kwargs.get("num_ppl", None)
 		self.as_only = kwargs.get("as_only", False)
 		self.qtl_only = kwargs.get("qtl_only", False)
-			
-		self.num_causal_prior = kwargs.get("num_causal_prior", self.NUM_CAUSAL_PRIOR_DEFAULT)	
-		self.cross_corr_prior = kwargs.get("cross_corr_prior", self.CROSS_CORR_PRIOR_DEFAULT)
-		self.imbalance_herit_prior = kwargs.get("imbalance_herit_prior", self.IMBALANCE_HERIT_PRIOR_DEFAULT)
-		self.total_exp_herit_prior = kwargs.get("total_exp_herit_prior", self.TOTAL_EXP_HERIT_PRIOR_DEFAULT)
-		self.ld_adj_prior = kwargs.get("ld_adj_prior", self.LD_ADJ_PRIOR_DEFAULT)
+		self.force_defaults = kwargs.get("qtl_only", False)
+
+		if self.force_defaults:
+			self.num_causal_prior = self.NUM_CAUSAL_PRIOR_DEFAULT	
+			self.cross_corr_prior = self.CROSS_CORR_PRIOR_DEFAULT
+			self.imbalance_herit_prior = self.IMBALANCE_HERIT_PRIOR_DEFAULT
+			self.total_exp_herit_prior = self.TOTAL_EXP_HERIT_PRIOR_DEFAULT
+			self.ld_adj_prior = self.LD_ADJ_PRIOR_DEFAULT
+		else:
+			self.num_causal_prior = kwargs.get("num_causal_prior", self.NUM_CAUSAL_PRIOR_DEFAULT)	
+			self.cross_corr_prior = kwargs.get("cross_corr_prior", self.CROSS_CORR_PRIOR_DEFAULT)
+			self.imbalance_herit_prior = kwargs.get("imbalance_herit_prior", self.IMBALANCE_HERIT_PRIOR_DEFAULT)
+			self.total_exp_herit_prior = kwargs.get("total_exp_herit_prior", self.TOTAL_EXP_HERIT_PRIOR_DEFAULT)
+			self.ld_adj_prior = kwargs.get("ld_adj_prior", self.LD_ADJ_PRIOR_DEFAULT)
 
 		self.causal_status_prior = kwargs.get("causal_status_prior", None)
 		self.imbalance_var_prior = kwargs.get("imbalance_var_prior", None)

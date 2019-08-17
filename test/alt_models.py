@@ -318,8 +318,6 @@ class FmBenner(Finemap):
 	def initialize(self):
 		super().initialize()
 
-		self.ncp = np.sqrt(self.total_exp_var_prior)
-
 		self.rsids = ["rs{0:05d}".format(i) for i in range(self.num_snps)]
 		self.rsid_map = dict(list(zip(self.rsids, list(range(self.num_snps)))))
 
@@ -344,6 +342,8 @@ class FmBenner(Finemap):
 		self.betas = self.beta.tolist()
 		self.se = (self.beta / self.total_exp_stats).tolist()
 		self.ld =(self.total_exp_corr * 0.999).tolist()
+		if not self.force_defaults:
+			self.prior_std = np.sqrt(self.total_exp_var_prior)
 
 	def search_exhaustive(self, min_causal, max_causal):
 		command_params = [
@@ -352,6 +352,11 @@ class FmBenner(Finemap):
 			"--n-causal-snps", str(max_causal),
 			"--sss"
 		]
+		if not self.force_defaults:
+			command_params.extend([
+				"--prior-std":, str(self.prior_std),
+				"--prior-k":, str(self.causal_status_prior)
+			])
 		self._run_fm(command_params)
 
 	def search_shotgun(self, min_causal, max_causal, prob_threshold, streak_threshold, num_iterations):
@@ -364,6 +369,11 @@ class FmBenner(Finemap):
 			"--prob-tol", str(prob_threshold),
 			"--sss"
 		]
+		if not self.force_defaults:
+			command_params.extend([
+				"--prior-std":, str(self.prior_std),
+				"--prior-k":, str(self.causal_status_prior)
+			])
 		self._run_fm(command_params)
 
 	def _run_fm(self, command_params):

@@ -341,7 +341,7 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	phs_errors = [(0., 0.), (0.152, 0.165)]
+	phs_errors = [(0., 0.), (0.00152, 0.00165)]
 	test_imperfect_phs(
 		disp, 
 		data_info,

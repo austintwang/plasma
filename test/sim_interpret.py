@@ -444,7 +444,7 @@ def interpret_imperfect_phs(
 
 		title = titles[i]
 
-		result_path = os.path.join(res_dir, "recall_s_{0}.txt".format(s))
+		result_path = os.path.join(res_dir, "recall_s_{0}_b_{1}.txt".format(*e))
 		write_stats_simple(
 			df_res,
 			"recall", 
@@ -453,7 +453,7 @@ def interpret_imperfect_phs(
 			result_path,
 		)
 
-		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(s))
+		result_path = os.path.join(res_dir, "stats_s_{0}_b_{1}.txt".format(*e))
 		thresh_data = write_stats(
 			df_res,
 			var_cred, 
@@ -463,7 +463,7 @@ def interpret_imperfect_phs(
 			result_path,
 		)
 
-		result_path = os.path.join(res_dir, "sets_s_{0}.svg".format(s))
+		result_path = os.path.join(res_dir, "sets_s_{0}_b_{1}.svg".format(*e))
 		make_violin(
 			df_res,
 			var_cred, 
@@ -475,7 +475,7 @@ def interpret_imperfect_phs(
 			num_snps
 		)
 
-		result_path = os.path.join(res_dir, "inc_s_{0}.svg".format(s))
+		result_path = os.path.join(res_dir, "inc_s_{0}_b_{1}.svg".format(*e))
 		make_avg_lineplot(
 			df_res,
 			var_inc, 
@@ -487,7 +487,7 @@ def interpret_imperfect_phs(
 			num_snps
 		)
 
-		result_path = os.path.join(res_dir, "thresh_s_{0}.svg".format(s))
+		result_path = os.path.join(res_dir, "thresh_s_{0}_b_{1}.svg".format(*e))
 		make_thresh_barplot(
 			df_res,
 			var_cred, 

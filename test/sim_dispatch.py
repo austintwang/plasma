@@ -37,8 +37,8 @@ class Dispatcher(object):
 	def submit(self):
 		timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
 		for i in self.jobs:
-			# print(" ".join(i)) ####
-			# raise Exception ####
+			print(" ".join(i)) ####
+			raise Exception ####
 			while True:
 				try:
 					submission = subprocess.run(i, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -330,13 +330,24 @@ if __name__ == '__main__':
 		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 
-	std_al_dev = [0.6, 0.8]
-	test_mainfig(
+	# std_al_dev = [0.6, 0.8]
+	# test_mainfig(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	std_al_dev,
+	# 	num_trials,
+	# 	script_path
+	# )
+
+	phs_errors = [(0., 0.), (0.152, 0.165)]
+	test_imperfect_phs(
 		disp, 
 		data_info,
 		params_dir, 
 		out_dir_base, 
-		std_al_dev,
+		phs_errors, 
 		num_trials,
 		script_path
 	)

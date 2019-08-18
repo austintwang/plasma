@@ -195,11 +195,12 @@ def make_thresh_barplot(
 		plt.xlabel("Proportion of Loci")
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
+	last_marker = [None for _ in len(thresh_data_models)]
 	for i, t in enumerate(thresh_data[:-1]):
 		for j, x in enumerate(t):
 			if thresh_data_models[j] in model_flavors:
 				xval = float(x)
-				if (i == 0 and xval > 0.02) or (xval - float(thresh_data[i-1][j])) >= 0.05:
+				if (last_marker[j] is None and xval >= 0.02) or ((xval - last_marker[j]) >= 0.05):
 					chart.text(
 						xval,
 						model_flavors.index(thresh_data_models[j]),
@@ -207,8 +208,9 @@ def make_thresh_barplot(
 						size="xx-small",
 						ha="center",
 						va="center",
-						bbox={"boxstyle":"circle", "pad":.3, "fc":"white", "ec":"white"}
+						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}
 					)
+					last_marker[j] = xval
 
 	plt.ylabel("")
 	plt.title(title)

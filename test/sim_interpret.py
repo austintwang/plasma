@@ -195,7 +195,7 @@ def make_thresh_barplot(
 		plt.xlabel("Proportion of Loci")
 		chart.set_yticklabels([model_names[m] for m in model_flavors])
 
-	last_marker = [None for _ in len(thresh_data_models)]
+	last_marker = [None for _ in range(len(thresh_data_models))]
 	for i, t in enumerate(thresh_data[:-1]):
 		for j, x in enumerate(t):
 			if thresh_data_models[j] in model_flavors:

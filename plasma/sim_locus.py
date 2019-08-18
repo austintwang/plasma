@@ -140,32 +140,6 @@ class LocusSimulator(object):
 		np.random.shuffle(haps_sampled)
 		hap_A = haps_sampled[:num_samples]
 		hap_B = haps_sampled[num_samples:]
-
-		if switch_error > 0:
-			# print(hap_A) ####
-			# print(np.array([True, False])) ####
-			# print(hap_A.shape()) ####
-			# print(p.array([switch_error, 1-switch_error])) ####
-			# print(np.random.choice(np.array([True, False]), size=hap_A.shape(), p=np.array([switch_error, 1-switch_error]))) ####
-			switches = np.logical_and(
-				(hap_A != hap_B), 
-				np.random.choice([True, False], size=hap_A.shape, p=np.array([switch_error, 1-switch_error]))
-			)
-			switch_idx = np.argwhere(switches)
-			for r, c in switch_idx:
-				hap_A[r, c:], hap_B[r, c:] = hap_B[r, c:], hap_A[r, c:].copy()
-
-		if blip_error > 0:
-			blips = np.logical_and(
-				(hap_A != hap_B), 
-				np.random.choice([True, False], size=hap_A.shape, p=np.array([blip_error, 1-blip_error]))
-			)
-			blip_idx = np.argwhere(blips)
-			for r, c in blip_idx:
-				hap_A[r, c], hap_B[r, c] = hap_B[r, c], hap_A[r, c].copy()
-
-		genotypes_comb = hap_A + hap_B
-		phases = hap_A - hap_B
 		
 		if causal_override is not None:
 			causal_config = causal_override
@@ -221,6 +195,32 @@ class LocusSimulator(object):
 		counts_B = noised_coverage - counts_A
 		counts_A[counts_A==0] = 1
 		counts_B[counts_B==0] = 1
+
+		if switch_error > 0:
+			# print(hap_A) ####
+			# print(np.array([True, False])) ####
+			# print(hap_A.shape()) ####
+			# print(p.array([switch_error, 1-switch_error])) ####
+			# print(np.random.choice(np.array([True, False]), size=hap_A.shape(), p=np.array([switch_error, 1-switch_error]))) ####
+			switches = np.logical_and(
+				(hap_A != hap_B), 
+				np.random.choice([True, False], size=hap_A.shape, p=np.array([switch_error, 1-switch_error]))
+			)
+			switch_idx = np.argwhere(switches)
+			for r, c in switch_idx:
+				hap_A[r, c:], hap_B[r, c:] = hap_B[r, c:], hap_A[r, c:].copy()
+
+		if blip_error > 0:
+			blips = np.logical_and(
+				(hap_A != hap_B), 
+				np.random.choice([True, False], size=hap_A.shape, p=np.array([blip_error, 1-blip_error]))
+			)
+			blip_idx = np.argwhere(blips)
+			for r, c in blip_idx:
+				hap_A[r, c], hap_B[r, c] = hap_B[r, c], hap_A[r, c].copy()
+
+		genotypes_comb = hap_A + hap_B
+		phases = hap_A - hap_B
 
 		data_dict = {
 			"total_exp": total_exp,

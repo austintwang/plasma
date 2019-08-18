@@ -142,6 +142,7 @@ class LocusSimulator(object):
 		hap_B = haps_sampled[num_samples:]
 
 		if switch_error > 0:
+			print(hap_A) ####
 			print(np.array([True, False])) ####
 			print(hap_A.shape()) ####
 			print(p.array([switch_error, 1-switch_error])) ####

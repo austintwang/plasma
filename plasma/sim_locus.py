@@ -144,7 +144,7 @@ class LocusSimulator(object):
 		if switch_error > 0:
 			switches = np.logical_and(
 				(hap_A != hap_B), 
-				np.random.choice([True, False], hap_A.shape(), p=[switch_error, 1-switch_error])
+				np.random.choice([True, False], shape=hap_A.shape(), p=[switch_error, 1-switch_error])
 			)
 			switch_idx = np.argwhere(switches)
 			for r, c in switch_idx:
@@ -153,7 +153,7 @@ class LocusSimulator(object):
 		if blip_error > 0:
 			blips = np.logical_and(
 				(hap_A != hap_B), 
-				np.random.choice([True, False], hap_A.shape(), p=[blip_error, 1-blip_error])
+				np.random.choice([True, False], shape=hap_A.shape(), p=[blip_error, 1-blip_error])
 			)
 			blip_idx = np.argwhere(blips)
 			for r, c in blip_idx:

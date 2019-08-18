@@ -207,6 +207,7 @@ class LocusSimulator(object):
 				np.random.choice([True, False], size=hap_A.shape, p=np.array([switch_error, 1-switch_error]))
 			)
 			switch_idx = np.argwhere(switches)
+			print(switch_idx) ####
 			for r, c in switch_idx:
 				hap_A[r, c:], hap_B[r, c:] = hap_B[r, c:], hap_A[r, c:].copy()
 

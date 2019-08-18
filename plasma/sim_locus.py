@@ -142,14 +142,14 @@ class LocusSimulator(object):
 		hap_B = haps_sampled[num_samples:]
 
 		if switch_error > 0:
-			print(hap_A) ####
-			print(np.array([True, False])) ####
-			print(hap_A.shape()) ####
-			print(p.array([switch_error, 1-switch_error])) ####
-			print(np.random.choice(np.array([True, False]), size=hap_A.shape(), p=np.array([switch_error, 1-switch_error]))) ####
+			# print(hap_A) ####
+			# print(np.array([True, False])) ####
+			# print(hap_A.shape()) ####
+			# print(p.array([switch_error, 1-switch_error])) ####
+			# print(np.random.choice(np.array([True, False]), size=hap_A.shape(), p=np.array([switch_error, 1-switch_error]))) ####
 			switches = np.logical_and(
 				(hap_A != hap_B), 
-				np.random.choice(np.array([True, False]), size=hap_A.shape(), p=np.array([switch_error, 1-switch_error]))
+				np.random.choice([True, False], size=hap_A.shape, p=np.array([switch_error, 1-switch_error]))
 			)
 			switch_idx = np.argwhere(switches)
 			for r, c in switch_idx:
@@ -158,7 +158,7 @@ class LocusSimulator(object):
 		if blip_error > 0:
 			blips = np.logical_and(
 				(hap_A != hap_B), 
-				np.random.choice(np.array([True, False]), size=hap_A.shape(), p=np.array([blip_error, 1-blip_error]))
+				np.random.choice([True, False], size=hap_A.shape, p=np.array([blip_error, 1-blip_error]))
 			)
 			blip_idx = np.argwhere(blips)
 			for r, c in blip_idx:

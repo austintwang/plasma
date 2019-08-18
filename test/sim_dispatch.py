@@ -298,7 +298,7 @@ def test_imperfect_phs(
 		os.makedirs(out_dir)
 
 	for s, b in phs_errors:
-		test_name = "s_{0}_b_{1}".format(i, j)
+		test_name = "s_{0}_b_{1}".format(s, b)
 		param_updates = {
 			"test_name": test_name,
 			"switch_error": s,

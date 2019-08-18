@@ -206,6 +206,7 @@ def make_thresh_barplot(
 						model_flavors.index(thresh_data_models[j]),
 						threshs[i],
 						size="xx-small",
+						weight="medium",
 						ha="center",
 						va="center",
 						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}
@@ -406,6 +407,101 @@ def interpret_mainfig(
 			num_snps
 		)
 
+def interpret_imperfect_phs(
+		data_dir_base, 
+		phs_errors, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "imperfect_phs")
+	df = load_data(data_dir, "imperfect_phs")
+
+	res_dir = os.path.join(res_dir_base, "imperfect_phs")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_cred = "Credible Set Size"
+	var_inc = "Inclusion"
+
+	for i, e in enumerate(phs_errors):
+		df_res = df.loc[
+			(df["switch_error"] == e[0])
+			& (df["blip_error"] == e[1])
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"causal_set_size": var_cred,
+				"inclusion": var_inc,
+				"model": "Model",
+			}, 
+			inplace=True
+		)
+
+		title = titles[i]
+
+		result_path = os.path.join(res_dir, "recall_s_{0}.txt".format(s))
+		write_stats_simple(
+			df_res,
+			"recall", 
+			model_flavors,
+			NAMEMAP, 
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(s))
+		thresh_data = write_stats(
+			df_res,
+			var_cred, 
+			model_flavors,
+			NAMEMAP, 
+			threshs,
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "sets_s_{0}.svg".format(s))
+		make_violin(
+			df_res,
+			var_cred, 
+			model_flavors_cred,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
+
+		result_path = os.path.join(res_dir, "inc_s_{0}.svg".format(s))
+		make_avg_lineplot(
+			df_res,
+			var_inc, 
+			model_flavors,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
+
+		result_path = os.path.join(res_dir, "thresh_s_{0}.svg".format(s))
+		make_thresh_barplot(
+			df_res,
+			var_cred, 
+			model_flavors_cred,
+			NAMEMAP, 
+			threshs,
+			thresh_data,
+			model_flavors,
+			title, 
+			result_path,
+			num_snps
+		)
+
+
 if __name__ == '__main__':
 	data_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 	res_dir_base = "/agusevlab/awang/ase_finemap_results/sim/"
@@ -420,6 +516,23 @@ if __name__ == '__main__':
 	interpret_mainfig(
 		data_dir_base, 
 		std_al_dev, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	)
+
+	phs_errors = [(0., 0.), (0.00152, 0.00165)]
+	titles = ["Perfect Phasing", "Imperfect Phasing"]
+	model_flavors = ["indep", "ase", "rasq"]
+	model_flavors_cred = ["indep", "ase"]
+	threshs = [1, 5, 20, 40, 70, 100]
+	num_snps = 100
+	interpret_imperfect_phs(
+		data_dir_base, 
+		phs_errors, 
 		titles,
 		model_flavors,
 		model_flavors_cred,

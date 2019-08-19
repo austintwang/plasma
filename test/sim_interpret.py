@@ -634,3 +634,20 @@ if __name__ == '__main__':
 		num_snps,
 		res_dir_base
 	)
+
+	phs_errors = [True, False]
+	titles = ["Program Defaults", "Manual Calibration"]
+	model_flavors = ["indep", "ase", "fmb"]
+	model_flavors_cred = ["indep", "ase", "fmb"]
+	threshs = [1, 5, 20, 40, 70, 100]
+	num_snps = 100
+	interpret_default_params(
+		data_dir_base, 
+		default_switch, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	)

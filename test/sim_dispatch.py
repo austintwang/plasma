@@ -351,7 +351,7 @@ def test_default_params(
 		test_name = "d_{0}".format(d)
 		param_updates = {
 			"test_name": test_name,
-			"force_default": s,
+			"force_default": d,
 		}
 		params = params_base.copy()
 		params.update(param_updates)

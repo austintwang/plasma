@@ -635,7 +635,7 @@ if __name__ == '__main__':
 		res_dir_base
 	)
 
-	phs_errors = [True, False]
+	default_switch = [True, False]
 	titles = ["Program Defaults", "Manual Calibration"]
 	model_flavors = ["indep", "ase", "fmb"]
 	model_flavors_cred = ["indep", "ase", "fmb"]

@@ -236,7 +236,7 @@ def sim_test(
 			# print(inputs["hap_A"].shape()) ####
 
 		except Exception as e:
-			raise ####
+			# raise ####
 			trace = traceback.format_exc()
 			message = repr(e)
 			result = {"complete": False, "error": message, "traceback": trace}
@@ -279,7 +279,7 @@ def sim_test(
 				param_updates = {}
 				result_full = run_model(Finemap, inputs, "full", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_full = {
@@ -296,7 +296,7 @@ def sim_test(
 				param_updates = {"cross_corr_prior": 0.}
 				result_indep = run_model(Finemap, inputs, "indep", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_indep = {
@@ -313,7 +313,7 @@ def sim_test(
 				param_updates = {"as_only": True}
 				result_ase = run_model(Finemap, inputs, "ase", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_ase = {
@@ -330,7 +330,7 @@ def sim_test(
 				param_updates = {}
 				result_acav = run_model(CaviarASE, inputs, "acav", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_acav = {
@@ -347,7 +347,7 @@ def sim_test(
 				param_updates = {"qtl_only": True}
 				result_eqtl = run_model(Finemap, inputs, "eqtl", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_eqtl = {
@@ -364,7 +364,7 @@ def sim_test(
 				param_updates = {"qtl_only": True}
 				result_cav = run_model(Caviar, inputs, "cav", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_cav = {
@@ -383,7 +383,7 @@ def sim_test(
 				result_rasq = run_model(Rasqual, inputs, "rasq", param_updates)
 				# print(result_rasq) ####
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_rasq = {
@@ -400,7 +400,7 @@ def sim_test(
 				param_updates = {"qtl_only": True}
 				result_fmb = run_model(FmBenner, inputs, "fmb", param_updates)
 			except Exception as e:
-				raise ####
+				# raise ####
 				trace = traceback.format_exc()
 				message = repr(e)
 				result_fmb = {

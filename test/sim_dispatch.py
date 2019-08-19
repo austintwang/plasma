@@ -103,7 +103,7 @@ def test_dev_cov(
 			params = params_base.copy()
 			params.update(param_updates)
 			params.update(data_info)
-			params_path = os.path.join(params_dir, params_base["test_type"], test_name + ".pickle")
+			params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 			disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_mainfig(
@@ -152,7 +152,7 @@ def test_mainfig(
 		params = params_base.copy()
 		params.update(param_updates)
 		params.update(data_info)
-		params_path = os.path.join(params_dir, params_base["test_type"], test_name + ".pickle")
+		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 		disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_dev_herit(
@@ -204,7 +204,7 @@ def test_dev_herit(
 			params = params_base.copy()
 			params.update(param_updates)
 			params.update(data_info)
-			params_path = os.path.join(params_dir, params_base["test_type"], test_name + ".pickle")
+			params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 			disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_multi_cv(
@@ -257,7 +257,7 @@ def test_multi_cv(
 		params = params_base.copy()
 		params.update(param_updates)
 		params.update(data_info)
-		params_path = os.path.join(params_dir, params_base["test_type"], test_name + ".pickle")
+		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 		disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_imperfect_phs(
@@ -307,7 +307,7 @@ def test_imperfect_phs(
 		params = params_base.copy()
 		params.update(param_updates)
 		params.update(data_info)
-		params_path = os.path.join(params_dir, params_base["test_type"], test_name + ".pickle")
+		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 		disp.add_job(out_dir, params_path, params, num_trials)
 
 def test_default_params(
@@ -356,7 +356,7 @@ def test_default_params(
 		params = params_base.copy()
 		params.update(param_updates)
 		params.update(data_info)
-		params_path = os.path.join(params_dir, params_base["test_type"], test_name + ".pickle")
+		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 		disp.add_job(out_dir, params_path, params, num_trials)
 
 if __name__ == '__main__':

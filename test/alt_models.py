@@ -339,6 +339,10 @@ class FmBenner(Finemap):
 
 		freq = (np.mean(self.hap_A, axis=0) + np.mean(self.hap_B, axis=0)) / 2.
 		self.maf = np.fmin(freq, 1 - freq)
+		if self.maf == 0:
+			self.maf = 0.0001
+		elif self.maf == 0.5:
+			self.maf = 0.4999
 		self.betas = self.beta.tolist()
 		self.se = (self.beta / self.total_exp_stats).tolist()
 		self.ld =(self.total_exp_corr * 0.999).tolist()

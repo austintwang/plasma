@@ -75,6 +75,7 @@ def make_distplot(
 			pass
 
 	plt.xlim(0, num_snps)
+	plt.ylim(bottom=0)
 	plt.legend()
 	plt.xlabel(var)
 	plt.ylabel("Density")
@@ -200,7 +201,7 @@ def make_thresh_barplot(
 		for j, x in enumerate(t):
 			if thresh_data_models[j] in model_flavors:
 				xval = float(x)
-				if (last_marker[j] is None and xval >= 0.02) or (last_marker[j] and (xval - last_marker[j]) >= 0.05):
+				if (last_marker[j] is None and xval >= 0.025) or (last_marker[j] and (xval - last_marker[j]) >= 0.05):
 					chart.text(
 						xval,
 						model_flavors.index(thresh_data_models[j]),

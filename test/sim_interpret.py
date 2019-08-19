@@ -201,7 +201,7 @@ def make_thresh_barplot(
 		for j, x in enumerate(t):
 			if thresh_data_models[j] in model_flavors:
 				xval = float(x)
-				if (last_marker[j] is None and xval >= 0.025) or (last_marker[j] and (xval - last_marker[j]) >= 0.05):
+				if (last_marker[j] is None and xval >= 0.03) or (last_marker[j] and (xval - last_marker[j]) >= 0.05):
 					chart.text(
 						xval,
 						model_flavors.index(thresh_data_models[j]),
@@ -209,8 +209,7 @@ def make_thresh_barplot(
 						size="xx-small",
 						weight="medium",
 						ha="center",
-						va="center",
-						linespacing=1,
+						va="center_baseline",
 						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}
 					)
 					last_marker[j] = xval

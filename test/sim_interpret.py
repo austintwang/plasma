@@ -75,7 +75,6 @@ def make_distplot(
 			pass
 
 	plt.xlim(0, num_snps)
-	plt.ylim(bottom=0)
 	plt.legend()
 	plt.xlabel(var)
 	plt.ylabel("Density")
@@ -160,6 +159,7 @@ def make_avg_lineplot(
 	handles, labels = ax.get_legend_handles_labels()
 	ax.legend(handles=handles[1:], labels=labels[1:])
 	plt.xlim(0., num_snps)
+	plt.ylim(bottom=0)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
@@ -204,12 +204,13 @@ def make_thresh_barplot(
 				if (last_marker[j] is None and xval >= 0.025) or (last_marker[j] and (xval - last_marker[j]) >= 0.05):
 					chart.text(
 						xval,
-						model_flavors.index(thresh_data_models[j]) - 0.01 * len(model_flavors),
+						model_flavors.index(thresh_data_models[j]),
 						threshs[i],
 						size="xx-small",
 						weight="medium",
 						ha="center",
 						va="center",
+						linespacing=1,
 						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}
 					)
 					last_marker[j] = xval

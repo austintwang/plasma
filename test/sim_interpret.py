@@ -204,7 +204,7 @@ def make_thresh_barplot(
 				if (last_marker[j] is None and xval >= 0.025) or (last_marker[j] and (xval - last_marker[j]) >= 0.05):
 					chart.text(
 						xval,
-						model_flavors.index(thresh_data_models[j]),
+						model_flavors.index(thresh_data_models[j]) - 0.01 * len(model_flavors),
 						threshs[i],
 						size="xx-small",
 						weight="medium",
@@ -489,6 +489,99 @@ def interpret_imperfect_phs(
 		)
 
 		result_path = os.path.join(res_dir, "thresh_s_{0}_b_{1}.svg".format(*e))
+		make_thresh_barplot(
+			df_res,
+			var_cred, 
+			model_flavors_cred,
+			NAMEMAP, 
+			threshs,
+			thresh_data,
+			model_flavors,
+			title, 
+			result_path,
+			num_snps
+		)
+
+def interpret_default_params(
+		data_dir_base, 
+		default_switch, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "default_params")
+	df = load_data(data_dir, "default_params")
+
+	res_dir = os.path.join(res_dir_base, "default_params")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_cred = "Credible Set Size"
+	var_inc = "Inclusion"
+
+	for i, d in enumerate(default_switch):
+		df_res = df.loc[
+			(df["force_default"] == d)
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"causal_set_size": var_cred,
+				"inclusion": var_inc,
+				"model": "Model",
+			}, 
+			inplace=True
+		)
+
+		title = titles[i]
+
+		result_path = os.path.join(res_dir, "recall_d_{0}.txt".format(d))
+		write_stats_simple(
+			df_res,
+			"recall", 
+			model_flavors,
+			NAMEMAP, 
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "stats_d_{0}.txt".format(d))
+		thresh_data = write_stats(
+			df_res,
+			var_cred, 
+			model_flavors,
+			NAMEMAP, 
+			threshs,
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "sets_d_{0}.svg".format(d))
+		make_violin(
+			df_res,
+			var_cred, 
+			model_flavors_cred,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
+
+		result_path = os.path.join(res_dir, "inc_d_{0}.svg".format(d))
+		make_avg_lineplot(
+			df_res,
+			var_inc, 
+			model_flavors,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
+
+		result_path = os.path.join(res_dir, "thresh_d_{0}.svg".format(d))
 		make_thresh_barplot(
 			df_res,
 			var_cred, 

@@ -520,6 +520,7 @@ class Finemap(object):
 		cumu_lposts = None
 		streak = 0
 		for i in range(num_iterations):
+			print("a")
 			lposts = []
 			before_cumu_lposts = self.evaluator.cumu_lposts
 			for c in configs:
@@ -550,7 +551,7 @@ class Finemap(object):
 			selection = np.random.choice(np.arange(len(configs)), p=dist)
 			configuration = configs[selection]
 
-			sel_lpost = lposts[selection]
+			print("b") ####
 
 			num_causal = np.count_nonzero(configuration)
 			configs = []

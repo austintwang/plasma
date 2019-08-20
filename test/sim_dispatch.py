@@ -1,6 +1,7 @@
 import subprocess
 import os
 import pickle
+import scipy.math as spm
 
 class Dispatcher(object):
 	def __init__(self, script_path, batch_size):

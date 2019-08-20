@@ -37,8 +37,8 @@ class Dispatcher(object):
 	def submit(self):
 		timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
 		for i in self.jobs:
-			print(" ".join(i)) ####
-			raise Exception ####
+			# print(" ".join(i)) ####
+			# raise Exception ####
 			while True:
 				try:
 					submission = subprocess.run(i, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -361,7 +361,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 2
+	batch_size = 1
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)

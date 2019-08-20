@@ -1,7 +1,6 @@
 import subprocess
 import os
 import pickle
-import scipy.math as spm
 
 class Dispatcher(object):
 	def __init__(self, script_path, batch_size):
@@ -233,12 +232,12 @@ def test_multi_cv(
 		"search_mode": "shotgun",
 		"prob_threshold": 0.001,
 		"streak_threshold": 1000,
-		"search_iterations": None, 
+		"search_iterations": 100000, 
 		"min_causal": 1,
 		"max_causal": None,
 		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "acav", "fmb"])
+		"model_flavors": set(["indep", "eqtl", "ase", "fmb"])
 	}
 	params_base.update(data_info)
 
@@ -248,12 +247,10 @@ def test_multi_cv(
 
 	for i in causal_vars:
 		test_name = "k_{0}".format(i)
-		it = int(spm.comb(params_base["max_snps"], i))
 		param_updates = {
 			"test_name": test_name,
 			"max_causal": i + 1,
 			"num_causal": i,
-			"search_iterations": it,
 		}
 		params = params_base.copy()
 		params.update(param_updates)

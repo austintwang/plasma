@@ -778,7 +778,7 @@ if __name__ == '__main__':
 	model_flavors_cred = ["indep", "ase", "eqtl", "fmb"]
 	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
-	interpret_default_params(
+	interpret_multi_cv(
 		data_dir_base, 
 		causal_vars, 
 		titles,

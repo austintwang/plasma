@@ -73,6 +73,7 @@ def make_distplot(
 				color=model_colors[m]
 			)
 		except Exception:
+			raise ####
 			print(traceback.format_exc())
 			pass
 
@@ -143,6 +144,7 @@ def make_avg_lineplot(
 			inclusions_dict[var+" Rate"].extend(inclusion_agg)
 			inclusions_dict["Model"].extend(num_snps * [model_names[m]])
 		except Exception:
+			raise ####
 			print(traceback.format_exc())
 			pass
 

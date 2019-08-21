@@ -181,11 +181,11 @@ class Evaluator(object):
 
 			snp_sets = {i: set() for i in range(self.num_snps)}
 			for c in results_exp.keys():
-				for i in c:
-					if i == 1:
+				for i in range(self.num_snps):
+					if c[i] == 1:
 						snp_sets[i].add(c)
 
-			print([(k, len(v)) for k, v in snp_sets.items()]) ####
+			# print([(k, len(v)) for k, v in snp_sets.items()]) ####
 
 			ppas = self.get_ppas()
 			ppas_sort = np.argsort(ppas)

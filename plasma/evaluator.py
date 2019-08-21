@@ -172,47 +172,72 @@ class Evaluator(object):
 		probs.sort(key=lambda x: x[1], reverse=True)
 		return probs
 
-	def get_causal_set(self, confidence):
+	def get_causal_set(self, confidence, heuristic="max_ppa"):
 		results_exp = self.get_probs()
-		causal_set = np.zeros(self.num_snps)
-		conf_sum = results_exp.get(tuple(causal_set), 0.)
+		
+		if heuristic == "max_ppa":
+			causal_set = np.zeros(self.num_snps)
+			conf_sum = 1.
 
-		distances = {}
-		causal_extras = {}
-		for k in list(self.results.keys()):
-			causals = set(ind for ind, val in enumerate(k) if val == 1)
-			distances.setdefault(sum(k), set()).add(k)
-			causal_extras[k] = causals
+			snp_sets = {i: set() for i in range(self.num_snps)}
+			for c in results_exp.keys():
+				for i in c:
+					if i == 1:
+						snp_sets[i].add(c)
 
-		while conf_sum < confidence:
-			dist_ones = distances[1]
-			neighbors = {}
-			for i in dist_ones:
-				diff_snp = next(iter(causal_extras[i]))
-				neighbors.setdefault(diff_snp, 0)
-				neighbors[diff_snp] += results_exp[i]
+			ppas = self.get_ppas()
+			ppas_rev_sort = np.argsort(-ppas)
+			for i in ppas_rev_sort:
+				conf_sum_after = conf_sum - sum(snp_sets[i])
+				if conf_sum_after > confidence:
+					remove_set = snp_sets.pop(i)
+					for s in snp_sets.values():
+						s -= remove_set
 
-			max_snp = max(neighbors, key=neighbors.get)
-			causal_set[max_snp] = 1
-			conf_sum += neighbors[max_snp]
-			print(conf_sum) ####
+					causal_set[i] = 0
+					conf_sum = conf_sum_after
+				else:
+					break
 
-			diffs = {}
-			for k, v in distances.items():
-				diffs[k] = set() 
-				for i in v:
-					if i[max_snp] == 1:
-						diffs[k].add(i)
-						if k == 1:
-							causal_extras.pop(i)
-						else:
-							causal_extras[i].remove(max_snp)
+		elif heuristic == "max_increase":
+			causal_set = np.zeros(self.num_snps)
+			conf_sum = results_exp.get(tuple(causal_set), 0.)
+			distances = {}
+			causal_extras = {}
+			for k in list(self.results.keys()):
+				causals = set(ind for ind, val in enumerate(k) if val == 1)
+				distances.setdefault(sum(k), set()).add(k)
+				causal_extras[k] = causals
 
-			for k, v in diffs.items():
-				distances[k] -= v
-				if k > 1:
-					distances.setdefault(k-1, set())
-					distances[k-1] |= v
+			while conf_sum < confidence:
+				dist_ones = distances[1]
+				neighbors = {}
+				for i in dist_ones:
+					diff_snp = next(iter(causal_extras[i]))
+					neighbors.setdefault(diff_snp, 0)
+					neighbors[diff_snp] += results_exp[i]
+
+				max_snp = max(neighbors, key=neighbors.get)
+				causal_set[max_snp] = 1
+				conf_sum += neighbors[max_snp]
+				# print(conf_sum) ####
+
+				diffs = {}
+				for k, v in distances.items():
+					diffs[k] = set() 
+					for i in v:
+						if i[max_snp] == 1:
+							diffs[k].add(i)
+							if k == 1:
+								causal_extras.pop(i)
+							else:
+								causal_extras[i].remove(max_snp)
+
+				for k, v in diffs.items():
+					distances[k] -= v
+					if k > 1:
+						distances.setdefault(k-1, set())
+						distances[k-1] |= v
 
 		return list(causal_set) 
 

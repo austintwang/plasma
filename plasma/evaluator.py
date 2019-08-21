@@ -185,11 +185,13 @@ class Evaluator(object):
 					if i == 1:
 						snp_sets[i].add(c)
 
+			print([k, sum(v) for i in snp_sets.items()]) ####
+
 			ppas = self.get_ppas()
 			ppas_sort = np.argsort(ppas)
 			for i in ppas_sort:
 				conf_sum_after = conf_sum - sum([results_exp[s] for s in snp_sets[i]])
-				print([results_exp[s] for s in snp_sets[i]]) ####
+				# print([results_exp[s] for s in snp_sets[i]]) ####
 				print(sum([results_exp[s] for s in snp_sets[i]])) ####
 				if conf_sum_after > confidence:
 					remove_set = snp_sets.pop(i)

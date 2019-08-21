@@ -816,7 +816,7 @@ def interpret_jointness(
 	result_path = os.path.join(res_dir, "sets.svg")
 	make_violin_series(
 		df_res,
-		var_corr
+		var_corr,
 		var_cred, 
 		model_flavors[0],
 		COLORMAP,

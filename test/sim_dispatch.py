@@ -357,6 +357,55 @@ def test_default_params(
 		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 		disp.add_job(out_dir, params_path, params, num_trials)
 
+def test_jointness(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	corr_priors, 
+	num_trials,
+	script_path
+):
+	params_base = {
+		"test_type": "jointness",
+		"region_size": None,
+		"max_snps": 100,
+		"num_samples": 100,
+		"maf_thresh": 0.01,
+		"overdispersion": 0.05,
+		"herit_qtl": 0.05,
+		"herit_as": 0.4,
+		"std_al_dev": 0.7,
+		"num_causal": 1,
+		"coverage": 100,
+		"search_mode": "exhaustive",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": None, 
+		"min_causal": 1,
+		"max_causal": 1,
+		"test_name": None,
+		"confidence": 0.95,
+		"model_flavors": set(["full"])
+	}
+	params_base.update(data_info)
+
+	out_dir = os.path.join(out_dir_base, params_base["test_type"])
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	for c in corr_priors:
+		test_name = "c_{0}".format(d)
+		param_updates = {
+			"test_name": test_name,
+			"cross_corr_prior": c,
+		}
+		params = params_base.copy()
+		params.update(param_updates)
+		params.update(data_info)
+		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
+		disp.add_job(out_dir, params_path, params, num_trials)
+
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -433,5 +482,16 @@ if __name__ == '__main__':
 	# 	num_trials,
 	# 	script_path
 	# )
+
+	corr_priors = [0., 0.2, 0.5, 0.7, 0.95]
+	test_jointness(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		corr_priors, 
+		num_trials,
+		script_path,
+	)
 
 	disp.submit()

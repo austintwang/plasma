@@ -114,6 +114,38 @@ def make_violin(
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
+def make_violin_series(
+		df,
+		var_ser, 
+		var_resp,
+		model_flavor,
+		model_colors,
+		title, 
+		result_path,
+		num_snps,
+		num_cats,
+		gradient=False
+	):
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+
+	model_data = df.loc[df["Model"] == model_flavor]
+
+	if gradient:
+		palette = sns.cubehelix_palette(len(num_cats))
+	else:
+		palette = [model_colors[model_flavor]]
+	sns.violinplot(
+		x=var_ser, 
+		y=var_resp,
+		data=model_data, 
+		palette=palette,
+		cut=0
+	)
+	plt.ylim(0., num_snps)
+	plt.title(title)
+	plt.savefig(result_path, bbox_inches='tight')
+	plt.clf()
+
 def make_avg_lineplot(
 		df,
 		var, 
@@ -714,6 +746,86 @@ def interpret_multi_cv(
 			result_path,
 			num_snps
 		)
+
+def interpret_jointness(
+		data_dir_base, 
+		corr_priors, 
+		title,
+		model_flavors,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "jointness")
+	df = load_data(data_dir, "jointness")
+
+	res_dir = os.path.join(res_dir_base, "jointness")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_cred = "Credible Set Size"
+	var_inc = "Inclusion"
+	var_corr = "Correlation Hyperparameter"
+
+	for i, c in enumerate(corr_priors):
+		df_res = df.loc[
+			(df["cross_corr_prior"] == c)
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"causal_set_size": var_cred,
+				"inclusion": var_inc,
+				"cross_corr_prior": var_corr,
+				"model": "Model",
+			}, 
+			inplace=True
+		)
+
+		result_path = os.path.join(res_dir, "recall_c_{0}.txt".format(c))
+		write_stats_simple(
+			df_res,
+			"recall", 
+			model_flavors,
+			NAMEMAP, 
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "stats_c_{0}.txt".format(c))
+		thresh_data = write_stats(
+			df_res,
+			var_cred, 
+			model_flavors,
+			NAMEMAP, 
+			threshs,
+			result_path,
+		)
+
+	df_res = df.loc[
+		(df["complete"] == True)
+	]
+	df_res.rename(
+		columns={
+			"causal_set_size": var_cred,
+			"inclusion": var_inc,
+			"cross_corr_prior": var_corr,
+			"model": "Model",
+		}, 
+		inplace=True
+	)
+
+	result_path = os.path.join(res_dir, "sets.svg")
+	make_violin_series(
+		df_res,
+		var_corr
+		var_cred, 
+		model_flavors[0],
+		COLORMAP,
+		title, 
+		result_path,
+		num_snps
+	)
+
+		
 
 
 if __name__ == '__main__':

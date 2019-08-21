@@ -61,7 +61,7 @@ class TextCentBbox(matplotlib.text.Text):
 
         # Metrics of the last line that are needed later:
         descent = d
-        print(descent) ####
+        # print(descent) ####
 
         # Bounding box definition:
         width = max(ws)

@@ -218,7 +218,7 @@ def make_thresh_barplot(
 						size="xx-small",
 						weight="medium",
 						ha="center",
-						va="center_baseline",
+						va="center",
 						transform=ax.transData,
 						clip_on=False,
 						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}

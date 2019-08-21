@@ -134,7 +134,7 @@ def make_avg_lineplot(
 		try:
 			inclusion_data = np.vstack(df.loc[df["Model"] == m, var].to_numpy())
 			if any_causal:
-				inclusion_agg = list(np.mean(np.nonzero(inclusion_data), axis=0))
+				inclusion_agg = list(np.mean((inclusion_data > 0).astype(int), axis=0))
 			else:
 				inclusion_agg = list(np.mean(inclusion_data, axis=0))
 			# print(inclusion_data) ####

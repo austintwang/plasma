@@ -186,8 +186,8 @@ class Evaluator(object):
 						snp_sets[i].add(c)
 
 			ppas = self.get_ppas()
-			ppas_rev_sort = np.argsort(-ppas)
-			for i in ppas_rev_sort:
+			ppas_sort = np.argsort(ppas)
+			for i in ppas_sort:
 				conf_sum_after = conf_sum - sum([results_exp[s] for s in snp_sets[i]])
 				print(sum([results_exp[s] for s in snp_sets[i]])) ####
 				if conf_sum_after > confidence:

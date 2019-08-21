@@ -185,7 +185,7 @@ class Evaluator(object):
 					if i == 1:
 						snp_sets[i].add(c)
 
-			print([k, sum(v) for i in snp_sets.items()]) ####
+			print([(k, len(v)) for k, v in snp_sets.items()]) ####
 
 			ppas = self.get_ppas()
 			ppas_sort = np.argsort(ppas)

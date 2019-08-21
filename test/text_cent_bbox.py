@@ -61,14 +61,15 @@ class TextCentBbox(matplotlib.text.Text):
 
         # Metrics of the last line that are needed later:
         descent = d
+        print(descent) ####
 
         # Bounding box definition:
         width = max(ws)
         xmin = 0
         xmax = width
         ymax = 0
-        ymin = ys[-1] - descent  # baseline of last line minus its descent
-        height = ymax - (ymin + descent)
+        ymin = ys[-1] 
+        height = ymax - ymin
 
         # get the rotation matrix
         M = Affine2D().rotate_deg(self.get_rotation())

@@ -163,7 +163,7 @@ def run_model(model_cls, inputs, model_name, model_updates):
 	print(np.nonzero(np.diff(inclusion))) ####
 	print(np.sum(causal_set)) ####
 	print(recall) ####
-	print(ppas) ####
+	# print(ppas) ####
 
 	result = {
 		"causal_set_size": causal_set_size,

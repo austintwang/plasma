@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import pickle
 import traceback
 
+from . import TextCentBbox
+
 pal = sns.color_palette()
 COLORMAP = {
 	"full": pal[1],
@@ -119,7 +121,8 @@ def make_avg_lineplot(
 		model_colors,
 		title, 
 		result_path,
-		num_snps
+		num_snps,
+		any_causal=False
 	):
 	inclusions_dict = {
 		"Number of Selected Markers": [],
@@ -129,7 +132,10 @@ def make_avg_lineplot(
 	for m in model_flavors:
 		try:
 			inclusion_data = np.vstack(df.loc[df["Model"] == m, var].to_numpy())
-			inclusion_agg = list(np.mean(inclusion_data, axis=0))
+			if any_causal:
+				inclusion_agg = list(np.mean(np.nonzero(inclusion_data), axis=0))
+			else:
+				inclusion_agg = list(np.mean(inclusion_data, axis=0))
 			# print(inclusion_data) ####
 			# print(inclusion_agg) ####
 			# print(len(inclusion_agg)) ####
@@ -202,16 +208,22 @@ def make_thresh_barplot(
 			if thresh_data_models[j] in model_flavors:
 				xval = float(x)
 				if (last_marker[j] is None and xval >= 0.04) or (last_marker[j] and (xval - last_marker[j]) >= 0.05):
-					chart.text(
+					ax = plt.gca()
+					text = TextCentBbox(
 						xval,
 						model_flavors.index(thresh_data_models[j]),
-						threshs[i],
+						text=threshs[i],
 						size="xx-small",
 						weight="medium",
 						ha="center",
 						va="center_baseline",
+						transform=ax.transData,
+						clip_on=False,
 						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}
 					)
+					text.set_clip_path(ax.patch)
+					ax._add_text(text)
+
 					last_marker[j] = xval
 
 	plt.ylabel("")
@@ -595,6 +607,112 @@ def interpret_default_params(
 			num_snps
 		)
 
+def interpret_multi_cv(
+		data_dir_base, 
+		causal_vars, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "multi_cv")
+	df = load_data(data_dir, "multi_cv")
+
+	res_dir = os.path.join(res_dir_base, "multi_cv")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_cred = "Credible Set Size"
+	var_inc = "Inclusion"
+
+	for i, k in enumerate(causal_vars):
+		df_res = df.loc[
+			(df["num_causal"] == k)
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"causal_set_size": var_cred,
+				"inclusion": var_inc,
+				"model": "Model",
+			}, 
+			inplace=True
+		)
+
+		title = titles[i]
+
+		result_path = os.path.join(res_dir, "recall_k_{0}.txt".format(k))
+		write_stats_simple(
+			df_res,
+			"recall", 
+			model_flavors,
+			NAMEMAP, 
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "stats_k_{0}.txt".format(k))
+		thresh_data = write_stats(
+			df_res,
+			var_cred, 
+			model_flavors,
+			NAMEMAP, 
+			threshs,
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "sets_k_{0}.svg".format(k))
+		make_violin(
+			df_res,
+			var_cred, 
+			model_flavors_cred,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
+
+		result_path = os.path.join(res_dir, "inc_k_{0}.svg".format(k))
+		make_avg_lineplot(
+			df_res,
+			var_inc, 
+			model_flavors,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
+
+		result_path = os.path.join(res_dir, "incany_k_{0}.svg".format(k))
+		make_avg_lineplot(
+			df_res,
+			var_inc, 
+			model_flavors,
+			NAMEMAP, 
+			COLORMAP,
+			title + ", Any Causal", 
+			result_path,
+			num_snps,
+			any_causal=True
+		)
+
+		result_path = os.path.join(res_dir, "thresh_k_{0}.svg".format(k))
+		make_thresh_barplot(
+			df_res,
+			var_cred, 
+			model_flavors_cred,
+			NAMEMAP, 
+			threshs,
+			thresh_data,
+			model_flavors,
+			title, 
+			result_path,
+			num_snps
+		)
+
 
 if __name__ == '__main__':
 	data_dir_base = "/agusevlab/awang/job_data/sim/outs/"
@@ -644,6 +762,23 @@ if __name__ == '__main__':
 	interpret_default_params(
 		data_dir_base, 
 		default_switch, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	)
+
+	causal_vars = [1, 2]
+	titles = ["1 Causal Variant", "2 Causal Variants"]
+	model_flavors = ["indep", "ase", "eqtl", "fmb"]
+	model_flavors_cred = ["indep", "ase", "eqtl", "fmb"]
+	threshs = [1, 5, 20, 40, 70, 100]
+	num_snps = 100
+	interpret_default_params(
+		data_dir_base, 
+		causal_vars, 
 		titles,
 		model_flavors,
 		model_flavors_cred,

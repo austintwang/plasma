@@ -176,7 +176,7 @@ class Evaluator(object):
 		results_exp = self.get_probs()
 		
 		if heuristic == "max_ppa":
-			causal_set = np.zeros(self.num_snps)
+			causal_set = np.ones(self.num_snps)
 			conf_sum = 1.
 
 			snp_sets = {i: set() for i in range(self.num_snps)}
@@ -189,6 +189,7 @@ class Evaluator(object):
 			ppas_rev_sort = np.argsort(-ppas)
 			for i in ppas_rev_sort:
 				conf_sum_after = conf_sum - sum(snp_sets[i])
+				print(conf_sum) ####
 				if conf_sum_after > confidence:
 					remove_set = snp_sets.pop(i)
 					for s in snp_sets.values():

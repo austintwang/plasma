@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib
-from matplotlib.text.transforms import Affine2D, Bbox
+from matplotlib.transforms import Affine2D, Bbox
 
 class TextCentBbox(matplotlib.text.Text):
     def _get_layout(self, renderer):

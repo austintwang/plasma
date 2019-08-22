@@ -146,9 +146,9 @@ def make_violin_series(
 		cut=0,
 	)
 	ax = plt.gca()
-    for art in ax.get_children():
-        if isinstance(art, matplotlib.collections.PolyCollection):
-            art.set_edgecolor((0., 0., 0.))
+	for art in ax.get_children():
+		if isinstance(art, matplotlib.collections.PolyCollection):
+			art.set_edgecolor((0., 0., 0.))
 	plt.ylim(0., num_snps)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')

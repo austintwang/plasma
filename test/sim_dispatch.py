@@ -224,6 +224,7 @@ def test_multi_cv(
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
+		"herit_qtl_man": 0.02,
 		"herit_as": 0.4,
 		"herit_as_man": 0.1,
 		"std_al_dev": 0.7,
@@ -237,7 +238,8 @@ def test_multi_cv(
 		"max_causal": None,
 		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "fmb"])
+		"cross_corr_prior": 0.95,
+		"model_flavors": set(["full", "indep", "eqtl", "ase", "fmb"])
 	}
 	params_base.update(data_info)
 
@@ -410,7 +412,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 5
+	batch_size = 1
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)
@@ -448,16 +450,16 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	# causal_vars = [1, 2]
-	# test_multi_cv(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	causal_vars, 
-	# 	num_trials,
-	# 	script_path,
-	# )
+	causal_vars = [1, 2]
+	test_multi_cv(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		causal_vars, 
+		num_trials,
+		script_path,
+	)
 
 	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
 	# test_imperfect_phs(
@@ -483,15 +485,15 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
-	test_jointness(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		corr_priors, 
-		num_trials,
-		script_path,
-	)
+	# corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
+	# test_jointness(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	corr_priors, 
+	# 	num_trials,
+	# 	script_path,
+	# )
 
 	disp.submit()

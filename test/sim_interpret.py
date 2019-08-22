@@ -59,7 +59,7 @@ def make_distplot(
 		num_snps
 	):
 
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 	for m in model_flavors:
 		try:
 			# model_data = np.sum(df.loc[df["model"] == m, [var]].to_numpy(), axis=1)
@@ -95,7 +95,7 @@ def make_violin(
 		result_path,
 		num_snps
 	):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 
 	palette = [model_colors[m] for m in model_flavors]
 	names = [model_names[m] for m in model_flavors]
@@ -126,7 +126,7 @@ def make_violin_series(
 		num_cats,
 		gradient=False
 	):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 
 	model_data = df.loc[df["Model"] == model_flavor]
 
@@ -189,7 +189,7 @@ def make_avg_lineplot(
 	inclusions_df = pd.DataFrame(inclusions_dict)
 	# print(inclusions_df) ####
 
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 	fig, ax = plt.subplots()
 
 	palette = [model_colors[m] for m in model_flavors]
@@ -222,7 +222,7 @@ def make_thresh_barplot(
 		result_path,
 		num_snps
 	):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,3)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 	palette = sns.cubehelix_palette(len(threshs))
 
 	for i, t in enumerate(reversed(threshs)):
@@ -892,8 +892,8 @@ if __name__ == '__main__':
 
 	causal_vars = [1, 2]
 	titles = ["1 Causal Variant", "2 Causal Variants"]
-	model_flavors = ["indep", "ase", "eqtl", "fmb"]
-	model_flavors_cred = ["indep", "ase", "eqtl", "fmb"]
+	model_flavors = ["indep", "full", "ase", "eqtl", "fmb"]
+	model_flavors_cred = ["indep", "full", "ase", "eqtl", "fmb"]
 	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
 	interpret_multi_cv(
@@ -907,7 +907,7 @@ if __name__ == '__main__':
 		res_dir_base
 	)
 
-	corr_priors = [0., 0.2, 0.5, 0.7, 0.95]
+	corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
 	title = "Correlation Hyperparameter in PLASMA-J"
 	model_flavors = ["full"]
 	num_snps = 100

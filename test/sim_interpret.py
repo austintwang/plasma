@@ -828,10 +828,10 @@ def interpret_jointness(
 		COLORMAP,
 		title, 
 		result_path,
-		num_snps
-	)
-
-		
+		num_snps,
+		len(corr_priors),
+		gradient=True
+	)	
 
 
 if __name__ == '__main__':
@@ -917,5 +917,6 @@ if __name__ == '__main__':
 		title,
 		model_flavors,
 		num_snps,
-		res_dir_base
+		res_dir_base,
+		num_cats
 	)

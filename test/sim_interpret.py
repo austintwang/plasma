@@ -141,7 +141,7 @@ def make_violin_series(
 		data=model_data, 
 		palette=palette,
 		cut=0,
-		linewidth=0
+		linewidth=.5
 	)
 	plt.ylim(0., num_snps)
 	plt.title(title)

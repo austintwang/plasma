@@ -906,3 +906,16 @@ if __name__ == '__main__':
 		num_snps,
 		res_dir_base
 	)
+
+	corr_priors = [0., 0.2, 0.5, 0.7, 0.95]
+	title = "Correlation Hyperparameter in PLASMA-J"
+	model_flavors = ["full"]
+	num_snps = 100
+	interpret_jointness(
+		data_dir_base, 
+		corr_priors, 
+		title,
+		model_flavors,
+		num_snps,
+		res_dir_base
+	)

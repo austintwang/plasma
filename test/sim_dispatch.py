@@ -395,7 +395,7 @@ def test_jointness(
 		os.makedirs(out_dir)
 
 	for c in corr_priors:
-		test_name = "c_{0}".format(d)
+		test_name = "c_{0}".format(c)
 		param_updates = {
 			"test_name": test_name,
 			"cross_corr_prior": c,

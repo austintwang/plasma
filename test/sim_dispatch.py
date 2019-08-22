@@ -483,7 +483,7 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	corr_priors = [0., 0.2, 0.5, 0.7, 0.95]
+	corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
 	test_jointness(
 		disp, 
 		data_info,

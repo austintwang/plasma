@@ -196,6 +196,8 @@ class LocusSimulator(object):
 		counts_A[counts_A==0] = 1
 		counts_B[counts_B==0] = 1
 
+		read_carrier = np.random.choice(self.snp_count)
+
 		if switch_error > 0:
 			# print(hap_A) ####
 			# print(np.array([True, False])) ####
@@ -210,6 +212,8 @@ class LocusSimulator(object):
 			# print(switch_idx) ####
 			for r, c in switch_idx:
 				hap_A[r, c:], hap_B[r, c:] = hap_B[r, c:], hap_A[r, c:].copy()
+				if c <= read_carrier:
+					counts_A[r], counts_B[r] = counts_B[r], counts_A[r]
 
 		if blip_error > 0:
 			blips = np.logical_and(
@@ -219,6 +223,8 @@ class LocusSimulator(object):
 			blip_idx = np.argwhere(blips)
 			for r, c in blip_idx:
 				hap_A[r, c], hap_B[r, c] = hap_B[r, c], hap_A[r, c].copy()
+				if c == read_carrier:
+					counts_A[r], counts_B[r] = counts_B[r], counts_A[r]
 
 		genotypes_comb = hap_A + hap_B
 		phases = hap_A - hap_B

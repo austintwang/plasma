@@ -412,7 +412,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 1
+	batch_size = 2
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)
@@ -450,27 +450,27 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	causal_vars = [1, 2]
-	test_multi_cv(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		causal_vars, 
-		num_trials,
-		script_path,
-	)
-
-	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
-	# test_imperfect_phs(
+	# causal_vars = [1, 2]
+	# test_multi_cv(
 	# 	disp, 
 	# 	data_info,
 	# 	params_dir, 
 	# 	out_dir_base, 
-	# 	phs_errors, 
+	# 	causal_vars, 
 	# 	num_trials,
-	# 	script_path
+	# 	script_path,
 	# )
+
+	phs_errors = [(0., 0.), (0.00152, 0.00165)]
+	test_imperfect_phs(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		phs_errors, 
+		num_trials,
+		script_path
+	)
 
 	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
 	# coverage = [10, 20, 50, 100, 500, 1000]

@@ -918,5 +918,4 @@ if __name__ == '__main__':
 		model_flavors,
 		num_snps,
 		res_dir_base,
-		num_cats
 	)

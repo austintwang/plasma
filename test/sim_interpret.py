@@ -131,7 +131,7 @@ def make_violin_series(
 	model_data = df.loc[df["Model"] == model_flavor]
 
 	if gradient:
-		palette = sns.cubehelix_palette(len(num_cats))
+		palette = sns.cubehelix_palette(num_cats)
 	else:
 		palette = [model_colors[model_flavor]]
 	sns.violinplot(

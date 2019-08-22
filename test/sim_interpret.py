@@ -108,9 +108,9 @@ def make_violin(
 		cut=0,
 	)
 	ax = plt.gca()
-    for art in ax.get_children():
-        if isinstance(art, matplotlib.collections.PolyCollection):
-            art.set_edgecolor((0., 0., 0.))
+	for art in ax.get_children():
+		if isinstance(art, matplotlib.collections.PolyCollection):
+			art.set_edgecolor((0., 0., 0.))
 	plt.xlim(0., num_snps)
 	chart.set_yticklabels([model_names[m] for m in model_flavors])
 	plt.ylabel("")

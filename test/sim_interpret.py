@@ -105,7 +105,8 @@ def make_violin(
 		data=df, 
 		order=model_flavors, 
 		palette=palette,
-		cut=0
+		cut=0,
+		linewidth=0
 	)
 	plt.xlim(0., num_snps)
 	chart.set_yticklabels([model_names[m] for m in model_flavors])
@@ -139,7 +140,8 @@ def make_violin_series(
 		y=var_resp,
 		data=model_data, 
 		palette=palette,
-		cut=0
+		cut=0,
+		linewidth=0
 	)
 	plt.ylim(0., num_snps)
 	plt.title(title)

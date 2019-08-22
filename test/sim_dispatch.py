@@ -448,16 +448,16 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	causal_vars = [1, 2]
-	test_multi_cv(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		causal_vars, 
-		num_trials,
-		script_path,
-	)
+	# causal_vars = [1, 2]
+	# test_multi_cv(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	causal_vars, 
+	# 	num_trials,
+	# 	script_path,
+	# )
 
 	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
 	# test_imperfect_phs(

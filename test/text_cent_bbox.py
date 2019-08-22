@@ -68,7 +68,7 @@ class TextCentBbox(matplotlib.text.Text):
         xmin = 0
         xmax = width
         ymax = 0
-        ymin = ys[-1] + d
+        ymin = ys[-1] - d
         height = ymax - ymin
 
         # get the rotation matrix

@@ -286,6 +286,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_full = {
 					"model": "full",
@@ -303,6 +304,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_indep = {
 					"model": "indep",
@@ -320,6 +322,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_ase = {
 					"model": "ase",
@@ -337,6 +340,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_acav = {
 					"model": "acav",
@@ -354,6 +358,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_eqtl = {
 					"model": "eqtl",
@@ -371,6 +376,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_cav = {
 					"model": "cav",
@@ -390,6 +396,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_rasq = {
 					"model": "rasq",
@@ -407,6 +414,7 @@ def sim_test(
 			except Exception as e:
 				# raise ####
 				trace = traceback.format_exc()
+				print(trace)
 				message = repr(e)
 				result_fmb = {
 					"model": "fmb",

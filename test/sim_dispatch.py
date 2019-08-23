@@ -412,7 +412,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 2
+	batch_size = 1
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)

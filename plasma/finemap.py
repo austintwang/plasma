@@ -275,13 +275,15 @@ class Finemap(object):
 			+ 4 * phi**2 * self.phase_err
 		)
 
-		varphi = denominator 
+		varphi = (
+			denominator 
 			* denominator 
 			* (
 				(phases.T * weights**2 * phases.T).sum(1) 
 				* remaining_errors 
 				+ (phases.T * weights * phases.T).sum(1)
 			)
+		)
 
 		self.imbalance_stats = np.nan_to_num(phi / np.sqrt(varphi))
 

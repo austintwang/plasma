@@ -8,9 +8,10 @@ class Finemap(object):
 
 	NUM_CAUSAL_PRIOR_DEFAULT = 1.
 	CROSS_CORR_PRIOR_DEFAULT = 0.
-	IMBALANCE_HERIT_PRIOR_DEFAULT = 0.4
+	IMBALANCE_HERIT_PRIOR_DEFAULT = 0.1
 	TOTAL_EXP_HERIT_PRIOR_DEFAULT = 0.05
 	LD_ADJ_PRIOR_DEFAULT = 1.
+	PHASE_ERR_DEFAULT = 1.
 
 	def __init__(self, **kwargs):
 		self.num_snps = kwargs.get("num_snps", None)
@@ -25,12 +26,14 @@ class Finemap(object):
 			self.imbalance_herit_prior = self.IMBALANCE_HERIT_PRIOR_DEFAULT
 			self.total_exp_herit_prior = self.TOTAL_EXP_HERIT_PRIOR_DEFAULT
 			self.ld_adj_prior = self.LD_ADJ_PRIOR_DEFAULT
+			self.phase_err = self.PHASE_ERR_DEFAULT
 		else:
 			self.num_causal_prior = kwargs.get("num_causal_prior", self.NUM_CAUSAL_PRIOR_DEFAULT)	
 			self.cross_corr_prior = kwargs.get("cross_corr_prior", self.CROSS_CORR_PRIOR_DEFAULT)
 			self.imbalance_herit_prior = kwargs.get("imbalance_herit_prior", self.IMBALANCE_HERIT_PRIOR_DEFAULT)
 			self.total_exp_herit_prior = kwargs.get("total_exp_herit_prior", self.TOTAL_EXP_HERIT_PRIOR_DEFAULT)
 			self.ld_adj_prior = kwargs.get("ld_adj_prior", self.LD_ADJ_PRIOR_DEFAULT)
+			self.phase_err = kwargs.get("phase_err", self.PHASE_ERR_DEFAULT)
 
 		self.causal_status_prior = kwargs.get("causal_status_prior", None)
 		self.imbalance_var_prior = kwargs.get("imbalance_var_prior", None)
@@ -269,9 +272,17 @@ class Finemap(object):
 				axis=0
 			) 
 			/ (sum_weights)
+			+ 4 * phi**2 * self.phase_err
 		)
 
-		varphi = denominator * denominator * ((phases.T * weights**2 * phases.T).sum(1) * remaining_errors + (phases.T * weights * phases.T).sum(1))
+		varphi = denominator 
+			* denominator 
+			* (
+				(phases.T * weights**2 * phases.T).sum(1) 
+				* remaining_errors 
+				+ (phases.T * weights * phases.T).sum(1)
+			)
+
 		self.imbalance_stats = np.nan_to_num(phi / np.sqrt(varphi))
 
 	def _calc_imbalance_corr(self):

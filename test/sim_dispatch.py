@@ -226,7 +226,7 @@ def test_multi_cv(
 		"herit_qtl": 0.05,
 		"herit_qtl_man": 0.001,
 		"herit_as": 0.4,
-		"herit_as_man": 0.01,
+		"herit_as_man": 0.1,
 		"std_al_dev": 0.7,
 		"num_causal": None,
 		"coverage": 100,

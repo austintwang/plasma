@@ -11,7 +11,7 @@ class Finemap(object):
 	IMBALANCE_HERIT_PRIOR_DEFAULT = 0.1
 	TOTAL_EXP_HERIT_PRIOR_DEFAULT = 0.05
 	LD_ADJ_PRIOR_DEFAULT = 1.
-	PHASE_ERR_DEFAULT = 1.
+	PHASE_ERR_DEFAULT = 0.
 
 	def __init__(self, **kwargs):
 		self.num_snps = kwargs.get("num_snps", None)

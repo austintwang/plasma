@@ -227,7 +227,7 @@ def test_multi_cv(
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
-		"herit_qtl_man": 0.005,
+		"herit_qtl_man": 0.002,
 		"herit_as": 0.4,
 		"herit_as_man": 0.1,
 		"cross_corr_prior": 0.9,
@@ -468,16 +468,16 @@ if __name__ == '__main__':
 		script_path,
 	)
 
-	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
-	# test_imperfect_phs(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	phs_errors, 
-	# 	num_trials,
-	# 	script_path
-	# )
+	phs_errors = [(0., 0.), (0.00152, 0.00165)]
+	test_imperfect_phs(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		phs_errors, 
+		num_trials,
+		script_path
+	)
 
 	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
 	# coverage = [10, 20, 50, 100, 500, 1000]

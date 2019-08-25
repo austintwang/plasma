@@ -198,6 +198,23 @@ class LocusSimulator(object):
 
 		read_carrier = np.random.choice(self.snp_count)
 
+		het_probs = np.mean((hap_A - hap_B)**2, axis=0)
+		phs_err = np.empty(self.snp_count)
+		for i in range(1, self.snp_count-1):
+			if i == read_carrier:
+				phs_err[i] = 0.
+			else:
+				num_hets = np.sum(het_probs[min(i, read_carrier), max(i, read_carrier)+1])
+				switch_prob = 1 - (1-switch_error)**num_hets
+				phs_err[i] = switch_prob + blip_error - switch_prob * blip_error
+
+		# phs_err[0] = 1 - (1-switch_error)**np.sum(het_probs[1:])
+		# phs_err[-1] = 1 - (1-switch_error)**np.sum(het_probs[:-1])
+		# for i in range(1, self.snp_count-1):
+		# 	hets_before = np.sum(het_probs[:i])
+		# 	hets_after = np.sum(het_probs[i+1:])
+		# 	phs_errs[i] = 1 - (1-switch_error)**hets_before + 1 - (1-switch_error)**hets_after
+
 		if switch_error > 0:
 			# print(hap_A) ####
 			# print(np.array([True, False])) ####
@@ -235,6 +252,8 @@ class LocusSimulator(object):
 			"counts_B": counts_B,
 			"hap_A": hap_A,
 			"hap_B": hap_B,
+			"phs_err": phs_err,
+			"read_carrier": read_carrier
 		}
 
 		return data_dict

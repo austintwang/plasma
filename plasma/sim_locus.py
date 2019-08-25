@@ -204,7 +204,7 @@ class LocusSimulator(object):
 			if i == read_carrier:
 				phs_err[i] = 0.
 			else:
-				num_hets = np.sum(het_probs[min(i, read_carrier), max(i, read_carrier)+1])
+				num_hets = np.sum(het_probs[min(i, read_carrier): max(i, read_carrier)+1])
 				switch_prob = 1 - (1-switch_error)**num_hets
 				phs_err[i] = switch_prob + blip_error - switch_prob * blip_error
 

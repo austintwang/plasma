@@ -468,7 +468,7 @@ class Finemap(object):
 				)
 			)
 		)
-		print(self.corr_stats) ####
+		# print(self.corr_stats) ####
 
 	def _calc_cross_corr(self):
 		"""

@@ -246,6 +246,7 @@ def sim_test(
 		except Exception as e:
 			# raise ####
 			trace = traceback.format_exc()
+			print(trace)
 			message = repr(e)
 			result = {"complete": False, "error": message, "traceback": trace}
 			if "full" in model_flavors:

@@ -23,8 +23,8 @@ COLORMAP = {
 	"fmb": pal[8],
 }
 NAMEMAP = {
-	"full": "PLASMA-JC",
-	"indep": "PLASMA-J",
+	"full": "PLASMA-J",
+	"indep": "PLASMA-JI",
 	"ase": "PLASMA-AS",
 	"acav": "CAVIAR-ASE",
 	"eqtl": "QTL-Only",

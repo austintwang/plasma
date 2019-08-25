@@ -38,7 +38,7 @@ class Caviar(Finemap):
 		self.set_path = os.path.join(self.output_path, self.output_name + "_set")
 		self.post_path = os.path.join(self.output_path, self.output_name + "_post")
 
-		self.causal_set = np.zeros(self.num_snps)
+		self.causal_set = np.ones(self.num_snps)
 		self.post_probs = np.zeros(self.num_snps)
 
 		self.z_scores = self.total_exp_stats.tolist()
@@ -225,8 +225,8 @@ class ECaviar(object):
 		self.post_gwas_path = os.path.join(self.output_path, self.output_name + "_2_post")
 		self.clpp_path = os.path.join(self.output_path, self.output_name + "_col")
 
-		self.causal_set_qtl = np.zeros(self.num_snps)
-		self.causal_set_gwas = np.zeros(self.num_snps)
+		self.causal_set_qtl = np.ones(self.num_snps)
+		self.causal_set_gwas = np.ones(self.num_snps)
 		self.post_probs_qtl = np.zeros(self.num_snps)
 		self.post_probs_gwas = np.zeros(self.num_snps)
 		self.clpp = np.zeros(self.num_snps)
@@ -334,7 +334,7 @@ class FmBenner(Finemap):
 		self.set_path = os.path.join(self.output_path, self.output_name + ".cred")
 		self.post_path = os.path.join(self.output_path, self.output_name + ".snp")
 
-		self.causal_set = np.zeros(self.num_snps)
+		self.causal_set = np.ones(self.num_snps)
 		self.post_probs = np.zeros(self.num_snps)
 
 		freq = (np.mean(self.hap_A, axis=0) + np.mean(self.hap_B, axis=0)) / 2.

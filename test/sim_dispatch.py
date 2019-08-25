@@ -73,6 +73,7 @@ def test_dev_cov(
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
 		"herit_as": 0.4,
+		"cross_corr_prior": 0.9,
 		"std_al_dev": None,
 		"num_causal": 1,
 		"coverage": None,
@@ -124,6 +125,7 @@ def test_mainfig(
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
 		"herit_as": 0.4,
+		"cross_corr_prior": 0.9,
 		"std_al_dev": None,
 		"num_causal": 1,
 		"coverage": 100,
@@ -175,6 +177,7 @@ def test_dev_herit(
 		"herit_qtl": 0.05,
 		"herit_as": None,
 		"std_al_dev": None,
+		"cross_corr_prior": 0.9,
 		"num_causal": 1,
 		"coverage": 100,
 		"search_mode": "exhaustive",
@@ -224,9 +227,10 @@ def test_multi_cv(
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
-		"herit_qtl_man": 0.001,
+		"herit_qtl_man": 0.01,
 		"herit_as": 0.4,
 		"herit_as_man": 0.1,
+		"cross_corr_prior": 0.9,
 		"std_al_dev": 0.7,
 		"num_causal": None,
 		"coverage": 100,
@@ -238,7 +242,6 @@ def test_multi_cv(
 		"max_causal": None,
 		"test_name": None,
 		"confidence": 0.95,
-		"cross_corr_prior": 0.95,
 		"model_flavors": set(["full", "indep", "eqtl", "ase", "fmb"])
 	}
 	params_base.update(data_info)
@@ -253,6 +256,7 @@ def test_multi_cv(
 			"test_name": test_name,
 			"max_causal": i + 1,
 			"num_causal": i,
+			"num_causal_prior": i,
 		}
 		params = params_base.copy()
 		params.update(param_updates)
@@ -278,6 +282,7 @@ def test_imperfect_phs(
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
 		"herit_as": 0.4,
+		"cross_corr_prior": 0.9,
 		"std_al_dev": 0.7,
 		"num_causal": 1,
 		"coverage": 100,
@@ -328,6 +333,7 @@ def test_default_params(
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
 		"herit_as": 0.4,
+		"cross_corr_prior": 0.9,
 		"std_al_dev": 0.7,
 		"num_causal": 1,
 		"coverage": 100,

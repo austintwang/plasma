@@ -172,7 +172,7 @@ class Evaluator(object):
 		probs.sort(key=lambda x: x[1], reverse=True)
 		return probs
 
-	def get_causal_set(self, confidence, heuristic="max_ppa"):
+	def get_causal_set(self, confidence, heuristic="max_increase"):
 		results_exp = self.get_probs()
 		
 		if heuristic == "max_ppa":

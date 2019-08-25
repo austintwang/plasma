@@ -866,8 +866,8 @@ if __name__ == '__main__':
 
 	phs_errors = [(0., 0.), (0.00152, 0.00165)]
 	titles = ["Perfect Phasing", "Imperfect Phasing"]
-	model_flavors = ["indep", "ase", "rasq"]
-	model_flavors_cred = ["indep", "ase"]
+	model_flavors = ["full", "indep", "ase", "rasq"]
+	model_flavors_cred = ["full", "indep", "ase"]
 	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
 	interpret_imperfect_phs(

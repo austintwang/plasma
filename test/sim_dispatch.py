@@ -227,7 +227,7 @@ def test_multi_cv(
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
 		"herit_qtl": 0.05,
-		"herit_qtl_man": 0.01,
+		"herit_qtl_man": 0.005,
 		"herit_as": 0.4,
 		"herit_as_man": 0.1,
 		"cross_corr_prior": 0.9,

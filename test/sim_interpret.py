@@ -181,7 +181,6 @@ def make_barplot_series(
 		palette=palette,
 		ci=None
 	)
-	plt.ylim(0., num_snps)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()

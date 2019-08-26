@@ -415,6 +415,57 @@ def test_jointness(
 		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
 		disp.add_job(out_dir, params_path, params, num_trials)
 
+def fmb_calib(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	prior_stds, 
+	num_trials,
+	script_path
+):
+	params_base = {
+		"test_type": "fmb_calib",
+		"region_size": None,
+		"max_snps": 100,
+		"num_samples": 100,
+		"maf_thresh": 0.01,
+		"overdispersion": 0.05,
+		# "herit_qtl": 0.05,
+		"herit_as": 0.4,
+		"std_al_dev": 0.7,
+		"num_causal": 1,
+		"coverage": 100,
+		"search_mode": "exhaustive",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": None, 
+		"min_causal": 1,
+		"max_causal": 1,
+		"test_name": None,
+		"confidence": 0.95,
+		"model_flavors": set(["fmb"])
+	}
+	params_base.update(data_info)
+
+	out_dir = os.path.join(out_dir_base, params_base["test_type"])
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	for s in prior_stds:
+		test_name = "s_{0}".format(s)
+		param_updates = {
+			"test_name": test_name,
+			"total_exp_var_prior": c**2,
+			"std_prior": c,
+		}
+		params = params_base.copy()
+		params.update(param_updates)
+		params.update(data_info)
+		params_path = os.path.join(params_dir, "{0}_{1}.pickle".format(params_base["test_type"], test_name))
+		disp.add_job(out_dir, params_path, params, num_trials)
+
+
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -457,27 +508,27 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	causal_vars = [1, 2]
-	test_multi_cv(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		causal_vars, 
-		num_trials,
-		script_path,
-	)
+	# causal_vars = [1, 2]
+	# test_multi_cv(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	causal_vars, 
+	# 	num_trials,
+	# 	script_path,
+	# )
 
-	phs_errors = [(0., 0.), (0.00152, 0.00165)]
-	test_imperfect_phs(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		phs_errors, 
-		num_trials,
-		script_path
-	)
+	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
+	# test_imperfect_phs(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	phs_errors, 
+	# 	num_trials,
+	# 	script_path
+	# )
 
 	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
 	# coverage = [10, 20, 50, 100, 500, 1000]
@@ -502,5 +553,16 @@ if __name__ == '__main__':
 	# 	num_trials,
 	# 	script_path,
 	# )
+
+	prior_stds = [0.001, 0.01, 0.05, 0.1]
+	fmb_calib(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		prior_stds, 
+		num_trials,
+		script_path,
+	)
 
 	disp.submit()

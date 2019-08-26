@@ -456,8 +456,8 @@ def fmb_calib(
 		test_name = "s_{0}".format(s)
 		param_updates = {
 			"test_name": test_name,
-			"total_exp_var_prior": c**2,
-			"std_prior": c,
+			"total_exp_var_prior": s**2,
+			"std_prior": s,
 		}
 		params = params_base.copy()
 		params.update(param_updates)
@@ -470,7 +470,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 2
+	batch_size = 5
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)

@@ -1043,7 +1043,7 @@ if __name__ == '__main__':
 		res_dir_base,
 	)
 
-	prior_stds = [0.001, 0.01, 0.05, 0.1]
+	prior_stds = [0.005, 0.05, 0.05, 0.5, 5]
 	title = "Calibration of FINEMAP 95% Credible Sets"
 	model_flavors = ["fmb"]
 	num_snps = 100

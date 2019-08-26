@@ -909,7 +909,7 @@ def interpret_fmb_calib(
 			inplace=True
 		)
 
-		result_path = os.path.join(res_dir, "recall_s_{0}.txt".format(c))
+		result_path = os.path.join(res_dir, "recall_s_{0}.txt".format(s))
 		write_stats_simple(
 			df_res,
 			var_recall, 
@@ -918,7 +918,7 @@ def interpret_fmb_calib(
 			result_path,
 		)
 
-		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(c))
+		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(s))
 		thresh_data = write_stats(
 			df_res,
 			var_cred, 

@@ -18,7 +18,7 @@ class Finemap(object):
 		self.num_ppl = kwargs.get("num_ppl", None)
 		self.as_only = kwargs.get("as_only", False)
 		self.qtl_only = kwargs.get("qtl_only", False)
-		self.force_defaults = kwargs.get("qtl_only", False)
+		self.force_defaults = kwargs.get("force_defaults", False)
 
 		if self.force_defaults:
 			self.num_causal_prior = self.NUM_CAUSAL_PRIOR_DEFAULT	

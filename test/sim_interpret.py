@@ -944,7 +944,7 @@ def interpret_fmb_calib(
 	result_path = os.path.join(res_dir, "calibration.svg")
 	make_barplot_series(
 		df_res,
-		var_corr,
+		var_std,
 		var_recall, 
 		model_flavors[0],
 		COLORMAP,

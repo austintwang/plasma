@@ -936,6 +936,7 @@ def interpret_fmb_calib(
 			"causal_set_size": var_cred,
 			"inclusion": var_inc,
 			"recall": var_recall,
+			"std_prior": var_std,
 			"model": "Model",
 		}, 
 		inplace=True

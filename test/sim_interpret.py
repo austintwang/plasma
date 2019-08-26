@@ -154,6 +154,38 @@ def make_violin_series(
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
+def make_barplot_series(
+		df,
+		var_ser, 
+		var_resp,
+		model_flavor,
+		model_colors,
+		title, 
+		result_path,
+		num_snps,
+		num_cats,
+		gradient=False
+	):
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
+
+	model_data = df.loc[df["Model"] == model_flavor]
+
+	if gradient:
+		palette = sns.cubehelix_palette(num_cats)
+	else:
+		palette = [model_colors[model_flavor]]
+	sns.barplot(
+		x=var_ser, 
+		y=var_resp,
+		data=model_data, 
+		palette=palette,
+		ci=None
+	)
+	plt.ylim(0., num_snps)
+	plt.title(title)
+	plt.savefig(result_path, bbox_inches='tight')
+	plt.clf()
+
 def make_avg_lineplot(
 		df,
 		var, 
@@ -841,6 +873,88 @@ def interpret_jointness(
 		gradient=True
 	)	
 
+def interpret_fmb_calib(
+		data_dir_base, 
+		prior_stds, 
+		title,
+		model_flavors,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "fmb_calib")
+	df = load_data(data_dir, "fmb_calib")
+
+	res_dir = os.path.join(res_dir_base, "fmb_calib")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_cred = "Credible Set Size"
+	var_inc = "Inclusion"
+	var_std = "Prior Std. Dev. of Effect Sizes"
+	var_recall = "Recall Rate"
+
+	for i, s in enumerate(prior_stds):
+		df_res = df.loc[
+			(df["std_prior"] == s)
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"causal_set_size": var_cred,
+				"inclusion": var_inc,
+				"recall": var_recall,
+				"std_prior": var_std,
+				"model": "Model",
+			}, 
+			inplace=True
+		)
+
+		result_path = os.path.join(res_dir, "recall_s_{0}.txt".format(c))
+		write_stats_simple(
+			df_res,
+			var_recall, 
+			model_flavors,
+			NAMEMAP, 
+			result_path,
+		)
+
+		result_path = os.path.join(res_dir, "stats_s_{0}.txt".format(c))
+		thresh_data = write_stats(
+			df_res,
+			var_cred, 
+			model_flavors,
+			NAMEMAP, 
+			threshs,
+			result_path,
+		)
+
+	df_res = df.loc[
+		(df["complete"] == True)
+	]
+	df_res.rename(
+		columns={
+			"causal_set_size": var_cred,
+			"inclusion": var_inc,
+			"recall": var_recall,
+			"model": "Model",
+		}, 
+		inplace=True
+	)
+
+	result_path = os.path.join(res_dir, "calibration.svg")
+	make_barplot_series(
+		df_res,
+		var_corr,
+		var_recall, 
+		model_flavors[0],
+		COLORMAP,
+		title, 
+		result_path,
+		num_snps,
+		len(corr_priors),
+		gradient=True
+	)
+
 
 if __name__ == '__main__':
 	data_dir_base = "/agusevlab/awang/job_data/sim/outs/"
@@ -922,6 +1036,19 @@ if __name__ == '__main__':
 	interpret_jointness(
 		data_dir_base, 
 		corr_priors, 
+		title,
+		model_flavors,
+		num_snps,
+		res_dir_base,
+	)
+
+	prior_stds = [0.001, 0.01, 0.05, 0.1]
+	title = "Calibration of FINEMAP 95% Credible Sets"
+	model_flavors = ["fmb"]
+	num_snps = 100
+	interpret_fmb_calib(
+		data_dir_base, 
+		prior_stds, 
 		title,
 		model_flavors,
 		num_snps,

@@ -554,7 +554,7 @@ if __name__ == '__main__':
 	# 	script_path,
 	# )
 
-	prior_stds = [0.000005, 0.00005, 0.0005, 0.005, 0.05, 0.5, 5, 50, 500]
+	prior_stds = [0.005, 0.05, 0.5, 5, 10, 20, 40]
 	fmb_calib(
 		disp, 
 		data_info,

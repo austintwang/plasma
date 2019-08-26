@@ -431,7 +431,7 @@ def fmb_calib(
 		"num_samples": 100,
 		"maf_thresh": 0.01,
 		"overdispersion": 0.05,
-		# "herit_qtl": 0.05,
+		"herit_qtl": 0.05,
 		"herit_as": 0.4,
 		"std_al_dev": 0.7,
 		"num_causal": 1,

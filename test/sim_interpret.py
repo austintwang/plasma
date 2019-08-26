@@ -174,13 +174,14 @@ def make_barplot_series(
 		palette = sns.cubehelix_palette(num_cats)
 	else:
 		palette = [model_colors[model_flavor]]
-	sns.barplot(
+	ax = sns.barplot(
 		x=var_ser, 
 		y=var_resp,
 		data=model_data, 
 		palette=palette,
 		ci=None
 	)
+	ax.set_xticklabels(ax.get_xticklabels(),rotation=30)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
@@ -951,7 +952,7 @@ def interpret_fmb_calib(
 		title, 
 		result_path,
 		num_snps,
-		len(corr_priors),
+		len(prior_stds),
 		gradient=True
 	)
 

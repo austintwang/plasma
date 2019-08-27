@@ -11,7 +11,7 @@ if __name__ == '__main__' and __package__ is None:
 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 	sys.path.insert(0, "/agusevlab/awang/plasma")
 	
-from . import Finemap, Caviar, CaviarASE, FmBenner, Rasqual
+from . import Finemap, Caviar, CaviarASE, FmBenner
 
 # print("imp5") ####
 
@@ -282,13 +282,6 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 			Caviar, inputs, updates_cav, informative_snps
 		)
 		result["ldsr_data_cav"] = get_ldsr_data(inputs, result["causal_set_cav"], result["ppas_cav"])
-
-	if "rasq" in model_flavors:
-		updates_rasq = {"as_only": True}
-		result["causal_set_rasq"], result["ppas_rasq"], result["size_probs_rasq"], model_rasq = run_model(
-			Finemap, inputs, updates_rasq, informative_snps
-		)
-		result["ldsr_data_rasq"] = get_ldsr_data(inputs, result["causal_set_rasq"], result["ppas_rasq"])
 
 	if "fmb" in model_flavors:
 		updates_fmb = {"qtl_only": True}

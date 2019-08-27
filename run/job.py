@@ -8,24 +8,19 @@ import pickle
 
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'run'
-	from eval_caviar import EvalCaviarASE
-else:
-	from .eval_caviar import EvalCaviarASE
-
-try:
-	import Finemap
-except ImportError:
 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-	from ase_finemap import Finemap
+	sys.path.insert(0, "/agusevlab/awang/plasma")
+	
+from . import Finemap, Caviar, CaviarASE, FmBenner, Rasqual
 
 # print("imp5") ####
 
-def run_model(inputs, input_updates, informative_snps):
+def run_model(model_cls, inputs, input_updates, informative_snps):
 	model_inputs = inputs.copy()
 	model_inputs.update(input_updates)
 	# print(model_inputs) ####
 
-	model = Finemap(**model_inputs)
+	model = model_cls(**model_inputs)
 	model.initialize()
 
 	if inputs["search_mode"] == "exhaustive":
@@ -224,69 +219,12 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	inputs["hap1"] = inputs["hap1"][:, informative_snps]
 	inputs["hap2"] = inputs["hap2"][:, informative_snps]
 
-	inputs["num_snps_imbalance"] = len(inputs["hap1"])
-	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
+	inputs["num_causal_prior"] = inputs["num_causal"]
 
 	if inputs["hap1"].size == 0:
 		result["data_error"] = "Insufficient Markers"
 		write_output(output_path, result)
 		return
-
-	# print(inputs["num_ppl"]) ####
-	# print(max_ppl) ####
-
-	num_ppl = inputs["num_ppl"]
-	num_causal = inputs["num_causal"]
-	eqtl_herit = 1 - inputs["prop_noise_eqtl"]
-	ase_herit = 1 - inputs["prop_noise_ase"]
-
-	coverage = np.mean(inputs["counts1"] + inputs["counts2"])
-	overdispersion = np.mean(inputs["overdispersion"])
-	# std_fraction = inputs["std_fraction"]
-	# ase_inherent_var = (np.log(std_fraction) - np.log(1-std_fraction))**2
-	imbalance = np.log(inputs["counts1"]) - np.log(inputs["counts2"])
-	ase_inherent_var = np.var(imbalance)
-	counts = np.mean(inputs["counts1"] + inputs["counts2"])
-	# print(ase_inherent_var) ####
-
-	ase_count_var = (
-		2 / coverage
-		* (
-			1 
-			+ (
-				1
-				/ (
-					1 / (np.exp(ase_inherent_var / 2))
-					+ 1 / (np.exp(ase_inherent_var / 2)**3)
-					* (
-						(np.exp(ase_inherent_var * 2) + 1) / 2
-						- np.exp(ase_inherent_var)
-					)
-				)
-			)
-		)
-		* (1 + overdispersion * (coverage - 1))
-	)
-	correction = ase_inherent_var / (ase_inherent_var + ase_count_var)
-	ase_herit_adj = ase_herit * correction
-
-	corr_stats = np.sqrt(
-		(num_ppl / num_causal)**2 * eqtl_herit * ase_herit_adj
-		/ (
-			(1 + eqtl_herit * (num_ppl / num_causal - 1))
-			* (1 + ase_herit_adj * (num_ppl / num_causal - 1))
-		)
-	)
-
-	iv = (
-		(num_ppl / num_causal * ase_herit_adj / (1 - ase_herit_adj)) 
-	)
-	xv = (
-		(num_ppl / num_causal * eqtl_herit / (1 - eqtl_herit)) 
-	)
-
-	imbalance_var_prior = 1 * iv
-	total_exp_var_prior = 1 * xv
 
 	inputs["hap_A"] = inputs["hap1"].astype(np.int)
 	inputs["hap_B"] = inputs["hap2"].astype(np.int)
@@ -295,122 +233,69 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	inputs["counts_B"] = inputs["counts2"].astype(np.int)
 	inputs["total_exp"] = inputs["counts_total"].astype(np.int)
 
-	inputs["num_ppl_imbalance"] = num_ppl
-	inputs["num_ppl_total_exp"] = num_ppl
-
-	inputs["num_snps_imbalance"] = np.shape(inputs["hap_A"])[1]
-	inputs["num_snps_total_exp"] = inputs["num_snps_imbalance"]
-
-	inputs["causal_status_prior"] = 1 / inputs["num_snps_imbalance"]
-
-	# print(np.shape(inputs["hap_A"])) ####
-	# print(np.shape(inputs["hap_B"])) ####
-	# print(np.shape(inputs["counts_A"])) ####
-	# print(np.shape(inputs["counts_B"])) ####
-	# print(num_ppl) ####
-	# raise Exception ####
-	# print(inputs["hap_A"]) ####
-	# print(inputs["counts_A"]) ####
-	# print(inputs["overdispersion"]) ####
-
 	if inputs["model_flavors"] == "all":
 		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
 	else:
 		model_flavors = inputs["model_flavors"]
 
-	
 	result["bed_ctrl"] = get_bed_ctrl(inputs)
 
-	updates_full = {
-		"corr_stats": corr_stats,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior
-	}
 	if "full" in model_flavors:
 		result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(
-			inputs, updates_full, informative_snps
+			Finemap, inputs, updates_full, informative_snps
 		)
 		result["ldsr_data_full"] = get_ldsr_data(inputs, result["causal_set_full"], result["ppas_full"])
 
-	updates_indep = {
-		"cross_corr_prior": 0.0, 
-		"corr_stats": 0.0,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior
-	}
 	if "indep" in model_flavors:
+		updates_indep = {"cross_corr_prior": 0.}
 		result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"], model_indep = run_model(
-			inputs, updates_indep, informative_snps
+			Finemap, inputs, updates_indep, informative_snps
 		)
 		result["ldsr_data_indep"] = get_ldsr_data(inputs, result["causal_set_indep"], result["ppas_indep"])
 		result["z_phi"] = model_indep.imbalance_stats
 		result["z_beta"] = model_indep.total_exp_stats
 
-	updates_eqtl = {
-		"counts_A": np.zeros(shape=0),
-		"counts_B": np.zeros(shape=0),
-		"imbalance": np.zeros(shape=0), 
-		"phases": np.zeros(shape=(0,0)),
-		"imbalance_corr": np.zeros(shape=(0,0)),
-		"imbalance_errors": np.zeros(shape=0),
-		"imbalance_stats": np.zeros(shape=0),
-		"overdispersion": np.zeros(shape=0),
-		"num_ppl_imbalance": 0,
-		"num_snps_imbalance": 0,
-		"corr_stats": 0.0,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior,
-		"cross_corr_prior": 0.0,
-	}
 	if "eqtl" in model_flavors:
+		updates_eqtl = {"qtl_only": True}
 		result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"], model_eqtl = run_model(
-			inputs, updates_eqtl, informative_snps
+			Finemap, inputs, updates_eqtl, informative_snps
 		)
 		result["ldsr_data_eqtl"] = get_ldsr_data(inputs, result["causal_set_eqtl"], result["ppas_eqtl"])
 
-	updates_ase = {
-		"total_exp": np.zeros(shape=0), 
-		"genotypes_comb": np.zeros(shape=(0,0)),
-		"total_exp_corr": np.zeros(shape=(0,0)),
-		"total_exp_errors": np.zeros(shape=0),
-		"total_exp_stats": np.zeros(shape=0),
-		"num_ppl_total_exp": 0,
-		"num_snps_total_exp": 0,
-		"corr_stats": 0.0,
-		"imbalance_var_prior": imbalance_var_prior,
-		"total_exp_var_prior": total_exp_var_prior,
-		"cross_corr_prior": 0.0,
-	}
 	if "ase" in model_flavors:
+		updates_ase = {"as_only": True}
 		result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"], model_ase = run_model(
-			inputs, updates_ase, informative_snps
+			Finemap, inputs, updates_ase, informative_snps
 		)
 		result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
-		# print(result["causal_set_ase"]) ####
 
 	if "acav" in model_flavors:
-		model_inputs_dummy = inputs.copy()
-		model_inputs_dummy.update(updates_full)
-		model_dummy = Finemap(**model_inputs_dummy)
-		model_dummy.initialize()
-		model_caviar_ase = EvalCaviarASE(
-			model_full, 
-			inputs["confidence"], 
-			inputs["max_causal"]
+		updates_acav = {}
+		result["causal_set_acav"], result["ppas_acav"], result["size_probs_acav"], model_acav = run_model(
+			CaviarASE, inputs, updates_acav, informative_snps
 		)
-		model_caviar_ase.run()
+		result["ldsr_data_acav"] = get_ldsr_data(inputs, result["causal_set_acav"], result["ppas_acav"])
 
-		causal_set = np.ones(np.shape(inputs["snp_ids"]))
-		np.put(causal_set, informative_snps, model_caviar_ase.causal_set)
-
-		ppas = np.full(np.shape(inputs["snp_ids"]), np.nan)
-		np.put(ppas, informative_snps, model_caviar_ase.post_probs)
-
-		result["causal_set_caviar_ase"] = causal_set
-		result["ppas_caviar_ase"] = ppas
-		result["ldsr_data_caviar_ase"] = get_ldsr_data(
-			inputs, result["causal_set_caviar_ase"], result["ppas_caviar_ase"]
+	if "cav" in model_flavors:
+		updates_cav = {"qtl_only": True}
+		result["causal_set_cav"], result["ppas_cav"], result["size_probs_cav"], model_cav = run_model(
+			Caviar, inputs, updates_cav, informative_snps
 		)
+		result["ldsr_data_cav"] = get_ldsr_data(inputs, result["causal_set_cav"], result["ppas_cav"])
+
+	if "rasq" in model_flavors:
+		updates_rasq = {"as_only": True}
+		result["causal_set_rasq"], result["ppas_rasq"], result["size_probs_rasq"], model_rasq = run_model(
+			Finemap, inputs, updates_rasq, informative_snps
+		)
+		result["ldsr_data_rasq"] = get_ldsr_data(inputs, result["causal_set_rasq"], result["ppas_rasq"])
+
+	if "fmb" in model_flavors:
+		updates_fmb = {"qtl_only": True}
+		result["causal_set_fmb"], result["ppas_fmb"], result["size_probs_fmb"], model_rasq = run_model(
+			Finemap, inputs, updates_fmb, informative_snps
+		)
+		result["ldsr_data_fmb"] = get_ldsr_data(inputs, result["causal_set_fmb"], result["ppas_fmb"])
 
 	write_in_data(output_path, inputs)
 	write_output(output_path, result)

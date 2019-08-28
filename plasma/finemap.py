@@ -87,7 +87,7 @@ class Finemap(object):
 		if self.num_snps is not None:
 			return
 
-		self.num_snps = np.size(self.counts_A)
+		self.num_snps = np.shape(self.hap_A)[0]
 
 	def _calc_num_ppl(self):
 		"""
@@ -97,7 +97,7 @@ class Finemap(object):
 		if self.num_ppl is not None:
 			return
 
-		self.num_ppl = np.shape(self.hap_A)[0]
+		self.num_ppl = np.size(self.counts_A)
 
 	def _calc_causal_status_prior(self):
 		"""

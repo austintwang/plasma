@@ -11,8 +11,8 @@ def make_list(in_path, out_path):
 		pickle.dump(gene_list, out_file)
 
 if __name__ == '__main__':
-	in_dir = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASSOC"
-	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists"
+	in_dir = "/agusevlab/DATA/KIRC_RNASEQ/ASSOC"
+	out_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 

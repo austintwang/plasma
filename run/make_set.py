@@ -21,8 +21,8 @@ def make_set(in_path, out_tumor_path, out_normal_path):
 
 if __name__ == '__main__':
 	# Kidney Data
-	in_path = "/bcb/agusevlab/DATA/KIRC_RNASEQ/ASVCF/KIRC.ALL.AS.PHE"
-	out_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets"
+	in_path = "/agusevlab/DATA/KIRC_RNASEQ/ASVCF/KIRC.ALL.AS.PHE"
+	out_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	out_tumor_path = os.path.join(out_dir, "tumor.pickle")
@@ -31,8 +31,8 @@ if __name__ == '__main__':
 	make_set(in_path, out_tumor_path, out_normal_path)
 
 	# Prostate Data
-	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets/prostate_tn"
-	out_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq/sample_sets"
+	in_path = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets/prostate_tn"
+	out_dir = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	out_tumor_path = os.path.join(out_dir, "tumor.pickle")

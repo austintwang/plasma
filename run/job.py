@@ -235,21 +235,21 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	inputs["total_exp"] = inputs["counts_total"].astype(np.int)
 
 	if inputs["model_flavors"] == "all":
-		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
+		model_flavors = set(["full", "indep", "eqtl", "ase", "acav", "fmb"])
 	else:
 		model_flavors = inputs["model_flavors"]
 
 	result["bed_ctrl"] = get_bed_ctrl(inputs)
 
 	if "full" in model_flavors:
-		updates_full = {}
+		updates_full = {"num_ppl": None}
 		result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(
 			Finemap, inputs, updates_full, informative_snps
 		)
 		result["ldsr_data_full"] = get_ldsr_data(inputs, result["causal_set_full"], result["ppas_full"])
 
 	if "indep" in model_flavors:
-		updates_indep = {"cross_corr_prior": 0.}
+		updates_indep = {"cross_corr_prior": 0., "num_ppl": None}
 		result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"], model_indep = run_model(
 			Finemap, inputs, updates_indep, informative_snps
 		)
@@ -258,37 +258,37 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		result["z_beta"] = model_indep.total_exp_stats
 
 	if "eqtl" in model_flavors:
-		updates_eqtl = {"qtl_only": True}
+		updates_eqtl = {"qtl_only": True, "num_ppl": None}
 		result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"], model_eqtl = run_model(
 			Finemap, inputs, updates_eqtl, informative_snps
 		)
 		result["ldsr_data_eqtl"] = get_ldsr_data(inputs, result["causal_set_eqtl"], result["ppas_eqtl"])
 
 	if "ase" in model_flavors:
-		updates_ase = {"as_only": True}
+		updates_ase = {"as_only": True, "num_ppl": None}
 		result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"], model_ase = run_model(
 			Finemap, inputs, updates_ase, informative_snps
 		)
 		result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
 
 	if "acav" in model_flavors:
-		updates_acav = {}
+		updates_acav = {"num_ppl": None}
 		result["causal_set_acav"], result["ppas_acav"], result["size_probs_acav"], model_acav = run_model(
 			CaviarASE, inputs, updates_acav, informative_snps
 		)
 		result["ldsr_data_acav"] = get_ldsr_data(inputs, result["causal_set_acav"], result["ppas_acav"])
 
 	if "cav" in model_flavors:
-		updates_cav = {"qtl_only": True}
+		updates_cav = {"qtl_only": True, "num_ppl": None}
 		result["causal_set_cav"], result["ppas_cav"], result["size_probs_cav"], model_cav = run_model(
 			Caviar, inputs, updates_cav, informative_snps
 		)
 		result["ldsr_data_cav"] = get_ldsr_data(inputs, result["causal_set_cav"], result["ppas_cav"])
 
 	if "fmb" in model_flavors:
-		updates_fmb = {"qtl_only": True}
+		updates_fmb = {"qtl_only": True, "num_ppl": None}
 		result["causal_set_fmb"], result["ppas_fmb"], result["size_probs_fmb"], model_rasq = run_model(
-			Finemap, inputs, updates_fmb, informative_snps
+			FmBenner, inputs, updates_fmb, informative_snps
 		)
 		result["ldsr_data_fmb"] = get_ldsr_data(inputs, result["causal_set_fmb"], result["ppas_fmb"])
 

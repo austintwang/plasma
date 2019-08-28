@@ -15,8 +15,17 @@ def make_filter(in_path, out_path):
 if __name__ == '__main__':
 
 	# Prostate Data
-	in_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs_filt.bed.gz"
-	out_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq/snp_filters/"
+	in_path = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs_filt.bed.gz"
+	out_dir = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/"
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+	out_path = os.path.join(out_dir, "1KG_SNPs.pickle")
+
+	make_filter(in_path, out_path)
+
+	# Kidney Data
+	in_path = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs_filt.bed.gz"
+	out_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 	out_path = os.path.join(out_dir, "1KG_SNPs.pickle")

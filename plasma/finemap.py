@@ -87,7 +87,7 @@ class Finemap(object):
 		if self.num_snps is not None:
 			return
 
-		self.num_snps = np.shape(self.hap_A)[0]
+		self.num_snps = np.shape(self.hap_A)[1]
 
 	def _calc_num_ppl(self):
 		"""

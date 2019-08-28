@@ -158,7 +158,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		inputs["sample_names"] = inputs["sample_names"][select]
 
 	num_ppl_raw = np.size(inputs["counts1"])
-	# print(num_ppl_raw) ####
+	print(num_ppl_raw) ####
 
 	max_ppl = inputs.get("max_ppl")
 	if max_ppl and max_ppl < num_ppl_raw:

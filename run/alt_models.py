@@ -407,6 +407,7 @@ class FmBenner(Finemap):
 		# print(" ".join(command_params)) ####
 
 		out = subprocess.check_output(command_params)
+		print(out) ####
 
 		# with open(self.set_path) as setfile:
 		# 	setdata = setfile.read()

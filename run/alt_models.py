@@ -374,7 +374,7 @@ class FmBenner(Finemap):
 		if not self.force_defaults:
 			command_params.extend([
 				"--prior-std", str(self.prior_std),
-				"--prior-k", str(self.causal_status_prior)
+				# "--prior-k", str(self.causal_status_prior)
 			])
 		self._run_fm(command_params)
 

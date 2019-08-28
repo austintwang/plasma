@@ -98,7 +98,7 @@ if __name__ == '__main__':
 	params_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/params"
 	script_path = os.path.join(curr_path, "job.py")
 	# filter_path = "all"
-	filter_path = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
+	filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
 	overdispersion_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/overdispersion/overdispersion.pickle"
 
 	hyperparams = {

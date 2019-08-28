@@ -5,23 +5,36 @@ import pickle
 import subprocess
 
 def dispatch(
-		target, 
+		targets, 
+		batch_num,
+		job_data_path,
 		output_path, 
 		input_path, 
-		params_path, 
+		params_path,
 		script_path, 
 		selection_path, 
 		filter_path, 
 		overdispersion_path
 	):
+	io_data = []
 
-	job_input_path = os.path.join(input_path, target, "input.pickle")
-	job_output_path = os.path.join(output_path, target)
+	for t in targets:
+		job_input_path = os.path.join(input_path, target, "input.pickle")
+		job_output_path = os.path.join(output_path, target)
+		data_tuple = (job_input_path, job_output_path)
+		io_data.append(data_tuple)
 
-	if not os.path.exists(job_output_path):
-		os.makedirs(job_output_path)
+		if not os.path.exists(job_output_path):
+			os.makedirs(job_output_path)
 
-	err_name = os.path.join(job_output_path, "stderr.txt")
+	if not os.path.exists(job_data_path):
+		os.makedirs(job_data_path)
+
+	io_name =  os.path.join(job_data_path, "{0}_io.pickle".format(batch_num))
+	with open(io_name, "wb"):
+		pickle.dump(io_data)
+
+	err_name = os.path.join(job_data_path, "{0}_stderr.txt".format(batch_num))
 	job_args = [
 		"sbatch", 
 		"-J", 
@@ -30,11 +43,11 @@ def dispatch(
 		err_name,
 		script_path	
 	]
-	job_args.extend([job_output_path, job_input_path, params_path, selection_path, filter_path, overdispersion_path])
+	job_args.extend([io_name, params_path, selection_path, filter_path, overdispersion_path])
 
 	timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
-	# print(" ".join(job_args)) ####
-	# raise Exception ####
+	print(" ".join(job_args)) ####
+	raise Exception ####
 	while True:
 		try:
 			submission = subprocess.run(job_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -62,7 +75,8 @@ def run(
 		list_path, 
 		filter_path, 
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	):
 	if not os.path.exists(params_path):
 		os.makedirs(params_path)
@@ -78,9 +92,16 @@ def run(
 		with open(list_path, "rb") as list_file:
 			targets = pickle.load(list_file)
 
-	for t in targets:
+	num_targets = len(targets)
+	num_padding = (-num_targets) % batch_size
+	num_jobs = (num_targets + num_padding) / batch_size
+	targets.extend([None] * num_padding)
+ 	batches = np.reshape(t, (num_jobs, batch_size))
+
+	for i, b in enumerate(batches):
 		dispatch(
-			t, 
+			b, 
+			i,
 			output_path, 
 			input_path, 
 			hyperparams_path, 
@@ -92,6 +113,7 @@ def run(
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
+	batch_size = 1
 
 	# Kidney Data, 1 CV
 	input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
@@ -137,7 +159,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Normal, 50 samples
@@ -157,7 +180,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Normal, 10 samples
@@ -177,7 +201,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor
@@ -202,7 +227,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor, 200 samples
@@ -222,7 +248,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor, 100 samples
@@ -242,7 +269,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor, 50 samples
@@ -262,7 +290,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor, 10 samples
@@ -282,7 +311,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor, low herit ASE
@@ -318,7 +348,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 
@@ -366,7 +397,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor
@@ -389,7 +421,8 @@ if __name__ == '__main__':
 		selection_path,
 		list_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Prostate Data, 1 CV
@@ -437,6 +470,7 @@ if __name__ == '__main__':
 		filter_path,
 		overdispersion_path,
 		params_name,
+		batch_size
 	)
 
 	# Normal, 10 samples
@@ -456,7 +490,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor
@@ -501,7 +536,8 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)
 
 	# Tumor, 10 samples
@@ -521,5 +557,6 @@ if __name__ == '__main__':
 		list_path,
 		filter_path,
 		overdispersion_path,
-		params_name
+		params_name,
+		batch_size
 	)

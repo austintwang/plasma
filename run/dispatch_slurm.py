@@ -95,8 +95,9 @@ def run(
 	num_targets = len(targets)
 	num_padding = (-num_targets) % batch_size
 	num_jobs = (num_targets + num_padding) / batch_size
+	print(num_jobs) ####
 	targets.extend([None] * num_padding)
-	batches = np.reshape(targets, (num_jobs, batch_size))
+	batches = np.reshape(targets, (int(num_jobs), batch_size))
 
 	for i, b in enumerate(batches):
 		dispatch(

@@ -19,8 +19,8 @@ def dispatch(
 	io_data = []
 
 	for t in targets:
-		job_input_path = os.path.join(input_path, target, "input.pickle")
-		job_output_path = os.path.join(output_path, target)
+		job_input_path = os.path.join(input_path, t, "input.pickle")
+		job_output_path = os.path.join(output_path, t)
 		data_tuple = (job_input_path, job_output_path)
 		io_data.append(data_tuple)
 
@@ -38,7 +38,7 @@ def dispatch(
 	job_args = [
 		"sbatch", 
 		"-J", 
-		target, 
+		str(batch_num), 
 		"-e",
 		err_name,
 		script_path	

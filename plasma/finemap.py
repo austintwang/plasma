@@ -332,7 +332,7 @@ class Finemap(object):
 			return
 
 		self._calc_beta()
-		self._calc_num_snps()
+		self._calc_num_ppl()
 
 		residuals = (self.total_exp - self._mean - (self.genotypes_comb * self.beta).T).T
 		self.exp_errors = np.sum(

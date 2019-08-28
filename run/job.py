@@ -245,6 +245,7 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 	result["bed_ctrl"] = get_bed_ctrl(inputs)
 
 	if "full" in model_flavors:
+		updates_full = {}
 		result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(
 			Finemap, inputs, updates_full, informative_snps
 		)

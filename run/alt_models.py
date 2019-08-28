@@ -8,7 +8,7 @@ import copy
 import vcf
 import pandas as pd
 
-from . import Finemap, EvalCaviar, Evaluator
+from . import Finemap, Evaluator
 
 class Caviar(Finemap):
 	cav_dir_path = "/agusevlab/awang/caviar"

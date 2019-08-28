@@ -123,9 +123,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		with open(filter_path, "rb") as filter_file:
 			snp_filter = pickle.load(filter_file)
 
-	with open(input_path, "rb", encoding='bytes') as input_file:
+	with open(input_path, "rb") as input_file:
 		# print(input_path) ####
-		inputs = pickle.load(input_file)
+		inputs = pickle.load(input_file, encoding='bytes')
 		for k, v in inputs.items():
 			inputs[k.encode('utf-8')] = v
 			inputs["snp_ids"] = [i.encode('utf-8') for i in inputs["snp_ids"]]

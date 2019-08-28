@@ -392,6 +392,8 @@ class Finemap(object):
 		if self.imbalance_var_prior is not None:
 			return
 
+		self._calc_num_ppl()
+
 		coverage = np.mean(self.counts_A + self.counts_B)
 		overdispersion = np.mean(self.overdispersion)
 		imbalance = np.log(self.counts_A) - np.log(self.counts_B)
@@ -435,6 +437,8 @@ class Finemap(object):
 		"""
 		if self.total_exp_var_prior is not None:
 			return
+
+		self._calc_num_ppl()
 
 		self.total_exp_var_prior = (
 			self.num_ppl 

@@ -31,8 +31,8 @@ def dispatch(
 		os.makedirs(job_data_path)
 
 	io_name =  os.path.join(job_data_path, "{0}_io.pickle".format(batch_num))
-	with open(io_name, "wb"):
-		pickle.dump(io_data)
+	with open(io_name, "wb") as io_file:
+		pickle.dump(io_data, io_file)
 
 	err_name = os.path.join(job_data_path, "{0}_stderr.txt".format(batch_num))
 	job_args = [

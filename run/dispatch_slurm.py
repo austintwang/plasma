@@ -33,8 +33,8 @@ def dispatch(
 	job_args.extend([job_output_path, job_input_path, params_path, selection_path, filter_path, overdispersion_path])
 
 	timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
-	print(" ".join(job_args)) ####
-	raise Exception ####
+	# print(" ".join(job_args)) ####
+	# raise Exception ####
 	while True:
 		try:
 			submission = subprocess.run(job_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)

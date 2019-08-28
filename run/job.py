@@ -127,9 +127,9 @@ def main(output_path, input_path, params_path, selection_path, filter_path, over
 		# print(input_path) ####
 		inputs = pickle.load(input_file, encoding='bytes')
 		for k in list(inputs.keys()):
-			inputs[k.encode('utf-8')] = inputs[k]
-		inputs["snp_ids"] = [i.encode('utf-8') for i in inputs["snp_ids"]]
-		inputs["chr"] = inputs["chr"].encode('utf-8')
+			inputs[k.decode('utf-8')] = inputs[k]
+		inputs["snp_ids"] = [i.decode('utf-8') for i in inputs["snp_ids"]]
+		inputs["chr"] = inputs["chr"].decode('utf-8')
 
 	with open(params_path, "rb", encoding='bytes') as params_file:
 		# print(input_path) ####

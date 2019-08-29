@@ -352,8 +352,8 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 			failed_jobs.append(t)
 			continue
 		
-		print(result_path) ####
-		print(result.keys()) ####
+		# print(result_path) ####
+		# print(result.keys()) ####
 		summary["names"].append(t)
 		for f in model_flavors:
 			summary["causal_sets_{0}".format(f)].append(result["causal_set_{0}".format(f)])

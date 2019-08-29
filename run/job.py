@@ -203,9 +203,7 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 
 				haps_comb = inputs["hap1"] + inputs["hap2"]
 
-				
-
-				if inputs["num_ppl"] <= 1:
+				if np.size(inputs["counts1"]) <= 1:
 					result["data_error"] = "Insufficient Read Counts"
 					write_output(output_path, result)
 					return
@@ -213,7 +211,7 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 				# print(haps_comb) ####
 				# print(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0))) ####
 				# print(np.where(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))) ####
-				informative_snps = np.where(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))[0]
+				informative_snps = np.nonzero(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0)))[0]
 				result["informative_snps"] = informative_snps
 				# print(informative_snps) ####
 
@@ -294,15 +292,15 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 					)
 					result["ldsr_data_fmb"] = get_ldsr_data(inputs, result["causal_set_fmb"], result["ppas_fmb"])
 
-				write_in_data(output_path, inputs)
 				write_output(output_path, result)
 
 			except Exception as e:
 				trace = traceback.format_exc()
-				print(trace)
+				print(trace, file=sys.stderr)
 				message = repr(e)
 				result["run_error"] = message
 				result["traceback"] = trace
+				write_in_data(output_path, inputs)
 				write_output(output_path, result)
 				return
 

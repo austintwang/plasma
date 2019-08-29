@@ -36,7 +36,7 @@ NAMEMAP = {
 }
 
 def write_thresholds(summary, out_dir, total_jobs, model_flavors):
-	header = "\t".join(["Model"] + summary["thresholds"]) + "\n"	
+	header = "\t".join(["Model"] + [str(i) for i in summary["thresholds"]]) + "\n"	
 	thresholds_list = [header]
 	for f in model_flavors:
 		data = [NAMEMAP[f]] + sorted(summary["thresholds_{0}".format(f)].keys())

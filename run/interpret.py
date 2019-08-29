@@ -13,118 +13,155 @@ try:
 except ImportError:
 	import pickle
 
+pal = sns.color_palette()
+COLORMAP = {
+	"full": pal[1],
+	"indep": pal[3],
+	"ase": pal[2],
+	"acav": pal[5],
+	"eqtl": pal[0],
+	"cav": pal[7],
+	"rasq": pal[6],
+	"fmb": pal[8],
+}
+NAMEMAP = {
+	"full": "PLASMA-J",
+	"indep": "PLASMA-JI",
+	"ase": "PLASMA-AS",
+	"acav": "CAVIAR-ASE",
+	"eqtl": "QTL-Only",
+	"cav": "CAVIAR",
+	"rasq": "RASQUAL+",
+	"fmb": "FINEMAP",
+}
+
 def write_thresholds(summary, out_dir, total_jobs, model_flavors):
-	thresholds_list = []
-	if "full" in model_flavors:
-		thresholds_list.append("PLASMA-JC")
-		for k in sorted(summary["thresholds_full"].keys()):
-			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_full"][k] / total_jobs))
-		thresholds_list.append("")
-	if "indep" in model_flavors:
-		thresholds_list.append("PLASMA-JI")
-		for k in sorted(summary["thresholds_indep"].keys()):
-			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_indep"][k] / total_jobs))
-		thresholds_list.append("")
-	if "ase" in model_flavors:
-		thresholds_list.append("PLASMA-AS")
-		for k in sorted(summary["thresholds_ase"].keys()):
-			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_ase"][k] / total_jobs))
-		thresholds_list.append("")
-	if "acav" in model_flavors:
-		thresholds_list.append("CAVIAR-ASE")
-		for k in sorted(summary["thresholds_caviar_ase"].keys()):
-			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_caviar_ase"][k] / total_jobs))
-		thresholds_list.append("")
-	if "eqtl" in model_flavors:
-		thresholds_list.append("QTL-Only")
-		for k in sorted(summary["thresholds_eqtl"].keys()):
-			thresholds_list.append("{0}\t{1}".format(k, summary["thresholds_eqtl"][k] / total_jobs))
-		thresholds_list.append("")
+	header = "\t".join(["Model"] + summary["thresholds"]) + "\n"	
+	thresholds_list = [header]
+	for f in model_flavors:
+		data = [NAMEMAP[f]] + sorted(summary["thresholds_{0}".format(f)].keys())
+		line = "\t".join([str(i) for i in data]) + "\n"
+		thresholds_list.append(line)
 
-	thresholds_str = "\n".join(thresholds_list)
 	out_path = os.path.join(out_dir, "causal_set_thresholds")
-
 	with open(out_path, "w") as out_file:
-		out_file.write(thresholds_str)
+		out_file.writelines(thresholds_list)
 
 def write_size_probs(summary, out_dir, total_jobs, model_flavors):
 	size_probs_list = []
-	if "full" in model_flavors:
-		size_probs_list.append("PLASMA-JC")
-		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_full"] / total_jobs))
-		size_probs_list.append("")
-	if "indep" in model_flavors:
-		size_probs_list.append("PLASMA-JI")
-		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_indep"] / total_jobs))
-		size_probs_list.append("")
-	if "ase" in model_flavors:
-		size_probs_list.append("PLASMA-AS")
-		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_ase"] / total_jobs))
-		size_probs_list.append("")
-	if "eqtl" in model_flavors:
-		size_probs_list.append("QTL-Only")
-		size_probs_list.append("\t".join(str(i) for i in summary["size_probs_eqtl"] / total_jobs))
-		size_probs_list.append("")
+	for f in model_flavors:
+		data = "\t".join([NAMEMAP[f]] + [str(i) for i in summary["size_probs_{0}".format(f)] / total_jobs])
+		size_probs_list.append(data)
 
-	size_probs_str = "\n".join(size_probs_list)
 	out_path = os.path.join(out_dir, "causal_set_size_probabilities")
-
 	with open(out_path, "w") as out_file:
-		out_file.write(size_probs_str)
+		out_file.writelines(size_probs_list)
 
 def write_sumstats(summary, out_dir, total_jobs, model_flavors):
-	sumstats_list = []
-	if "full" in model_flavors:
-		sumstats_list.append("PLASMA-JC")
-		sizes = summary["set_sizes_full"]
-		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
-		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
-		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
-		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
-		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
-		sumstats_list.append("")
-	if "indep" in model_flavors:
-		sumstats_list.append("PLASMA-JI")
-		sizes = summary["set_sizes_indep"]
-		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
-		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
-		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
-		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
-		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
-		sumstats_list.append("")
-	if "ase" in model_flavors:
-		sumstats_list.append("PLASMA-AS")
-		sizes = summary["set_sizes_ase"]
-		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
-		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
-		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
-		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
-		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
-		sumstats_list.append("")
-	if "acav" in model_flavors:
-		sumstats_list.append("CAVIAR-ASE")
-		sizes = summary["set_sizes_caviar_ase"]
-		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
-		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
-		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
-		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
-		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
-		sumstats_list.append("")
-	if "eqtl" in model_flavors:
-		sumstats_list.append("QTL-Only")
-		sizes = summary["set_sizes_eqtl"]
-		sumstats_list.append("{0}\t{1}".format("Mean", np.nanmean(sizes)))
-		sumstats_list.append("{0}\t{1}".format("Variance", np.nanvar(sizes)))
-		sumstats_list.append("{0}\t{1}".format("25 Perc", np.nanpercentile(sizes, 25)))
-		sumstats_list.append("{0}\t{1}".format("Median", np.nanmedian(sizes)))
-		sumstats_list.append("{0}\t{1}".format("75 Perc", np.nanpercentile(sizes, 75)))
-		sumstats_list.append("")
+	header = "\t".join(["Model", "Mean", "Variance", "25 Perc", "Median", "75 Perc"]) + "\n"
+	sumstats_list = [header]
+	for f in model_flavors:
+		sizes = summary["set_sizes_{0}".format(f)]
+		line = "\t".join([
+			NAMEMAP[f], 
+			str(np.nanmean(sizes)), 
+			str(np.nanvar(sizes)), 
+			str(np.nanpercentile(sizes, 25)),
+			str(np.nanmedian(sizes)),
+			str(np.nanpercentile(sizes, 75))
+		]) + "\n"
 
-	sumstats_str = "\n".join(sumstats_list)
 	out_path = os.path.join(out_dir, "causal_set_stats")
 
 	with open(out_path, "w") as out_file:
-		out_file.write(sumstats_str)
+		out_file.writelines(sumstats_list)
+
+def plot_violin(result, out_dir, name, model_flavors, metric):
+	if metric == "size":
+		kwd = "set_sizes"
+		kwd_label = "Credible Set Size"
+	elif metric == "prop":
+		kwd = "set_props"
+		kwd_label = "Credible Set Size (Proportion)"
+
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
+
+	plt_data = []
+	for f in model_flavors:
+		set_sizes = result["{0}_{1}".format(kwd, f)]
+		plt_data.extend([[i, NAMEMAP[f]] for i in set_sizes])
+
+	labels = [kwd_label, "Model"]
+	df = pd.DataFrame.from_records(plt_data, columns=labels)
+
+	names = [NAMEMAP[m] for m in model_flavors]
+	palette = [COLORMAP[m] for m in model_flavors]
+	chart = sns.violinplot(
+		x=kwd_label, 
+		y="Model", 
+		data=df, 
+		order=names, 
+		palette=palette,
+		cut=0,
+	)
+	plt.ylabel("")
+	plt.title(name)
+	if metric == "prop":
+		plt.xlim(0, 1)
+	elif metric == "size":
+		plt.xlim(0, 1000)
+	plt.savefig(os.path.join(out_dir, "set_{0}_distribution.svg".format(metric)), bbox_inches='tight')
+	plt.clf()
+
+def plot_thresh(result, out_dir, name, model_flavors):
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
+
+	threshs = result["thresholds"]
+	plt_data = []
+	for f in model_flavors:
+		thresh_data = summary["thresholds_{0}".format(f)]
+		for k, v in thresh_data.items():
+			plt_data.append([v, k, NAMEMAP[f]])
+
+	labels = ["Proportion of Loci", "Threshold", "Model"]
+	df = pd.DataFrame.from_records(plt_data, columns=labels)
+
+	names = [NAMEMAP[m] for m in model_flavors]
+	palette = sns.cubehelix_palette(len(threshs))
+	for i, t in enumerate(reversed(threshs)):
+		chart = sns.barplot(
+			x="Proportion of Loci", 
+			y="Model", 
+			data=df, 
+			label=t, 
+			order=names, 
+			color=palette[i], 
+			ci=None
+		)
+
+	last_marker = [None for _ in range(len(model_flavors))]
+	for i, f in enumerate(model_flavors):
+		thresh_data = summary["thresholds_{0}".format(f)]
+		for k, v in sorted(thresh_data.items()):
+			if (last_marker[i] is None and k >= 0.04) or (last_marker[i] and (k - last_marker[i]) >= 0.08)
+				plt.text(
+					xval,
+					model_flavors.index(thresh_data_models[j]),
+					text=threshs[i],
+					size="xx-small",
+					weight="medium",
+					ha="center",
+					va="center",
+					transform=ax.transData,
+					clip_on=False,
+					bbox={"boxstyle":"round", "pad":.25, "fc":"white", "ec":"white"}
+				)
+				last_marker[i] = k
+
+	plt.ylabel("")
+	plt.title(name)
+	plt.savefig(os.path.join(out_dir, "set_size_thresh.svg"), bbox_inches='tight')
+	plt.clf()
 
 def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if metric == "size":
@@ -134,76 +171,19 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 
 	sns.set(style="whitegrid", font="Roboto")
 
-	# if "full" in model_flavors:
-	# 	set_sizes_full = result["{0}_full".format(kwd)]
-	# 	sns.distplot(
-	# 		set_sizes_full,
-	# 		hist=False,
-	# 		kde=True,
-	# 		kde_kws={"linewidth": 2, "shade":True, "cumulative":cumu},
-	# 		label="Full"
-	# 	)
+	for f in model_flavors:
+		set_sizes = result["{0}_{1}".format(kwd, f)]
+		try:
+			sns.distplot(
+				set_sizes,
+				hist=False,
+				kde=True,
+				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
+				label=NAMEMAP[f]
+			)
+		except Exception:
+			pass
 
-	if "full" in model_flavors:
-		set_sizes_full = result["{0}_full".format(kwd)]
-		try:
-			sns.distplot(
-				set_sizes_full,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="PLASMA-JC"
-			)
-		except Exception:
-			pass
-	if "indep" in model_flavors:
-		set_sizes_indep = result["{0}_indep".format(kwd)]
-		try:
-			sns.distplot(
-				set_sizes_indep,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="PLASMA-JI"			
-			)
-		except Exception:
-			pass
-	if "ase" in model_flavors:
-		set_sizes_ase = result["{0}_ase".format(kwd)]
-		try:
-			sns.distplot(
-				set_sizes_ase,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="PLASMA-AS"			
-			)
-		except Exception:
-			pass
-	if "acav" in model_flavors:
-		set_sizes_caviar_ase = result["{0}_caviar_ase".format(kwd)]
-		try:
-			sns.distplot(
-				set_sizes_caviar_ase,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="CAVIAR-ASE"			
-			)
-		except Exception:
-			pass
-	if "eqtl" in model_flavors:
-		set_sizes_eqtl = result["{0}_eqtl".format(kwd)]
-		try:
-			sns.distplot(
-				set_sizes_eqtl,
-				hist=False,
-				kde=True,
-				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label="QTL-Only"			
-			)
-		except Exception:
-			pass
 	if metric == "prop":
 		plt.xlim(0, 1)
 	elif metric == "size":
@@ -241,31 +221,16 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 
 	dflst = []
 	for key, val in series.items():
-		if "full" in model_flavors:
-			for skey, sval in series["{0}_full".format(kwd)].items():
+		for f in model_flavors:
+			for skey, sval in series["{0}_{1}".format(kwd, f)].items():
 				for i in sval:
-					dflst.append([i, skey, "PLASMA-JC"])
-		if "indep" in model_flavors:
-			for skey, sval in series["{0}_indep".format(kwd)].items():
-				for i in sval:
-					dflst.append([i, skey, "PLASMA-JI"])
-		if "ase" in model_flavors:
-			for skey, sval in series["{0}_ase".format(kwd)].items():
-				for i in sval:
-					dflst.append([i, skey, "PLASMA-AS"])
-		if "acav" in model_flavors:
-			for skey, sval in series["{0}_caviar_ase".format(kwd)].items():
-				for i in sval:
-					dflst.append([i, skey, "CAVIAR-ASE"])
-		if "eqtl" in model_flavors:
-			for skey, sval in series["{0}_eqtl".format(kwd)].items():
-				for i in sval:
-					dflst.append([i, skey, "QTL-Only"])
+					dflst.append([i, skey, NAMEMAP[f]])
 	res_df = pd.DataFrame(dflst, columns=[label, primary_var_name, "Model"])
 
-	title = "Credible Set Sizes Across {0}:\n{1}".format(primary_var_name, name)
+	names = [NAMEMAP[m] for m in model_flavors]
+	palette = [COLORMAP[m] for m in model_flavors]
 	
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(6,2)})
 	if metric == "prop":
 		plt.ylim(0, 1)
 	elif metric == "size":
@@ -275,9 +240,11 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		y=label,
 		hue="Model",
 		data=res_df,
-		order=primary_var_vals
+		order=primary_var_vals,
+		hue_order=names,
+		palette=palette
 	)
-	plt.title(title)
+	plt.title(name)
 	plt.savefig(os.path.join(out_dir, "{0}_violin.svg".format(filename)))
 	plt.clf()
 
@@ -286,7 +253,9 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		y=label,
 		hue="Model",
 		data=res_df,
-		order=primary_var_vals
+		order=primary_var_vals,
+		hue_order=names,
+		palette=palette
 	)
 	plt.title(title)
 	plt.savefig(os.path.join(out_dir, "{0}_bar.svg".format(filename)))
@@ -297,48 +266,18 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 	# print(series.keys()) ####
 	dflst = []
 	for key, val in series.items():
-		if "full" in model_flavors:
-			for skey, sval in series["recall_full"].items():
+		for f in model_flavors:
+			for skey, sval in series["recall_{0}".format(f)].items():
 				data = sorted(list(sval.items()), key=lambda x: x[0])
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, "PLASMA-JC"])
-
-		if "indep" in model_flavors:
-			for skey, sval in series["recall_indep"].items():
-				data = sorted(list(sval.items()), key=lambda x: x[0])
-				cumu_recall = 0.
-				for x, val in data:
-					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, "PLASMA-JI"])
-		if "ase" in model_flavors:
-			for skey, sval in series["recall_ase"].items():
-				data = sorted(list(sval.items()), key=lambda x: x[0])
-				cumu_recall = 0.
-				for x, val in data:
-					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, "PLASMA-AS"])
-		if "acav" in model_flavors:
-			for skey, sval in series["recall_caviar_ase"].items():
-				data = sorted(list(sval.items()), key=lambda x: x[0])
-				cumu_recall = 0.
-				for x, val in data:
-					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, "CAVIAR-ASE"])
-		if "eqtl" in model_flavors:
-			for skey, sval in series["recall_eqtl"].items():
-				data = sorted(list(sval.items()), key=lambda x: x[0])
-				cumu_recall = 0.
-				for x, val in data:
-					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, "QTL-Only"])
-	# print(dflst[:10]) ####
-	res_df = pd.DataFrame(dflst, columns=["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"])
+					dflst.append([x, cumu_recall, skey, NAMEMAP[f]])
+		
+	labels = ["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"]
+	res_df = pd.DataFrame(dflst, columns=labels)
 	# print(res_df) ####
-	
-	title = "Inclusion Rates Across {0}:\n{1}".format(primary_var_name, name)
-	
+		
 	sns.set(style="whitegrid", font="Roboto")
 	palette = sns.cubehelix_palette(len(primary_var_vals))
 	sns.lineplot(
@@ -350,135 +289,44 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		sort=True,
 		palette=palette
 	)
-	plt.title(title)
+	plt.title(name)
 	plt.savefig(os.path.join(out_dir, "inclusion.svg"))
 	plt.clf()
 
-	if "full" in model_flavors:
-		title = "Proportion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "PLASMA-JC")
+	for f in model_flavors:
+		title = "{0}, {1} Model".format(name, NAMEMAP[f])
 		sns.set(style="whitegrid", font="Roboto")
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
 			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
-			data=res_df.query("Model == 'PLASMA-JC'"),
+			data=res_df.query("Model == '{0}'".format(NAMEMAP[f])),
 			sort=True,
 			palette=palette
 		)
 		plt.title(title)
-		plt.savefig(os.path.join(out_dir, "inclusion_full.svg"))
-		plt.clf()
-	if "indep" in model_flavors:
-		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "PLASMA-JI")
-		sns.set(style="whitegrid", font="Roboto")
-		palette = sns.cubehelix_palette(len(primary_var_vals))
-		sns.lineplot(
-			x="Proportion of Selected Markers",
-			y="Inclusion Rate",
-			hue=primary_var_name,
-			data=res_df.query("Model == 'PLASMA-JI'"),
-			sort=True,
-			palette=palette
-		)
-		plt.title(title)
-		plt.savefig(os.path.join(out_dir, "inclusion_indep.svg"))
-		plt.clf()
-	if "eqtl" in model_flavors:
-		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "QTL-Only")
-		sns.set(style="whitegrid", font="Roboto")
-		palette = sns.cubehelix_palette(len(primary_var_vals))
-		sns.lineplot(
-			x="Proportion of Selected Markers",
-			y="Inclusion Rate",
-			hue=primary_var_name,
-			data=res_df.query("Model == 'QTL-Only'"),
-			sort=True,
-			palette=palette
-		)
-		plt.title(title)
-		plt.savefig(os.path.join(out_dir, "inclusion_eqtl.svg"))
-		plt.clf()
-	if "ase" in model_flavors:
-		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "PLASMA-AS")
-		sns.set(style="whitegrid", font="Roboto")
-		palette = sns.cubehelix_palette(len(primary_var_vals))
-		sns.lineplot(
-			x="Proportion of Selected Markers",
-			y="Inclusion Rate",
-			hue=primary_var_name,
-			data=res_df.query("Model == 'PLASMA-AS'"),
-			sort=True,
-			palette=palette
-		)
-		plt.title(title)
-		plt.savefig(os.path.join(out_dir, "inclusion_ase.svg"))
-		plt.clf()
-	if "acav" in model_flavors:
-		title = "Inclusion Rates Across {0}:\n{1}, {2} Model".format(primary_var_name, name, "CAVIAR-ASE")
-		sns.set(style="whitegrid", font="Roboto")
-		palette = sns.cubehelix_palette(len(primary_var_vals))
-		sns.lineplot(
-			x="Proportion of Selected Markers",
-			y="Inclusion Rate",
-			hue=primary_var_name,
-			data=res_df.query("Model == 'CAVIAR-ASE'"),
-			sort=True,
-			palette=palette
-		)
-		plt.title(title)
-		plt.savefig(os.path.join(out_dir, "inclusion_acav.svg"))
+		plt.savefig(os.path.join(out_dir, "inclusion_{0}.svg".format(f)))
 		plt.clf()
 
-def interpret(target_dir, out_dir, name, model_flavors):
+
+def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 	if model_flavors == "all":
-		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
+		model_flavors = ["indep", "full", "ase", "acav" "eqtl", "fmb"]
 
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
 	targets = os.listdir(target_dir)
 
-	summary = {"names":[]}
-	if "full" in model_flavors:
-		summary["causal_sets_full"] = []
-		summary["ppas_full"] = []
-		summary["set_sizes_full"] = []
-		summary["set_props_full"] = []
-		summary["thresholds_full"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
-		summary["size_probs_full"] = np.zeros(6)
-		
-	if "indep" in model_flavors:
-		summary["causal_sets_indep"] = []
-		summary["ppas_indep"] = []
-		summary["set_sizes_indep"] = []
-		summary["set_props_indep"] = []
-		summary["thresholds_indep"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
-		summary["size_probs_indep"] = np.zeros(6)
-		
-	if "eqtl" in model_flavors:
-		summary["causal_sets_eqtl"] = []
-		summary["ppas_eqtl"] = []
-		summary["set_sizes_eqtl"] = []
-		summary["set_props_eqtl"] = []
-		summary["thresholds_eqtl"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
-		summary["size_probs_eqtl"] = np.zeros(6)
-		
-	if "ase" in model_flavors:
-		summary["causal_sets_ase"] = []
-		summary["ppas_ase"] = []
-		summary["set_sizes_ase"] = []
-		summary["set_props_ase"] = []
-		summary["thresholds_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
-		summary["size_probs_ase"] = np.zeros(6)
-	
-	if "acav" in model_flavors:
-		summary["causal_sets_caviar_ase"] = []
-		summary["ppas_caviar_ase"] = []
-		summary["set_sizes_caviar_ase"] = []
-		summary["set_props_caviar_ase"] = []
-		summary["thresholds_caviar_ase"] = {5: 0, 10: 0, 20: 0, 50: 0, 100: 0}
-		summary["size_probs_caviar_ase"] = np.zeros(6)
+	summary = {"names":[], "thresholds": thresholds}
+	for f in model_flavors:
+		summary["causal_sets_{0}".format(f)] = []
+		summary["ppas_{0}".format(f)] = []
+		summary["set_sizes_{0}".format(f)] = []
+		summary["set_props_{0}".format(f)] = []
+		summary["thresholds_{0}".format(f)] = {i : 0 for i in thresholds}
+		summary["size_probs_{0}".format(f)] = np.zeros(6)
 
 	failed_jobs = []
 	insufficient_data_jobs = []
@@ -504,65 +352,18 @@ def interpret(target_dir, out_dir, name, model_flavors):
 			continue
 		
 		summary["names"].append(t)
-		if "full" in model_flavors:
-			summary["causal_sets_full"].append(result["causal_set_full"])
-			summary["ppas_full"].append(result["ppas_full"])
-			set_size = np.count_nonzero(result["causal_set_full"])
-			set_prop = set_size / np.shape(result["causal_set_full"])[0]
-			summary["set_sizes_full"].append(set_size)
-			summary["set_props_full"].append(set_prop)
-			for k in list(summary["thresholds_full"].keys()):
+		for f in model_flavors:
+			summary["causal_sets_{0}".format(f)].append(result["causal_set_{0}".format(f)])
+			summary["ppas_{0}".format(f)].append(result["ppas_{0}".format(f)])
+			set_size = np.count_nonzero(result["causal_set_{0}".format(f)])
+			set_prop = set_size / np.shape(result["causal_set_{0}".format(f)])[0]
+			summary["set_sizes_{0}".format(f)].append(set_size)
+			summary["set_props_{0}".format(f)].append(set_prop)
+			for k in list(summary["thresholds_{0}".format(f)].keys()):
 				if set_size <= k:
-					summary["thresholds_full"][k] += 1
-			size_probs = np.resize(result["size_probs_full"], 6)
-			summary["size_probs_full"] += size_probs
-
-		if "indep" in model_flavors:
-			summary["causal_sets_indep"].append(result["causal_set_indep"])
-			summary["ppas_indep"].append(result["ppas_indep"])
-			set_size = np.count_nonzero(result["causal_set_indep"])
-			set_prop = set_size / np.shape(result["causal_set_indep"])[0]
-			summary["set_sizes_indep"].append(set_size)
-			summary["set_props_indep"].append(set_prop)
-			for k in list(summary["thresholds_indep"].keys()):
-				if set_size <= k:
-					summary["thresholds_indep"][k] += 1
-			size_probs = np.resize(result["size_probs_indep"], 6)
-			summary["size_probs_indep"] += size_probs
-		if "eqtl" in model_flavors:
-			summary["causal_sets_eqtl"].append(result["causal_set_eqtl"])
-			summary["ppas_eqtl"].append(result["ppas_eqtl"])
-			set_size = np.count_nonzero(result["causal_set_eqtl"])
-			set_prop = set_size / np.shape(result["causal_set_eqtl"])[0]
-			summary["set_sizes_eqtl"].append(set_size)
-			summary["set_props_eqtl"].append(set_prop)
-			for k in list(summary["thresholds_eqtl"].keys()):
-				if set_size <= k:
-					summary["thresholds_eqtl"][k] += 1
-			size_probs = np.resize(result["size_probs_eqtl"], 6)
-			summary["size_probs_eqtl"] += size_probs
-		if "ase" in model_flavors:
-			summary["causal_sets_ase"].append(result["causal_set_ase"])
-			summary["ppas_ase"].append(result["ppas_ase"])
-			set_size = np.count_nonzero(result["causal_set_ase"])
-			set_prop = set_size / np.shape(result["causal_set_ase"])[0]
-			summary["set_sizes_ase"].append(set_size)
-			summary["set_props_ase"].append(set_prop)
-			for k in list(summary["thresholds_ase"].keys()):
-				if set_size <= k:
-					summary["thresholds_ase"][k] += 1
-			size_probs = np.resize(result["size_probs_ase"], 6)
-			summary["size_probs_ase"] += size_probs
-		if "acav" in model_flavors:
-			summary["causal_sets_caviar_ase"].append(result["causal_set_caviar_ase"])
-			summary["ppas_caviar_ase"].append(result["ppas_caviar_ase"])
-			set_size = np.count_nonzero(result["causal_set_caviar_ase"])
-			set_prop = set_size / np.shape(result["causal_set_caviar_ase"])[0]
-			summary["set_sizes_caviar_ase"].append(set_size)
-			summary["set_props_caviar_ase"].append(set_prop)
-			for k in list(summary["thresholds_caviar_ase"].keys()):
-				if set_size <= k:
-					summary["thresholds_caviar_ase"][k] += 1
+					summary["thresholds_{0}".format(f)][k] += 1
+			size_probs = np.resize(result["size_probs_{0}".format(f)], 6)
+			summary["size_probs_{0}".format(f)] += size_probs
 
 		successes += 1
 
@@ -587,37 +388,17 @@ def interpret(target_dir, out_dir, name, model_flavors):
 
 def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=None):
 	if model_flavors == "all":
-		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
+		model_flavors = ["indep", "full", "ase", "acav" "eqtl", "fmb"]
 
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
 	series = {}
-	if "full" in model_flavors:
-		series["avg_sets_full"] = {i: 0 for i in primary_var_vals}
-		series["all_sizes_full"] = {}
-		series["all_props_full"] = {}
-		series["recall_full"] = {}
-	if "indep" in model_flavors:
-		series["avg_sets_indep"] = {i: 0 for i in primary_var_vals}
-		series["all_sizes_indep"] = {}
-		series["all_props_indep"] = {}
-		series["recall_indep"] = {}
-	if "eqtl" in model_flavors:
-		series["avg_sets_eqtl"] = {i: 0 for i in primary_var_vals}
-		series["all_sizes_eqtl"] = {}
-		series["all_props_eqtl"] = {}
-		series["recall_eqtl"] = {}
-	if "ase" in model_flavors:
-		series["avg_sets_ase"] = {i: 0 for i in primary_var_vals}
-		series["all_sizes_ase"] = {}
-		series["all_props_ase"] = {}
-		series["recall_ase"] = {}
-	if "acav" in model_flavors:
-		series["avg_sets_caviar_ase"] = {i: 0 for i in primary_var_vals}
-		series["all_sizes_caviar_ase"] = {}
-		series["all_props_caviar_ase"] = {}
-		series["recall_caviar_ase"] = {}
+	for f in model_flavors:
+		series["avg_sets_{0}".format(f)] = {i: 0 for i in primary_var_vals}
+		series["all_sizes_{0}".format(f)] = {}
+		series["all_props_{0}".format(f)] = {}
+		series["recall_{0}".format(f)] = {}
 
 	sig_snps = {}
 	num_sigs = {}
@@ -630,12 +411,12 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 	for ind, val in enumerate(summaries):
 		var_val = primary_var_vals[ind]
 		data_size = sum([1 for i in val["names"] if num_sigs.get(i, 0) > 0])
-		if "full" in model_flavors:
-			series["avg_sets_full"][var_val] = np.mean(val["set_sizes_full"])
-			series["all_sizes_full"][var_val] = val["set_sizes_full"]
-			series["all_props_full"][var_val] = val["set_props_full"]
-			series["recall_full"][var_val] = {}
-			for sind, sval in enumerate(val["ppas_full"]):
+		for f in model_flavors:
+			series["avg_sets_{0}".format(f)][var_val] = np.mean(val["set_sizes_{0}".format(f)])
+			series["all_sizes_{0}".format(f)][var_val] = val["set_sizes_{0}".format(f)]
+			series["all_props_{0}".format(f)][var_val] = val["set_props_{0}".format(f)]
+			series["recall_{0}".format(f)][var_val] = {}
+			for sind, sval in enumerate(val["ppas_{0}".format(f)]):
 				gene_name = val["names"][sind]
 				if gene_name not in sig_snps:
 					continue
@@ -647,88 +428,8 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 					for xind, xval in enumerate(ppa_idx_sorted):
 						if xval in sigs:
 							pos = xind / loc_size
-							series["recall_full"][var_val].setdefault(pos, 0)
-							series["recall_full"][var_val][pos] += 1. / (num * data_size)
-						
-		if "indep" in model_flavors:
-			series["avg_sets_indep"][var_val] = np.mean(val["set_sizes_indep"])
-			series["all_sizes_indep"][var_val] = val["set_sizes_indep"]
-			series["all_props_indep"][var_val] = val["set_props_indep"]
-			series["recall_indep"][var_val] = {}
-			for sind, sval in enumerate(val["ppas_indep"]):
-				gene_name = val["names"][sind]
-				if gene_name not in sig_snps:
-					continue
-				sigs = sig_snps[gene_name]
-				num = num_sigs[gene_name]
-				if num > 0:
-					loc_size = len(sval)
-					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
-					for xind, xval in enumerate(ppa_idx_sorted):
-						if xval in sigs:
-							pos = xind / loc_size
-							series["recall_indep"][var_val].setdefault(pos, 0)
-							series["recall_indep"][var_val][pos] += 1. / (num * data_size)
-
-		if "ase" in model_flavors:
-			series["avg_sets_ase"][var_val] = np.mean(val["set_sizes_ase"])
-			series["all_sizes_ase"][var_val] = val["set_sizes_ase"]
-			series["all_props_ase"][var_val] = val["set_props_ase"]
-			series["recall_ase"][var_val] = {}
-			for sind, sval in enumerate(val["ppas_ase"]):
-				gene_name = val["names"][sind]
-				if gene_name not in sig_snps:
-					continue
-				sigs = sig_snps[gene_name]
-				num = num_sigs[gene_name]
-				if num > 0:
-					loc_size = len(sval)
-					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
-					for xind, xval in enumerate(ppa_idx_sorted):
-						if xval in sigs:
-							pos = xind / loc_size
-							series["recall_ase"][var_val].setdefault(pos, 0)
-							series["recall_ase"][var_val][pos] += 1. / (num * data_size)
-
-		if "acav" in model_flavors:
-			series["avg_sets_caviar_ase"][var_val] = np.mean(val["set_sizes_caviar_ase"])
-			series["all_sizes_caviar_ase"][var_val] = val["set_sizes_caviar_ase"]
-			series["all_props_caviar_ase"][var_val] = val["set_props_caviar_ase"]
-			series["recall_caviar_ase"][var_val] = {}
-			for sind, sval in enumerate(val["ppas_caviar_ase"]):
-				gene_name = val["names"][sind]
-				if gene_name not in sig_snps:
-					continue
-				sigs = sig_snps[gene_name]
-				num = num_sigs[gene_name]
-				if num > 0:
-					loc_size = len(sval)
-					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
-					for xind, xval in enumerate(ppa_idx_sorted):
-						if xval in sigs:
-							pos = xind / loc_size
-							series["recall_caviar_ase"][var_val].setdefault(pos, 0)
-							series["recall_caviar_ase"][var_val][pos] += 1. / (num * data_size)
-
-		if "eqtl" in model_flavors:
-			series["avg_sets_eqtl"][var_val] = np.mean(val["set_sizes_eqtl"])
-			series["all_sizes_eqtl"][var_val] = val["set_sizes_eqtl"]
-			series["all_props_eqtl"][var_val] = val["set_props_eqtl"]
-			series["recall_eqtl"][var_val] = {}
-			for sind, sval in enumerate(val["ppas_eqtl"]):
-				gene_name = val["names"][sind]
-				if gene_name not in sig_snps:
-					continue
-				sigs = sig_snps[gene_name]
-				num = num_sigs[gene_name]
-				if num > 0:
-					loc_size = len(sval)
-					ppa_idx_sorted = sorted(list(range(loc_size)), key=lambda x:sval[x], reverse=True)
-					for xind, xval in enumerate(ppa_idx_sorted):
-						if xval in sigs:
-							pos = xind / loc_size
-							series["recall_eqtl"][var_val].setdefault(pos, 0)
-							series["recall_eqtl"][var_val][pos] += 1. / (num * data_size)
+							series["recall_{0}".format(f)][var_val].setdefault(pos, 0)
+							series["recall_{0}".format(f)][var_val][pos] += 1. / (num * data_size)
 
 	# print(series.keys()) ####
 	if recall_model_flavors is None:
@@ -738,154 +439,156 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "prop")
 
 if __name__ == '__main__':
-	# # Kidney Cancer
+	thresholds = [1, 5, 10, 20, 50, 100]
+	
+	# Kidney Cancer
 
-	# # Normal
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	# Normal
+	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
 
-	# # Normal, all samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
-	# name = "Kidney RNA-Seq\nAll Normal Samples"
+	# Normal, all samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
+	name = "Kidney RNA-Seq\nAll Normal Samples"
 
-	# normal_all = interpret(target_dir, out_dir, name, model_flavors)
+	normal_all = interpret(target_dir, out_dir, name, model_flavors)
 
-	# # Normal, 50 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
-	# name = "Kidney RNA-Seq\n50 Normal Samples"
+	# Normal, 50 samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
+	name = "Kidney RNA-Seq\n50 Normal Samples"
 
-	# normal_50 = interpret(target_dir, out_dir, name, model_flavors)
+	normal_50 = interpret(target_dir, out_dir, name, model_flavors)
 
-	# # Normal, 10 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
-	# name = "Kidney RNA-Seq\n10 Normal Samples"
+	# Normal, 10 samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
+	name = "Kidney RNA-Seq\n10 Normal Samples"
 
-	# normal_10 = interpret(target_dir, out_dir, name, model_flavors)
+	normal_10 = interpret(target_dir, out_dir, name, model_flavors)
 
-	# # Normal, across sample sizes
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
-	# name = "Kidney RNA-Seq, Normal Samples"
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
-	# recall_model_flavors = set(["eqtl", "acav"])
-	# summaries = [normal_all, normal_50, normal_10]
-	# primary_var_vals = [70, 50, 10]
-	# primary_var_name = "Sample Size"
+	# Normal, across sample sizes
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
+	name = "Kidney RNA-Seq, Normal Samples"
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	recall_model_flavors = set(["eqtl", "acav"])
+	summaries = [normal_all, normal_50, normal_10]
+	primary_var_vals = [70, 50, 10]
+	primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
+	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
-	# # Tumor
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	# Tumor
+	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
 
-	# # Tumor, all samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
-	# name = "Kidney RNA-Seq\nAll Tumor Samples"
+	# Tumor, all samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
+	name = "Kidney RNA-Seq\nAll Tumor Samples"
 
-	# tumor_all = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Tumor, 200 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
-	# name = "Kidney RNA-Seq\n200 Tumor Samples"
+	# Tumor, 200 samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
+	name = "Kidney RNA-Seq\n200 Tumor Samples"
 
-	# tumor_200 = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_200 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Tumor, 100 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
-	# name = "Kidney RNA-Seq\n100 Tumor Samples"
+	# Tumor, 100 samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
+	name = "Kidney RNA-Seq\n100 Tumor Samples"
 
-	# tumor_100 = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_100 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Tumor, 50 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
-	# name = "Kidney RNA-Seq\n50 Tumor Samples"
+	# Tumor, 50 samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
+	name = "Kidney RNA-Seq\n50 Tumor Samples"
 
-	# tumor_50 = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_50 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Tumor, 10 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
-	# name = "Kidney RNA-Seq\n10 Tumor Samples"
+	# Tumor, 10 samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
+	name = "Kidney RNA-Seq\n10 Tumor Samples"
 
-	# tumor_10 = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Tumor, across sample sizes
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
-	# name = "Kidney RNA-Seq, Tumor Samples"
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
-	# recall_model_flavors = set(["indep", "acav"])
-	# summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
-	# primary_var_vals = [524, 200, 100, 50, 10]
-	# primary_var_name = "Sample Size"
+	# Tumor, across sample sizes
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
+	name = "Kidney RNA-Seq, Tumor Samples"
+	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	recall_model_flavors = ["indep", "acav"]
+	summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
+	primary_var_vals = [524, 200, 100, 50, 10]
+	primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
+	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
-	# # Tumor, low heritability, all samples
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	# Tumor, low heritability, all samples
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
 
-	# target_dir = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
-	# name = "Kidney RNA-Seq\nAll Tumor Samples"
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
+	name = "Kidney RNA-Seq\nAll Tumor Samples"
 
-	# tumor_low_herit = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_low_herit = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Prostate Cancer
 	
-	# # Normal
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	# Normal
+	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
 
-	# # Normal, all samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
-	# name = "Prostate ChIP-Seq\nAll Normal Samples"
+	# Normal, all samples
+	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
+	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
+	name = "Prostate ChIP-Seq\nAll Normal Samples"
 
-	# normal_all = interpret(target_dir, out_dir, name, model_flavors)
+	normal_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Normal, 10 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
-	# name = "Prostate ChIP-Seq\n10 Normal Samples"
+	# Normal, 10 samples
+	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
+	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
+	name = "Prostate ChIP-Seq\n10 Normal Samples"
 
-	# normal_10 = interpret(target_dir, out_dir, name, model_flavors)
+	normal_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Normal, across sample sizes
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
-	# name = "Prostate ChIP-Seq, Normal Samples"
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
-	# summaries = [normal_all, normal_10]
-	# primary_var_vals = [24, 10]
-	# primary_var_name = "Sample Size"
+	# Normal, across sample sizes
+	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
+	name = "Prostate ChIP-Seq, Normal Samples"
+	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	summaries = [normal_all, normal_10]
+	primary_var_vals = [24, 10]
+	primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 
 	# Tumor
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
 
 	# Tumor, all samples
-	target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
-	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
+	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
+	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
 	name = "Prostate ChIP-Seq\nAll Tumor Samples"
 
-	tumor_all = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Tumor, 10 samples
-	# target_dir = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
-	# name = "Prostate ChIP-Seq\n10 Tumor Samples"
+	# Tumor, 10 samples
+	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
+	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
+	name = "Prostate ChIP-Seq\n10 Tumor Samples"
 
-	# tumor_10 = interpret(target_dir, out_dir, name, model_flavors)
+	tumor_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
-	# # Tumor, across sample sizes
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
-	# name = "Prostate ChIP-Seq, Tumor Samples"
-	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
-	# summaries = [tumor_all, tumor_10]
-	# primary_var_vals = [24, 10]
-	# primary_var_name = "Sample Size"
+	# Tumor, across sample sizes
+	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
+	name = "Prostate ChIP-Seq, Tumor Samples"
+	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	summaries = [tumor_all, tumor_10]
+	primary_var_vals = [24, 10]
+	primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 

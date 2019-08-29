@@ -68,9 +68,7 @@ def run(
 		input_path, 
 		job_data_path,
 		params_path, 
-		hyperparams, 
-		num_tasks, 
-		poll_freq, 
+		hyperparams,  
 		script_path, 
 		selection_path, 
 		list_path, 
@@ -153,9 +151,7 @@ if __name__ == '__main__':
 		input_path, 
 		job_data_path,
 		params_path, 
-		hyperparams, 
-		num_tasks, 
-		poll_freq, 
+		hyperparams,  
 		script_path,
 		selection_path,
 		list_path,
@@ -176,9 +172,7 @@ if __name__ == '__main__':
 		input_path, 
 		job_data_path, 
 		params_path, 
-		hyperparams, 
-		num_tasks, 
-		poll_freq, 
+		hyperparams,  
 		script_path,
 		selection_path,
 		list_path,
@@ -200,8 +194,6 @@ if __name__ == '__main__':
 		job_data_path, 
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,
@@ -228,8 +220,6 @@ if __name__ == '__main__':
 		job_data_path,
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,
@@ -251,8 +241,6 @@ if __name__ == '__main__':
 		job_data_path,
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,
@@ -273,9 +261,7 @@ if __name__ == '__main__':
 		input_path, 
 		job_data_path,
 		params_path, 
-		hyperparams, 
-		num_tasks, 
-		poll_freq, 
+		hyperparams,  
 		script_path,
 		selection_path,
 		list_path,
@@ -297,8 +283,6 @@ if __name__ == '__main__':
 		job_data_path,
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,
@@ -319,9 +303,7 @@ if __name__ == '__main__':
 		input_path, 
 		job_data_path,
 		params_path, 
-		hyperparams, 
-		num_tasks, 
-		poll_freq, 
+		hyperparams,  
 		script_path,
 		selection_path,
 		list_path,
@@ -359,8 +341,6 @@ if __name__ == '__main__':
 		job_data_path,
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,
@@ -391,9 +371,6 @@ if __name__ == '__main__':
 	# 	"model_flavors": set(["full", "indep", "eqtl", "ase"])
 	# }
 
-	# num_tasks = 100
-	# poll_freq = 5
-
 	# # Normal
 	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
 	# selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
@@ -409,9 +386,7 @@ if __name__ == '__main__':
 	# 	input_path, 
 	# 	job_data_path,
 	# 	params_path, 
-	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
+	# 	hyperparams,  
 	# 	script_path,
 	# 	selection_path,
 	# 	list_path,
@@ -437,8 +412,6 @@ if __name__ == '__main__':
 	# 	job_data_path,
 	# 	params_path, 
 	# 	hyperparams, 
-	# 	num_tasks, 
-	# 	poll_freq, 
 	# 	script_path,
 	# 	selection_path,
 	# 	list_path,
@@ -468,9 +441,6 @@ if __name__ == '__main__':
 		"model_flavors": "all"
 	}
 
-	num_tasks = 100
-	poll_freq = 5
-
 	list_path = "all"
 	selection_path = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets/normal.pickle"
 
@@ -486,8 +456,6 @@ if __name__ == '__main__':
 		job_data_path,
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,
@@ -509,8 +477,6 @@ if __name__ == '__main__':
 		job_data_path,
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,
@@ -539,9 +505,6 @@ if __name__ == '__main__':
 		"model_flavors": "all"
 	}
 
-	num_tasks = 100
-	poll_freq = 5
-
 	list_path = "all"
 	selection_path = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets/tumor.pickle"
 
@@ -556,9 +519,7 @@ if __name__ == '__main__':
 		input_path, 
 		job_data_path,
 		params_path, 
-		hyperparams, 
-		num_tasks, 
-		poll_freq, 
+		hyperparams,  
 		script_path,
 		selection_path,
 		list_path,
@@ -580,8 +541,6 @@ if __name__ == '__main__':
 		job_data_path,
 		params_path, 
 		hyperparams, 
-		num_tasks, 
-		poll_freq, 
 		script_path,
 		selection_path,
 		list_path,

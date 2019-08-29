@@ -6,6 +6,7 @@ def make_filter(in_path, out_path):
 	snp_filter = set()
 	with gzip.open(in_path) as bed_file:
 		for line in bed_file:
+			print(line) ####
 			entry = line.split()
 			snp_filter.add(entry[3])
 

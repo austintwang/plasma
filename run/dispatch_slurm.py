@@ -46,8 +46,8 @@ def dispatch(
 	job_args.extend([io_name, params_path, selection_path, filter_path, overdispersion_path])
 
 	timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
-	print(" ".join(job_args)) ####
-	raise Exception ####
+	# print(" ".join(job_args)) ####
+	# raise Exception ####
 	while True:
 		try:
 			submission = subprocess.run(job_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -116,7 +116,7 @@ def run(
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
-	batch_size = 1
+	batch_size = 50
 
 	# Kidney Data, 1 CV
 	input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
@@ -137,9 +137,6 @@ if __name__ == '__main__':
 		"confidence": 0.95, 
 		"model_flavors": "all"
 	}
-
-	num_tasks = 100
-	poll_freq = 5
 
 	# Normal
 	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"

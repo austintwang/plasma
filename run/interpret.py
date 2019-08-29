@@ -347,7 +347,7 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 				if result.get("data_error", "") == "Insufficient Markers":
 					insufficient_snps_jobs.append(t)
 					continue
-				if "run_error" in results:
+				if "run_error" in result:
 					failed_jobs.append(t)
 					continue
 		except (EOFError, IOError):

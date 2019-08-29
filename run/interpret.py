@@ -119,7 +119,7 @@ def plot_thresh(result, out_dir, name, model_flavors):
 	threshs = result["thresholds"]
 	plt_data = []
 	for f in model_flavors:
-		thresh_data = summary["thresholds_{0}".format(f)]
+		thresh_data = result["thresholds_{0}".format(f)]
 		for k, v in thresh_data.items():
 			plt_data.append([v, k, NAMEMAP[f]])
 

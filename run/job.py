@@ -302,7 +302,6 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 				result["traceback"] = trace
 				write_in_data(output_path, inputs)
 				write_output(output_path, result)
-				return
 
 	# print(result) ####
 	# print(sum(result["causal_set_eqtl"])) ####

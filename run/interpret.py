@@ -338,7 +338,7 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 
 		try:
 			with open(result_path, "rb") as result_file:
-				result = pickle.load(result_file)
+				result = pickle.load(result_file, encoding='latin1')
 				if result.get("data_error", "") == "Insufficient Read Counts":
 					insufficient_data_jobs.append(t)
 					continue

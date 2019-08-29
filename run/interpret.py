@@ -334,7 +334,7 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 	for t in targets:
 		# print(t) ####
 		result_path = os.path.join(target_dir, t, "output.pickle")
-		stdout_path = os.path.join(target_dir, t, "stdout.txt")
+		# stdout_path = os.path.join(target_dir, t, "stdout.txt")
 
 		try:
 			with open(result_path, "rb") as result_file:
@@ -352,6 +352,7 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 			failed_jobs.append(t)
 			continue
 		
+		print(result_path) ####
 		print(result.keys()) ####
 		summary["names"].append(t)
 		for f in model_flavors:

@@ -143,9 +143,9 @@ def plot_thresh(result, out_dir, name, model_flavors):
 	for i, f in enumerate(model_flavors):
 		thresh_data = result["thresholds_{0}".format(f)]
 		for k, v in sorted(thresh_data.items()):
-			if (last_marker[i] is None and k >= 0.04) or (last_marker[i] and (k - last_marker[i]) >= 0.08):
+			if (last_marker[i] is None and v >= 0.04) or (last_marker[i] and (v - last_marker[i]) >= 0.08):
 				plt.text(
-					xval,
+					v,
 					model_flavors.index(thresh_data_models[j]),
 					text=threshs[i],
 					size="xx-small",
@@ -156,7 +156,7 @@ def plot_thresh(result, out_dir, name, model_flavors):
 					clip_on=False,
 					bbox={"boxstyle":"round", "pad":.25, "fc":"white", "ec":"white"}
 				)
-				last_marker[i] = k
+				last_marker[i] = v
 
 	plt.ylabel("")
 	plt.title(name)

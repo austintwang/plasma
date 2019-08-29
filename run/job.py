@@ -139,7 +139,7 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 					inputs = pickle.load(input_file, encoding='latin1')
 				inputs.update(params)
 
-				inputs["sample_names"] = np.array([i.decode('UTF-8') for i in inputs["sample_names"]])
+				inputs["sample_names"] = np.array([i for i in inputs["sample_names"]])
 
 				if selection:
 					select = np.array([i in selection for i in inputs["sample_names"]])

@@ -379,8 +379,9 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 	write_thresholds(summary, out_dir, successes, model_flavors)
 	write_size_probs(summary, out_dir, successes, model_flavors)
 	write_sumstats(summary, out_dir, successes, model_flavors)
-	plot_dist(summary, out_dir, name, model_flavors, "size", False)
-	plot_dist(summary, out_dir, name, model_flavors, "prop", False)
+	plot_thresh(summary, out_dir, name, model_flavors)
+	plot_violin(summary, out_dir, name, model_flavors, "size")
+	plot_violin(summary, out_dir, name, model_flavors, "prop")
 	plot_dist(summary, out_dir, name, model_flavors, "size", True)
 	plot_dist(summary, out_dir, name, model_flavors, "prop", True)
 

@@ -19,13 +19,14 @@ def dispatch(
 	io_data = []
 
 	for t in targets:
-		job_input_path = os.path.join(input_path, t, "input.pickle")
-		job_output_path = os.path.join(output_path, t)
-		data_tuple = (job_input_path, job_output_path)
-		io_data.append(data_tuple)
+		if t is not None:
+			job_input_path = os.path.join(input_path, t, "input.pickle")
+			job_output_path = os.path.join(output_path, t)
+			data_tuple = (job_input_path, job_output_path)
+			io_data.append(data_tuple)
 
-		if not os.path.exists(job_output_path):
-			os.makedirs(job_output_path)
+			if not os.path.exists(job_output_path):
+				os.makedirs(job_output_path)
 
 	if not os.path.exists(job_data_path):
 		os.makedirs(job_data_path)

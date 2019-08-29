@@ -146,7 +146,7 @@ def plot_thresh(result, out_dir, name, model_flavors):
 			if (last_marker[i] is None and v >= 0.04) or (last_marker[i] and (v - last_marker[i]) >= 0.08):
 				plt.text(
 					v,
-					model_flavors.index(thresh_data_models[j]),
+					i,
 					text=threshs[i],
 					size="xx-small",
 					weight="medium",

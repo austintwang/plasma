@@ -147,13 +147,11 @@ def plot_thresh(result, out_dir, name, model_flavors):
 				plt.text(
 					v,
 					i,
-					text=threshs[i],
+					threshs[i],
 					size="xx-small",
 					weight="medium",
 					ha="center",
 					va="center",
-					transform=ax.transData,
-					clip_on=False,
 					bbox={"boxstyle":"round", "pad":.25, "fc":"white", "ec":"white"}
 				)
 				last_marker[i] = v

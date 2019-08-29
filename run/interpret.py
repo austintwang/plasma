@@ -312,7 +312,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 
 def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 	if model_flavors == "all":
-		model_flavors = ["indep", "full", "ase", "acav" "eqtl", "fmb"]
+		model_flavors = ["indep", "full", "ase", "acav", "eqtl", "fmb"]
 
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
@@ -388,7 +388,7 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 
 def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=None):
 	if model_flavors == "all":
-		model_flavors = ["indep", "full", "ase", "acav" "eqtl", "fmb"]
+		model_flavors = ["indep", "full", "ase", "acav", "eqtl", "fmb"]
 
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
@@ -444,7 +444,7 @@ if __name__ == '__main__':
 	# Kidney Cancer
 
 	# Normal
-	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
 
 	# Normal, all samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
@@ -479,7 +479,7 @@ if __name__ == '__main__':
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
 	# Tumor
-	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
 
 	# Tumor, all samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
@@ -519,7 +519,7 @@ if __name__ == '__main__':
 	# Tumor, across sample sizes
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
 	name = "Kidney RNA-Seq, Tumor Samples"
-	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
 	recall_model_flavors = ["indep", "acav"]
 	summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
 	primary_var_vals = [524, 200, 100, 50, 10]
@@ -539,7 +539,7 @@ if __name__ == '__main__':
 	# Prostate Cancer
 	
 	# Normal
-	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
 
 	# Normal, all samples
 	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
@@ -566,7 +566,7 @@ if __name__ == '__main__':
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 
 	# Tumor
-	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
 
 	# Tumor, all samples
 	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
@@ -585,7 +585,7 @@ if __name__ == '__main__':
 	# Tumor, across sample sizes
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
 	name = "Prostate ChIP-Seq, Tumor Samples"
-	model_flavors = ["indep", "ase", "acav" "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
 	summaries = [tumor_all, tumor_10]
 	primary_var_vals = [24, 10]
 	primary_var_name = "Sample Size"

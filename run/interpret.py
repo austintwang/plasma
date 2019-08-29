@@ -451,21 +451,21 @@ if __name__ == '__main__':
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
 	name = "Kidney RNA-Seq\nAll Normal Samples"
 
-	normal_all = interpret(target_dir, out_dir, name, model_flavors)
+	normal_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Normal, 50 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
 	name = "Kidney RNA-Seq\n50 Normal Samples"
 
-	normal_50 = interpret(target_dir, out_dir, name, model_flavors)
+	normal_50 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Normal, 10 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
 	name = "Kidney RNA-Seq\n10 Normal Samples"
 
-	normal_10 = interpret(target_dir, out_dir, name, model_flavors)
+	normal_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Normal, across sample sizes
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"

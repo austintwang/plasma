@@ -383,6 +383,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds):
 			print(t)
 			print(result.keys())
 			# raise
+			continue
 		
 		# print(result_path) ####
 		# print(result.keys()) ####

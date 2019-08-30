@@ -118,7 +118,7 @@ def plot_violin(result, out_dir, name, model_flavors, metric):
 	if metric == "prop":
 		plt.xlim(0, 1)
 	elif metric == "size":
-		plt.xlim(0, 600)
+		plt.xlim(0, 500)
 	plt.savefig(os.path.join(out_dir, "set_{0}_distribution.svg".format(metric)), bbox_inches='tight')
 	plt.clf()
 
@@ -137,7 +137,7 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 	df = pd.DataFrame.from_records(plt_data, columns=labels)
 
 	names = [NAMEMAP[m] for m in model_flavors]
-	palette = sns.cubehelix_palette(len(threshs) + 1)
+	palette = sns.cubehelix_palette(len(threshs) + 1, rot=-.25, light=.7)
 	df_thresh = df.loc[df["Threshold"] == np.inf]
 	chart = sns.barplot(
 		x="Proportion of Loci", 
@@ -187,7 +187,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	elif metric == "prop":
 		kwd = "set_props"
 
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 
 	for f in model_flavors:
 		set_sizes = result["{0}_{1}".format(kwd, f)]
@@ -254,8 +254,8 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	if metric == "prop":
 		plt.ylim(0, 1)
 	elif metric == "size":
-		plt.ylim(0, 1000)
-	sns.violinplot(
+		plt.ylim(0, 500)
+	g = sns.violinplot(
 		x=primary_var_name,
 		y=label,
 		hue="Model",
@@ -266,11 +266,12 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		scale="width",
 		cut=0
 	)
+	g.legend(loc='center left', bbox_to_anchor=(1.25, 0.5), ncol=1)
 	plt.title(name)
 	plt.savefig(os.path.join(out_dir, "{0}_violin.svg".format(filename)))
 	plt.clf()
 
-	sns.barplot(
+	g = sns.barplot(
 		x=primary_var_name, 
 		y=label,
 		hue="Model",
@@ -279,6 +280,7 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		hue_order=names,
 		palette=palette
 	)
+	g.legend(loc='center left', bbox_to_anchor=(1.25, 0.5), ncol=1)
 	plt.title(name)
 	plt.savefig(os.path.join(out_dir, "{0}_bar.svg".format(filename)))
 	plt.clf()
@@ -300,7 +302,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 	res_df = pd.DataFrame(dflst, columns=labels)
 	# print(res_df) ####
 		
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(6,5)})
 	palette = sns.cubehelix_palette(len(primary_var_vals))
 	sns.lineplot(
 		x="Proportion of Selected Markers",
@@ -317,7 +319,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 
 	for f in model_flavors:
 		title = "{0}, {1} Model".format(name, NAMEMAP[f])
-		sns.set(style="whitegrid", font="Roboto")
+		sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(6,5)})
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
 			x="Proportion of Selected Markers",
@@ -481,7 +483,7 @@ if __name__ == '__main__':
 	# Kidney Cancer
 
 	# Normal
-	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
 	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle")
 
 	# Normal, all samples
@@ -517,7 +519,7 @@ if __name__ == '__main__':
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
 	# Tumor
-	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
 	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
 
 	# Tumor, all samples
@@ -567,7 +569,7 @@ if __name__ == '__main__':
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
 	# Tumor, low heritability, all samples
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
 	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
 
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
@@ -579,7 +581,7 @@ if __name__ == '__main__':
 	# Prostate Cancer
 	
 	# Normal
-	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
 	targets = "all"
 
 	# Normal, all samples
@@ -599,7 +601,7 @@ if __name__ == '__main__':
 	# Normal, across sample sizes
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
 	name = "Prostate ChIP-Seq, Normal Samples"
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
 	summaries = [normal_all, normal_10]
 	primary_var_vals = [24, 10]
 	primary_var_name = "Sample Size"
@@ -607,7 +609,7 @@ if __name__ == '__main__':
 	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 
 	# Tumor
-	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
 	targets = "all"
 
 	# Tumor, all samples
@@ -627,7 +629,7 @@ if __name__ == '__main__':
 	# Tumor, across sample sizes
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
 	name = "Prostate ChIP-Seq, Tumor Samples"
-	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
 	summaries = [tumor_all, tumor_10]
 	primary_var_vals = [24, 10]
 	primary_var_name = "Sample Size"

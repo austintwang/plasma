@@ -263,7 +263,7 @@ def make_thresh_barplot(
 		num_snps
 	):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
-	palette = sns.cubehelix_palette(len(threshs))
+	palette = palette = sns.cubehelix_palette(len(threshs), rot=-.25, light=.7)
 
 	for i, t in enumerate(reversed(threshs)):
 		estimator = lambda x: np.mean((x <= t).astype(int))
@@ -288,11 +288,10 @@ def make_thresh_barplot(
 			if thresh_data_models[j] in model_flavors:
 				xval = float(x)
 				if (last_marker[j] is None and xval >= 0.04) or (last_marker[j] and (xval - last_marker[j]) >= 0.08):
-					ax = plt.gca()
-					text = TextCentBbox(
+					plt.text(
 						xval,
 						model_flavors.index(thresh_data_models[j]),
-						text=threshs[i],
+						threshs[i],
 						size="xx-small",
 						weight="medium",
 						ha="center",
@@ -301,9 +300,6 @@ def make_thresh_barplot(
 						clip_on=False,
 						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}
 					)
-					text.set_clip_path(ax.patch)
-					ax._add_text(text)
-
 					last_marker[j] = xval
 
 	plt.ylabel("")

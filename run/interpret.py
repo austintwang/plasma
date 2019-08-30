@@ -132,7 +132,7 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 
 	names = [NAMEMAP[m] for m in model_flavors]
 	palette = sns.cubehelix_palette(len(threshs) + 1)
-	df_thresh = df.loc(df["Threshold"] == np.inf)
+	df_thresh = df.loc[df["Threshold"] == np.inf]
 	chart = sns.barplot(
 		x="Number of Loci", 
 		y="Model", 

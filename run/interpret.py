@@ -118,7 +118,7 @@ def plot_violin(result, out_dir, name, model_flavors, metric):
 	if metric == "prop":
 		plt.xlim(0, 1)
 	elif metric == "size":
-		plt.xlim(0, 1000)
+		plt.xlim(0, 600)
 	plt.savefig(os.path.join(out_dir, "set_{0}_distribution.svg".format(metric)), bbox_inches='tight')
 	plt.clf()
 
@@ -166,7 +166,7 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 			if (last_marker[i] is None and xval >= 0.04) or (last_marker[i] and (xval - last_marker[i]) >= 0.08):
 				plt.text(
 					xval,
-					k,
+					i,
 					threshs[i],
 					size="xx-small",
 					weight="medium",
@@ -197,7 +197,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label=NAMEMAP[f]
+				label=NAMEMAP[f],
+				color=COLORMAP[f]
 			)
 		except Exception as e:
 			trace = traceback.format_exc()
@@ -206,7 +207,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 	if metric == "prop":
 		plt.xlim(0, 1)
 	elif metric == "size":
-		plt.xlim(0, 1000)
+		plt.xlim(0, 600)
 	plt.legend(title="Model")
 	if cumu:
 		cumu_kwd = "Cumulative "
@@ -217,14 +218,14 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 		cumu_fname = ""
 		yax = "Density"
 	if metric == "size":
-		plt.xlabel("Set Size")
+		plt.xlabel("Credible Set Size")
 		plt.ylabel(yax)
-		plt.title("{0}Distribution of Credible Set Sizes: {1}".format(cumu_kwd, name))
+		plt.title(name)
 		plt.savefig(os.path.join(out_dir, "set_size_distribution{0}.svg".format(cumu_fname)))
 	elif metric == "prop":
-		plt.xlabel("Set Size (Proportion of Total Markers)")
+		plt.xlabel("Credible Set Size (Proportion)")
 		plt.ylabel(yax)
-		plt.title("{0}Distribution of Credible Set Sizes: {1}".format(cumu_kwd, name))
+		plt.title(name)
 		plt.savefig(os.path.join(out_dir, "set_prop_distribution{0}.svg".format(cumu_fname)))
 	plt.clf()
 
@@ -381,7 +382,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds):
 		except Exception: ####
 			print(t)
 			print(result.keys())
-			raise
+			# raise
 		
 		# print(result_path) ####
 		# print(result.keys()) ####

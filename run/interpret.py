@@ -142,7 +142,7 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 		ci=None
 	)
 	for i, t in enumerate(reversed(threshs)):
-		df_thresh = df.loc(df["Threshold"] == t)
+		df_thresh = df.loc[df["Threshold"] == t]
 		chart = sns.barplot(
 			x="Proportion of Loci", 
 			y="Model", 

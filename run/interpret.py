@@ -279,7 +279,7 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		hue_order=names,
 		palette=palette
 	)
-	plt.title(title)
+	plt.title(name)
 	plt.savefig(os.path.join(out_dir, "{0}_bar.svg".format(filename)))
 	plt.clf()
 

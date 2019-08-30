@@ -206,7 +206,7 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 			if np.size(inputs["counts1"]) <= 1:
 				result["data_error"] = "Insufficient Read Counts"
 				write_output(output_path, result)
-				return
+				continue
 
 			# print(haps_comb) ####
 			# print(np.logical_not(np.all(haps_comb == haps_comb[0,:], axis=0))) ####
@@ -225,7 +225,7 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 			if inputs["hap1"].size == 0:
 				result["data_error"] = "Insufficient Markers"
 				write_output(output_path, result)
-				return
+				continue
 
 			inputs["hap_A"] = inputs["hap1"].astype(np.int)
 			inputs["hap_B"] = inputs["hap2"].astype(np.int)

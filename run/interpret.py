@@ -134,7 +134,7 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 	palette = sns.cubehelix_palette(len(threshs) + 1)
 	df_thresh = df.loc[df["Threshold"] == np.inf]
 	chart = sns.barplot(
-		x="Number of Loci", 
+		x="Proportion of Loci", 
 		y="Model", 
 		data=df_thresh, 
 		order=names, 
@@ -144,7 +144,7 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 	for i, t in enumerate(reversed(threshs)):
 		df_thresh = df.loc(df["Threshold"] == t)
 		chart = sns.barplot(
-			x="Number of Loci", 
+			x="Proportion of Loci", 
 			y="Model", 
 			data=df_thresh, 
 			order=names, 
@@ -370,7 +370,7 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 			continue
 
 		try: ####
-			print(result["causal_set_acav"])
+			r = result["causal_set_acav"]
 		except Exception: ####
 			print(t)
 			print(result.keys())

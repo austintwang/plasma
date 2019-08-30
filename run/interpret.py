@@ -167,14 +167,14 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 				plt.text(
 					xval,
 					i,
-					threshs[i],
+					k,
 					size="xx-small",
 					weight="medium",
 					ha="center",
 					va="center",
 					bbox={"boxstyle":"round", "pad":.25, "fc":"white", "ec":"white"}
 				)
-				last_marker[i] = v
+				last_marker[i] = xval
 
 	plt.ylabel("")
 	plt.title(name)

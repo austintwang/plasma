@@ -8,11 +8,11 @@ import copy
 import vcf
 import pandas as pd
 
-from . import Finemap, EvalCaviar, Evaluator
+from . import Finemap, Evaluator
 
 class Caviar(Finemap):
 	cav_dir_path = "/agusevlab/awang/caviar"
-	caviar_path = "CAVIAR"
+	caviar_path = "/agusevlab/awang/caviar/caviar/CAVIAR-C++/CAVIAR"
 	temp_path = os.path.join(cav_dir_path, "temp")
 	
 	def __init__(self, **kwargs):
@@ -44,6 +44,8 @@ class Caviar(Finemap):
 		self.z_scores = self.total_exp_stats.tolist()
 		self.ld = self.total_exp_corr.tolist()
 
+		self.ncp = None
+
 	def search_exhaustive(self, min_causal, max_causal):
 		self.min_causal = min_causal
 		self.max_causal = max_causal
@@ -63,6 +65,8 @@ class Caviar(Finemap):
 			"-c", str(self.max_causal),
 			# "-n", str(self.ncp)
 		]
+		if self.ncp is not None:
+			self.params.extend(["-n", str(self.ncp)])
 
 		with open(self.z_path, "w") as zfile:
 			zstr = "\n".join("\t".join(str(j) for j in i) for i in zip(self.rsids, self.z_scores)) + "\n"
@@ -101,6 +105,7 @@ class CaviarASE(Finemap):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.init_args = kwargs
+		self.ncp = 1.
 
 	def initialize(self):
 		super().initialize()
@@ -147,11 +152,13 @@ class CaviarASE(Finemap):
 		self.eval1.initialize()
 		self.eval1.ld = self.ld.tolist()
 		self.eval1.z_scores = self.stats_1.tolist()
+		self.eval1.ncp = self.ncp
 
 		self.eval2 = Caviar(**self.init_args)
 		self.eval2.initialize()
 		self.eval2.ld = self.ld.tolist()
 		self.eval2.z_scores = self.stats_2.tolist()
+		self.eval2.ncp = self.ncp
 
 	def search_exhaustive(self, min_causal, max_causal):
 		self.min_causal = min_causal
@@ -357,7 +364,7 @@ class FmBenner(Finemap):
 		if not self.force_defaults:
 			command_params.extend([
 				"--prior-std", str(self.prior_std),
-				"--prior-k", str(self.causal_status_prior)
+				# "--prior-k", str(self.causal_status_prior)
 			])
 		self._run_fm(command_params)
 
@@ -374,7 +381,7 @@ class FmBenner(Finemap):
 		if not self.force_defaults:
 			command_params.extend([
 				"--prior-std", str(self.prior_std),
-				"--prior-k", str(self.causal_status_prior)
+				# "--prior-k", str(self.causal_status_prior)
 			])
 		self._run_fm(command_params)
 
@@ -407,6 +414,7 @@ class FmBenner(Finemap):
 		# print(" ".join(command_params)) ####
 
 		out = subprocess.check_output(command_params)
+		# print(out) ####
 
 		# with open(self.set_path) as setfile:
 		# 	setdata = setfile.read()

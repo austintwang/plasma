@@ -470,7 +470,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 11
+	batch_size = 15
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)
@@ -486,27 +486,27 @@ if __name__ == '__main__':
 		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 
-	# std_al_dev = [0.6, 0.8]
-	# test_mainfig(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	std_al_dev,
-	# 	num_trials,
-	# 	script_path
-	# )
+	std_al_dev = [0.6, 0.8]
+	test_mainfig(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		std_al_dev,
+		num_trials,
+		script_path
+	)
 
-	# default_switch = [True, False]
-	# test_default_params(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	default_switch, 
-	# 	num_trials,
-	# 	script_path
-	# )
+	default_switch = [True, False]
+	test_default_params(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		default_switch, 
+		num_trials,
+		script_path
+	)
 
 	# causal_vars = [1, 2]
 	# test_multi_cv(

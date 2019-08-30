@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import time
+import traceback
 import matplotlib
 matplotlib.use('Agg')
 matplotlib.rcParams['agg.path.chunksize'] = 10000
@@ -39,21 +40,21 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	header = "\t".join(["Model"] + [str(i) for i in summary["thresholds"]]) + "\n"	
 	thresholds_list = [header]
 	for f in model_flavors:
-		data = [NAMEMAP[f]] + sorted(summary["thresholds_{0}".format(f)].keys())
+		data = [NAMEMAP[f]] + [summary["thresholds_{0}".format(f)][i] for i in summary["thresholds"]]
 		line = "\t".join([str(i) for i in data]) + "\n"
 		thresholds_list.append(line)
 
-	out_path = os.path.join(out_dir, "causal_set_thresholds")
+	out_path = os.path.join(out_dir, "causal_set_thresholds.txt")
 	with open(out_path, "w") as out_file:
 		out_file.writelines(thresholds_list)
 
 def write_size_probs(summary, out_dir, total_jobs, model_flavors):
 	size_probs_list = []
 	for f in model_flavors:
-		data = "\t".join([NAMEMAP[f]] + [str(i) for i in summary["size_probs_{0}".format(f)] / total_jobs])
+		data = "\t".join([NAMEMAP[f]] + [str(i) for i in summary["size_probs_{0}".format(f)] / total_jobs]) + "\n"
 		size_probs_list.append(data)
 
-	out_path = os.path.join(out_dir, "causal_set_size_probabilities")
+	out_path = os.path.join(out_dir, "causal_set_size_probabilities.txt")
 	with open(out_path, "w") as out_file:
 		out_file.writelines(size_probs_list)
 
@@ -70,8 +71,9 @@ def write_sumstats(summary, out_dir, total_jobs, model_flavors):
 			str(np.nanmedian(sizes)),
 			str(np.nanpercentile(sizes, 75))
 		]) + "\n"
+		sumstats_list.append(line)
 
-	out_path = os.path.join(out_dir, "causal_set_stats")
+	out_path = os.path.join(out_dir, "causal_set_stats.txt")
 
 	with open(out_path, "w") as out_file:
 		out_file.writelines(sumstats_list)
@@ -103,6 +105,7 @@ def plot_violin(result, out_dir, name, model_flavors, metric):
 		order=names, 
 		palette=palette,
 		cut=0,
+		scale="width",
 	)
 	plt.ylabel("")
 	plt.title(name)
@@ -113,29 +116,39 @@ def plot_violin(result, out_dir, name, model_flavors, metric):
 	plt.savefig(os.path.join(out_dir, "set_{0}_distribution.svg".format(metric)), bbox_inches='tight')
 	plt.clf()
 
-def plot_thresh(result, out_dir, name, model_flavors):
+def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 
 	threshs = result["thresholds"]
 	plt_data = []
 	for f in model_flavors:
+		plt_data.append([1., np.inf, NAMEMAP[f]])
 		thresh_data = result["thresholds_{0}".format(f)]
 		for k, v in thresh_data.items():
-			plt_data.append([v, k, NAMEMAP[f]])
+			plt_data.append([v / total_jobs, k, NAMEMAP[f]])
 
 	labels = ["Proportion of Loci", "Threshold", "Model"]
 	df = pd.DataFrame.from_records(plt_data, columns=labels)
 
 	names = [NAMEMAP[m] for m in model_flavors]
-	palette = sns.cubehelix_palette(len(threshs))
+	palette = sns.cubehelix_palette(len(threshs) + 1)
+	df_thresh = df.loc(df["Threshold"] == np.inf)
+	chart = sns.barplot(
+		x="Number of Loci", 
+		y="Model", 
+		data=df_thresh, 
+		order=names, 
+		color=palette[0], 
+		ci=None
+	)
 	for i, t in enumerate(reversed(threshs)):
+		df_thresh = df.loc(df["Threshold"] == t)
 		chart = sns.barplot(
-			x="Proportion of Loci", 
+			x="Number of Loci", 
 			y="Model", 
-			data=df, 
-			label=t, 
+			data=df_thresh, 
 			order=names, 
-			color=palette[i], 
+			color=palette[i+1], 
 			ci=None
 		)
 
@@ -143,10 +156,11 @@ def plot_thresh(result, out_dir, name, model_flavors):
 	for i, f in enumerate(model_flavors):
 		thresh_data = result["thresholds_{0}".format(f)]
 		for k, v in sorted(thresh_data.items()):
-			if (last_marker[i] is None and v >= 0.04) or (last_marker[i] and (v - last_marker[i]) >= 0.08):
+			xval = v / total_jobs
+			if (last_marker[i] is None and xval >= 0.04) or (last_marker[i] and (xval - last_marker[i]) >= 0.08):
 				plt.text(
-					v,
-					i,
+					xval,
+					k,
 					threshs[i],
 					size="xx-small",
 					weight="medium",
@@ -179,8 +193,9 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
 				label=NAMEMAP[f]
 			)
-		except Exception:
-			pass
+		except Exception as e:
+			trace = traceback.format_exc()
+			print(trace, file=sys.stderr)
 
 	if metric == "prop":
 		plt.xlim(0, 1)
@@ -240,7 +255,9 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		data=res_df,
 		order=primary_var_vals,
 		hue_order=names,
-		palette=palette
+		palette=palette,
+		scale="width",
+		cut=0
 	)
 	plt.title(name)
 	plt.savefig(os.path.join(out_dir, "{0}_violin.svg".format(filename)))
@@ -351,6 +368,13 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 		except (EOFError, IOError):
 			failed_jobs.append(t)
 			continue
+
+		try: ####
+			print(result["causal_set_acav"])
+		except Exception: ####
+			print(t)
+			print(result.keys())
+			raise
 		
 		# print(result_path) ####
 		# print(result.keys()) ####
@@ -382,7 +406,7 @@ def interpret(target_dir, out_dir, name, model_flavors, thresholds):
 	write_thresholds(summary, out_dir, successes, model_flavors)
 	write_size_probs(summary, out_dir, successes, model_flavors)
 	write_sumstats(summary, out_dir, successes, model_flavors)
-	plot_thresh(summary, out_dir, name, model_flavors)
+	plot_thresh(summary, out_dir, name, model_flavors, successes)
 	plot_violin(summary, out_dir, name, model_flavors, "size")
 	plot_violin(summary, out_dir, name, model_flavors, "prop")
 	plot_dist(summary, out_dir, name, model_flavors, "size", True)
@@ -453,21 +477,21 @@ if __name__ == '__main__':
 	# Normal, all samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
-	name = "Kidney RNA-Seq\nAll Normal Samples"
+	name = "Kidney RNA-Seq, All Normal Samples"
 
 	normal_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Normal, 50 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
-	name = "Kidney RNA-Seq\n50 Normal Samples"
+	name = "Kidney RNA-Seq, 50 Normal Samples"
 
 	normal_50 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Normal, 10 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
-	name = "Kidney RNA-Seq\n10 Normal Samples"
+	name = "Kidney RNA-Seq, 10 Normal Samples"
 
 	normal_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
@@ -488,35 +512,35 @@ if __name__ == '__main__':
 	# Tumor, all samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
-	name = "Kidney RNA-Seq\nAll Tumor Samples"
+	name = "Kidney RNA-Seq, All Tumor Samples"
 
 	tumor_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Tumor, 200 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
-	name = "Kidney RNA-Seq\n200 Tumor Samples"
+	name = "Kidney RNA-Seq, 200 Tumor Samples"
 
 	tumor_200 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Tumor, 100 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
-	name = "Kidney RNA-Seq\n100 Tumor Samples"
+	name = "Kidney RNA-Seq, 100 Tumor Samples"
 
 	tumor_100 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Tumor, 50 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
-	name = "Kidney RNA-Seq\n50 Tumor Samples"
+	name = "Kidney RNA-Seq, 50 Tumor Samples"
 
 	tumor_50 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Tumor, 10 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
-	name = "Kidney RNA-Seq\n10 Tumor Samples"
+	name = "Kidney RNA-Seq, 10 Tumor Samples"
 
 	tumor_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
@@ -536,7 +560,7 @@ if __name__ == '__main__':
 
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
-	name = "Kidney RNA-Seq\nAll Tumor Samples"
+	name = "Kidney RNA-Seq, All Tumor Samples"
 
 	tumor_low_herit = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
@@ -548,14 +572,14 @@ if __name__ == '__main__':
 	# Normal, all samples
 	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
-	name = "Prostate ChIP-Seq\nAll Normal Samples"
+	name = "Prostate ChIP-Seq, All Normal Samples"
 
 	normal_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Normal, 10 samples
 	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
-	name = "Prostate ChIP-Seq\n10 Normal Samples"
+	name = "Prostate ChIP-Seq, 10 Normal Samples"
 
 	normal_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
@@ -575,14 +599,14 @@ if __name__ == '__main__':
 	# Tumor, all samples
 	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
-	name = "Prostate ChIP-Seq\nAll Tumor Samples"
+	name = "Prostate ChIP-Seq, All Tumor Samples"
 
 	tumor_all = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Tumor, 10 samples
 	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
-	name = "Prostate ChIP-Seq\n10 Tumor Samples"
+	name = "Prostate ChIP-Seq, 10 Tumor Samples"
 
 	tumor_10 = interpret(target_dir, out_dir, name, model_flavors, thresholds)
 

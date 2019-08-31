@@ -486,38 +486,38 @@ if __name__ == '__main__':
 		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 
-	std_al_dev = [0.6, 0.8]
-	test_mainfig(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		std_al_dev,
-		num_trials,
-		script_path
-	)
-
-	default_switch = [True, False]
-	test_default_params(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		default_switch, 
-		num_trials,
-		script_path
-	)
-
-	# causal_vars = [1, 2]
-	# test_multi_cv(
+	# std_al_dev = [0.6, 0.8]
+	# test_mainfig(
 	# 	disp, 
 	# 	data_info,
 	# 	params_dir, 
 	# 	out_dir_base, 
-	# 	causal_vars, 
+	# 	std_al_dev,
 	# 	num_trials,
-	# 	script_path,
+	# 	script_path
 	# )
+
+	# default_switch = [True, False]
+	# test_default_params(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	default_switch, 
+	# 	num_trials,
+	# 	script_path
+	# )
+
+	causal_vars = [1, 2]
+	test_multi_cv(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		causal_vars, 
+		num_trials,
+		script_path,
+	)
 
 	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
 	# test_imperfect_phs(
@@ -554,15 +554,15 @@ if __name__ == '__main__':
 	# 	script_path,
 	# )
 
-	prior_stds = [0.005, 0.05, 0.5, 5, 10, 20, 40]
-	fmb_calib(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		prior_stds, 
-		num_trials,
-		script_path,
-	)
+	# prior_stds = [0.005, 0.05, 0.5, 5, 10, 20, 40]
+	# fmb_calib(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	prior_stds, 
+	# 	num_trials,
+	# 	script_path,
+	# )
 
 	disp.submit()

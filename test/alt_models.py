@@ -105,7 +105,7 @@ class CaviarASE(Finemap):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		self.init_args = kwargs
-		self.ncp = 1.
+		self.ncp = 0.5
 
 	def initialize(self):
 		super().initialize()
@@ -649,4 +649,3 @@ class Rasqual(Finemap):
 
 
 
-	

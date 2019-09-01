@@ -23,8 +23,8 @@ COLORMAP = {
 	"fmb": pal[8],
 }
 NAMEMAP = {
-	"full": "PLASMA-J",
-	"indep": "PLASMA-JI",
+	"full": "PLASMA-JC",
+	"indep": "PLASMA-J",
 	"ase": "PLASMA-AS",
 	"acav": "CAVIAR-ASE",
 	"eqtl": "QTL-Only",
@@ -296,7 +296,7 @@ def make_thresh_barplot(
 						weight="medium",
 						ha="center",
 						va="center",
-						bbox={"boxstyle":"rounded", "pad":.25, "fc":"white", "ec":"white"}
+						bbox={"boxstyle":"round", "pad":.25, "fc":"white", "ec":"white"}
 					)
 					last_marker[j] = xval
 

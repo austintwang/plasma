@@ -296,7 +296,7 @@ def make_thresh_barplot(
 						weight="medium",
 						ha="center",
 						va="center",
-						bbox={"boxstyle":"circle", "pad":.25, "fc":"white", "ec":"white"}
+						bbox={"boxstyle":"rounded", "pad":.25, "fc":"white", "ec":"white"}
 					)
 					last_marker[j] = xval
 

@@ -150,15 +150,13 @@ class CaviarASE(Finemap):
 
 		self.eval1 = Caviar(**self.init_args)
 		self.eval1.initialize()
-		if self.force_defaults:
-			self.eval1.ncp = self.default_ncp
+		self.eval1.ncp = self.default_ncp
 		self.eval1.ld = self.ld.tolist()
 		self.eval1.z_scores = self.stats_1.tolist()
 
 		self.eval2 = Caviar(**self.init_args)
 		self.eval2.initialize()
-		if self.force_defaults:
-			self.eval2.ncp = self.default_ncp
+		self.eval2.ncp = self.default_ncp
 		self.eval2.ld = self.ld.tolist()
 		self.eval2.z_scores = self.stats_2.tolist()
 		self.eval2.ncp = self.ncp

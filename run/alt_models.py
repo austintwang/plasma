@@ -159,7 +159,6 @@ class CaviarASE(Finemap):
 		self.eval2.ncp = self.default_ncp
 		self.eval2.ld = self.ld.tolist()
 		self.eval2.z_scores = self.stats_2.tolist()
-		self.eval2.ncp = self.ncp
 
 	def search_exhaustive(self, min_causal, max_causal):
 		self.min_causal = min_causal

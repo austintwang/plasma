@@ -85,7 +85,7 @@ def test_dev_cov(
 		"max_causal": 1,
 		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "acav", "fmb"])
+		"model_flavors": set(["full", "indep", "ase", "acav"])
 	}
 	params_base.update(data_info)
 
@@ -188,7 +188,7 @@ def test_dev_herit(
 		"max_causal": 1,
 		"test_name": None,
 		"confidence": 0.95,
-		"model_flavors": set(["indep", "eqtl", "ase", "acav", "rasq", "fmb"])
+		"model_flavors": set(["full", "indep", "ase", "acav"])
 	}
 	params_base.update(data_info)
 
@@ -470,7 +470,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 15
+	batch_size = 135
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)
@@ -486,27 +486,27 @@ if __name__ == '__main__':
 		os.makedirs(params_dir)
 	out_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 
-	std_al_dev = [0.6, 0.8]
-	test_mainfig(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		std_al_dev,
-		num_trials,
-		script_path
-	)
+	# std_al_dev = [0.6, 0.8]
+	# test_mainfig(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	std_al_dev,
+	# 	num_trials,
+	# 	script_path
+	# )
 
-	default_switch = [True, False]
-	test_default_params(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		default_switch, 
-		num_trials,
-		script_path
-	)
+	# default_switch = [True, False]
+	# test_default_params(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	default_switch, 
+	# 	num_trials,
+	# 	script_path
+	# )
 
 	# causal_vars = [1, 2]
 	# test_multi_cv(
@@ -530,18 +530,31 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-	# coverage = [10, 20, 50, 100, 500, 1000]
-	# test_dev_cov(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	std_al_dev,
-	# 	coverage, 
-	# 	num_trials,
-	# 	script_path
-	# )
+	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	coverage = [10, 20, 50, 100, 500, 1000]
+	test_dev_cov(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		std_al_dev,
+		coverage, 
+		num_trials,
+		script_path
+	)
+
+	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	herit_as = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+	test_dev_herit(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		std_al_dev,
+		herit_as, 
+		num_trials,
+		script_path
+	)
 
 	# corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
 	# test_jointness(

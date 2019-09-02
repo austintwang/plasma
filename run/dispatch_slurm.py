@@ -115,261 +115,26 @@ def run(
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
-	batch_size = 50
+	batch_size = 10
 
-	# Kidney Data, 1 CV
-	input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
-	params_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/params"
-	script_path = os.path.join(curr_path, "job.py")
-	# filter_path = "all"
-	filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
-	overdispersion_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/overdispersion/overdispersion.pickle"
-
-	hyperparams = {
-		"total_exp_herit_prior": 0.05,
-		"imbalance_herit_prior": 0.40,
-		"cross_corr_prior": 0.9,
-		"min_causal": 1,
-		"num_causal": 1.,
-		"search_mode": "exhaustive",
-		"max_causal": 1,
-		"confidence": 0.95, 
-		"model_flavors": "all"
-	}
-
-	# Normal
-	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
-	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
-
-	# Normal, all samples
-	params_name = "1cv_all.pickle"
-	hyperparams["max_ppl"] = None
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_normal_all"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams,  
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Normal, 50 samples
-	params_name = "1cv_50.pickle"
-	hyperparams["max_ppl"] = 50
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_normal_50"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path, 
-		params_path, 
-		hyperparams,  
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Normal, 10 samples
-	params_name = "1cv_10.pickle"
-	hyperparams["max_ppl"] = 10
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_normal_10"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path, 
-		params_path, 
-		hyperparams, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Tumor
-	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
-	# list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/verified.pickle" ####
-	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
-
-	# Tumor, all samples
-	params_name = "1cv_all.pickle"
-	hyperparams["max_ppl"] = None
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_all"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Tumor, 200 samples
-	params_name = "1cv_200.pickle"
-	hyperparams["max_ppl"] = 200
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_200"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Tumor, 100 samples
-	params_name = "1cv_100.pickle"
-	hyperparams["max_ppl"] = 100
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_100"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams,  
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Tumor, 50 samples
-	params_name = "1cv_50.pickle"
-	hyperparams["max_ppl"] = 50
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_50"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Tumor, 10 samples
-	params_name = "1cv_10.pickle"
-	hyperparams["max_ppl"] = 10
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_10"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams,  
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Tumor, low herit ASE
-	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
-	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
-
-	hyperparams = {
-		"total_exp_herit_prior": 0.05,
-		"imbalance_herit_prior": 0.05,
-		"cross_corr_prior": 0.9,
-		"min_causal": 1,
-		"num_causal": 1.1,
-		"search_mode": "exhaustive",
-		"max_causal": 1,
-		"confidence": 0.95, 
-		"model_flavors": "all"
-	}
-
-	# Tumor, all samples
-	params_name = "1cv_all_low_herit.pickle"
-	hyperparams["max_ppl"] = None
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_all_low_herit"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-
-	# # Kidney Data, multiple CV
+	# # Kidney Data, 1 CV
 	# input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
 	# params_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/params"
 	# script_path = os.path.join(curr_path, "job.py")
+	# # filter_path = "all"
+	# filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
+	# overdispersion_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/overdispersion/overdispersion.pickle"
 
 	# hyperparams = {
 	# 	"total_exp_herit_prior": 0.05,
 	# 	"imbalance_herit_prior": 0.40,
 	# 	"cross_corr_prior": 0.9,
 	# 	"min_causal": 1,
-	# 	"num_causal": 1,
-	# 	"search_mode": "shotgun",
-	# 	"prob_threshold": 0.001,
-	# 	"streak_threshold": 1000,
-	# 	"search_iterations": 100000, 
-	# 	"max_causal": 5,
+	# 	"num_causal": 1.,
+	# 	"search_mode": "exhaustive",
+	# 	"max_causal": 1,
 	# 	"confidence": 0.95, 
-	# 	"model_flavors": set(["full", "indep", "eqtl", "ase"])
+	# 	"model_flavors": "all"
 	# }
 
 	# # Normal
@@ -377,9 +142,9 @@ if __name__ == '__main__':
 	# selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
 
 	# # Normal, all samples
-	# params_name = "shotgun_all.pickle"
+	# params_name = "1cv_all.pickle"
 	# hyperparams["max_ppl"] = None
-	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
 	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_normal_all"
 
 	# run(
@@ -397,15 +162,58 @@ if __name__ == '__main__':
 	# 	batch_size
 	# )
 
-	# Tumor
+	# # Normal, 50 samples
+	# params_name = "1cv_50.pickle"
+	# hyperparams["max_ppl"] = 50
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_normal_50"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path, 
+	# 	params_path, 
+	# 	hyperparams,  
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Normal, 10 samples
+	# params_name = "1cv_10.pickle"
+	# hyperparams["max_ppl"] = 10
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_normal_10"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path, 
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Tumor
 	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	# # list_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/verified.pickle" ####
 	# selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
 	# # Tumor, all samples
-	# params_name = "shotgun_all.pickle"
+	# params_name = "1cv_all.pickle"
 	# hyperparams["max_ppl"] = None
-	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_tumor_all"
-	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/shotgun_tumor_all"
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_all"
 
 	# run(
 	# 	output_path, 
@@ -416,104 +224,165 @@ if __name__ == '__main__':
 	# 	script_path,
 	# 	selection_path,
 	# 	list_path,
+	# 	filter_path,
 	# 	overdispersion_path,
 	# 	params_name,
 	# 	batch_size
 	# )
 
-	# Prostate Data, 1 CV
-	
-	# Normal
-	input_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/jobs"
-	params_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/params"
+	# # Tumor, 200 samples
+	# params_name = "1cv_200.pickle"
+	# hyperparams["max_ppl"] = 200
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_200"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Tumor, 100 samples
+	# params_name = "1cv_100.pickle"
+	# hyperparams["max_ppl"] = 100
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_100"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams,  
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Tumor, 50 samples
+	# params_name = "1cv_50.pickle"
+	# hyperparams["max_ppl"] = 50
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_50"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Tumor, 10 samples
+	# params_name = "1cv_10.pickle"
+	# hyperparams["max_ppl"] = 10
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_10"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams,  
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Tumor, low herit ASE
+	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	# selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
+
+	# hyperparams = {
+	# 	"total_exp_herit_prior": 0.05,
+	# 	"imbalance_herit_prior": 0.05,
+	# 	"cross_corr_prior": 0.9,
+	# 	"min_causal": 1,
+	# 	"num_causal": 1.1,
+	# 	"search_mode": "exhaustive",
+	# 	"max_causal": 1,
+	# 	"confidence": 0.95, 
+	# 	"model_flavors": "all"
+	# }
+
+	# # Tumor, all samples
+	# params_name = "1cv_all_low_herit.pickle"
+	# hyperparams["max_ppl"] = None
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/1cv_tumor_all_low_herit"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+
+	# Kidney Data, multiple CV
+	input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
+	params_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/params"
 	script_path = os.path.join(curr_path, "job.py")
-	filter_path = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
-	overdispersion_path = "/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.pickle"
+	filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
+	overdispersion_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/overdispersion/overdispersion.pickle"
 
 	hyperparams = {
-		"overdispersion": 4.22e-4,
-		"prop_noise_eqtl": 0.95,
-		"prop_noise_ase": 0.50,
-		"min_causal": 1,
-		"num_causal": 1.1,
-		"search_mode": "exhaustive",
-		"max_causal": 1,
-		"confidence": 0.95, 
-		"model_flavors": "all"
-	}
-
-	list_path = "all"
-	selection_path = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets/normal.pickle"
-
-	# Normal, all samples
-	params_name = "1cv_all.pickle"
-	hyperparams["max_ppl"] = None
-	output_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
-	job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_normal_all"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Normal, 10 samples
-	params_name = "1cv_10.pickle"
-	hyperparams["max_ppl"] = 10
-	output_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
-	job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_normal_10"
-
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams, 
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
-
-	# Tumor
-	input_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/jobs"
-	params_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/params"
-	script_path = os.path.join(curr_path, "job.py")
-	filter_path = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
-	overdispersion_path = "/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.pickle"
-
-	hyperparams = {
-		"total_exp_herit_prior": 0.05,
-		"imbalance_herit_prior": 0.40,
+		"total_exp_herit_prior": 0.01,
+		"imbalance_herit_prior": 0.1,
 		"cross_corr_prior": 0.9,
 		"min_causal": 1,
-		"num_causal": 1.1,
-		"search_mode": "exhaustive",
-		"max_causal": 1,
+		"max_causal": 3,
+		"num_causal": 1,
+		"search_mode": "shotgun",
+		"prob_threshold": 0.001,
+		"streak_threshold": 1000,
+		"search_iterations": 100000, 
 		"confidence": 0.95, 
-		"model_flavors": "all"
+		"model_flavors": set(["full", "indep", "eqtl", "ase", "fmb"])
 	}
 
-	list_path = "all"
-	selection_path = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets/tumor.pickle"
+	# Normal
+	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
+	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
 
-	# Tumor, all samples
-	params_name = "1cv_all.pickle"
+	# Normal, all samples
+	params_name = "shotgun_all.pickle"
 	hyperparams["max_ppl"] = None
-	output_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
-	job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_tumor_all"
+	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
+	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/shotgun_normal_all"
 
 	run(
 		output_path, 
@@ -530,11 +399,15 @@ if __name__ == '__main__':
 		batch_size
 	)
 
-	# Tumor, 10 samples
-	params_name = "1cv_10.pickle"
-	hyperparams["max_ppl"] = 10
-	output_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
-	job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_tumor_10"
+	# Tumor
+	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
+
+	# Tumor, all samples
+	params_name = "shotgun_all.pickle"
+	hyperparams["max_ppl"] = None
+	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_tumor_all"
+	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/shotgun_tumor_all"
 
 	run(
 		output_path, 
@@ -545,8 +418,137 @@ if __name__ == '__main__':
 		script_path,
 		selection_path,
 		list_path,
-		filter_path,
 		overdispersion_path,
 		params_name,
 		batch_size
 	)
+
+	# # Prostate Data, 1 CV
+	
+	# # Normal
+	# input_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/jobs"
+	# params_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/params"
+	# script_path = os.path.join(curr_path, "job.py")
+	# filter_path = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
+	# overdispersion_path = "/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.pickle"
+
+	# hyperparams = {
+	# 	"overdispersion": 4.22e-4,
+	# 	"prop_noise_eqtl": 0.95,
+	# 	"prop_noise_ase": 0.50,
+	# 	"min_causal": 1,
+	# 	"num_causal": 1.1,
+	# 	"search_mode": "exhaustive",
+	# 	"max_causal": 1,
+	# 	"confidence": 0.95, 
+	# 	"model_flavors": "all"
+	# }
+
+	# list_path = "all"
+	# selection_path = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets/normal.pickle"
+
+	# # Normal, all samples
+	# params_name = "1cv_all.pickle"
+	# hyperparams["max_ppl"] = None
+	# output_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
+	# job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_normal_all"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Normal, 10 samples
+	# params_name = "1cv_10.pickle"
+	# hyperparams["max_ppl"] = 10
+	# output_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
+	# job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_normal_10"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Tumor
+	# input_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/jobs"
+	# params_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/params"
+	# script_path = os.path.join(curr_path, "job.py")
+	# filter_path = "/agusevlab/awang/job_data/prostate_chipseq/snp_filters/1KG_SNPs.pickle"
+	# overdispersion_path = "/agusevlab/awang/job_data/prostate_chipseq/overdispersion/overdispersion.pickle"
+
+	# hyperparams = {
+	# 	"total_exp_herit_prior": 0.05,
+	# 	"imbalance_herit_prior": 0.40,
+	# 	"cross_corr_prior": 0.9,
+	# 	"min_causal": 1,
+	# 	"num_causal": 1.1,
+	# 	"search_mode": "exhaustive",
+	# 	"max_causal": 1,
+	# 	"confidence": 0.95, 
+	# 	"model_flavors": "all"
+	# }
+
+	# list_path = "all"
+	# selection_path = "/agusevlab/awang/job_data/prostate_chipseq/sample_sets/tumor.pickle"
+
+	# # Tumor, all samples
+	# params_name = "1cv_all.pickle"
+	# hyperparams["max_ppl"] = None
+	# output_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
+	# job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_tumor_all"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams,  
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
+
+	# # Tumor, 10 samples
+	# params_name = "1cv_10.pickle"
+	# hyperparams["max_ppl"] = 10
+	# output_path = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
+	# job_data_path = "/agusevlab/awang/job_data/prostate_chipseq_normal/job_data/1cv_tumor_10"
+
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams, 
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )

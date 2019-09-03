@@ -833,6 +833,52 @@ def interpret_dev_cov(
 			fmt='.2g'
 		)
 
+def interpret_dev_herit(
+		data_dir_base, 
+		std_al_dev, 
+		herit_as,
+		model_flavors,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "dev_herit")
+	df = load_data(data_dir, "dev_herit")
+
+	res_dir = os.path.join(res_dir_base, "dev_herit")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_dev = "Standard Allelic Deviation"
+	var_herit = "AS Heritability"
+	var_cred = "Credible Set Size"
+
+	for m in model_flavors:
+		df_res = df.loc[
+			(df["model"] == m)
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"std_al_dev": var_dev,
+				"herit_as": var_herit,
+				"causal_set_size": var_cred,
+				"model": "Model",
+			}, 
+			inplace=True
+		)
+
+		result_path = os.path.join(res_dir, "heat_{0}.svg".format(m))
+		make_heatmap(
+			df_res,
+			var_herit, 
+			var_dev, 
+			var_cred, 
+			NAMEMAP[m], 
+			result_path, 
+			aggfunc="mean",
+			fmt='.2g'
+		)
+
 def interpret_jointness(
 		data_dir_base, 
 		corr_priors, 
@@ -1104,6 +1150,19 @@ if __name__ == '__main__':
 		data_dir_base, 
 		std_al_dev, 
 		coverage,
+		model_flavors,
+		num_snps,
+		res_dir_base
+	)
+
+	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	herit_as = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+	model_flavors = ["full", "indep", "ase", "acav"]
+	num_snps = 100
+	interpret_dev_herit(
+		data_dir_base, 
+		std_al_dev, 
+		herit_as,
 		model_flavors,
 		num_snps,
 		res_dir_base

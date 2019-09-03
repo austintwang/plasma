@@ -325,7 +325,7 @@ def make_heatmap(
 	)
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(5,5)})
-	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True, cbar=False, annot_kws={"size": 20})
+	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True, cbar=False, annot_kws={"size": 8})
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()

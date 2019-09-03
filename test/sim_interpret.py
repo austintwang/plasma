@@ -821,7 +821,7 @@ def interpret_dev_cov(
 			inplace=True
 		)
 
-		result_path = os.path.join(res_dir, "heat_{0}.txt".format(m))
+		result_path = os.path.join(res_dir, "heat_{0}.svg".format(m))
 		make_heatmap(
 			df_res,
 			var_dev, 

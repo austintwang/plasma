@@ -311,7 +311,6 @@ def make_heatmap(
 		var_row, 
 		var_col, 
 		response, 
-		model_name, 
 		title, 
 		result_path, 
 		aggfunc="mean",
@@ -325,7 +324,8 @@ def make_heatmap(
 		aggfunc=aggfunc
 	)
 
-	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True)
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True, cbar=False)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
@@ -787,6 +787,52 @@ def interpret_multi_cv(
 			num_snps
 		)
 
+def interpret_dev_cov(
+		data_dir_base, 
+		std_al_dev, 
+		coverage,
+		model_flavors,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "dev_cov")
+	df = load_data(data_dir, "dev_cov")
+
+	res_dir = os.path.join(res_dir_base, "dev_cov")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_dev = "Standard Allelic Deviation"
+	var_cov = "Read Coverage"
+	var_cred = "Credible Set Size"
+
+	for m in model_flavors:
+		df_res = df.loc[
+			(df["model"] == m)
+			& (df["complete"] == True)
+		]
+		df_res.rename(
+			columns={
+				"std_al_dev": var_dev,
+				"coverage": var_cov,
+				"causal_set_size": var_cred,
+				"model": "Model",
+			}, 
+			inplace=True
+		)
+
+		result_path = os.path.join(res_dir, "heat_{0}.txt".format(m))
+		make_heatmap(
+			df_res,
+			var_dev, 
+			var_cov, 
+			var_cred, 
+			NAMEMAP[m], 
+			result_path, 
+			aggfunc="mean",
+			fmt='.2g'
+		)
+
 def interpret_jointness(
 		data_dir_base, 
 		corr_priors, 
@@ -1048,4 +1094,17 @@ if __name__ == '__main__':
 		model_flavors,
 		num_snps,
 		res_dir_base,
+	)
+
+	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	coverage = [10, 20, 50, 100, 500, 1000]
+	model_flavors = ["full", "indep", "ase", "acav"]
+	num_snps = 100
+	interpret_dev_cov(
+		data_dir_base, 
+		std_al_dev, 
+		coverage,
+		model_flavors,
+		num_snps,
+		res_dir_base
 	)

@@ -324,7 +324,7 @@ def make_heatmap(
 		aggfunc=aggfunc
 	)
 
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(5,5)})
 	sns.heatmap(heat_data, annot=True, fmt=fmt, square=True, cbar=False)
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
@@ -824,8 +824,8 @@ def interpret_dev_cov(
 		result_path = os.path.join(res_dir, "heat_{0}.svg".format(m))
 		make_heatmap(
 			df_res,
-			var_dev, 
 			var_cov, 
+			var_dev, 
 			var_cred, 
 			NAMEMAP[m], 
 			result_path, 

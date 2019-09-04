@@ -578,6 +578,28 @@ if __name__ == '__main__':
 
 	tumor_low_herit = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
+	# Kidney Cancer, Multi CV
+
+	# Normal, all samples
+	model_flavors = ["indep", "ase", "fmb", "eqtl"]
+	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
+
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/shotgun_normal_all"
+	name = "Kidney RNA-Seq, All Tumor Samples"
+
+	normal_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+
+	# Tumor, all samples
+	model_flavors = ["indep", "ase", "fmb", "eqtl"]
+	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
+
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_tumor_all"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/shotgun_tumor_all"
+	name = "Kidney RNA-Seq, All Tumor Samples"
+
+	tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+
 	# Prostate Cancer
 	
 	# Normal

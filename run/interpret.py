@@ -582,7 +582,7 @@ if __name__ == '__main__':
 
 	# Normal, all samples
 	model_flavors = ["indep", "ase", "fmb", "eqtl"]
-	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
+	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle")
 
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/shotgun_normal_all"

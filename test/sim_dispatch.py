@@ -19,11 +19,14 @@ class Dispatcher(object):
 		batches[-1] -= -num_tasks % self.batch_size
 
 		for ind, val in enumerate(batches):
+			out_name = os.path.join(out_dir, "{0}_{1}.out".format(job_name, ind))
 			err_name = os.path.join(out_dir, "{0}_{1}.err".format(job_name, ind))
 			job_args = [
 				"sbatch", 
 				"-J", 
 				job_name, 
+				"-o",
+				out_name,
 				"-e",
 				err_name,
 				self.script_path,

@@ -35,11 +35,14 @@ def dispatch(
 	with open(io_name, "wb") as io_file:
 		pickle.dump(io_data, io_file)
 
+	out_name = os.path.join(job_data_path, "{0}_stdout.txt".format(batch_num))
 	err_name = os.path.join(job_data_path, "{0}_stderr.txt".format(batch_num))
 	job_args = [
 		"sbatch", 
 		"-J", 
 		str(batch_num), 
+		"-o",
+		out_name,
 		"-e",
 		err_name,
 		script_path	

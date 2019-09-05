@@ -379,13 +379,13 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds):
 			failed_jobs.append(t)
 			continue
 
-		# try: ####
-		# 	r = result["causal_set_acav"]
-		# except Exception: ####
-		# 	print(t)
-		# 	print(result.keys())
-		# 	# raise
-		# 	continue
+		try: ####
+			r = result["causal_set_fmb"]
+		except Exception: ####
+			print(t)
+			print(result.keys())
+			# raise
+			continue
 		
 		# print(result_path) ####
 		# print(result.keys()) ####

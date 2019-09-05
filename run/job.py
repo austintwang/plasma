@@ -287,7 +287,7 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 
 			if "fmb" in model_flavors:
 				updates_fmb = {"qtl_only": True, "num_ppl": None}
-				result["causal_set_fmb"], result["ppas_fmb"], result["size_probs_fmb"], model_rasq = run_model(
+				result["causal_set_fmb"], result["ppas_fmb"], result["size_probs_fmb"], model_fmb = run_model(
 					FmBenner, inputs, updates_fmb, informative_snps
 				)
 				result["ldsr_data_fmb"] = get_ldsr_data(inputs, result["causal_set_fmb"], result["ppas_fmb"])

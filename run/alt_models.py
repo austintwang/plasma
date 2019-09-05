@@ -431,9 +431,11 @@ class FmBenner(Finemap):
 
 		set_df = pd.read_csv(self.set_path, sep=" ")
 		# print(set_df) ####
-		set_ids = set_df.iloc[:, 1]
-		for i in set_ids:
-			self.causal_set[self.rsid_map[i]] = 1
+		for k, v in set_df.iteritems():
+			if k.startswith("cred"):
+				for i in v:
+					if i in self.rsid_map:
+						self.causal_set[self.rsid_map[i]] = 1
 
 		shutil.rmtree(self.output_path)
 

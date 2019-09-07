@@ -453,7 +453,7 @@ class FmBenner(Finemap):
 			if num_causal_region:
 				size, prob = l.split("->")
 				size = int(size.strip("() "))
-				prob = float(size.strip("() "))
+				prob = float(prob.strip("() "))
 				self.size_probs[size] = prob
 			if l.startswith("- Post-Pr(# of causal SNPs is k)"):
 				num_causal_region = True

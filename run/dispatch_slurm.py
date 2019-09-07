@@ -45,6 +45,8 @@ def dispatch(
 		out_name,
 		"-e",
 		err_name,
+		"-x",
+		"node17",
 		script_path	
 	]
 	job_args.extend([io_name, params_path, selection_path, filter_path, overdispersion_path])

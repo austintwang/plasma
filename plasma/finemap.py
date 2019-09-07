@@ -500,7 +500,7 @@ class Finemap(object):
 		else:
 			self.cross_corr = self.corr_shared * self.corr_stats
 
-	def initialize(self):
+	def initialize(self, evaluator_cls=Evaluator):
 		"""
 		Recursively calculate all required parameters and data from initial settings
 		Create Evaluator instance for fine-mapping
@@ -512,7 +512,7 @@ class Finemap(object):
 		self._calc_total_exp_corr()
 		self._calc_cross_corr()
 
-		self.evaluator = Evaluator(self)
+		self.evaluator = evaluator_cls(self)
 
 	def search_exhaustive(self, min_causal, max_causal):
 		"""
@@ -595,16 +595,99 @@ class Finemap(object):
 		return self.evaluator.get_probs()
 
 	def get_probs_sorted(self):
-		return self.evaluator.get_probs_sorted()
+		probs = list(self.get_probs().items())
+		probs.sort(key=lambda x: x[1], reverse=True)
+		return probs
 
 	def get_causal_set(self, confidence):
-		return self.evaluator.get_causal_set(confidence)
+		results_exp = self.get_probs()
+		
+		if heuristic == "max_ppa":
+			causal_set = np.ones(self.num_snps)
+			conf_sum = 1.
+
+			snp_sets = {i: set() for i in range(self.num_snps)}
+			for c in results_exp.keys():
+				for i in range(self.num_snps):
+					if c[i] == 1:
+						snp_sets[i].add(c)
+
+			# print([(k, len(v)) for k, v in snp_sets.items()]) ####
+
+			ppas = self.get_ppas()
+			ppas_sort = np.argsort(ppas)
+			for i in ppas_sort:
+				conf_sum_after = conf_sum - sum([results_exp[s] for s in snp_sets[i]])
+				# print([results_exp[s] for s in snp_sets[i]]) ####
+				# print(sum([results_exp[s] for s in snp_sets[i]])) ####
+				if conf_sum_after > confidence:
+					remove_set = snp_sets.pop(i)
+					for s in snp_sets.values():
+						s -= remove_set
+
+					causal_set[i] = 0
+					conf_sum = conf_sum_after
+				else:
+					break
+
+		elif heuristic == "max_increase":
+			causal_set = np.zeros(self.num_snps)
+			conf_sum = results_exp.get(tuple(causal_set), 0.)
+			distances = {}
+			causal_extras = {}
+			for k in results_exp.keys():
+				causals = set(ind for ind, val in enumerate(k) if val == 1)
+				distances.setdefault(sum(k), set()).add(k)
+				causal_extras[k] = causals
+
+			while conf_sum < confidence:
+				dist_ones = distances[1]
+				neighbors = {}
+				for i in dist_ones:
+					diff_snp = next(iter(causal_extras[i]))
+					neighbors.setdefault(diff_snp, 0)
+					neighbors[diff_snp] += results_exp[i]
+
+				max_snp = max(neighbors, key=neighbors.get)
+				causal_set[max_snp] = 1
+				conf_sum += neighbors[max_snp]
+				# print(conf_sum) ####
+
+				diffs = {}
+				for k, v in distances.items():
+					diffs[k] = set() 
+					for i in v:
+						if i[max_snp] == 1:
+							diffs[k].add(i)
+							if k == 1:
+								causal_extras.pop(i)
+							else:
+								causal_extras[i].remove(max_snp)
+
+				for k, v in diffs.items():
+					distances[k] -= v
+					if k > 1:
+						distances.setdefault(k-1, set())
+						distances[k-1] |= v
+
+		return list(causal_set) 
 
 	def get_ppas(self):
-		return self.evaluator.get_ppas()
+		ppas = []
+		for i in range(self.num_snps):
+			ppa = 0
+			for k, v in self.get_probs().items():
+				if k[i] == 1:
+					ppa += v
+			ppas.append(ppa)
+		return np.array(ppas)
 
 	def get_size_probs(self):
-		return self.evaluator.get_size_probs()
+		size_probs = np.zeros(self.num_snps)
+		for k, v in self.get_probs().items():
+			num_snps = np.count_nonzero(k)
+			size_probs[num_snps] += v
+		return size_probs
 
 	def reset_mapping(self):
 		self.evaluator.reset()

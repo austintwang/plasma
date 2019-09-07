@@ -362,7 +362,8 @@ class FmBenner(Finemap):
 			self.fm_path,
 			"--in-files", self.master_path,
 			"--n-causal-snps", str(max_causal),
-			"--sss"
+			"--sss",
+			"--log"
 		]
 		if not self.force_defaults:
 			command_params.extend([
@@ -379,7 +380,8 @@ class FmBenner(Finemap):
 			"--n-convergence", str(streak_threshold),
 			"--n-iterations", str(num_iterations),
 			"--prob-tol", str(prob_threshold),
-			"--sss"
+			"--sss",
+			"--log"
 		]
 		if not self.force_defaults:
 			command_params.extend([

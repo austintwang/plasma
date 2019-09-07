@@ -344,8 +344,9 @@ class FmBenner(Finemap):
 		self.log_path = os.path.join(self.output_path, self.output_name + ".log")
 
 		self.results = {}
-		self.causal_set = np.ones(self.num_snps)
+		# self.causal_set = np.ones(self.num_snps)
 		self.post_probs = np.zeros(self.num_snps)
+		self.size_probs = np.zeros(self.num_snps)
 
 		freq = (np.mean(self.hap_A, axis=0) + np.mean(self.hap_B, axis=0)) / 2.
 		self.maf = np.fmin(freq, 1 - freq)
@@ -396,9 +397,9 @@ class FmBenner(Finemap):
 			self.z_path,
 			self.ld_path,
 			self.post_path,
-			os.path.join(self.output_path, self.output_name + ".config"),
+			self.config_path,
 			self.set_path,
-			os.path.join(self.output_path, self.output_name + ".log"),
+			self.log_path,
 			str(self.num_ppl)
 		)
 		master_content = ";".join(master_info) + "\n"
@@ -441,10 +442,24 @@ class FmBenner(Finemap):
 			for s in i.config.split(","):
 				config_key[self.rsid_map[s]]
 			self.results[tuple(config_key)] = i.prob
+		print(self.results) ####
 
 		with open(self.log_path) as log_file:
-			print(log_file.read()) ####
+			log_data = log_file.readlines()
 
+		num_causal_region = False
+		for l in log_data:
+			if num_causal_region and l.startswith("-"):
+				num_causal_region = False
+			if num_causal_region:
+				size, prob = l.split("->")
+				size = int(size.strip("() "))
+				prob = float(size.strip("() "))
+				self.size_probs[size] = prob
+			if l.startswith("- Post-Pr(# of causal SNPs is k)"):
+				num_causal_region = True
+
+		print(self.size_probs) ####
 		# set_df = pd.read_csv(self.set_path, sep=" ")
 		# # print(set_df) ####
 		# for k, v in set_df.iteritems():

@@ -120,7 +120,7 @@ def run(
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
-	batch_size = 6
+	batch_size = 20
 
 	# # Kidney Data, 1 CV
 	# input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
@@ -404,30 +404,30 @@ if __name__ == '__main__':
 		batch_size
 	)
 
-	# # Tumor
-	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
-	# selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
+	# Tumor
+	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
-	# # Tumor, all samples
-	# params_name = "shotgun_all.pickle"
-	# hyperparams["max_ppl"] = None
-	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_tumor_all"
-	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/shotgun_tumor_all"
+	# Tumor, all samples
+	params_name = "shotgun_all.pickle"
+	hyperparams["max_ppl"] = None
+	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_tumor_all"
+	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/shotgun_tumor_all"
 
-	# run(
-	# 	output_path, 
-	# 	input_path, 
-	# 	job_data_path,
-	# 	params_path, 
-	# 	hyperparams, 
-	# 	script_path,
-	# 	selection_path,
-	# 	list_path,
-	# 	filter_path,
-	# 	overdispersion_path,
-	# 	params_name,
-	# 	batch_size
-	# )
+	run(
+		output_path, 
+		input_path, 
+		job_data_path,
+		params_path, 
+		hyperparams, 
+		script_path,
+		selection_path,
+		list_path,
+		filter_path,
+		overdispersion_path,
+		params_name,
+		batch_size
+	)
 
 	# # Prostate Data, 1 CV
 	

@@ -441,7 +441,6 @@ class FmBenner(Finemap):
 			for s in i.config.split(","):
 				config_key[self.rsid_map[s]] = 1
 			self.results[tuple(config_key)] = i.prob
-		print(self.results) ####
 
 		with open(self.log_path + "_sss") as log_file:
 			log_data = log_file.readlines()
@@ -457,15 +456,6 @@ class FmBenner(Finemap):
 				self.size_probs[size] = prob
 			if l.startswith("- Post-Pr(# of causal SNPs is k)"):
 				num_causal_region = True
-
-		print(self.size_probs) ####
-		# set_df = pd.read_csv(self.set_path, sep=" ")
-		# # print(set_df) ####
-		# for k, v in set_df.iteritems():
-		# 	if k.startswith("cred"):
-		# 		for i in v:
-		# 			if i in self.rsid_map:
-		# 				self.causal_set[self.rsid_map[i]] = 1
 
 		shutil.rmtree(self.output_path)
 

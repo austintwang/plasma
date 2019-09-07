@@ -340,7 +340,10 @@ class FmBenner(Finemap):
 		self.ld_path = os.path.join(self.output_path, self.output_name + ".ld")
 		self.set_path = os.path.join(self.output_path, self.output_name + ".cred")
 		self.post_path = os.path.join(self.output_path, self.output_name + ".snp")
+		self.config_path = os.path.join(self.output_path, self.output_name + ".config")
+		self.log_path = os.path.join(self.output_path, self.output_name + ".log")
 
+		self.results = {}
 		self.causal_set = np.ones(self.num_snps)
 		self.post_probs = np.zeros(self.num_snps)
 
@@ -429,18 +432,32 @@ class FmBenner(Finemap):
 			self.post_probs[self.rsid_map[i.rsid]] = i.prob
 			self.causal_set[self.rsid_map[i.rsid]] = 0
 
-		set_df = pd.read_csv(self.set_path, sep=" ")
-		# print(set_df) ####
-		for k, v in set_df.iteritems():
-			if k.startswith("cred"):
-				for i in v:
-					if i in self.rsid_map:
-						self.causal_set[self.rsid_map[i]] = 1
+		config_df = pd.read_csv(self.config_path, sep=" ")
+		configs = config_df.loc[:,["config", "prob"]]
+		for i in configs.itertuples():
+			config_key = [0] * self.num_snps
+			for s in i.config.split(","):
+				config_key[self.rsid_map[s]]
+			self.results[tuple(config_key)] = i.prob
+
+		with open(self.log_path) as log_file:
+			print(log_file.read()) ####
+
+		# set_df = pd.read_csv(self.set_path, sep=" ")
+		# # print(set_df) ####
+		# for k, v in set_df.iteritems():
+		# 	if k.startswith("cred"):
+		# 		for i in v:
+		# 			if i in self.rsid_map:
+		# 				self.causal_set[self.rsid_map[i]] = 1
 
 		shutil.rmtree(self.output_path)
 
-	def get_causal_set(self, confidence):
-		return self.causal_set
+	# def get_causal_set(self, confidence):
+	# 	return self.causal_set
+
+	def get_probs(self):
+		return self.results
 
 	def get_ppas(self):
 		return self.post_probs

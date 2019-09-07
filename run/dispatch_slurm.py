@@ -379,30 +379,30 @@ if __name__ == '__main__':
 		"model_flavors": set(["full", "indep", "eqtl", "ase", "fmb"])
 	}
 
-	# Normal
-	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
-	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
+	# # Normal
+	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
+	# selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
 
-	# Normal, all samples
-	params_name = "shotgun_all.pickle"
-	hyperparams["max_ppl"] = None
-	output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
-	job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/shotgun_normal_all"
+	# # Normal, all samples
+	# params_name = "shotgun_all.pickle"
+	# hyperparams["max_ppl"] = None
+	# output_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
+	# job_data_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/job_data/shotgun_normal_all"
 
-	run(
-		output_path, 
-		input_path, 
-		job_data_path,
-		params_path, 
-		hyperparams,  
-		script_path,
-		selection_path,
-		list_path,
-		filter_path,
-		overdispersion_path,
-		params_name,
-		batch_size
-	)
+	# run(
+	# 	output_path, 
+	# 	input_path, 
+	# 	job_data_path,
+	# 	params_path, 
+	# 	hyperparams,  
+	# 	script_path,
+	# 	selection_path,
+	# 	list_path,
+	# 	filter_path,
+	# 	overdispersion_path,
+	# 	params_name,
+	# 	batch_size
+	# )
 
 	# Tumor
 	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"

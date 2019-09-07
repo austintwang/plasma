@@ -433,7 +433,6 @@ class FmBenner(Finemap):
 		post_ids = post_df.loc[:,["rsid", "prob"]]
 		for i in post_ids.itertuples():
 			self.post_probs[self.rsid_map[i.rsid]] = i.prob
-			self.causal_set[self.rsid_map[i.rsid]] = 0
 
 		config_df = pd.read_csv(self.config_path, sep=" ")
 		configs = config_df.loc[:,["config", "prob"]]

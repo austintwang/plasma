@@ -439,11 +439,11 @@ class FmBenner(Finemap):
 		for i in configs.itertuples():
 			config_key = [0] * self.num_snps
 			for s in i.config.split(","):
-				config_key[self.rsid_map[s]]
+				config_key[self.rsid_map[s]] = 1
 			self.results[tuple(config_key)] = i.prob
 		print(self.results) ####
 
-		with open(self.log_path) as log_file:
+		with open(self.log_path + "_sss") as log_file:
 			log_data = log_file.readlines()
 
 		num_causal_region = False

@@ -30,7 +30,7 @@ NAMEMAP = {
 	"full": "PLASMA-J",
 	"indep": "PLASMA-JI",
 	"ase": "PLASMA-AS",
-	"acav": "CAVIAR-ASE",
+	"acav": "AS-Meta",
 	"eqtl": "QTL-Only",
 	"cav": "CAVIAR",
 	"rasq": "RASQUAL+",

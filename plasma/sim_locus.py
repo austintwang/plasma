@@ -199,7 +199,7 @@ class LocusSimulator(object):
 		read_carrier = np.random.choice(self.snp_count)
 
 		het_probs = np.mean((hap_A - hap_B)**2, axis=0)
-		phs_err = np.empty(self.snp_count)
+		phs_err = np.zeros(self.snp_count)
 		for i in range(1, self.snp_count-1):
 			if i == read_carrier:
 				phs_err[i] = 0.

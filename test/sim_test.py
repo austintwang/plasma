@@ -124,14 +124,16 @@ def run_model(model_cls, inputs, model_name, model_updates):
 		param_renames = {
 			"num_ppl": inputs_model["num_samples"],
 		}
-		if "herit_as_man" in inputs_model:
+		if inputs_model.get("herit_as_man", None) is not None:
 			param_renames["imbalance_herit_prior"] = inputs_model["herit_as_man"]
 		else:
 			param_renames["imbalance_herit_prior"] = inputs_model["herit_as"]
-		if "herit_qtl_man" in inputs_model:
+		if inputs_model.get("herit_qtl_man", None) is not None:
 			param_renames["total_exp_herit_prior"] = inputs_model["herit_qtl_man"]
 		else:
 			param_renames["total_exp_herit_prior"] = inputs_model["herit_qtl"]
+		if inputs_model.get("phs_err_man", None) is not None:
+			param_renames["phs_err"] = inputs_model["phs_err_man"]
 		inputs_model.update(param_renames)
 
 		model = model_cls(**inputs_model)

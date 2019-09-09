@@ -305,13 +305,13 @@ def test_imperfect_phs(
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
-	for s, b in phs_errors:
-		test_name = "s_{0}_b_{1}".format(s, b)
+	for s, b, f in phs_errors:
+		test_name = "s_{0}_b_{1}_f_{2}".format(s, b, f)
 		param_updates = {
 			"test_name": test_name,
 			"switch_error": s,
 			"blip_error": b,
-			"phs_err": 1 - (1-s)**(params_base["max_snps"]*.18/3) + b
+			"phs_err_man": f
 		}
 		params = params_base.copy()
 		params.update(param_updates)
@@ -522,16 +522,16 @@ if __name__ == '__main__':
 	# 	script_path,
 	# )
 
-	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
-	# test_imperfect_phs(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	phs_errors, 
-	# 	num_trials,
-	# 	script_path
-	# )
+	phs_errors = [(0., 0., 0.), (0.00152, 0.00165, 0.), (0.00152, 0.00165, None)]
+	test_imperfect_phs(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		phs_errors, 
+		num_trials,
+		script_path
+	)
 
 	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
 	coverage = [10, 20, 50, 100, 500, 1000]

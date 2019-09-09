@@ -26,7 +26,7 @@ NAMEMAP = {
 	"full": "PLASMA-JC",
 	"indep": "PLASMA-J",
 	"ase": "PLASMA-AS",
-	"acav": "CAVIAR-ASE",
+	"acav": "AS-Meta",
 	"eqtl": "QTL-Only",
 	"cav": "CAVIAR",
 	"rasq": "RASQUAL+",

@@ -1,6 +1,7 @@
 import subprocess
 import os
 import pickle
+import shutil
 
 class Dispatcher(object):
 	def __init__(self, script_path, batch_size):
@@ -9,6 +10,9 @@ class Dispatcher(object):
 		self.jobs = []
 
 	def add_job(self, out_dir, params_path, params, num_tasks):
+		shutil.rmtree(out_dir)
+		os.makedirs(out_dir)
+
 		with open(params_path, "wb") as params_file:
 			pickle.dump(params, params_file)
 

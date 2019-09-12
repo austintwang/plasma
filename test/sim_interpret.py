@@ -222,7 +222,7 @@ def make_avg_lineplot(
 			inclusions_dict[var+" Rate"].extend(inclusion_agg)
 			inclusions_dict["Model"].extend(num_snps * [model_names[m]])
 		except Exception:
-			raise ####
+			# raise ####
 			print(traceback.format_exc())
 			pass
 
@@ -303,6 +303,47 @@ def make_thresh_barplot(
 	plt.ylabel("")
 	plt.title(title)
 	# plt.legend()
+	plt.savefig(result_path, bbox_inches='tight')
+	plt.clf()
+
+def make_pip_plot(
+		df,
+		var, 
+		var_causal,
+		model_x,
+		model_y,
+		model_names, 
+		title, 
+		result_path,
+	):
+
+	pip_data = {}
+	df_x = df.loc[df["Model"] == model_x, [var, var_causal, "chrom", "locus_start"]].to_numpy()
+	df_y = df.loc[df["Model"] == model_y, [var, var_causal, "chrom", "locus_start"]].to_numpy()
+	for i in df_x:
+		markers = i[0]
+		causals = i[1]
+		for ind, val in enumerate(markers):
+			causal = (causal[i] == 1)
+			marker_data = [np.log10(val/(1-val)), np.nan, causal]
+			pip_data["{0}_{1}_{2}".format(i[2], i[3], ind)] = marker
+	for i in df_y:
+		markers = i[0]
+		for ind, val in enumerate(markers):
+			pip_data["{0}_{1}_{2}".format(i[2], i[3], ind)][1] = np.log10(val/(1-val))
+
+	pip_cols = [model_x, model_y, "causal"]
+	df_pip = pd.DataFrame.from_dict(pip_data, orient='index', columns=pip_cols)
+
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+
+	g = sns.JointGrid(x=model_x, y=model_y, data=df_pip, ratio=100)
+	g.plot_joint(sns.regplot)
+	g.ax_marg_x.set_axis_off()
+	g.ax_marg_y.set_axis_off()
+	sns.scatterplot(x=model_x, y=model_y, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1])
+
+	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 
@@ -397,6 +438,7 @@ def interpret_mainfig(
 		titles,
 		model_flavors,
 		model_flavors_cred,
+		model_flavors_pip,
 		threshs,
 		num_snps,
 		res_dir_base
@@ -410,6 +452,8 @@ def interpret_mainfig(
 
 	var_cred = "Credible Set Size"
 	var_inc = "Inclusion"
+	var_post = "Marginal Posterior Probabilities"
+	var_causal = "Causal Configuration"
 
 	for i, s in enumerate(std_al_dev):
 		df_res = df.loc[
@@ -420,6 +464,8 @@ def interpret_mainfig(
 			columns={
 				"causal_set_size": var_cred,
 				"inclusion": var_inc,
+				"ppas": var_post,
+				"causal_configuration": var_causal,
 				"model": "Model",
 			}, 
 			inplace=True
@@ -492,6 +538,18 @@ def interpret_mainfig(
 			title, 
 			result_path,
 			num_snps
+		)
+
+		result_path = os.path.join(res_dir, "pip_s_{0}.svg".format(s))
+		make_pip_plot(
+			df_res,
+			var_post, 
+			var_causal,
+			model_flavors_pip[0],
+			model_flavors_pip[1],
+			NAMEMAP, 
+			title, 
+			result_path,
 		)
 
 def interpret_imperfect_phs(
@@ -1060,6 +1118,7 @@ if __name__ == '__main__':
 		titles,
 		model_flavors,
 		model_flavors_cred,
+		model_flavors_pip,
 		threshs,
 		num_snps,
 		res_dir_base

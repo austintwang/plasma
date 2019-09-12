@@ -3,6 +3,7 @@ import os
 import time
 import pickle
 import subprocess
+import shutil
 
 def dispatch(
 		targets, 
@@ -83,6 +84,9 @@ def run(
 		params_name,
 		batch_size
 	):
+	shutil.rmtree(output_path)
+	os.makedirs(output_path)
+
 	if not os.path.exists(params_path):
 		os.makedirs(params_path)
 

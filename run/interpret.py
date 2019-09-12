@@ -334,7 +334,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		plt.clf()
 
 
-def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds):
+def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=None):
 	if model_flavors == "all":
 		model_flavors = ["indep", "full", "ase", "acav", "eqtl", "fmb"]
 
@@ -379,13 +379,13 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds):
 			failed_jobs.append(t)
 			continue
 
-		try: ####
-			r = result["causal_set_fmb"]
-		except Exception: ####
-			print(t)
-			print(result.keys())
-			# raise
-			continue
+		# try: ####
+		# 	r = result["causal_set_fmb"]
+		# except Exception: ####
+		# 	print(t)
+		# 	print(result.keys())
+		# 	# raise
+		# 	continue
 		
 		# print(result_path) ####
 		# print(result.keys()) ####
@@ -405,14 +405,18 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds):
 
 		successes += 1
 
+	if fail_list_out is not None:
+		with open(fail_list_out, "wb") as fail_list_file:
+			pickle.dump(failed_jobs, fail_list_file)
+
 	with open(os.path.join(out_dir, "failed_jobs.txt"), "w") as fail_out:
-		fail_out.write("\n".join(failed_jobs))
+		fail_out.write("\n".join(failed_jobs) + "\n")
 
 	with open(os.path.join(out_dir, "insufficient_data_jobs.txt"), "w") as insufficient_data_out:
-		insufficient_data_out.write("\n".join(insufficient_data_jobs))
+		insufficient_data_out.write("\n".join(insufficient_data_jobs) + "\n")
 
 	with open(os.path.join(out_dir, "insufficient_snps_jobs.txt"), "w") as insufficient_snps_out:
-		insufficient_snps_out.write("\n".join(insufficient_snps_jobs))
+		insufficient_snps_out.write("\n".join(insufficient_snps_jobs) + "\n")
 	
 	write_thresholds(summary, out_dir, successes, model_flavors)
 	write_size_probs(summary, out_dir, successes, model_flavors)
@@ -586,9 +590,10 @@ if __name__ == '__main__':
 
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/shotgun_normal_all"
-	name = "Kidney RNA-Seq, All Tumor Samples"
+	fail_list_out = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_normal_fail.pickle"
+	name = "Kidney RNA-Seq, All Normal Samples"
 
-	normal_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	normal_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
 
 	# Tumor, all samples
 	model_flavors = ["indep", "ase", "fmb", "eqtl"]
@@ -596,9 +601,10 @@ if __name__ == '__main__':
 
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_tumor_all"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/shotgun_tumor_all"
+	fail_list_out = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_tumor_fail.pickle"
 	name = "Kidney RNA-Seq, All Tumor Samples"
 
-	tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
 
 	# Prostate Cancer
 	

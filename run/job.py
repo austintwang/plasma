@@ -5,6 +5,7 @@ import os
 import sys
 import traceback
 import pickle
+import gc
 
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'run'
@@ -44,7 +45,8 @@ def run_model(model_cls, inputs, input_updates, informative_snps):
 	ppas = np.full(np.shape(inputs["snp_ids"]), np.nan)
 	np.put(ppas, informative_snps, ppas_inf)
 
-	return causal_set, ppas, size_probs, model
+	gc.collect()
+	return causal_set, ppas, size_probs
 
 def get_ldsr_data(inputs, causal_set, ppas):
 	cset_bool = (np.array(causal_set) == 1)
@@ -94,6 +96,8 @@ def write_output(output_path, result):
 	output_return = os.path.join(output_path, "output.pickle")
 	with open(output_return, "wb") as output_file:
 		pickle.dump(result, output_file)
+
+	gc.collect()
 
 def write_in_data(output_path, in_data):
 	if not os.path.exists(output_path):
@@ -243,14 +247,14 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 
 			if "full" in model_flavors:
 				updates_full = {"num_ppl": None}
-				result["causal_set_full"], result["ppas_full"], result["size_probs_full"], model_full = run_model(
+				result["causal_set_full"], result["ppas_full"], result["size_probs_full"] = run_model(
 					Finemap, inputs, updates_full, informative_snps
 				)
 				result["ldsr_data_full"] = get_ldsr_data(inputs, result["causal_set_full"], result["ppas_full"])
 
 			if "indep" in model_flavors:
 				updates_indep = {"cross_corr_prior": 0., "num_ppl": None}
-				result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"], model_indep = run_model(
+				result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"] = run_model(
 					Finemap, inputs, updates_indep, informative_snps
 				)
 				result["ldsr_data_indep"] = get_ldsr_data(inputs, result["causal_set_indep"], result["ppas_indep"])
@@ -259,35 +263,35 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 
 			if "eqtl" in model_flavors:
 				updates_eqtl = {"qtl_only": True, "num_ppl": None}
-				result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"], model_eqtl = run_model(
+				result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"] = run_model(
 					Finemap, inputs, updates_eqtl, informative_snps
 				)
 				result["ldsr_data_eqtl"] = get_ldsr_data(inputs, result["causal_set_eqtl"], result["ppas_eqtl"])
 
 			if "ase" in model_flavors:
 				updates_ase = {"as_only": True, "num_ppl": None}
-				result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"], model_ase = run_model(
+				result["causal_set_ase"], result["ppas_ase"], result["size_probs_ase"] = run_model(
 					Finemap, inputs, updates_ase, informative_snps
 				)
 				result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
 
 			if "acav" in model_flavors:
 				updates_acav = {"num_ppl": None}
-				result["causal_set_acav"], result["ppas_acav"], result["size_probs_acav"], model_acav = run_model(
+				result["causal_set_acav"], result["ppas_acav"], result["size_probs_acav"] = run_model(
 					CaviarASE, inputs, updates_acav, informative_snps
 				)
 				result["ldsr_data_acav"] = get_ldsr_data(inputs, result["causal_set_acav"], result["ppas_acav"])
 
 			if "cav" in model_flavors:
 				updates_cav = {"qtl_only": True, "num_ppl": None}
-				result["causal_set_cav"], result["ppas_cav"], result["size_probs_cav"], model_cav = run_model(
+				result["causal_set_cav"], result["ppas_cav"], result["size_probs_cav"] = run_model(
 					Caviar, inputs, updates_cav, informative_snps
 				)
 				result["ldsr_data_cav"] = get_ldsr_data(inputs, result["causal_set_cav"], result["ppas_cav"])
 
 			if "fmb" in model_flavors:
 				updates_fmb = {"qtl_only": True, "num_ppl": None}
-				result["causal_set_fmb"], result["ppas_fmb"], result["size_probs_fmb"], model_fmb = run_model(
+				result["causal_set_fmb"], result["ppas_fmb"], result["size_probs_fmb"] = run_model(
 					FmBenner, inputs, updates_fmb, informative_snps
 				)
 				result["ldsr_data_fmb"] = get_ldsr_data(inputs, result["causal_set_fmb"], result["ppas_fmb"])

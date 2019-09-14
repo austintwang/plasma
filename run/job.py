@@ -16,7 +16,7 @@ from . import Finemap, Caviar, CaviarASE, FmBenner
 
 # print("imp5") ####
 
-def run_model(model_cls, inputs, input_updates, informative_snps):
+def run_model(model_cls, inputs, input_updates, informative_snps, return_stats=False):
 	model_inputs = inputs.copy()
 	model_inputs.update(input_updates)
 	# print(model_inputs) ####
@@ -45,8 +45,16 @@ def run_model(model_cls, inputs, input_updates, informative_snps):
 	ppas = np.full(np.shape(inputs["snp_ids"]), np.nan)
 	np.put(ppas, informative_snps, ppas_inf)
 
+	if return_stats:
+		z_phi = model.imbalance_stats
+		z_beta = model.total_exp_stats
+
 	gc.collect()
-	return causal_set, ppas, size_probs
+
+	if return_stats:
+		return causal_set, ppas, size_probs
+	else:
+		return causal_set, ppas, size_probs
 
 def get_ldsr_data(inputs, causal_set, ppas):
 	cset_bool = (np.array(causal_set) == 1)
@@ -254,13 +262,11 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 
 			if "indep" in model_flavors:
 				updates_indep = {"cross_corr_prior": 0., "num_ppl": None}
-				result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"] = run_model(
-					Finemap, inputs, updates_indep, informative_snps
+				result["causal_set_indep"], result["ppas_indep"], result["size_probs_indep"], result["z_phi"], result["z_beta"] = run_model(
+					Finemap, inputs, updates_indep, informative_snps, return_stats=True
 				)
 				result["ldsr_data_indep"] = get_ldsr_data(inputs, result["causal_set_indep"], result["ppas_indep"])
-				result["z_phi"] = model_indep.imbalance_stats
-				result["z_beta"] = model_indep.total_exp_stats
-
+				
 			if "eqtl" in model_flavors:
 				updates_eqtl = {"qtl_only": True, "num_ppl": None}
 				result["causal_set_eqtl"], result["ppas_eqtl"], result["size_probs_eqtl"] = run_model(

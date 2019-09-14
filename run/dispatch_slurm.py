@@ -49,7 +49,7 @@ def dispatch(
 		"-x",
 		"node17",
 		"--mem",
-		"1000",
+		"2000",
 		script_path	
 	]
 	job_args.extend([io_name, params_path, selection_path, filter_path, overdispersion_path])
@@ -86,8 +86,9 @@ def run(
 		params_name,
 		batch_size
 	):
-	shutil.rmtree(output_path)
-	os.makedirs(output_path)
+	shutil.rmtree(output_path, ignore_errors=True)
+	if not os.path.exists(output_path):
+		os.makedirs(output_path)
 
 	if not os.path.exists(params_path):
 		os.makedirs(params_path)

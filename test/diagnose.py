@@ -32,6 +32,7 @@ def diagnose_nodes(nodelist, testfile, logfile):
 		try:
 			output = subprocess.check_output(job_args, timeout=15, stderr=subprocess.STDOUT)
 			print(output.decode('UTF-8'))
+			print("COMPLETE")
 		except subprocess.TimeoutExpired as e:
 			print(e.output.decode('UTF-8'))
 			print("TERMINATED")

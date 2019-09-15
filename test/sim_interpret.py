@@ -1110,6 +1110,7 @@ if __name__ == '__main__':
 	titles = ["Low AS Variance", "High AS Variance"]
 	model_flavors = ["indep", "ase", "rasq", "acav", "eqtl", "fmb", "cav"]
 	model_flavors_cred = ["indep", "ase", "acav", "eqtl", "fmb", "cav"]
+	model_flavors_pip = ["fmb", "indep"]
 	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
 	interpret_mainfig(

@@ -1,11 +1,6 @@
-import signal
-from contextlib import contextmanager
 import sys
 import os
 import subprocess
-
-class TimeoutException(Exception): 
-	pass
 
 class Logger(object):
 	def __init__(self, logfile):
@@ -19,23 +14,13 @@ class Logger(object):
 	def flush(self):
 		pass
 
-# @contextmanager
-# def time_limit(seconds):
-# 	def signal_handler(signum, frame):
-# 		raise TimeoutException()
-# 	signal.signal(signal.SIGALRM, signal_handler)
-# 	signal.alarm(seconds)
-# 	try:
-# 		yield
-# 	finally:
-# 		signal.alarm(0)
-
 def diagnose_nodes(nodelist, testfile, logfile):
 	sys.stdout = Logger(logfile)
 	for n in nodelist:
 		print("TEST {0}".format(n))
 		job_args = [
 			"srun", 
+			"--export=ALL,PYTHONVERBOSE=2",
 			"-w",
 			n,
 			"--mem",
@@ -55,7 +40,7 @@ def diagnose_nodes(nodelist, testfile, logfile):
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
-	nodelist = ["node{0}".format(i) for i in range(20)]
+	nodelist = ["node{0:02d}".format(i) for i in range(1, 20)]
 	testfile = os.path.join(curr_path, "node_test.py")
 	logfile = "/agusevlab/awang/nodetest.txt"
 	diagnose_nodes(nodelist, testfile, logfile)

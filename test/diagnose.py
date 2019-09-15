@@ -43,6 +43,7 @@ def diagnose_nodes(nodelist, testfile, logfile):
 			"--pty",
 			testfile,
 		]
+		print("TRY " + " ".join(job_args))
 		try:
 			output = subprocess.check_output(job_args, timeout=15)
 			print(output.decode('UTF-8'))

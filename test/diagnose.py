@@ -45,7 +45,7 @@ def diagnose_nodes(nodelist, testfile, logfile):
 		]
 		print("TRY " + " ".join(job_args))
 		try:
-			output = subprocess.check_output(job_args, timeout=15)
+			output = subprocess.check_output(job_args, timeout=15, stderr=subprocess.STDOUT)
 			print(output.decode('UTF-8'))
 		except subprocess.TimeoutExpired as e:
 			print(e.output.decode('UTF-8'))
@@ -56,7 +56,7 @@ def diagnose_nodes(nodelist, testfile, logfile):
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 	nodelist = ["node{0}".format(i) for i in range(20)]
-	testfile = os.path.join(curr_path, "node-test.py")
+	testfile = os.path.join(curr_path, "node_test.py")
 	logfile = "/agusevlab/awang/nodetest.txt"
 	diagnose_nodes(nodelist, testfile, logfile)
 

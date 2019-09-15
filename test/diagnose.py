@@ -40,7 +40,7 @@ def diagnose_nodes(nodelist, testfile, logfile):
 			n,
 			"--mem",
 			"10000",
-			"--pty"
+			"--pty",
 			testfile,
 		]
 		try:

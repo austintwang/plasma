@@ -41,7 +41,7 @@ def diagnose_nodes(nodelist, testfile, logfile):
 			"--mem",
 			"10000",
 			"--pty"
-			testfile	
+			testfile,
 		]
 		try:
 			with time_limit(10):

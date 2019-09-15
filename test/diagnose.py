@@ -19,16 +19,16 @@ class Logger(object):
 	def flush(self):
 		pass
 
-@contextmanager
-def time_limit(seconds):
-	def signal_handler(signum, frame):
-		raise TimeoutException()
-	signal.signal(signal.SIGALRM, signal_handler)
-	signal.alarm(seconds)
-	try:
-		yield
-	finally:
-		signal.alarm(0)
+# @contextmanager
+# def time_limit(seconds):
+# 	def signal_handler(signum, frame):
+# 		raise TimeoutException()
+# 	signal.signal(signal.SIGALRM, signal_handler)
+# 	signal.alarm(seconds)
+# 	try:
+# 		yield
+# 	finally:
+# 		signal.alarm(0)
 
 def diagnose_nodes(nodelist, testfile, logfile):
 	sys.stdout = Logger(logfile)
@@ -44,10 +44,10 @@ def diagnose_nodes(nodelist, testfile, logfile):
 			testfile,
 		]
 		try:
-			with time_limit(10):
-				output = subprocess.check_output(job_args)
+			output = subprocess.check_output(job_args, timeout=15)
 			print(output.decode('UTF-8'))
-		except (TimeoutException):
+		except subprocess.TimeoutExpired as e:
+			print(e.output.decode('UTF-8'))
 			print("TERMINATED")
 		print("----------------------")
 		print("")

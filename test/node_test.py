@@ -1,4 +1,4 @@
-#!/usr/bin/env python -vv
+#!/usr/bin/env python
 
 print("PYTHON STARTED")
 

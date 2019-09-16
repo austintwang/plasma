@@ -353,9 +353,9 @@ def make_pip_plot(
 	
 	g.plot_marginals(sns.distplot, kde=False, color="k")
 	sns.distplot(df_causal[x_disp].values, kde=False, ax=g.ax_marg_x, color="r")
-	sns.distplot(df_causal[y_disp].values, kde=False, ax=g.ax_marg_y, color="r", vertical=True)
+	sns.distplot(df_causal[y_disp].values, kde=False, ax=g.ax_marg_y, vertical=True)
 	g.plot_joint(plt.hexbin, gridsize=30, bins="log", cmap=cmap)
-	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_causal, color="r", s=25)
+	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_causal, s=25)
 	# g.ax_marg_x.set_axis_off()
 	# g.ax_marg_y.set_axis_off()
 	

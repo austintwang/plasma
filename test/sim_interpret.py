@@ -332,7 +332,9 @@ def make_pip_plot(
 	for i in df_y.itertuples():
 		markers = i._1
 		for ind, val in enumerate(markers):
-			pip_data["{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)][1] = np.log10(val/(1-val))
+			marker_idx = "{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)
+			if marker_idx in pip_data:
+				pip_data[marker_idx][1] = np.log10(val/(1-val))
 
 	pip_cols = [model_x, model_y, "causal"]
 	df_pip = pd.DataFrame.from_dict(pip_data, orient='index', columns=pip_cols)

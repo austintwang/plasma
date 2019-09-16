@@ -336,15 +336,17 @@ def make_pip_plot(
 			if marker_idx in pip_data:
 				pip_data[marker_idx][1] = np.log10(val/(1-val))
 
-	pip_cols = [model_names[model_x], model_names[model_y], "causal"]
+	x_disp = model_names[model_x]
+	y_disp = model_names[model_y]
+	pip_cols = [x_disp, y_disp, "causal"]
 	df_pip = pd.DataFrame.from_dict(pip_data, orient='index', columns=pip_cols)
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 
-	g = sns.jointplot(x=model_x, y=model_y, data=df_pip, kind="hex", ratio=100, joint_kws={'gridsize':30, 'bins':'log'})
+	g = sns.jointplot(x=x_disp, y=y_disp, data=df_pip, kind="hex", ratio=100, joint_kws={'gridsize':30, 'bins':'log'})
 	g.ax_marg_x.set_axis_off()
 	g.ax_marg_y.set_axis_off()
-	sns.scatterplot(x=model_x, y=model_y, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r")
+	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r")
 
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')

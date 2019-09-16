@@ -322,7 +322,7 @@ def make_pip_plot(
 	df_y = df.loc[df["Model"] == model_y, [var, var_causal, "chrom", "locus_start"]]
 	# print(df_x) ####
 	for i in df_x.itertuples():
-		# print(i) ####
+		print(i) ####
 		markers = i._1
 		causals = i._2
 		for ind, val in enumerate(markers):
@@ -467,7 +467,7 @@ def interpret_mainfig(
 				"causal_set_size": var_cred,
 				"inclusion": var_inc,
 				"ppas": var_post,
-				"causal_configuration": var_causal,
+				"causal_config": var_causal,
 				"model": "Model",
 			}, 
 			inplace=True

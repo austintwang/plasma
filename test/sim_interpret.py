@@ -342,10 +342,10 @@ def make_pip_plot(
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 
 	g = sns.JointGrid(x=model_x, y=model_y, data=df_pip, ratio=100)
-	g.plot_joint(sns.regplot)
+	g.plot_joint(plt.hexbin, bins='log', gridsize=40)
 	g.ax_marg_x.set_axis_off()
 	g.ax_marg_y.set_axis_off()
-	sns.scatterplot(x=model_x, y=model_y, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1])
+	sns.scatterplot(x=model_x, y=model_y, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r")
 
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')

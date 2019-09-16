@@ -320,8 +320,9 @@ def make_pip_plot(
 	pip_data = {}
 	df_x = df.loc[df["Model"] == model_x, [var, var_causal, "chrom", "locus_start"]]
 	df_y = df.loc[df["Model"] == model_y, [var, var_causal, "chrom", "locus_start"]]
-	print(df_x) ####
+	# print(df_x) ####
 	for i in df_x.itertuples():
+		print(i) ####
 		markers = i[0]
 		causals = i[1]
 		for ind, val in enumerate(markers):

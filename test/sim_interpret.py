@@ -327,7 +327,7 @@ def make_pip_plot(
 		causals = i._2
 		for ind, val in enumerate(markers):
 			causal = (causals[ind] == 1)
-			marker_data = [np.log10(val/(1-val)), np.nan, causal]
+			marker_data = [np.log10(val/(1-val)), None, causal]
 			pip_data["{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)] = marker_data
 	for i in df_y.itertuples():
 		markers = i._1
@@ -335,6 +335,9 @@ def make_pip_plot(
 			marker_idx = "{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)
 			if marker_idx in pip_data:
 				pip_data[marker_idx][1] = np.log10(val/(1-val))
+	for k in list(pip_data.keys()):
+		if pip_data[k][1] is None:
+			pip_data.pop(k)
 
 	x_disp = model_names[model_x]
 	y_disp = model_names[model_y]

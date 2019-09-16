@@ -328,7 +328,7 @@ def make_pip_plot(
 		for ind, val in enumerate(markers):
 			causal = (causals[ind] == 1)
 			marker_data = [np.log10(val/(1-val)), np.nan, causal]
-			pip_data["{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)] = marker
+			pip_data["{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)] = marker_data
 	for i in df_y:
 		markers = i._1
 		for ind, val in enumerate(markers):

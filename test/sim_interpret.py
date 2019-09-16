@@ -343,7 +343,12 @@ def make_pip_plot(
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 
-	g = sns.jointplot(x=x_disp, y=y_disp, data=df_pip, kind="hex", ratio=100, joint_kws={'gridsize':30, 'bins':'log'})
+	color_rgb = matplotlib.colors.colorConverter.to_rgb("k")
+	colors = [sns.utils.set_hls_values(color_rgb, l=l) for l in np.linspace(1, 0, 12)]
+	cmap = sns.palettes.blend_palette(colors, as_cmap=True)
+
+	g = sns.JointGrid(x=x_disp, y=y_disp, data=df_pip, ratio=100)
+	g.plot_joint(plt.hexbin, gridsize=30, bins="log", cmap="cmap")
 	g.ax_marg_x.set_axis_off()
 	g.ax_marg_y.set_axis_off()
 	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r")

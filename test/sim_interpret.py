@@ -336,13 +336,12 @@ def make_pip_plot(
 			if marker_idx in pip_data:
 				pip_data[marker_idx][1] = np.log10(val/(1-val))
 
-	pip_cols = [model_x, model_y, "causal"]
+	pip_cols = [model_names[model_x], model_names[model_y], "causal"]
 	df_pip = pd.DataFrame.from_dict(pip_data, orient='index', columns=pip_cols)
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
 
-	g = sns.JointGrid(x=model_x, y=model_y, data=df_pip, ratio=100)
-	g.plot_joint(plt.hexbin, bins='log', gridsize=40)
+	g = sns.jointplot(x=model_x, y=model_y, data=df_pip, kind="hex", ratio=100, joint_kws={'gridsize':30, 'bins':'log'})
 	g.ax_marg_x.set_axis_off()
 	g.ax_marg_y.set_axis_off()
 	sns.scatterplot(x=model_x, y=model_y, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r")

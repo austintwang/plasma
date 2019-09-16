@@ -341,7 +341,7 @@ def make_pip_plot(
 	pip_cols = [x_disp, y_disp, "causal"]
 	df_pip = pd.DataFrame.from_dict(pip_data, orient='index', columns=pip_cols)
 
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,4)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(3,3)})
 
 	color_rgb = matplotlib.colors.colorConverter.to_rgb("k")
 	colors = [sns.utils.set_hls_values(color_rgb, l=l) for l in np.linspace(1, 0, 12)]
@@ -351,7 +351,7 @@ def make_pip_plot(
 	g.plot_joint(plt.hexbin, gridsize=30, bins="log", cmap=cmap)
 	g.ax_marg_x.set_axis_off()
 	g.ax_marg_y.set_axis_off()
-	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r")
+	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r", s=5)
 
 	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')

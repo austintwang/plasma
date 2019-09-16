@@ -387,8 +387,8 @@ if __name__ == '__main__':
 	}
 
 	# Normal
-	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
-	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_normal_fail.pickle"
+	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"
+	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_normal_fail.pickle"
 	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/normal.pickle"
 
 	# Normal, all samples
@@ -413,8 +413,8 @@ if __name__ == '__main__':
 	)
 
 	# Tumor
-	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
-	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_tumor_fail.pickle"
+	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_tumor_fail.pickle"
 	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
 	# Tumor, all samples

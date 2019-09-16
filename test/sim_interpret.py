@@ -354,7 +354,7 @@ def make_pip_plot(
 	g.ax_marg_y.set_axis_off()
 	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r", s=30)
 
-	plt.gca().title(title)
+	g.ax_joint.set_title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 

@@ -340,6 +340,7 @@ def make_pip_plot(
 	y_disp = model_names[model_y]
 	pip_cols = [x_disp, y_disp, "causal"]
 	df_pip = pd.DataFrame.from_dict(pip_data, orient='index', columns=pip_cols)
+	df_causal = df_pip.loc[df_pip["causal"]==1]
 
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(3,3), 'axes.grid': False})
 	# print(sns.axes_style()) ####
@@ -348,13 +349,16 @@ def make_pip_plot(
 	colors = [sns.utils.set_hls_values(color_rgb, l=l) for l in np.linspace(1, 0, 12)]
 	cmap = sns.palettes.blend_palette(colors, as_cmap=True)
 
-	g = sns.JointGrid(x=x_disp, y=y_disp, data=df_pip, ratio=100)
+	g = sns.JointGrid(x=x_disp, y=y_disp, data=df_pip)
 	g.plot_joint(plt.hexbin, gridsize=30, bins="log", cmap=cmap)
-	g.ax_marg_x.set_axis_off()
-	g.ax_marg_y.set_axis_off()
-	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_pip.loc[df_pip["causal"]==1], color="r", s=30)
+	g.plot_marginals(sns.distplot, kde=False, color=".5")
+	# g.ax_marg_x.set_axis_off()
+	# g.ax_marg_y.set_axis_off()
+	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_causal, color="r", s=25)
+	sns.distplot(df_causal[x_disp], kde=False, ax=g.ax_marg_x, color="r")
+	sns.distplot(df_causal[y_disp], kde=False, ax=g.ax_marg_y, color="r")
 
-	g.ax_joint.set_title(title)
+	plt.title(title)
 	plt.savefig(result_path, bbox_inches='tight')
 	plt.clf()
 

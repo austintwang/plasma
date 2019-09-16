@@ -322,17 +322,17 @@ def make_pip_plot(
 	df_y = df.loc[df["Model"] == model_y, [var, var_causal, "chrom", "locus_start"]]
 	# print(df_x) ####
 	for i in df_x.itertuples():
-		print(i) ####
-		markers = i[0]
-		causals = i[1]
+		# print(i) ####
+		markers = i._1
+		causals = i._2
 		for ind, val in enumerate(markers):
 			causal = (causals[i] == 1)
 			marker_data = [np.log10(val/(1-val)), np.nan, causal]
-			pip_data["{0}_{1}_{2}".format(i[2], i[3], ind)] = marker
+			pip_data["{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)] = marker
 	for i in df_y:
-		markers = i[0]
+		markers = i._1
 		for ind, val in enumerate(markers):
-			pip_data["{0}_{1}_{2}".format(i[2], i[3], ind)][1] = np.log10(val/(1-val))
+			pip_data["{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)][1] = np.log10(val/(1-val))
 
 	pip_cols = [model_x, model_y, "causal"]
 	df_pip = pd.DataFrame.from_dict(pip_data, orient='index', columns=pip_cols)

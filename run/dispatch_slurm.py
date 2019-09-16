@@ -49,7 +49,7 @@ def dispatch(
 		"-x",
 		"node09,node10,node17,node18,node19",
 		"--mem",
-		"4000",
+		"3500",
 		script_path	
 	]
 	job_args.extend([io_name, params_path, selection_path, filter_path, overdispersion_path])

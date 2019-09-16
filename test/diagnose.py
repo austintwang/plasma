@@ -5,7 +5,7 @@ import subprocess
 class Logger(object):
 	def __init__(self, logfile):
 		self.terminal = sys.stdout
-		self.log = open(logfile, "a")
+		self.log = open(logfile, "w")
 
 	def write(self, message):
 		self.terminal.write(message)
@@ -25,7 +25,6 @@ def diagnose_nodes(nodelist, testfile, logfile):
 			n,
 			"--mem",
 			"10000",
-			"--pty",
 			testfile,
 		]
 		print("TRY " + " ".join(job_args))

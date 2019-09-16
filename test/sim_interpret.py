@@ -322,11 +322,11 @@ def make_pip_plot(
 	df_y = df.loc[df["Model"] == model_y, [var, var_causal, "chrom", "locus_start"]]
 	# print(df_x) ####
 	for i in df_x.itertuples():
-		print(i) ####
+		# print(i) ####
 		markers = i._1
 		causals = i._2
 		for ind, val in enumerate(markers):
-			causal = (causals[i] == 1)
+			causal = (causals[ind] == 1)
 			marker_data = [np.log10(val/(1-val)), np.nan, causal]
 			pip_data["{0}_{1}_{2}".format(i.chrom, i.locus_start, ind)] = marker
 	for i in df_y:

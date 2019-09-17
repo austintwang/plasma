@@ -355,7 +355,7 @@ def make_pip_plot(
 	g = sns.JointGrid(x=x_disp, y=y_disp, data=df_pip)
 	
 	g.plot_joint(plt.hexbin, gridsize=30, bins="log", cmap=cmap)
-	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_causal, color="r", s=25)
+	sns.scatterplot(x=x_disp, y=y_disp, ax=g.ax_joint, data=df_causal, color="r", s=20)
 	g.plot_marginals(sns.distplot, kde=False, color="k", norm_hist=True)
 	sns.distplot(df_causal[x_disp].values, kde=False, ax=g.ax_marg_x, color="r", norm_hist=True)
 	sns.distplot(df_causal[y_disp].values, kde=False, ax=g.ax_marg_y, color="r", norm_hist=True, vertical=True)

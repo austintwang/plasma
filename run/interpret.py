@@ -358,6 +358,8 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	insufficient_snps_jobs = []
 	successes = 0
 
+	causal_zscores_fmb = [] ####
+
 	for t in targets:
 		# print(t) ####
 		result_path = os.path.join(target_dir, t, "output.pickle")
@@ -366,15 +368,18 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 		try:
 			with open(result_path, "rb") as result_file:
 				result = pickle.load(result_file, encoding='latin1')
-				if result.get("data_error", "") == "Insufficient Read Counts":
-					insufficient_data_jobs.append(t)
-					continue
-				if result.get("data_error", "") == "Insufficient Markers":
-					insufficient_snps_jobs.append(t)
-					continue
-				if "run_error" in result:
-					failed_jobs.append(t)
-					continue
+			if result.get("data_error", "") == "Insufficient Read Counts":
+				insufficient_data_jobs.append(t)
+				continue
+			if result.get("data_error", "") == "Insufficient Markers":
+				insufficient_snps_jobs.append(t)
+				continue
+			if "run_error" in result:
+				failed_jobs.append(t)
+				continue
+
+			causal_zscores_fmb.append(result["z_beta"][result["causal_set_fmb"]]) ####
+
 		except (EOFError, IOError):
 			failed_jobs.append(t)
 			continue
@@ -405,6 +410,8 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 
 		successes += 1
 
+	print(sorted(causal_zscores_fmb, key=np.size)[:20])
+
 	if fail_list_out is not None:
 		with open(fail_list_out, "wb") as fail_list_file:
 			pickle.dump(failed_jobs, fail_list_file)
@@ -417,7 +424,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 
 	with open(os.path.join(out_dir, "insufficient_snps_jobs.txt"), "w") as insufficient_snps_out:
 		insufficient_snps_out.write("\n".join(insufficient_snps_jobs) + "\n")
-	
+
 	write_thresholds(summary, out_dir, successes, model_flavors)
 	write_size_probs(summary, out_dir, successes, model_flavors)
 	write_sumstats(summary, out_dir, successes, model_flavors)
@@ -484,103 +491,103 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 if __name__ == '__main__':
 	thresholds = [1, 5, 10, 20, 50, 100]
 	
-	# Kidney Cancer
+	# # Kidney Cancer
 
-	# Normal
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle")
+	# # Normal
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle")
 
-	# Normal, all samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
-	name = "Kidney RNA-Seq, All Normal Samples"
+	# # Normal, all samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
+	# name = "Kidney RNA-Seq, All Normal Samples"
 
-	normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Normal, 50 samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
-	name = "Kidney RNA-Seq, 50 Normal Samples"
+	# # Normal, 50 samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
+	# name = "Kidney RNA-Seq, 50 Normal Samples"
 
-	normal_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Normal, 10 samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
-	name = "Kidney RNA-Seq, 10 Normal Samples"
+	# # Normal, 10 samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
+	# name = "Kidney RNA-Seq, 10 Normal Samples"
 
-	normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Normal, across sample sizes
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
-	name = "Kidney RNA-Seq, Normal Samples"
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
-	recall_model_flavors = set(["eqtl", "acav"])
-	summaries = [normal_all, normal_50, normal_10]
-	primary_var_vals = [70, 50, 10]
-	primary_var_name = "Sample Size"
+	# # Normal, across sample sizes
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
+	# name = "Kidney RNA-Seq, Normal Samples"
+	# model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	# recall_model_flavors = set(["eqtl", "acav"])
+	# summaries = [normal_all, normal_50, normal_10]
+	# primary_var_vals = [70, 50, 10]
+	# primary_var_name = "Sample Size"
 
-	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
-	# Tumor
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
+	# # Tumor
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
 
-	# Tumor, all samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
-	name = "Kidney RNA-Seq, All Tumor Samples"
+	# # Tumor, all samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
+	# name = "Kidney RNA-Seq, All Tumor Samples"
 
-	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Tumor, 200 samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
-	name = "Kidney RNA-Seq, 200 Tumor Samples"
+	# # Tumor, 200 samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
+	# name = "Kidney RNA-Seq, 200 Tumor Samples"
 
-	tumor_200 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_200 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Tumor, 100 samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
-	name = "Kidney RNA-Seq, 100 Tumor Samples"
+	# # Tumor, 100 samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
+	# name = "Kidney RNA-Seq, 100 Tumor Samples"
 
-	tumor_100 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_100 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Tumor, 50 samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
-	name = "Kidney RNA-Seq, 50 Tumor Samples"
+	# # Tumor, 50 samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
+	# name = "Kidney RNA-Seq, 50 Tumor Samples"
 
-	tumor_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Tumor, 10 samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
-	name = "Kidney RNA-Seq, 10 Tumor Samples"
+	# # Tumor, 10 samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
+	# name = "Kidney RNA-Seq, 10 Tumor Samples"
 
-	tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Tumor, across sample sizes
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
-	name = "Kidney RNA-Seq, Tumor Samples"
-	model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
-	recall_model_flavors = ["indep", "acav"]
-	summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
-	primary_var_vals = [524, 200, 100, 50, 10]
-	primary_var_name = "Sample Size"
+	# # Tumor, across sample sizes
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
+	# name = "Kidney RNA-Seq, Tumor Samples"
+	# model_flavors = ["indep", "ase", "acav", "eqtl", "fmb"]
+	# recall_model_flavors = ["indep", "acav"]
+	# summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
+	# primary_var_vals = [524, 200, 100, 50, 10]
+	# primary_var_name = "Sample Size"
 
-	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
-	# Tumor, low heritability, all samples
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
+	# # Tumor, low heritability, all samples
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
 
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
-	name = "Kidney RNA-Seq, All Tumor Samples"
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all_low_herit"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
+	# name = "Kidney RNA-Seq, All Tumor Samples"
 
-	tumor_low_herit = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_low_herit = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
 	# Kidney Cancer, Multi CV
 
@@ -606,61 +613,61 @@ if __name__ == '__main__':
 
 	tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
 
-	# Prostate Cancer
+	# # Prostate Cancer
 	
-	# Normal
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	targets = "all"
+	# # Normal
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# targets = "all"
 
-	# Normal, all samples
-	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
-	name = "Prostate ChIP-Seq, All Normal Samples"
+	# # Normal, all samples
+	# target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
+	# name = "Prostate ChIP-Seq, All Normal Samples"
 
-	normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Normal, 10 samples
-	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
-	name = "Prostate ChIP-Seq, 10 Normal Samples"
+	# # Normal, 10 samples
+	# target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
+	# name = "Prostate ChIP-Seq, 10 Normal Samples"
 
-	normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Normal, across sample sizes
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
-	name = "Prostate ChIP-Seq, Normal Samples"
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	summaries = [normal_all, normal_10]
-	primary_var_vals = [24, 10]
-	primary_var_name = "Sample Size"
+	# # Normal, across sample sizes
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
+	# name = "Prostate ChIP-Seq, Normal Samples"
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# summaries = [normal_all, normal_10]
+	# primary_var_vals = [24, 10]
+	# primary_var_name = "Sample Size"
 
-	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 
-	# Tumor
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	targets = "all"
+	# # Tumor
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# targets = "all"
 
-	# Tumor, all samples
-	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
-	name = "Prostate ChIP-Seq, All Tumor Samples"
+	# # Tumor, all samples
+	# target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
+	# name = "Prostate ChIP-Seq, All Tumor Samples"
 
-	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Tumor, 10 samples
-	target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
-	name = "Prostate ChIP-Seq, 10 Tumor Samples"
+	# # Tumor, 10 samples
+	# target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
+	# name = "Prostate ChIP-Seq, 10 Tumor Samples"
 
-	tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
-	# Tumor, across sample sizes
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
-	name = "Prostate ChIP-Seq, Tumor Samples"
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	summaries = [tumor_all, tumor_10]
-	primary_var_vals = [24, 10]
-	primary_var_name = "Sample Size"
+	# # Tumor, across sample sizes
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
+	# name = "Prostate ChIP-Seq, Tumor Samples"
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# summaries = [tumor_all, tumor_10]
+	# primary_var_vals = [24, 10]
+	# primary_var_name = "Sample Size"
 
-	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
 

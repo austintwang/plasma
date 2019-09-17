@@ -359,6 +359,28 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	successes = 0
 
 	causal_zscores_fmb = [] ####
+	small_loci = set([ ####
+		"ENSG00000134996.11",
+		"ENSG00000137364.4",
+		"ENSG00000160957.8",
+		"ENSG00000175387.11",
+		"ENSG00000134575.5",
+		"ENSG00000156968.8",
+		"ENSG00000157111.8",
+		"ENSG00000158258.11",
+		"ENSG00000157045.4",
+		"ENSG00000170222.11",
+		"ENSG00000161036.6",
+		"ENSG00000175198.10",
+		"ENSG00000140105.13",
+		"ENSG00000148339.8",
+		"ENSG00000160953.10",
+		"ENSG00000168589.10",
+		"ENSG00000173566.9",
+		"ENSG00000176842.10",
+		"ENSG00000167701.9",
+		"ENSG00000182095.10",
+	])
 
 	for t in targets:
 		# print(t) ####
@@ -381,7 +403,9 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 			# zb = np.full(np.shape(result["causal_set_fmb"]), np.nan) ####
 			# np.put(zb, result["informative_snps"], result["z_beta"]) ####
 			# causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
-			causal_zscores_fmb.append([np.sum(result["causal_set_fmb"]), t]) ####
+			# causal_zscores_fmb.append([np.sum(result["causal_set_fmb"]), t]) ####
+			if t in small_loci:
+				causal_zscores_fmb.append([t, np.sum(result["causal_set_fmb"])]) ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)

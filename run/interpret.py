@@ -414,7 +414,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 					np.mean(result["causal_set_ase"]), 
 					np.amax(np.abs(result["z_phi"]))
 				]
-				causal_zscores_fmb.append() ####
+				causal_zscores_fmb.append(res) ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)

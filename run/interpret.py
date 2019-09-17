@@ -414,7 +414,9 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 		successes += 1
 
 	# print(sorted(causal_zscores_fmb, key=np.size)[:20]) ####
-	print(sorted(causal_zscores_fmb, key=lambda x:x[0])[:20]) ####
+	lst = sorted(causal_zscores_fmb, key=lambda x:x[0])[:20] ####
+	for i in lst:
+		print "\t".join(i) ####
 
 	if fail_list_out is not None:
 		with open(fail_list_out, "wb") as fail_list_file:

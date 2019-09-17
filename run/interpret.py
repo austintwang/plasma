@@ -559,16 +559,16 @@ if __name__ == '__main__':
 
 	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
-	# # Tumor
-	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	# targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
+	# Tumor
+	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
 
-	# # Tumor, all samples
-	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
-	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
-	# name = "Kidney RNA-Seq, All Tumor Samples"
+	# Tumor, all samples
+	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
+	name = "Kidney RNA-Seq, All Tumor Samples"
 
-	# tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
 	# # Tumor, 200 samples
 	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
@@ -621,16 +621,16 @@ if __name__ == '__main__':
 
 	# Kidney Cancer, Multi CV
 
-	# Normal, all samples
-	model_flavors = ["indep", "ase", "fmb", "eqtl"]
-	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle")
+	# # Normal, all samples
+	# model_flavors = ["indep", "ase", "fmb", "eqtl"]
+	# targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle")
 
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/shotgun_normal_all"
-	fail_list_out = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_normal_fail.pickle"
-	name = "Kidney RNA-Seq, All Normal Samples"
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/shotgun_normal_all"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/shotgun_normal_all"
+	# fail_list_out = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_normal_fail.pickle"
+	# name = "Kidney RNA-Seq, All Normal Samples"
 
-	normal_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
+	# normal_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
 
 	# Tumor, all samples
 	model_flavors = ["indep", "ase", "fmb", "eqtl"]

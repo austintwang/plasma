@@ -405,7 +405,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 			# causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
 			# causal_zscores_fmb.append([np.sum(result["causal_set_fmb"]), t]) ####
 			if t in small_loci:
-				causal_zscores_fmb.append([t, np.sum(result["causal_set_fmb"]), np.amax(np.abs(result["ppas_fmb"])), np.sum(result["causal_set_ase"]), np.amax(np.abs(result["ppas_ase"]))]) ####
+				causal_zscores_fmb.append([t, np.sum(result["causal_set_fmb"]), np.amax(np.abs(result["z_beta"])), np.sum(result["causal_set_ase"]), np.amax(np.abs(result["z_phi"]))]) ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)
@@ -441,6 +441,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	lst = sorted(causal_zscores_fmb, key=lambda x:x[0])[:20] ####
 	for i in lst:
 		print("\t".join([str(j) for j in i])) ####
+	print("")
 
 	if fail_list_out is not None:
 		with open(fail_list_out, "wb") as fail_list_file:

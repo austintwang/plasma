@@ -3,17 +3,14 @@ import os
 import time
 import sys
 import traceback
+import pickle
 import matplotlib
 matplotlib.use('Agg')
 matplotlib.rcParams['agg.path.chunksize'] = 10000
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
-
-try:
-	import pickle as pickle
-except ImportError:
-	import pickle
+from scipy.stats import norm
 
 pal = sns.color_palette()
 COLORMAP = {
@@ -334,7 +331,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		plt.clf()
 
 
-def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=None):
+def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=None, sig_filter=None):
 	if model_flavors == "all":
 		model_flavors = ["indep", "full", "ase", "acav", "eqtl", "fmb"]
 
@@ -356,31 +353,32 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	failed_jobs = []
 	insufficient_data_jobs = []
 	insufficient_snps_jobs = []
+	non_sig_jobs = []
 	successes = 0
 
-	causal_zscores_fmb = [] ####
-	small_loci = set([ ####
-		"ENSG00000134996.11",
-		"ENSG00000137364.4",
-		"ENSG00000160957.8",
-		"ENSG00000175387.11",
-		"ENSG00000134575.5",
-		"ENSG00000156968.8",
-		"ENSG00000157111.8",
-		"ENSG00000158258.11",
-		"ENSG00000157045.4",
-		"ENSG00000170222.11",
-		"ENSG00000161036.6",
-		"ENSG00000175198.10",
-		"ENSG00000140105.13",
-		"ENSG00000148339.8",
-		"ENSG00000160953.10",
-		"ENSG00000168589.10",
-		"ENSG00000173566.9",
-		"ENSG00000176842.10",
-		"ENSG00000167701.9",
-		"ENSG00000182095.10",
-	])
+	# causal_zscores_fmb = [] ####
+	# small_loci = set([ ####
+	# 	"ENSG00000134996.11",
+	# 	"ENSG00000137364.4",
+	# 	"ENSG00000160957.8",
+	# 	"ENSG00000175387.11",
+	# 	"ENSG00000134575.5",
+	# 	"ENSG00000156968.8",
+	# 	"ENSG00000157111.8",
+	# 	"ENSG00000158258.11",
+	# 	"ENSG00000157045.4",
+	# 	"ENSG00000170222.11",
+	# 	"ENSG00000161036.6",
+	# 	"ENSG00000175198.10",
+	# 	"ENSG00000140105.13",
+	# 	"ENSG00000148339.8",
+	# 	"ENSG00000160953.10",
+	# 	"ENSG00000168589.10",
+	# 	"ENSG00000173566.9",
+	# 	"ENSG00000176842.10",
+	# 	"ENSG00000167701.9",
+	# 	"ENSG00000182095.10",
+	# ])
 
 	for t in targets:
 		# print(t) ####
@@ -400,21 +398,27 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 				failed_jobs.append(t)
 				continue
 
+			if sig_filter is not None:
+				if np.abs(result["z_beta"]) < 5:
+					non_sig_jobs.append(t)
+					continue
+
+
 			# zb = np.full(np.shape(result["causal_set_fmb"]), np.nan) ####
 			# np.put(zb, result["informative_snps"], result["z_beta"]) ####
 			# causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
 			# causal_zscores_fmb.append([np.sum(result["causal_set_fmb"]), t]) ####
-			if t in small_loci:
-				res = [
-					t, 
-					np.sum(result["causal_set_fmb"]),
-					np.mean(result["causal_set_fmb"]), 
-					np.amax(np.abs(result["z_beta"])), 
-					np.sum(result["causal_set_ase"]), 
-					np.mean(result["causal_set_ase"]), 
-					np.amax(np.abs(result["z_phi"]))
-				]
-				causal_zscores_fmb.append(res) ####
+			# if t in small_loci:
+			# 	res = [
+			# 		t, 
+			# 		np.sum(result["causal_set_fmb"]),
+			# 		np.mean(result["causal_set_fmb"]), 
+			# 		np.amax(np.abs(result["z_beta"])), 
+			# 		np.sum(result["causal_set_ase"]), 
+			# 		np.mean(result["causal_set_ase"]), 
+			# 		np.amax(np.abs(result["z_phi"]))
+			# 	]
+			# 	causal_zscores_fmb.append(res) ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)
@@ -447,10 +451,10 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 		successes += 1
 
 	# print(sorted(causal_zscores_fmb, key=np.size)[:20]) ####
-	lst = sorted(causal_zscores_fmb, key=lambda x:x[0])[:20] ####
-	for i in lst:
-		print("\t".join([str(j) for j in i])) ####
-	print("")
+	# lst = sorted(causal_zscores_fmb, key=lambda x:x[0])[:20] ####
+	# for i in lst:
+	# 	print("\t".join([str(j) for j in i])) ####
+	# print("")
 
 	if fail_list_out is not None:
 		with open(fail_list_out, "wb") as fail_list_file:
@@ -473,6 +477,8 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	plot_violin(summary, out_dir, name, model_flavors, "prop")
 	plot_dist(summary, out_dir, name, model_flavors, "size", True)
 	plot_dist(summary, out_dir, name, model_flavors, "prop", True)
+
+	print(successes)
 
 	return summary
 
@@ -569,16 +575,16 @@ if __name__ == '__main__':
 
 	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
 
-	# Tumor
-	model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
-	targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
+	# # Tumor
+	# model_flavors = ["indep", "ase", "acav", "fmb", "eqtl"]
+	# targets = get_targets("/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle")
 
-	# Tumor, all samples
-	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
-	name = "Kidney RNA-Seq, All Tumor Samples"
+	# # Tumor, all samples
+	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
+	# name = "Kidney RNA-Seq, All Tumor Samples"
 
-	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
 
 	# # Tumor, 200 samples
 	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"

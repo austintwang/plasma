@@ -378,7 +378,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 				failed_jobs.append(t)
 				continue
 
-			causal_zscores_fmb.append(result["z_beta"][result["causal_set_fmb"]]) ####
+			causal_zscores_fmb.append(result["z_beta"][result["causal_set_fmb"].astype(bool)]) ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)

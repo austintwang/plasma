@@ -399,7 +399,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 				continue
 
 			if sig_filter is not None:
-				if np.abs(result["z_beta"]) < sig_filter:
+				if np.abs(np.nanmax(result["z_beta"])) < sig_filter:
 					non_sig_jobs.append(t)
 					continue
 

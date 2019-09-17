@@ -379,7 +379,8 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 				continue
 
 			zb = np.full(np.shape(result["causal_set_fmb"]), np.nan) ####
-			np.put(zb, result["informative_snps"], result["z_phi"]) ####
+			np.put(zb, result["informative_snps"], result["z_beta"]) ####
+			causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
 			causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
 
 		except (EOFError, IOError):

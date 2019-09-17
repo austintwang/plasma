@@ -399,7 +399,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 				continue
 
 			if sig_filter is not None:
-				if np.abs(result["z_beta"]) < 5:
+				if np.abs(result["z_beta"]) < sig_filter:
 					non_sig_jobs.append(t)
 					continue
 
@@ -657,7 +657,7 @@ if __name__ == '__main__':
 	fail_list_out = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_tumor_fail.pickle"
 	name = "Kidney RNA-Seq, All Tumor Samples"
 
-	tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
+	tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out, sig_filter=5)
 
 	# # Prostate Cancer
 	

@@ -378,10 +378,10 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 				failed_jobs.append(t)
 				continue
 
-			zb = np.full(np.shape(result["causal_set_fmb"]), np.nan) ####
-			np.put(zb, result["informative_snps"], result["z_beta"]) ####
-			causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
-			causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
+			# zb = np.full(np.shape(result["causal_set_fmb"]), np.nan) ####
+			# np.put(zb, result["informative_snps"], result["z_beta"]) ####
+			# causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
+			causal_zscores_fmb.append([np.size(result["causal_set_fmb"]), result["causal_set_indep"]]) ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)
@@ -413,7 +413,8 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 
 		successes += 1
 
-	print(sorted(causal_zscores_fmb, key=np.size)[:20])
+	# print(sorted(causal_zscores_fmb, key=np.size)[:20]) ####
+	print(sorted(causal_zscores_fmb)[:20]) ####
 
 	if fail_list_out is not None:
 		with open(fail_list_out, "wb") as fail_list_file:

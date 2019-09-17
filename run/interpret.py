@@ -378,9 +378,9 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 				failed_jobs.append(t)
 				continue
 
-			causals = np.full(np.shape(result["z_beta"]), 0) ####
-			np.put(causals, result["informative_snps"], result["causal_set_fmb"]) ####
-			causal_zscores_fmb.append(result["z_beta"][causals.astype(bool)]) ####
+			zb = np.full(np.shape(result["causal_set_fmb"]), 0) ####
+			np.put(zb, result["informative_snps"], result["z_beta"]) ####
+			causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)

@@ -405,7 +405,16 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 			# causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####
 			# causal_zscores_fmb.append([np.sum(result["causal_set_fmb"]), t]) ####
 			if t in small_loci:
-				causal_zscores_fmb.append([t, np.sum(result["causal_set_fmb"]), np.amax(np.abs(result["z_beta"])), np.sum(result["causal_set_ase"]), np.amax(np.abs(result["z_phi"]))]) ####
+				res = [
+					t, 
+					np.sum(result["causal_set_fmb"]),
+					np.mean(result["causal_set_fmb"]), 
+					np.amax(np.abs(result["z_beta"])), 
+					np.sum(result["causal_set_ase"]), 
+					np.mean(result["causal_set_ase"]), 
+					np.amax(np.abs(result["z_phi"]))
+				]
+				causal_zscores_fmb.append() ####
 
 		except (EOFError, IOError):
 			failed_jobs.append(t)

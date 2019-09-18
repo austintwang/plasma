@@ -33,6 +33,10 @@ class Dispatcher(object):
 				out_name,
 				"-e",
 				err_name,
+				"-x",
+				"node09,node10,node17,node18,node19",
+				"--mem",
+				"3500",
 				self.script_path,
 				out_dir,
 				str(val),
@@ -477,7 +481,7 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
 	script_path = os.path.join(curr_path, "sim_test.py")
-	batch_size = 135
+	batch_size = 7
 	num_trials = 500
 
 	disp = Dispatcher(script_path, batch_size)
@@ -504,16 +508,16 @@ if __name__ == '__main__':
 	# 	script_path
 	# )
 
-	# default_switch = [True, False]
-	# test_default_params(
-	# 	disp, 
-	# 	data_info,
-	# 	params_dir, 
-	# 	out_dir_base, 
-	# 	default_switch, 
-	# 	num_trials,
-	# 	script_path
-	# )
+	default_switch = [True, False]
+	test_default_params(
+		disp, 
+		data_info,
+		params_dir, 
+		out_dir_base, 
+		default_switch, 
+		num_trials,
+		script_path
+	)
 
 	# causal_vars = [1, 2]
 	# test_multi_cv(
@@ -537,31 +541,31 @@ if __name__ == '__main__':
 		script_path
 	)
 
-	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-	coverage = [10, 20, 50, 100, 500, 1000]
-	test_dev_cov(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		std_al_dev,
-		coverage, 
-		num_trials,
-		script_path
-	)
+	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	# coverage = [10, 20, 50, 100, 500, 1000]
+	# test_dev_cov(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	std_al_dev,
+	# 	coverage, 
+	# 	num_trials,
+	# 	script_path
+	# )
 
-	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-	herit_as = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-	test_dev_herit(
-		disp, 
-		data_info,
-		params_dir, 
-		out_dir_base, 
-		std_al_dev,
-		herit_as, 
-		num_trials,
-		script_path
-	)
+	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	# herit_as = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+	# test_dev_herit(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	std_al_dev,
+	# 	herit_as, 
+	# 	num_trials,
+	# 	script_path
+	# )
 
 	# corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
 	# test_jointness(

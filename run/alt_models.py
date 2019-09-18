@@ -447,8 +447,10 @@ class FmBenner(Finemap):
 
 		print("".join(log_data)) ####
 
-		for i in self.get_probs_sorted()[:20]: ####
+		for i in self.get_probs_sorted()[:5]: ####
 			print(i) ####
+
+		print(self.get_ppas()) ####
 
 		num_causal_region = False
 		for l in log_data:

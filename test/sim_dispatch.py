@@ -34,7 +34,7 @@ class Dispatcher(object):
 				"-e",
 				err_name,
 				"-x",
-				"node09,node10,node17,node18,node19",
+				"node09,node10,node13,node15,node17,node18",
 				"--mem",
 				"1000",
 				self.script_path,

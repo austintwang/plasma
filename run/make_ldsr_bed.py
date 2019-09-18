@@ -111,11 +111,18 @@ def make_bed(input_path, output_path, model_flavors):
 					bed_data_all["ase"][k] = v
 
 		if "acav" in model_flavors:
-			for k, v in result["ldsr_data_caviar_ase"].items():
+			for k, v in result["ldsr_data_acav"].items():
 				if k in bed_data_all["acav"]:
 					bed_data_all["acav"][k] = max(v, bed_data_all["acav"][k], key=lambda x: x["ppa"]) 
 				else:
 					bed_data_all["acav"][k] = v
+
+		if "fmb" in model_flavors:
+			for k, v in result["ldsr_data_fmb"].items():
+				if k in bed_data_all["fmb"]:
+					bed_data_all["fmb"][k] = max(v, bed_data_all["fmb"][k], key=lambda x: x["ppa"]) 
+				else:
+					bed_data_all["fmb"][k] = v
 
 	write_bed(bed_data_all["ctrl"], os.path.join(output_path, "ctrl.bed"))
 	if "full" in model_flavors:
@@ -128,32 +135,34 @@ def make_bed(input_path, output_path, model_flavors):
 		write_bed(bed_data_all["ase"], os.path.join(output_path, "ldsr_ase.bed"))
 	if "acav" in model_flavors:
 		write_bed(bed_data_all["acav"], os.path.join(output_path, "ldsr_acav.bed"))
+	if "fmb" in model_flavors:
+		write_bed(bed_data_all["fmb"], os.path.join(output_path, "ldsr_acav.bed"))
 
 if __name__ == '__main__':
 	# Kidney Data, Tumor
 	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
 	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all"
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = set(["indep", "fmb", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)
 
 	# Kidney Data, Normal
 	input_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_all"
 	output_path = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all"
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = set(["indep", "fmb", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)
 
 	# Prostate Data, Tumor
 	input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_all"
 	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all"
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = set(["indep", "fmb", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)
 
 	# Prostate Data, Normal
 	input_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_all"
 	output_path = "/bcb/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all"
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = set(["indep", "fmb", "ase", "acav"])
 
 	make_bed(input_path, output_path, model_flavors)

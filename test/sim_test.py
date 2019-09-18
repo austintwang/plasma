@@ -220,7 +220,7 @@ def sim_test(
 
 	output = []
 	for i in range(batch_size):
-		print("test {0}".format(b))
+		print("test {0}".format(i))
 		try:
 			locus, qtl_data = sim_random(
 				vcf_dir, 

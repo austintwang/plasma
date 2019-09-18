@@ -447,6 +447,9 @@ class FmBenner(Finemap):
 
 		print("".join(log_data)) ####
 
+		for i in self.get_probs_sorted()[:20]: ####
+			print(i) ####
+
 		num_causal_region = False
 		for l in log_data:
 			if num_causal_region and l.startswith("-"):

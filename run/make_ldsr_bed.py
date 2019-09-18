@@ -46,7 +46,7 @@ def make_bed(input_path, output_path, model_flavors):
 		os.makedirs(output_path)
 
 	if model_flavors == "all":
-		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
+		model_flavors = set(["full", "indep", "eqtl", "ase", "acav", "fmb"])
 
 	bed_data_all = {}
 	bed_data_all["ctrl"] = {}
@@ -60,6 +60,8 @@ def make_bed(input_path, output_path, model_flavors):
 		bed_data_all["ase"] = {}
 	if "acav" in model_flavors:
 		bed_data_all["acav"] = {}
+	if "fmb" in model_flavors:
+		bed_data_all["fmb"] = {}
 
 	targets = os.listdir(input_path)
 	for t in targets:

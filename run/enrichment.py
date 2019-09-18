@@ -30,6 +30,7 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 		bed_path = bed_path_base.format("indep")
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
+		print(s_out) ####
 		parse_output(s_out, lst_out, "PLASMA-J")
 
 	if "ase" in model_flavors:

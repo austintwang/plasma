@@ -445,6 +445,8 @@ class FmBenner(Finemap):
 		with open(self.log_path + "_sss") as log_file:
 			log_data = log_file.readlines()
 
+		print(log_data)
+
 		num_causal_region = False
 		for l in log_data:
 			if num_causal_region and l.startswith("-"):
@@ -674,4 +676,3 @@ class Rasqual(Finemap):
 
 
 
-	

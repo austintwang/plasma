@@ -104,7 +104,7 @@ def run(
 		with open(list_path, "rb") as list_file:
 			targets = pickle.load(list_file)
 
-	targets = ["ENSG00000134575.5"]
+	targets = ["ENSG00000134575.5"] ####
 
 	num_targets = len(targets)
 	num_padding = (-num_targets) % batch_size
@@ -385,8 +385,9 @@ if __name__ == '__main__':
 		"streak_threshold": 1000,
 		"search_iterations": 100000, 
 		"confidence": 0.95, 
-		"model_flavors": set(["full", "indep", "eqtl", "ase", "fmb"])
+		"model_flavors": set(["full", "indep", "eqtl", "ase", "fmb"]),
 	}
+	hyperparams["model_flavors"] = set(["fmb"]) ####
 
 	# # Normal
 	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/normal_fdr05.pickle"

@@ -651,7 +651,7 @@ class Finemap(object):
 				max_snp = max(neighbors, key=neighbors.get)
 				causal_set[max_snp] = 1
 				conf_sum += neighbors[max_snp]
-				print(conf_sum) ####
+				# print(conf_sum) ####
 
 				diffs = {}
 				for k, v in distances.items():
@@ -670,6 +670,7 @@ class Finemap(object):
 						distances.setdefault(k-1, set())
 						distances[k-1] |= v
 
+		print(causal_set) ####
 		return list(causal_set) 
 
 	def get_ppas(self):

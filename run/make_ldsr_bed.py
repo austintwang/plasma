@@ -68,7 +68,7 @@ def make_bed(input_path, output_path, model_flavors):
 		result_path = os.path.join(input_path, t, "output.pickle")
 		try:
 			with open(result_path, "rb") as result_file:
-				result = pickle.load(result_file)
+				result = pickle.load(result_file, encoding='latin1')
 				if "data_error" in result:
 					continue
 

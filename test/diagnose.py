@@ -17,6 +17,7 @@ class Logger(object):
 def diagnose_nodes(nodelist, testfile, logfile):
 	sys.stdout = Logger(logfile)
 	good_nodes = []
+	bad_nodes = []
 	for n in nodelist:
 		print("TEST {0}".format(n))
 		job_args = [
@@ -33,14 +34,17 @@ def diagnose_nodes(nodelist, testfile, logfile):
 			output = subprocess.check_output(job_args, timeout=30, stderr=subprocess.STDOUT)
 			print(output.decode('UTF-8'))
 			good_nodes.append(n)
-			print("COMPLETE")
+			print("COMPLETE {0}".format(n))
 		except subprocess.TimeoutExpired as e:
 			print(e.output.decode('UTF-8'))
-			print("TERMINATED")
+			bad_nodes.append(n)
+			print("TERMINATED {0}".format(n))
 		print("----------------------")
 		print("")
 	print("GOOD NODES:")
 	print(", ".join(good_nodes))
+	print("BAD_NODES:")
+	print(", ".join(bad_nodes))
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))

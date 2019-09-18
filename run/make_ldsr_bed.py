@@ -71,6 +71,9 @@ def make_bed(input_path, output_path, model_flavors):
 				result = pickle.load(result_file)
 				if "data_error" in result:
 					continue
+
+				if "ldsr_data_fmb" not in result:
+					continue
 		except (EOFError, IOError):
 			continue
 

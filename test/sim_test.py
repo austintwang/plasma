@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+print("start imports")
 import os
 import random
 import traceback
@@ -10,12 +11,13 @@ from contextlib import contextmanager
 
 import numpy as np
 import pandas as pd
-
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'test'
 	import sys
 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 	sys.path.insert(0, "/agusevlab/awang/plasma")
+
+print("start package imports")
 
 from . import Finemap, LocusSimulator, Caviar, CaviarASE, FmBenner, Rasqual
 
@@ -192,6 +194,7 @@ def sim_test(
 		batch_num, 
 		params_path
 	):
+	print("loading files")
 	with open(params_path, "rb") as params_file:
 		params = pickle.load(params_file)
 	test_type = params["test_type"]
@@ -216,7 +219,8 @@ def sim_test(
 		snp_filter = pickle.load(snp_filter_file)
 
 	output = []
-	for _ in range(batch_size):
+	for i in range(batch_size):
+		print("test {0}".format(b))
 		try:
 			locus, qtl_data = sim_random(
 				vcf_dir, 

@@ -670,7 +670,7 @@ class Finemap(object):
 						distances.setdefault(k-1, set())
 						distances[k-1] |= v
 
-		print(causal_set) ####
+		# print(causal_set) ####
 		return list(causal_set) 
 
 	def get_ppas(self):

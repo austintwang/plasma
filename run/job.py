@@ -51,6 +51,7 @@ def run_model(model_cls, inputs, input_updates, informative_snps, return_stats=F
 
 	gc.collect()
 
+	print(causal_set) ####
 	if return_stats:
 		return causal_set, ppas, size_probs, z_phi, z_beta
 	else:

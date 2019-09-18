@@ -9,7 +9,7 @@ import pandas as pd
 import pickle
 
 def parse_output(s_out, lst_out, model_name):
-	lines = s_out.strip().split("\n")
+	lines = s_out.decode("utf-8").strip().split("\n")
 	for l in lines:
 		cols = l.split("\t")
 		entry = [model_name, float(cols[1]), float(cols[2]), float(cols[3]), float(cols[4]), -np.log10(float(cols[5]))]
@@ -70,7 +70,7 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 	return df_out
 
 def plot_enrichment(out_dir, df_out, title):
-	sns.set(style="whitegrid", font="Roboto")
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 
 	sns.barplot(
 		x="Minimum Posterior Probability", 

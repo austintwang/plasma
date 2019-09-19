@@ -12,10 +12,10 @@ from contextlib import contextmanager
 
 print("BUILTINS IMPORTS FINISHED")
 
-# import numpy as np
-# import pandas as pd
+import numpy as np
+import pandas as pd
 
-# print("USER IMPORTS FINISHED")
+print("USER IMPORTS FINISHED")
 
 # if __name__ == '__main__' and __package__ is None:
 # 	__package__ = 'test'

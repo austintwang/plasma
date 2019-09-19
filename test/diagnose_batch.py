@@ -22,5 +22,5 @@ if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 	testfile = os.path.join(curr_path, "node_test.py")
 	outdir = "/agusevlab/awang/batchtest"
-	diagnose_sbatch(100, testfile, logfile)
+	diagnose_sbatch(100, testfile, outdir)
 

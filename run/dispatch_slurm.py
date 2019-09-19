@@ -47,7 +47,7 @@ def dispatch(
 		"-e",
 		err_name,
 		"-x",
-		"node09,node10,node17,node18,node19",
+		"node09,node10,node13,node16,node17,node18",
 		"--mem",
 		"3500",
 		script_path	

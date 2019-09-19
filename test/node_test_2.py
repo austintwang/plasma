@@ -11,12 +11,11 @@ import signal
 from contextlib import contextmanager
 
 print("BUILTINS IMPORTS FINISHED")
-# import gc
 
-import numpy as np
-import pandas as pd
+# import numpy as np
+# import pandas as pd
 
-print("USER IMPORTS FINISHED")
+# print("USER IMPORTS FINISHED")
 
 if __name__ == '__main__' and __package__ is None:
 	__package__ = 'test'
@@ -28,7 +27,7 @@ from . import Finemap, LocusSimulator, Caviar, CaviarASE, FmBenner, Rasqual
 
 print("PACKAGE IMPORTS FINISHED")
 
-np.array([1,2,3])
+# np.array([1,2,3])
 
 node = sys.argv[1]
 test_num = sys.argv[2]

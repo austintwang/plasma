@@ -13,14 +13,14 @@ def diagnose_sbatch(count_per_node, nodelist, testfile, outdir):
 			job_args = [
 				"sbatch", 
 				"-J",
-				"{0}_{1:02d}".format(n, j),
+				"{0}_{1:01d}".format(n, j),
 				"-w",
 				n,
 				"--export=ALL,PYTHONVERBOSE=1",
 				"--mem",
 				"10000",
 				"-o",
-				os.path.join(outdir, "{0}_{1:02d}.out".format(n, j)),
+				os.path.join(outdir, "{0}_{1:01d}.out".format(n, j)),
 				testfile,
 				n,
 				str(j)

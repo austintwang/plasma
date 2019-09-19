@@ -6,7 +6,7 @@ import shutil
 def diagnose_sbatch(count_per_node, nodelist, testfile, outdir):
 	job_ids = []
 	if os.path.exists(outdir):
-		shutil.rmtree(output_path, ignore_errors=True)
+		shutil.rmtree(outdir, ignore_errors=True)
 	os.makedirs(outdir)
 	for n in nodelist:
 		for j in range(count_per_node):

@@ -4,6 +4,7 @@ import subprocess
 import shutil
 
 def diagnose_sbatch(count_per_node, nodelist, testfile, outdir):
+	job_ids = []
 	if os.path.exists(outdir):
 		shutil.rmtree(output_path, ignore_errors=True)
 	os.makedirs(outdir)
@@ -25,7 +26,10 @@ def diagnose_sbatch(count_per_node, nodelist, testfile, outdir):
 				str(j)
 			]
 			submission = subprocess.run(job_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			print(str(submission.stdout, 'utf-8').rstrip())
+			submission_str = str(submission.stdout, 'utf-8').rstrip()
+			print(submission_str)
+			job_ids.append(submission_str.split()[-1])
+	print(",".join(job_ids))
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))

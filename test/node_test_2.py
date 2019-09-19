@@ -17,15 +17,15 @@ print("BUILTINS IMPORTS FINISHED")
 
 # print("USER IMPORTS FINISHED")
 
-if __name__ == '__main__' and __package__ is None:
-	__package__ = 'test'
-	import sys
-	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-	sys.path.insert(0, "/agusevlab/awang/plasma")
+# if __name__ == '__main__' and __package__ is None:
+# 	__package__ = 'test'
+# 	import sys
+# 	sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# 	sys.path.insert(0, "/agusevlab/awang/plasma")
 
-from . import Finemap, LocusSimulator, Caviar, CaviarASE, FmBenner, Rasqual
+# from . import Finemap, LocusSimulator, Caviar, CaviarASE, FmBenner, Rasqual
 
-print("PACKAGE IMPORTS FINISHED")
+# print("PACKAGE IMPORTS FINISHED")
 
 # np.array([1,2,3])
 

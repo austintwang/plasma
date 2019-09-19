@@ -14,6 +14,7 @@ def diagnose_sbatch(count_per_node, nodelist, testfile, outdir):
 				"-J",
 				"{0}_{1:02d}".format(n, j),
 				"-w",
+				n,
 				"--export=ALL,PYTHONVERBOSE=1",
 				"--mem",
 				"10000",

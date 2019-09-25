@@ -356,7 +356,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	non_sig_jobs = []
 	successes = 0
 
-	# causal_zscores_fmb = [] ####
+	causal_zscores_fmb = [] ####
 	# small_loci = set([ ####
 	# 	"ENSG00000134996.11",
 	# 	"ENSG00000137364.4",

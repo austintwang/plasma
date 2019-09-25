@@ -47,7 +47,7 @@ def dispatch(
 		"-e",
 		err_name,
 		"-x",
-		"node09,node10,node13,node16,node17,node18",
+		"node05,node15",
 		"--mem",
 		"3500",
 		script_path	
@@ -129,7 +129,7 @@ def run(
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
-	batch_size = 20
+	batch_size = 15
 
 	# # Kidney Data, 1 CV
 	# input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"

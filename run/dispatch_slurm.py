@@ -84,9 +84,11 @@ def run(
 		filter_path, 
 		overdispersion_path,
 		params_name,
-		batch_size
+		batch_size,
+		clear_old=False
 	):
-	shutil.rmtree(output_path, ignore_errors=True)
+	if clear_old:
+		shutil.rmtree(output_path)
 	if not os.path.exists(output_path):
 		os.makedirs(output_path)
 
@@ -129,7 +131,7 @@ def run(
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
-	batch_size = 15
+	batch_size = 6
 
 	# # Kidney Data, 1 CV
 	# input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"
@@ -416,8 +418,8 @@ if __name__ == '__main__':
 	# )
 
 	# Tumor
-	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
-	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_tumor_fail.pickle"
+	# list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/tumor_fdr05.pickle"
+	list_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_tumor_fail.pickle"
 	selection_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/sample_sets/tumor.pickle"
 
 	# Tumor, all samples

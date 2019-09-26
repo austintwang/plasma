@@ -131,7 +131,7 @@ def run(
 
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
-	batch_size = 4
+	batch_size = 3
 
 	# # Kidney Data, 1 CV
 	# input_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/jobs"

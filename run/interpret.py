@@ -380,6 +380,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	# 	"ENSG00000182095.10",
 	# ])
 	print("") ####
+	small_sets = [] ####
 
 	for t in targets:
 		# print(t) ####
@@ -405,6 +406,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 					continue
 
 			if np.sum(result["causal_set_indep"]) <= 10: ####
+				small_sets.append([t, np.sum(result["causal_set_indep"].astype(int))]) ####
 				print("{0}\t{1}".format(t, np.sum(result["causal_set_indep"].astype(int)))) ####
 			# zb = np.full(np.shape(result["causal_set_fmb"]), np.nan) ####
 			# np.put(zb, result["informative_snps"], result["z_beta"]) ####
@@ -457,6 +459,10 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	# for i in lst:
 	# 	print("\t".join([str(j) for j in i])) ####
 	# print("")
+	small_sets.sort(key=lambda x:x[1]) ####
+	with open(os.path.join(out_dir, "small_sets.txt"), "w") as out_file: ####
+		for i in small_sets: ####
+			out_file.writelines("{0}\t{1}\n".format(*i)) ####
 
 	if fail_list_out is not None:
 		with open(fail_list_out, "wb") as fail_list_file:

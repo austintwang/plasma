@@ -405,7 +405,7 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 					continue
 
 			if np.sum(result["causal_set_indep"]) <= 10: ####
-				print(t, np.sum(result["causal_set_indep"])) ####
+				print("{0}\t{1}".format(t, np.sum(result["causal_set_indep"].astype(int)))) ####
 			# zb = np.full(np.shape(result["causal_set_fmb"]), np.nan) ####
 			# np.put(zb, result["informative_snps"], result["z_beta"]) ####
 			# causal_zscores_fmb.append(zb[result["causal_set_fmb"].astype(bool)]) ####

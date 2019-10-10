@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import pickle
 import traceback
 
-from . import TextCentBbox
+# from . import TextCentBbox
 
 pal = sns.color_palette()
 COLORMAP = {

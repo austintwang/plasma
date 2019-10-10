@@ -247,7 +247,7 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	names = [NAMEMAP[m] for m in model_flavors]
 	palette = [COLORMAP[m] for m in model_flavors]
 	
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(6,2)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(9,3)})
 	if metric == "prop":
 		plt.ylim(0, 1)
 	elif metric == "size":

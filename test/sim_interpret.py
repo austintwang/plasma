@@ -594,7 +594,7 @@ def interpret_presentation(
 	var_causal = "Causal Configuration"
 
 	df_res = df.loc[
-		(df["std_al_dev"] == 0.6)
+		(df["std_al_dev"] == 0.8)
 		& (df["complete"] == True)
 	]
 	df_res.rename(

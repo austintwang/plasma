@@ -141,7 +141,7 @@ def make_bed(input_path, output_path, model_flavors):
 	if "acav" in model_flavors:
 		write_bed(bed_data_all["acav"], os.path.join(output_path, "ldsr_acav.bed"))
 	if "fmb" in model_flavors:
-		write_bed(bed_data_all["fmb"], os.path.join(output_path, "ldsr_acav.bed"))
+		write_bed(bed_data_all["fmb"], os.path.join(output_path, "ldsr_fmb.bed"))
 
 if __name__ == '__main__':
 	# Kidney Data, Tumor

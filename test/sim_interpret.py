@@ -144,6 +144,7 @@ def make_violin_series(
 		data=model_data, 
 		palette=palette,
 		cut=0,
+		scale="width"
 	)
 	ax = plt.gca()
 	for art in ax.get_children():
@@ -571,6 +572,102 @@ def interpret_mainfig(
 			title, 
 			result_path,
 		)
+
+def interpret_presentation(
+		data_dir_base, 
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	):
+	data_dir = os.path.join(data_dir_base, "presentation")
+	df = load_data(data_dir, "presentation")
+
+	res_dir = os.path.join(res_dir_base, "presentation")
+	if not os.path.exists(res_dir):
+		os.makedirs(res_dir)
+
+	var_cred = "Credible Set Size"
+	var_inc = "Inclusion"
+	var_post = "Marginal Posterior Probabilities"
+	var_causal = "Causal Configuration"
+
+	df_res = df.loc[
+		(df["std_al_dev"] == 0.6)
+		& (df["complete"] == True)
+	]
+	df_res.rename(
+		columns={
+			"causal_set_size": var_cred,
+			"inclusion": var_inc,
+			"ppas": var_post,
+			"causal_config": var_causal,
+			"model": "Model",
+		}, 
+		inplace=True
+	)
+
+	title = ""
+
+	result_path = os.path.join(res_dir, "recall.txt")
+	write_stats_simple(
+		df_res,
+		"recall", 
+		model_flavors,
+		NAMEMAP, 
+		result_path,
+	)
+
+	result_path = os.path.join(res_dir, "stats.txt")
+	thresh_data = write_stats(
+		df_res,
+		var_cred, 
+		model_flavors,
+		NAMEMAP, 
+		threshs,
+		result_path,
+	)
+
+	result_path = os.path.join(res_dir, "sets.svg")
+	make_violin(
+		df_res,
+		var_cred, 
+		model_flavors_cred,
+		NAMEMAP, 
+		COLORMAP,
+		title, 
+		result_path,
+		num_snps
+	)
+
+	for i in reversed(range(len(model_flavors))):
+		model_flavors_inc = model_flavors[i:]
+		result_path = os.path.join(res_dir, "inc_from_{1}.svg".format(i))
+		make_avg_lineplot(
+			df_res,
+			var_inc, 
+			model_flavors_inc,
+			NAMEMAP, 
+			COLORMAP,
+			title, 
+			result_path,
+			num_snps
+		)
+
+	result_path = os.path.join(res_dir, "thresh.svg")
+	make_thresh_barplot(
+		df_res,
+		var_cred, 
+		model_flavors_cred,
+		NAMEMAP, 
+		threshs,
+		thresh_data,
+		model_flavors,
+		title, 
+		result_path,
+		num_snps
+	)
 
 def interpret_imperfect_phs(
 		data_dir_base, 
@@ -1125,36 +1222,13 @@ if __name__ == '__main__':
 	data_dir_base = "/agusevlab/awang/job_data/sim/outs/"
 	res_dir_base = "/agusevlab/awang/ase_finemap_results/sim/"
 	# model_flavors = set(["indep", "eqtl", "ase", "ecav"])
-
-	std_al_dev = [0.6, 0.8]
-	titles = ["Low AS Variance", "High AS Variance"]
-	model_flavors = ["indep", "ase", "rasq", "acav", "eqtl", "fmb", "cav"]
-	model_flavors_cred = ["indep", "ase", "acav", "eqtl", "fmb", "cav"]
-	model_flavors_pip = ["fmb", "indep"]
+	
+	model_flavors = ["indep", "ase", "rasq", "acav", "fmb"]
+	model_flavors_cred = ["indep", "ase", "acav", "fmb"]
 	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
-	interpret_mainfig(
+	interpret_presentation(
 		data_dir_base, 
-		std_al_dev, 
-		titles,
-		model_flavors,
-		model_flavors_cred,
-		model_flavors_pip,
-		threshs,
-		num_snps,
-		res_dir_base
-	)
-
-	phs_errors = [(0., 0.), (0.00152, 0.00165)]
-	titles = ["Perfect Phasing", "Imperfect Phasing"]
-	model_flavors = ["full", "indep", "ase", "rasq"]
-	model_flavors_cred = ["full", "indep", "ase"]
-	threshs = [1, 5, 20, 40, 70, 100]
-	num_snps = 100
-	interpret_imperfect_phs(
-		data_dir_base, 
-		phs_errors, 
-		titles,
 		model_flavors,
 		model_flavors_cred,
 		threshs,
@@ -1162,88 +1236,124 @@ if __name__ == '__main__':
 		res_dir_base
 	)
 
-	default_switch = [True, False]
-	titles = ["Program Defaults", "Manual Calibration"]
-	model_flavors = ["indep", "ase", "fmb"]
-	model_flavors_cred = ["indep", "ase", "fmb"]
-	threshs = [1, 5, 20, 40, 70, 100]
-	num_snps = 100
-	interpret_default_params(
-		data_dir_base, 
-		default_switch, 
-		titles,
-		model_flavors,
-		model_flavors_cred,
-		threshs,
-		num_snps,
-		res_dir_base
-	)
+	# std_al_dev = [0.6, 0.8]
+	# titles = ["Low AS Variance", "High AS Variance"]
+	# model_flavors = ["indep", "ase", "rasq", "acav", "eqtl", "fmb", "cav"]
+	# model_flavors_cred = ["indep", "ase", "acav", "eqtl", "fmb", "cav"]
+	# model_flavors_pip = ["fmb", "indep"]
+	# threshs = [1, 5, 20, 40, 70, 100]
+	# num_snps = 100
+	# interpret_mainfig(
+	# 	data_dir_base, 
+	# 	std_al_dev, 
+	# 	titles,
+	# 	model_flavors,
+	# 	model_flavors_cred,
+	# 	model_flavors_pip,
+	# 	threshs,
+	# 	num_snps,
+	# 	res_dir_base
+	# )
 
-	causal_vars = [1, 2]
-	titles = ["1 Causal Variant", "2 Causal Variants"]
-	model_flavors = ["indep", "full", "ase", "eqtl", "fmb"]
-	model_flavors_cred = ["indep", "full", "ase", "eqtl", "fmb"]
-	threshs = [1, 5, 20, 40, 70, 100]
-	num_snps = 100
-	interpret_multi_cv(
-		data_dir_base, 
-		causal_vars, 
-		titles,
-		model_flavors,
-		model_flavors_cred,
-		threshs,
-		num_snps,
-		res_dir_base
-	)
+	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
+	# titles = ["Perfect Phasing", "Imperfect Phasing"]
+	# model_flavors = ["full", "indep", "ase", "rasq"]
+	# model_flavors_cred = ["full", "indep", "ase"]
+	# threshs = [1, 5, 20, 40, 70, 100]
+	# num_snps = 100
+	# interpret_imperfect_phs(
+	# 	data_dir_base, 
+	# 	phs_errors, 
+	# 	titles,
+	# 	model_flavors,
+	# 	model_flavors_cred,
+	# 	threshs,
+	# 	num_snps,
+	# 	res_dir_base
+	# )
 
-	corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
-	title = "Correlation Hyperparameter in PLASMA-J"
-	model_flavors = ["full"]
-	num_snps = 100
-	interpret_jointness(
-		data_dir_base, 
-		corr_priors, 
-		title,
-		model_flavors,
-		num_snps,
-		res_dir_base,
-	)
+	# default_switch = [True, False]
+	# titles = ["Program Defaults", "Manual Calibration"]
+	# model_flavors = ["indep", "ase", "fmb"]
+	# model_flavors_cred = ["indep", "ase", "fmb"]
+	# threshs = [1, 5, 20, 40, 70, 100]
+	# num_snps = 100
+	# interpret_default_params(
+	# 	data_dir_base, 
+	# 	default_switch, 
+	# 	titles,
+	# 	model_flavors,
+	# 	model_flavors_cred,
+	# 	threshs,
+	# 	num_snps,
+	# 	res_dir_base
+	# )
 
-	prior_stds = [0.005, 0.05, 0.5, 5, 10, 20, 40]
-	title = "Calibration of FINEMAP 95% Credible Sets"
-	model_flavors = ["fmb"]
-	num_snps = 100
-	interpret_fmb_calib(
-		data_dir_base, 
-		prior_stds, 
-		title,
-		model_flavors,
-		num_snps,
-		res_dir_base,
-	)
+	# causal_vars = [1, 2]
+	# titles = ["1 Causal Variant", "2 Causal Variants"]
+	# model_flavors = ["indep", "full", "ase", "eqtl", "fmb"]
+	# model_flavors_cred = ["indep", "full", "ase", "eqtl", "fmb"]
+	# threshs = [1, 5, 20, 40, 70, 100]
+	# num_snps = 100
+	# interpret_multi_cv(
+	# 	data_dir_base, 
+	# 	causal_vars, 
+	# 	titles,
+	# 	model_flavors,
+	# 	model_flavors_cred,
+	# 	threshs,
+	# 	num_snps,
+	# 	res_dir_base
+	# )
 
-	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-	coverage = [10, 20, 50, 100, 500, 1000]
-	model_flavors = ["full", "indep", "ase", "acav"]
-	num_snps = 100
-	interpret_dev_cov(
-		data_dir_base, 
-		std_al_dev, 
-		coverage,
-		model_flavors,
-		num_snps,
-		res_dir_base
-	)
+	# corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
+	# title = "Correlation Hyperparameter in PLASMA-J"
+	# model_flavors = ["full"]
+	# num_snps = 100
+	# interpret_jointness(
+	# 	data_dir_base, 
+	# 	corr_priors, 
+	# 	title,
+	# 	model_flavors,
+	# 	num_snps,
+	# 	res_dir_base,
+	# )
 
-	std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
-	herit_as = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
-	model_flavors = ["full", "indep", "ase", "acav"]
-	num_snps = 100
-	interpret_dev_herit(
-		data_dir_base, 
-		std_al_dev, 
-		herit_as,
-		model_flavors,
-		num_snps,
-		res_dir_base
-	)
+	# prior_stds = [0.005, 0.05, 0.5, 5, 10, 20, 40]
+	# title = "Calibration of FINEMAP 95% Credible Sets"
+	# model_flavors = ["fmb"]
+	# num_snps = 100
+	# interpret_fmb_calib(
+	# 	data_dir_base, 
+	# 	prior_stds, 
+	# 	title,
+	# 	model_flavors,
+	# 	num_snps,
+	# 	res_dir_base,
+	# )
+
+	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	# coverage = [10, 20, 50, 100, 500, 1000]
+	# model_flavors = ["full", "indep", "ase", "acav"]
+	# num_snps = 100
+	# interpret_dev_cov(
+	# 	data_dir_base, 
+	# 	std_al_dev, 
+	# 	coverage,
+	# 	model_flavors,
+	# 	num_snps,
+	# 	res_dir_base
+	# )
+
+	# std_al_dev = [0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95]
+	# herit_as = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6]
+	# model_flavors = ["full", "indep", "ase", "acav"]
+	# num_snps = 100
+	# interpret_dev_herit(
+	# 	data_dir_base, 
+	# 	std_al_dev, 
+	# 	herit_as,
+	# 	model_flavors,
+	# 	num_snps,
+	# 	res_dir_base
+	# )

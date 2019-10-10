@@ -13,7 +13,7 @@ def fisher_enr(arg1, arg2, arg3, arg4):
 	table = np.array([[arg1, arg2-arg1],[arg3-arg1, arg4-arg2-arg3+arg1]])
 	return scipy.stats.fisher_exact(table)
 
-def parse_output(s_out, lst_out, model_name)
+def parse_output(s_out, lst_out, model_name):
 	lines = s_out.decode("utf-8").strip().split("\n")
 	for l in lines:
 		cols = l.split("\t")

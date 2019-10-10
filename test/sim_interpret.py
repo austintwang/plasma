@@ -106,6 +106,7 @@ def make_violin(
 		order=model_flavors, 
 		palette=palette,
 		cut=0,
+		scale="width"
 	)
 	ax = plt.gca()
 	for art in ax.get_children():

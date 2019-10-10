@@ -643,7 +643,7 @@ def interpret_presentation(
 
 	for i in reversed(range(len(model_flavors))):
 		model_flavors_inc = model_flavors[i:]
-		result_path = os.path.join(res_dir, "inc_from_{1}.svg".format(i))
+		result_path = os.path.join(res_dir, "inc_from_{0}.svg".format(i))
 		make_avg_lineplot(
 			df_res,
 			var_inc, 

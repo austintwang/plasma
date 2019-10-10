@@ -581,8 +581,8 @@ def interpret_presentation(
 		num_snps,
 		res_dir_base
 	):
-	data_dir = os.path.join(data_dir_base, "presentation")
-	df = load_data(data_dir, "presentation")
+	data_dir = os.path.join(data_dir_base, "mainfig")
+	df = load_data(data_dir, "mainfig")
 
 	res_dir = os.path.join(res_dir_base, "presentation")
 	if not os.path.exists(res_dir):

@@ -506,7 +506,7 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 
 	sig_snps = {}
 	num_sigs = {}
-	for ind, val in enumerate(summaries[0]["ppas_eqtl"]):
+	for ind, val in enumerate(summaries[0]["ppas_fmb"]):
 		gene_name = summaries[0]["names"][ind]
 		sigs = set([sind for sind, sval in enumerate(val) if sval >= 0.1])
 		sig_snps[gene_name] = sigs

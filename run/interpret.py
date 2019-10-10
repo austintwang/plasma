@@ -248,7 +248,7 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	palette = [COLORMAP[m] for m in model_flavors]
 	
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(9,3)})
-	plt.rcParams["figure.figsize"] = (9,3) ####
+	# plt.rcParams["figure.figsize"] = (9,3) ####
 
 	if metric == "prop":
 		plt.ylim(0, 1)
@@ -266,6 +266,8 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		cut=0
 	)
 	g.legend(loc='center left', bbox_to_anchor=(1.25, 0.5), ncol=1)
+	fig = matplotlib.pyplot.gcf()
+	fig.set_size_inches(9, 3) ####
 	plt.title(name)
 	plt.savefig(os.path.join(out_dir, "{0}_violin.svg".format(filename)))
 	plt.clf()

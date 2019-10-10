@@ -248,6 +248,8 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	palette = [COLORMAP[m] for m in model_flavors]
 	
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(9,3)})
+	plt.rcParams["figure.figsize"] = (9,3) ####
+
 	if metric == "prop":
 		plt.ylim(0, 1)
 	elif metric == "size":
@@ -538,10 +540,10 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 	# print(series.keys()) ####
 	if recall_model_flavors is None:
 		recall_model_flavors = model_flavors
-	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, recall_model_flavors)
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "size")
 	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "prop")
-
+	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, recall_model_flavors)
+	
 if __name__ == '__main__':
 	thresholds = [1, 5, 10, 20, 50, 100]
 	

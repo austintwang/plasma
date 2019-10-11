@@ -66,15 +66,17 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 	return df_out
 
 def plot_enrichment(out_dir, df_out, title, model_flavors):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(12,4)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(9,5)})
 
 	palette = [COLORMAP[m] for m in model_flavors]
+	palette = [NAMEMAP[m] for m in model_flavors]
 
 	sns.barplot(
 		x="Minimum Posterior Probability", 
 		y="Odds Ratio",
 		hue="Model",
-		data=df_out
+		data=df_out,
+		palette=palette
 	)
 	if title is not None:
 		plt.title(title + "\nOdds Ratios")
@@ -85,7 +87,9 @@ def plot_enrichment(out_dir, df_out, title, model_flavors):
 		x="Minimum Posterior Probability", 
 		y="-log10 p-Value",
 		hue="Model",
-		data=df_out
+		data=df_out,
+		palette=palette,
+		hue_order=names
 	)
 	if title is not None:
 		plt.title(title + "\n-log10 p-Values")

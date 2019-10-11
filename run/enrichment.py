@@ -9,6 +9,28 @@ import matplotlib.pyplot as plt
 import pandas as pd 
 import pickle
 
+pal = sns.color_palette()
+COLORMAP = {
+	"full": pal[1],
+	"indep": pal[3],
+	"ase": pal[2],
+	"acav": pal[5],
+	"eqtl": pal[0],
+	"cav": pal[7],
+	"rasq": pal[6],
+	"fmb": pal[8],
+}
+NAMEMAP = {
+	"full": "PLASMA-JC",
+	"indep": "PLASMA-J",
+	"ase": "PLASMA-AS",
+	"acav": "AS-Meta",
+	"eqtl": "QTL-Only",
+	"cav": "CAVIAR",
+	"rasq": "RASQUAL+",
+	"fmb": "FINEMAP",
+}
+
 def fisher_enr(arg1, arg2, arg3, arg4):
 	table = np.array([[arg1, arg2-arg1],[arg3-arg1, arg4-arg2-arg3+arg1]])
 	return scipy.stats.fisher_exact(table)
@@ -23,45 +45,14 @@ def parse_output(s_out, lst_out, model_name):
 
 def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors):
 	if model_flavors == "all":
-		model_flavors = set(["full", "indep", "eqtl", "ase", "acav"])
+		model_flavors = ["full", "indep", "eqtl", "ase", "acav"]
 
 	lst_out = []
-	if "full" in model_flavors:
-		bed_path = bed_path_base.format("full")
+	for m in model_flavors:
+		bed_path = bed_path_base.format(m)
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "PLASMA-JC")
-
-	if "indep" in model_flavors:
-		bed_path = bed_path_base.format("indep")
-		s_args = [script_path, bed_path, annot_path, ctrl_path]
-		s_out = subprocess.check_output(s_args)
-		print(s_out) ####
-		parse_output(s_out, lst_out, "PLASMA-J")
-
-	if "ase" in model_flavors:
-		bed_path = bed_path_base.format("ase")
-		s_args = [script_path, bed_path, annot_path, ctrl_path]
-		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "PLASMA-AS")
-
-	if "acav" in model_flavors:
-		bed_path = bed_path_base.format("acav")
-		s_args = [script_path, bed_path, annot_path, ctrl_path]
-		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "AS-Meta")
-
-	if "eqtl" in model_flavors:
-		bed_path = bed_path_base.format("eqtl")
-		s_args = [script_path, bed_path, annot_path, ctrl_path]
-		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "QTL-Only")
-
-	if "fmb" in model_flavors:
-		bed_path = bed_path_base.format("fmb")
-		s_args = [script_path, bed_path, annot_path, ctrl_path]
-		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, "FINEMAP")
+		parse_output(s_out, lst_out, NAMEMAP[m])
 
 	cols_out = [
 		"Model", 
@@ -74,8 +65,10 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 
 	return df_out
 
-def plot_enrichment(out_dir, df_out, title):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
+def plot_enrichment(out_dir, df_out, title, model_flavors):
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(12,4)})
+
+	palette = [COLORMAP[m] for m in model_flavors]
 
 	sns.barplot(
 		x="Minimum Posterior Probability", 
@@ -83,7 +76,8 @@ def plot_enrichment(out_dir, df_out, title):
 		hue="Model",
 		data=df_out
 	)
-	plt.title(title + "\nOdds Ratios")
+	if title is not None:
+		plt.title(title + "\nOdds Ratios")
 	plt.savefig(os.path.join(out_dir, "enrichment_odds.svg"))
 	plt.clf()
 
@@ -93,7 +87,8 @@ def plot_enrichment(out_dir, df_out, title):
 		hue="Model",
 		data=df_out
 	)
-	plt.title(title + "\n-log10 p-Values")
+	if title is not None:
+		plt.title(title + "\n-log10 p-Values")
 	plt.savefig(os.path.join(out_dir, "enrichment_pvals.svg"))
 	plt.clf()
 
@@ -102,8 +97,7 @@ def enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title
 	data_path = os.path.join(out_dir, "enrichment_data.txt")
 	df_out.to_csv(data_path, sep=str("\t"))
 	df_out.replace(np.inf, 100, inplace=True)
-	plot_enrichment(out_dir, df_out, title)
-	
+	plot_enrichment(out_dir, df_out, title, model_flavors)
 
 
 if __name__ == '__main__':
@@ -112,7 +106,7 @@ if __name__ == '__main__':
 
 	# Kidney Data
 	annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")
-	model_flavors = set(["indep", "fmb", "ase", "acav"])
+	model_flavors = ["indep", "fmb", "ase", "acav"]
 
 	# Normal
 	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
@@ -134,9 +128,20 @@ if __name__ == '__main__':
 
 	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
 
+	# Tumor, Presentation
+	model_flavors = set(["indep", "fmb", "acav"])
+	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
+	ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment_pres"
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+	title = None
+
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
+
 	# Prostate Data
 	annot_path = os.path.join(enrichment_path, "PRCA_HICHIP.MERGED_Annotated_FDR0.01_ncounts10.E.bed")
-	model_flavors = set(["indep", "eqtl", "ase", "acav"])
+	model_flavors = ["indep", "eqtl", "ase", "acav"]
 
 	# Normal
 	bed_path_base = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"

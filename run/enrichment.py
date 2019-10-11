@@ -69,7 +69,7 @@ def plot_enrichment(out_dir, df_out, title, model_flavors):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(9,5)})
 
 	palette = [COLORMAP[m] for m in model_flavors]
-	palette = [NAMEMAP[m] for m in model_flavors]
+	names = [NAMEMAP[m] for m in model_flavors]
 
 	sns.barplot(
 		x="Minimum Posterior Probability", 

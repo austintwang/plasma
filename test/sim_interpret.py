@@ -1224,8 +1224,8 @@ if __name__ == '__main__':
 	res_dir_base = "/agusevlab/awang/ase_finemap_results/sim/"
 	# model_flavors = set(["indep", "eqtl", "ase", "ecav"])
 	
-	model_flavors = ["indep", "ase", "rasq", "acav", "fmb"]
-	model_flavors_cred = ["indep", "ase", "acav", "fmb"]
+	model_flavors = ["indep", "rasq", "acav", "fmb"]
+	model_flavors_cred = ["indep", "acav", "fmb"]
 	threshs = [1, 5, 20, 40, 70, 100]
 	num_snps = 100
 	interpret_presentation(

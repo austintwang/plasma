@@ -648,7 +648,7 @@ if __name__ == '__main__':
 	# Tumor, across sample sizes, presentation
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes_pres"
 	name = ""
-	model_flavors = ["indep", "ase", "acav", "fmb",]
+	model_flavors = ["indep", "acav", "fmb",]
 	summaries = [tumor_all, tumor_200, tumor_100, tumor_50, tumor_10]
 	primary_var_vals = [524, 200, 100, 50, 10]
 	primary_var_name = "Sample Size"

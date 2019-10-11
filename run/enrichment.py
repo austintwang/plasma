@@ -66,7 +66,7 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 	return df_out
 
 def plot_enrichment(out_dir, df_out, title, model_flavors):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(9,5)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(8,5)})
 
 	palette = [COLORMAP[m] for m in model_flavors]
 	names = [NAMEMAP[m] for m in model_flavors]

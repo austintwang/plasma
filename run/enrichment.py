@@ -76,7 +76,8 @@ def plot_enrichment(out_dir, df_out, title, model_flavors):
 		y="Odds Ratio",
 		hue="Model",
 		data=df_out,
-		palette=palette
+		palette=palette,
+		hue_order=names
 	)
 	if title is not None:
 		plt.title(title + "\nOdds Ratios")

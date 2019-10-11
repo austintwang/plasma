@@ -33,6 +33,19 @@ NAMEMAP = {
 	"fmb": "FINEMAP",
 }
 
+COLORMAP_PRES = {
+	"indep": pal[0],
+	"acav": pal[2],
+	"rasq": pal[1],
+	"fmb": pal[3],
+}
+NAMEMAP_PRES = {
+	"indep": "PLASMA",
+	"acav": "AS-Meta",
+	"rasq": "RASQUAL+",
+	"fmb": "FINEMAP",
+}
+
 def load_data(data_dir, test_name):
 	# print(os.listdir(data_dir)) ####
 	filenames = [os.path.join(data_dir, i) for i in os.listdir(data_dir) if i.endswith(".pickle")]
@@ -616,7 +629,7 @@ def interpret_presentation(
 		df_res,
 		"recall", 
 		model_flavors,
-		NAMEMAP, 
+		NAMEMAP_PRES, 
 		result_path,
 	)
 
@@ -625,7 +638,7 @@ def interpret_presentation(
 		df_res,
 		var_cred, 
 		model_flavors,
-		NAMEMAP, 
+		NAMEMAP_PRES, 
 		threshs,
 		result_path,
 	)
@@ -635,8 +648,8 @@ def interpret_presentation(
 		df_res,
 		var_cred, 
 		model_flavors_cred,
-		NAMEMAP, 
-		COLORMAP,
+		NAMEMAP_PRES, 
+		COLORMAP_PRES,
 		title, 
 		result_path,
 		num_snps
@@ -649,8 +662,8 @@ def interpret_presentation(
 			df_res,
 			var_inc, 
 			model_flavors_inc,
-			NAMEMAP, 
-			COLORMAP,
+			NAMEMAP_PRES, 
+			COLORMAP_PRES,
 			title, 
 			result_path,
 			num_snps
@@ -661,7 +674,7 @@ def interpret_presentation(
 		df_res,
 		var_cred, 
 		model_flavors_cred,
-		NAMEMAP, 
+		NAMEMAP_PRES, 
 		threshs,
 		thresh_data,
 		model_flavors,

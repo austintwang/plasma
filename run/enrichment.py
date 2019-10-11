@@ -31,6 +31,19 @@ NAMEMAP = {
 	"fmb": "FINEMAP",
 }
 
+COLORMAP_PRES = {
+	"indep": pal[0],
+	"acav": pal[2],
+	"rasq": pal[1],
+	"fmb": pal[3],
+}
+NAMEMAP_PRES = {
+	"indep": "PLASMA",
+	"acav": "AS-Meta",
+	"rasq": "RASQUAL+",
+	"fmb": "FINEMAP",
+}
+
 def fisher_enr(arg1, arg2, arg3, arg4):
 	table = np.array([[arg1, arg2-arg1],[arg3-arg1, arg4-arg2-arg3+arg1]])
 	return scipy.stats.fisher_exact(table)
@@ -65,11 +78,15 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 
 	return df_out
 
-def plot_enrichment(out_dir, df_out, title, model_flavors):
+def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(8,5)})
 
-	palette = [COLORMAP[m] for m in model_flavors]
-	names = [NAMEMAP[m] for m in model_flavors]
+	if presentation:
+		palette = [COLORMAP_PRES[m] for m in model_flavors]
+		names = [NAMEMAP_PRES[m] for m in model_flavors]
+	else:
+		palette = [COLORMAP[m] for m in model_flavors]
+		names = [NAMEMAP[m] for m in model_flavors]
 
 	sns.barplot(
 		x="Minimum Posterior Probability", 
@@ -97,12 +114,12 @@ def plot_enrichment(out_dir, df_out, title, model_flavors):
 	plt.savefig(os.path.join(out_dir, "enrichment_pvals.svg"))
 	plt.clf()
 
-def enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors):
+def enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors, presentation=False):
 	df_out = run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors)
 	data_path = os.path.join(out_dir, "enrichment_data.txt")
 	df_out.to_csv(data_path, sep=str("\t"))
 	df_out.replace(np.inf, 100, inplace=True)
-	plot_enrichment(out_dir, df_out, title, model_flavors)
+	plot_enrichment(out_dir, df_out, title, model_flavors, presentation)
 
 
 if __name__ == '__main__':
@@ -142,7 +159,7 @@ if __name__ == '__main__':
 		os.makedirs(out_dir)
 	title = None
 
-	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors, presentation=True)
 
 	# Prostate Data
 	annot_path = os.path.join(enrichment_path, "PRCA_HICHIP.MERGED_Annotated_FDR0.01_ncounts10.E.bed")

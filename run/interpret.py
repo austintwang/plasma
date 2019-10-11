@@ -24,12 +24,25 @@ COLORMAP = {
 	"fmb": pal[8],
 }
 NAMEMAP = {
-	"full": "PLASMA-J",
-	"indep": "PLASMA-JI",
+	"full": "PLASMA-JC",
+	"indep": "PLASMA-J",
 	"ase": "PLASMA-AS",
 	"acav": "AS-Meta",
 	"eqtl": "QTL-Only",
 	"cav": "CAVIAR",
+	"rasq": "RASQUAL+",
+	"fmb": "FINEMAP",
+}
+
+COLORMAP_PRES = {
+	"indep": pal[0],
+	"acav": pal[2],
+	"rasq": pal[1],
+	"fmb": pal[3],
+}
+NAMEMAP_PRES = {
+	"indep": "PLASMA",
+	"acav": "AS-Meta",
 	"rasq": "RASQUAL+",
 	"fmb": "FINEMAP",
 }
@@ -39,11 +52,11 @@ def get_targets(list_path):
 		targets = pickle.load(list_file)
 	return targets
 
-def write_thresholds(summary, out_dir, total_jobs, model_flavors):
+def write_thresholds(summary, out_dir, total_jobs, model_flavors, namemap):
 	header = "\t".join(["Model"] + [str(i) for i in summary["thresholds"]]) + "\n"	
 	thresholds_list = [header]
 	for f in model_flavors:
-		data = [NAMEMAP[f]] + [summary["thresholds_{0}".format(f)][i] for i in summary["thresholds"]]
+		data = [namemap[f]] + [summary["thresholds_{0}".format(f)][i] for i in summary["thresholds"]]
 		line = "\t".join([str(i) for i in data]) + "\n"
 		thresholds_list.append(line)
 
@@ -51,23 +64,23 @@ def write_thresholds(summary, out_dir, total_jobs, model_flavors):
 	with open(out_path, "w") as out_file:
 		out_file.writelines(thresholds_list)
 
-def write_size_probs(summary, out_dir, total_jobs, model_flavors):
+def write_size_probs(summary, out_dir, total_jobs, model_flavors, namemap):
 	size_probs_list = []
 	for f in model_flavors:
-		data = "\t".join([NAMEMAP[f]] + [str(i) for i in summary["size_probs_{0}".format(f)] / total_jobs]) + "\n"
+		data = "\t".join([namemap[f]] + [str(i) for i in summary["size_probs_{0}".format(f)] / total_jobs]) + "\n"
 		size_probs_list.append(data)
 
 	out_path = os.path.join(out_dir, "causal_set_size_probabilities.txt")
 	with open(out_path, "w") as out_file:
 		out_file.writelines(size_probs_list)
 
-def write_sumstats(summary, out_dir, total_jobs, model_flavors):
+def write_sumstats(summary, out_dir, total_jobs, model_flavors, namemap):
 	header = "\t".join(["Model", "Mean", "Variance", "25 Perc", "Median", "75 Perc"]) + "\n"
 	sumstats_list = [header]
 	for f in model_flavors:
 		sizes = summary["set_sizes_{0}".format(f)]
 		line = "\t".join([
-			NAMEMAP[f], 
+			namemap[f], 
 			str(np.nanmean(sizes)), 
 			str(np.nanvar(sizes)), 
 			str(np.nanpercentile(sizes, 25)),
@@ -81,7 +94,7 @@ def write_sumstats(summary, out_dir, total_jobs, model_flavors):
 	with open(out_path, "w") as out_file:
 		out_file.writelines(sumstats_list)
 
-def plot_violin(result, out_dir, name, model_flavors, metric):
+def plot_violin(result, out_dir, name, model_flavors, metric, namemap, colormap):
 	if metric == "size":
 		kwd = "set_sizes"
 		kwd_label = "Credible Set Size"
@@ -94,13 +107,13 @@ def plot_violin(result, out_dir, name, model_flavors, metric):
 	plt_data = []
 	for f in model_flavors:
 		set_sizes = result["{0}_{1}".format(kwd, f)]
-		plt_data.extend([[i, NAMEMAP[f]] for i in set_sizes])
+		plt_data.extend([[i, namemap[f]] for i in set_sizes])
 
 	labels = [kwd_label, "Model"]
 	df = pd.DataFrame.from_records(plt_data, columns=labels)
 
-	names = [NAMEMAP[m] for m in model_flavors]
-	palette = [COLORMAP[m] for m in model_flavors]
+	names = [namemap[m] for m in model_flavors]
+	palette = [colormap[m] for m in model_flavors]
 	chart = sns.violinplot(
 		x=kwd_label, 
 		y="Model", 
@@ -119,21 +132,21 @@ def plot_violin(result, out_dir, name, model_flavors, metric):
 	plt.savefig(os.path.join(out_dir, "set_{0}_distribution.svg".format(metric)), bbox_inches='tight')
 	plt.clf()
 
-def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
+def plot_thresh(result, out_dir, name, model_flavors, total_jobs, namemap):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(4,2)})
 
 	threshs = result["thresholds"]
 	plt_data = []
 	for f in model_flavors:
-		plt_data.append([1., np.inf, NAMEMAP[f]])
+		plt_data.append([1., np.inf, namemap[f]])
 		thresh_data = result["thresholds_{0}".format(f)]
 		for k, v in thresh_data.items():
-			plt_data.append([v / total_jobs, k, NAMEMAP[f]])
+			plt_data.append([v / total_jobs, k, namemap[f]])
 
 	labels = ["Proportion of Loci", "Threshold", "Model"]
 	df = pd.DataFrame.from_records(plt_data, columns=labels)
 
-	names = [NAMEMAP[m] for m in model_flavors]
+	names = [namemap[m] for m in model_flavors]
 	palette = sns.cubehelix_palette(len(threshs) + 1, rot=-.25, light=.7)
 	df_thresh = df.loc[df["Threshold"] == np.inf]
 	chart = sns.barplot(
@@ -178,7 +191,7 @@ def plot_thresh(result, out_dir, name, model_flavors, total_jobs):
 	plt.savefig(os.path.join(out_dir, "set_size_thresh.svg"), bbox_inches='tight')
 	plt.clf()
 
-def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
+def plot_dist(result, out_dir, name, model_flavors, metric, cumu, namemap, colormap):
 	if metric == "size":
 		kwd = "set_sizes"
 	elif metric == "prop":
@@ -194,8 +207,8 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 				hist=False,
 				kde=True,
 				kde_kws={"linewidth": 2, "shade":False, "cumulative":cumu},
-				label=NAMEMAP[f],
-				color=COLORMAP[f]
+				label=namemap[f],
+				color=colormap[f]
 			)
 		except Exception as e:
 			trace = traceback.format_exc()
@@ -226,7 +239,7 @@ def plot_dist(result, out_dir, name, model_flavors, metric, cumu):
 		plt.savefig(os.path.join(out_dir, "set_prop_distribution{0}.svg".format(cumu_fname)))
 	plt.clf()
 
-def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, metric):
+def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, metric, namemap, colormap):
 	if metric == "size":
 		kwd = "all_sizes"
 		label = "Set Size"
@@ -241,11 +254,11 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 		for f in model_flavors:
 			for skey, sval in series["{0}_{1}".format(kwd, f)].items():
 				for i in sval:
-					dflst.append([i, skey, NAMEMAP[f]])
+					dflst.append([i, skey, namemap[f]])
 	res_df = pd.DataFrame(dflst, columns=[label, primary_var_name, "Model"])
 
-	names = [NAMEMAP[m] for m in model_flavors]
-	palette = [COLORMAP[m] for m in model_flavors]
+	names = [namemap[m] for m in model_flavors]
+	palette = [colormap[m] for m in model_flavors]
 	
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(9,3)})
 	# plt.rcParams["figure.figsize"] = (9,3) ####
@@ -286,7 +299,7 @@ def plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model
 	plt.savefig(os.path.join(out_dir, "{0}_bar.svg".format(filename)))
 	plt.clf()
 
-def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors):
+def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, namemap):
 	# print(model_flavors) ####
 	# print(series.keys()) ####
 	dflst = []
@@ -297,7 +310,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 				cumu_recall = 0.
 				for x, val in data:
 					cumu_recall += val
-					dflst.append([x, cumu_recall, skey, NAMEMAP[f]])
+					dflst.append([x, cumu_recall, skey, namemap[f]])
 		
 	labels = ["Proportion of Selected Markers", "Inclusion Rate", primary_var_name, "Model"]
 	res_df = pd.DataFrame(dflst, columns=labels)
@@ -319,14 +332,14 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 	plt.clf()
 
 	for f in model_flavors:
-		title = "{0}, {1} Model".format(name, NAMEMAP[f])
+		title = "{0}, {1} Model".format(name, namemap[f])
 		sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(6,5)})
 		palette = sns.cubehelix_palette(len(primary_var_vals))
 		sns.lineplot(
 			x="Proportion of Selected Markers",
 			y="Inclusion Rate",
 			hue=primary_var_name,
-			data=res_df.query("Model == '{0}'".format(NAMEMAP[f])),
+			data=res_df.query("Model == '{0}'".format(namemap[f])),
 			sort=True,
 			palette=palette
 		)
@@ -335,7 +348,7 @@ def plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, model
 		plt.clf()
 
 
-def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=None, sig_filter=None):
+def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, namemap, colormap, fail_list_out=None, sig_filter=None):
 	if model_flavors == "all":
 		model_flavors = ["indep", "full", "ase", "acav", "eqtl", "fmb"]
 
@@ -481,20 +494,20 @@ def interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fai
 	with open(os.path.join(out_dir, "insufficient_snps_jobs.txt"), "w") as insufficient_snps_out:
 		insufficient_snps_out.write("\n".join(insufficient_snps_jobs) + "\n")
 
-	write_thresholds(summary, out_dir, successes, model_flavors)
-	write_size_probs(summary, out_dir, successes, model_flavors)
-	write_sumstats(summary, out_dir, successes, model_flavors)
-	plot_thresh(summary, out_dir, name, model_flavors, successes)
-	plot_violin(summary, out_dir, name, model_flavors, "size")
-	plot_violin(summary, out_dir, name, model_flavors, "prop")
-	plot_dist(summary, out_dir, name, model_flavors, "size", True)
-	plot_dist(summary, out_dir, name, model_flavors, "prop", True)
+	write_thresholds(summary, out_dir, successes, model_flavors, namemap)
+	write_size_probs(summary, out_dir, successes, model_flavors, namemap)
+	write_sumstats(summary, out_dir, successes, model_flavors, namemap)
+	plot_thresh(summary, out_dir, name, model_flavors, successes, namemap)
+	plot_violin(summary, out_dir, name, model_flavors, "size", namemap, colormap)
+	plot_violin(summary, out_dir, name, model_flavors, "prop", namemap, colormap)
+	plot_dist(summary, out_dir, name, model_flavors, "size", True, namemap, colormap)
+	plot_dist(summary, out_dir, name, model_flavors, "prop", True, namemap, colormap)
 
 	print(successes)
 
 	return summary
 
-def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=None):
+def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, namemap, colormap, recall_model_flavors=None):
 	if model_flavors == "all":
 		model_flavors = ["indep", "full", "ase", "acav", "eqtl", "fmb"]
 
@@ -542,9 +555,9 @@ def interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, 
 	# print(series.keys()) ####
 	if recall_model_flavors is None:
 		recall_model_flavors = model_flavors
-	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "size")
-	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "prop")
-	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, recall_model_flavors)
+	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "size", namemap, colormap)
+	plot_series(series, primary_var_vals, primary_var_name, out_dir, name, model_flavors, "prop", namemap, colormap)
+	plot_recall(series, primary_var_vals, primary_var_name, out_dir, name, recall_model_flavors, namemap)
 	
 if __name__ == '__main__':
 	thresholds = [1, 5, 10, 20, 50, 100]
@@ -560,21 +573,21 @@ if __name__ == '__main__':
 	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_all"
 	# name = "Kidney RNA-Seq, All Normal Samples"
 
-	# normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# # Normal, 50 samples
 	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_50"
 	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_50"
 	# name = "Kidney RNA-Seq, 50 Normal Samples"
 
-	# normal_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# # Normal, 10 samples
 	# target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_normal_10"
 	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_10"
 	# name = "Kidney RNA-Seq, 10 Normal Samples"
 
-	# normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# # Normal, across sample sizes
 	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_sample_sizes"
@@ -585,7 +598,7 @@ if __name__ == '__main__':
 	# primary_var_vals = [70, 50, 10]
 	# primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, NAMEMAP, COLORMAP, recall_model_flavors=recall_model_flavors)
 
 	# Tumor
 	model_flavors = ["indep", "ase", "acav", "fmb",]
@@ -596,7 +609,7 @@ if __name__ == '__main__':
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all"
 	name = "Kidney RNA-Seq, All Tumor Samples"
 
-	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# Tumor, all samples, presentation
 	model_flavors_pres = ["indep", "acav", "fmb",]
@@ -604,35 +617,35 @@ if __name__ == '__main__':
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_pres"
 	name = ""
 
-	tumor_all_pres = interpret(targets, target_dir, out_dir, name, model_flavors_pres, thresholds)
+	tumor_all_pres = interpret(targets, target_dir, out_dir, name, model_flavors_pres, thresholds, NAMEMAP_PRES, COLORMAP_PRES)
 
 	# Tumor, 200 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_200"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_200"
 	name = "Kidney RNA-Seq, 200 Tumor Samples"
 
-	tumor_200 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	tumor_200 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# Tumor, 100 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_100"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_100"
 	name = "Kidney RNA-Seq, 100 Tumor Samples"
 
-	tumor_100 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	tumor_100 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# Tumor, 50 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_50"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_50"
 	name = "Kidney RNA-Seq, 50 Tumor Samples"
 
-	tumor_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	tumor_50 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# Tumor, 10 samples
 	target_dir = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_10"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_10"
 	name = "Kidney RNA-Seq, 10 Tumor Samples"
 
-	tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# # Tumor, across sample sizes
 	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes"
@@ -643,7 +656,7 @@ if __name__ == '__main__':
 	# primary_var_vals = [524, 200, 100, 50, 10]
 	# primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=recall_model_flavors)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, NAMEMAP, COLORMAP, recall_model_flavors=recall_model_flavors)
 
 	# Tumor, across sample sizes, presentation
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_sample_sizes_pres"
@@ -653,7 +666,7 @@ if __name__ == '__main__':
 	primary_var_vals = [524, 200, 100, 50, 10]
 	primary_var_name = "Sample Size"
 
-	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, recall_model_flavors=[])
+	interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, NAMEMAP_PRES, COLORMAP_PRES, recall_model_flavors=[])
 
 	# # Tumor, low heritability, all samples
 	# model_flavors = ["indep", "ase", "acav", "fmb",]
@@ -663,7 +676,7 @@ if __name__ == '__main__':
 	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_all_low_herit"
 	# name = "Kidney RNA-Seq, All Tumor Samples"
 
-	# tumor_low_herit = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_low_herit = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# Kidney Cancer, Multi CV
 
@@ -676,7 +689,7 @@ if __name__ == '__main__':
 	# fail_list_out = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_normal_fail.pickle"
 	# name = "Kidney RNA-Seq, All Normal Samples"
 
-	# normal_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
+	# normal_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP, fail_list_out=fail_list_out)
 
 	# # Tumor, all samples
 	# model_flavors = ["indep", "ase", "fmb"]
@@ -687,7 +700,7 @@ if __name__ == '__main__':
 	# fail_list_out = "/agusevlab/awang/job_data/KIRC_RNASEQ/gene_lists/shotgun_tumor_fail.pickle"
 	# name = "Kidney RNA-Seq, All Tumor Samples"
 
-	# tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, fail_list_out=fail_list_out)
+	# tumor_multi_cv = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP, fail_list_out=fail_list_out)
 
 	# # Prostate Cancer
 
@@ -702,14 +715,14 @@ if __name__ == '__main__':
 	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_all"
 	# name = "Prostate ChIP-Seq, All Normal Samples"
 
-	# normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# # Normal, 10 samples
 	# target_dir = "/agusevlab/awang/job_data/prostate_chipseq_normal/outs/1cv_normal_10"
 	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_10"
 	# name = "Prostate ChIP-Seq, 10 Normal Samples"
 
-	# normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# normal_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# # Normal, across sample sizes
 	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_sample_sizes"
@@ -719,7 +732,7 @@ if __name__ == '__main__':
 	# primary_var_vals = [24, 10]
 	# primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, NAMEMAP, COLORMAP)
 
 	# Tumor
 	model_flavors = ["indep", "ase", "acav", "fmb",]
@@ -730,7 +743,7 @@ if __name__ == '__main__':
 	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all"
 	# name = "Prostate ChIP-Seq, All Tumor Samples"
 
-	# tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# Tumor, all samples, presentation
 	model_flavors_pres = ["indep", "ase", "acav", "fmb",]
@@ -738,14 +751,14 @@ if __name__ == '__main__':
 	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_all_pres"
 	name = ""
 
-	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors_pres, thresholds)
+	tumor_all = interpret(targets, target_dir, out_dir, name, model_flavors_pres, thresholds, NAMEMAP_PRES, COLORMAP_PRES)
 
 	# # Tumor, 10 samples
 	# target_dir = "/agusevlab/awang/job_data/prostate_chipseq_tumor/outs/1cv_tumor_10"
 	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_10"
 	# name = "Prostate ChIP-Seq, 10 Tumor Samples"
 
-	# tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds)
+	# tumor_10 = interpret(targets, target_dir, out_dir, name, model_flavors, thresholds, NAMEMAP, COLORMAP)
 
 	# # Tumor, across sample sizes
 	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_sample_sizes"
@@ -755,5 +768,5 @@ if __name__ == '__main__':
 	# primary_var_vals = [24, 10]
 	# primary_var_name = "Sample Size"
 
-	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name)
+	# interpret_series(out_dir, name, model_flavors, summaries, primary_var_vals, primary_var_name, NAMEMAP, COLORMAP)
 

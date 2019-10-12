@@ -61,9 +61,9 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 		model_flavors = ["full", "indep", "eqtl", "ase", "acav"]
 
 	if presentation:
-		namemap = NAMEMAP
-	else:
 		namemap = NAMEMAP_PRES
+	else:
+		namemap = NAMEMAP
 
 	lst_out = []
 	for m in model_flavors:
@@ -156,7 +156,7 @@ if __name__ == '__main__':
 	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
 
 	# Tumor, Presentation
-	model_flavors = set(["indep", "fmb", "acav"])
+	model_flavors_pres = ["indep", "acav", "fmb"]
 	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
 	ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment_pres"
@@ -164,7 +164,7 @@ if __name__ == '__main__':
 		os.makedirs(out_dir)
 	title = None
 
-	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors, presentation=True)
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors_pres, presentation=True)
 
 	# Prostate Data
 	annot_path = os.path.join(enrichment_path, "PRCA_HICHIP.MERGED_Annotated_FDR0.01_ncounts10.E.bed")

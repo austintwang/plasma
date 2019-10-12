@@ -84,7 +84,7 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 	return df_out
 
 def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
-	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(8,5)})
+	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(6,4)})
 
 	if presentation:
 		palette = [COLORMAP_PRES[m] for m in model_flavors]

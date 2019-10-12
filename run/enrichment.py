@@ -103,7 +103,7 @@ def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
 	)
 	if title is not None:
 		plt.title(title + "\nOdds Ratios")
-	plt.savefig(os.path.join(out_dir, "enrichment_odds.svg"))
+	plt.savefig(os.path.join(out_dir, "enrichment_odds.svg"), bbox_inches="tight")
 	plt.clf()
 
 	sns.barplot(
@@ -116,7 +116,7 @@ def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
 	)
 	if title is not None:
 		plt.title(title + "\n-log10 p-Values")
-	plt.savefig(os.path.join(out_dir, "enrichment_pvals.svg"))
+	plt.savefig(os.path.join(out_dir, "enrichment_pvals.svg"), bbox_inches="tight")
 	plt.clf()
 
 def enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors, presentation=False):

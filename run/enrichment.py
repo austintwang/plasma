@@ -56,16 +56,21 @@ def parse_output(s_out, lst_out, model_name):
 		entry = [model_name, float(cols[1]), odds, -np.log10(pval)]
 		lst_out.append(entry)
 
-def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors):
+def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors, presentation):
 	if model_flavors == "all":
 		model_flavors = ["full", "indep", "eqtl", "ase", "acav"]
+
+	if presentation:
+		namemap = NAMEMAP
+	else:
+		namemap = NAMEMAP_PRES
 
 	lst_out = []
 	for m in model_flavors:
 		bed_path = bed_path_base.format(m)
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, NAMEMAP[m])
+		parse_output(s_out, lst_out, namemap[m])
 
 	cols_out = [
 		"Model", 
@@ -115,7 +120,7 @@ def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
 	plt.clf()
 
 def enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors, presentation=False):
-	df_out = run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors)
+	df_out = run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors, presentation)
 	data_path = os.path.join(out_dir, "enrichment_data.txt")
 	df_out.to_csv(data_path, sep=str("\t"))
 	df_out.replace(np.inf, 100, inplace=True)

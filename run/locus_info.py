@@ -22,7 +22,7 @@ def write_loci(loci, loci_dir, out_dir, out_text_file):
         with open(locus_out_path, "rb") as locus_out_file:
             locus_out = pickle.load(locus_out_file, encoding='latin1')
         
-        for j in np.nonzero(locus["causal_set_indep"])[0]:
+        for j in np.nonzero(locus_out["causal_set_indep"])[0]:
             snp_id = locus_in["snp_ids"][j]
             ppa = locus_out["ppas_indep"][j]
             z_phi = locus_out["z_phi"][j]

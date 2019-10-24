@@ -35,7 +35,7 @@ def write_loci(loci, loci_dir, out_dir, out_text_file):
 
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    with open(out_text_file, "w") as out:
+    with open(os.path.join(out_dir, out_text_file), "w") as out:
         out.writelines(loci_info)
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ def write_loci(loci, loci_dir, out_dir, out_text_file):
         for j in np.nonzero(locus_out["causal_set_indep"])[0]:
             snp_id = locus_in["snp_ids"][j]
             if snp_id is None:
-                snp_id = "{0}.{1}".format(locus_in["chr"][j], locus_in["snp_pos"][j])
+                snp_id = "{0}.{1}".format(locus_in["chr"], locus_in["snp_pos"][j])
             ppa = locus_out["ppas_indep"][j]
             # z_phi = locus_out["z_phi"][j]
             # z_beta = locus_out["z_beta"][j]

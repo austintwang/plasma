@@ -15,15 +15,18 @@ import pickle
 def write_loci(loci, loci_dir, out_dir, out_text_file):
     loci_info = []
     for i in loci:
-        locus_path = os.path.join(loci_dir, i, "output.pickle")
-        with open(locus_path, "rb") as locus_file:
-            locus = pickle.load(locus_file, encoding='latin1')
+        locus_in_path = os.path.join(loci_dir, i, "in_data.pickle")
+        with open(locus_in_path, "rb") as locus_in_file:
+            locus_in = pickle.load(locus_in_file, encoding='latin1')
+        locus_out_path = os.path.join(loci_dir, i, "output.pickle")
+        with open(locus_out_path, "rb") as locus_out_file:
+            locus_out = pickle.load(locus_out_file, encoding='latin1')
         
         for j in np.nonzero(locus["causal_set_indep"])[0]:
-            snp_id = locus["snp_ids"][j]
-            ppa = locus["ppas_indep"][j]
-            z_phi = locus["z_phi"][j]
-            z_beta = locus["z_beta"][j]
+            snp_id = locus_in["snp_ids"][j]
+            ppa = locus_out["ppas_indep"][j]
+            z_phi = locus_out["z_phi"][j]
+            z_beta = locus_out["z_beta"][j]
             line = "{0}\t{1}\t{2}\t{3}\t{4}\n".format(i, snp_id, ppa, z_phi, z_beta)
             print(line)
             loci_info.append(line)

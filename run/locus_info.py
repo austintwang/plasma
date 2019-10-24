@@ -25,9 +25,9 @@ def write_loci(loci, loci_dir, out_dir, out_text_file):
         for j in np.nonzero(locus_out["causal_set_indep"])[0]:
             snp_id = locus_in["snp_ids"][j]
             ppa = locus_out["ppas_indep"][j]
-            z_phi = locus_out["z_phi"][j]
-            z_beta = locus_out["z_beta"][j]
-            line = "{0}\t{1}\t{2}\t{3}\t{4}\n".format(i, snp_id, ppa, z_phi, z_beta)
+            # z_phi = locus_out["z_phi"][j]
+            # z_beta = locus_out["z_beta"][j]
+            line = "{0}\t{1}\t{2}\n".format(i, snp_id, ppa)
             print(line)
             loci_info.append(line)
 

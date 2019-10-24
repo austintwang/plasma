@@ -33,6 +33,8 @@ def write_loci(loci, loci_dir, out_dir, out_text_file):
             print(line)
             loci_info.append(line)
 
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
     with open(out_text_file, "w") as out:
         out.writelines(loci_info)
 

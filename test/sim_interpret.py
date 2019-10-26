@@ -586,17 +586,17 @@ def interpret_mainfig(
 			num_snps
 		)
 
-		result_path = os.path.join(res_dir, "pip_s_{0}.svg".format(s))
-		make_pip_plot(
-			df_res,
-			var_post, 
-			var_causal,
-			model_flavors_pip[0],
-			model_flavors_pip[1],
-			NAMEMAP, 
-			title, 
-			result_path,
-		)
+		# result_path = os.path.join(res_dir, "pip_s_{0}.svg".format(s))
+		# make_pip_plot(
+		# 	df_res,
+		# 	var_post, 
+		# 	var_causal,
+		# 	model_flavors_pip[0],
+		# 	model_flavors_pip[1],
+		# 	NAMEMAP, 
+		# 	title, 
+		# 	result_path,
+		# )
 
 def interpret_presentation(
 		data_dir_base, 
@@ -1248,37 +1248,37 @@ if __name__ == '__main__':
 	res_dir_base = "/agusevlab/awang/ase_finemap_results/sim/"
 	# model_flavors = set(["indep", "eqtl", "ase", "ecav"])
 	
-	model_flavors = ["indep", "rasq", "acav", "fmb"]
-	model_flavors_cred = ["indep", "acav", "fmb"]
-	threshs = [1, 5, 20, 40, 70, 100]
-	num_snps = 100
-	interpret_presentation(
-		data_dir_base, 
-		model_flavors,
-		model_flavors_cred,
-		threshs,
-		num_snps,
-		res_dir_base
-	)
-
-	# std_al_dev = [0.6, 0.8]
-	# titles = ["Low AS Variance", "High AS Variance"]
-	# model_flavors = ["indep", "ase", "rasq", "acav", "eqtl", "fmb", "cav"]
-	# model_flavors_cred = ["indep", "ase", "acav", "eqtl", "fmb", "cav"]
-	# model_flavors_pip = ["fmb", "indep"]
+	# model_flavors = ["indep", "rasq", "acav", "fmb"]
+	# model_flavors_cred = ["indep", "acav", "fmb"]
 	# threshs = [1, 5, 20, 40, 70, 100]
 	# num_snps = 100
-	# interpret_mainfig(
+	# interpret_presentation(
 	# 	data_dir_base, 
-	# 	std_al_dev, 
-	# 	titles,
 	# 	model_flavors,
 	# 	model_flavors_cred,
-	# 	model_flavors_pip,
 	# 	threshs,
 	# 	num_snps,
 	# 	res_dir_base
 	# )
+
+	std_al_dev = [0.6, 0.8]
+	titles = ["Low AS Variance", "High AS Variance"]
+	model_flavors = ["indep", "ase", "rasq", "acav", "eqtl", "fmb", "cav"]
+	model_flavors_cred = ["indep", "ase", "acav", "eqtl", "fmb", "cav"]
+	model_flavors_pip = ["fmb", "indep"]
+	threshs = [1, 5, 20, 40, 70, 100]
+	num_snps = 100
+	interpret_mainfig(
+		data_dir_base, 
+		std_al_dev, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		model_flavors_pip,
+		threshs,
+		num_snps,
+		res_dir_base
+	)
 
 	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
 	# titles = ["Perfect Phasing", "Imperfect Phasing"]
@@ -1314,22 +1314,22 @@ if __name__ == '__main__':
 	# 	res_dir_base
 	# )
 
-	# causal_vars = [1, 2]
-	# titles = ["1 Causal Variant", "2 Causal Variants"]
-	# model_flavors = ["indep", "full", "ase", "eqtl", "fmb"]
-	# model_flavors_cred = ["indep", "full", "ase", "eqtl", "fmb"]
-	# threshs = [1, 5, 20, 40, 70, 100]
-	# num_snps = 100
-	# interpret_multi_cv(
-	# 	data_dir_base, 
-	# 	causal_vars, 
-	# 	titles,
-	# 	model_flavors,
-	# 	model_flavors_cred,
-	# 	threshs,
-	# 	num_snps,
-	# 	res_dir_base
-	# )
+	causal_vars = [1, 2]
+	titles = ["1 Causal Variant", "2 Causal Variants"]
+	model_flavors = ["indep", "full", "ase", "fmb"]
+	model_flavors_cred = ["indep", "full", "ase", "fmb"]
+	threshs = [1, 5, 20, 40, 70, 100]
+	num_snps = 100
+	interpret_multi_cv(
+		data_dir_base, 
+		causal_vars, 
+		titles,
+		model_flavors,
+		model_flavors_cred,
+		threshs,
+		num_snps,
+		res_dir_base
+	)
 
 	# corr_priors = [0., 0.2, 0.5, 0.7, 0.95, 0.99]
 	# title = "Correlation Hyperparameter in PLASMA-J"

@@ -1261,24 +1261,24 @@ if __name__ == '__main__':
 	# 	res_dir_base
 	# )
 
-	std_al_dev = [0.6, 0.8]
-	titles = ["Low AS Variance", "High AS Variance"]
-	model_flavors = ["indep", "ase", "rasq", "acav", "eqtl", "fmb", "cav"]
-	model_flavors_cred = ["indep", "ase", "acav", "eqtl", "fmb", "cav"]
-	model_flavors_pip = ["fmb", "indep"]
-	threshs = [1, 5, 20, 40, 70, 100]
-	num_snps = 100
-	interpret_mainfig(
-		data_dir_base, 
-		std_al_dev, 
-		titles,
-		model_flavors,
-		model_flavors_cred,
-		model_flavors_pip,
-		threshs,
-		num_snps,
-		res_dir_base
-	)
+	# std_al_dev = [0.6, 0.8]
+	# titles = ["Low AS Variance", "High AS Variance"]
+	# model_flavors = ["indep", "ase", "rasq", "acav", "eqtl", "fmb", "cav"]
+	# model_flavors_cred = ["indep", "ase", "acav", "eqtl", "fmb", "cav"]
+	# model_flavors_pip = ["fmb", "indep"]
+	# threshs = [1, 5, 20, 40, 70, 100]
+	# num_snps = 100
+	# interpret_mainfig(
+	# 	data_dir_base, 
+	# 	std_al_dev, 
+	# 	titles,
+	# 	model_flavors,
+	# 	model_flavors_cred,
+	# 	model_flavors_pip,
+	# 	threshs,
+	# 	num_snps,
+	# 	res_dir_base
+	# )
 
 	# phs_errors = [(0., 0.), (0.00152, 0.00165)]
 	# titles = ["Perfect Phasing", "Imperfect Phasing"]

@@ -133,7 +133,7 @@ if __name__ == '__main__':
 
 	# Kidney Data
 	annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")
-	model_flavors = ["indep", "fmb", "ase", "acav"]
+	model_flavors = ["indep", "ase", "acav", "fmb"]
 
 	# Normal
 	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
@@ -155,20 +155,20 @@ if __name__ == '__main__':
 
 	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
 
-	# Tumor, Presentation
-	model_flavors_pres = ["indep", "acav", "fmb"]
-	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
-	ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment_pres"
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
-	title = None
+	# # Tumor, Presentation
+	# model_flavors_pres = ["indep", "acav", "fmb"]
+	# bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
+	# ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment_pres"
+	# if not os.path.exists(out_dir):
+	# 	os.makedirs(out_dir)
+	# title = None
 
-	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors_pres, presentation=True)
+	# enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors_pres, presentation=True)
 
 	# Prostate Data
 	annot_path = os.path.join(enrichment_path, "PRCA_HICHIP.MERGED_Annotated_FDR0.01_ncounts10.E.bed")
-	model_flavors = ["indep", "eqtl", "ase", "acav"]
+	model_flavors = ["indep", "ase", "acav", "fmb"]
 
 	# Normal
 	bed_path_base = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"

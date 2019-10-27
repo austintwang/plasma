@@ -14,14 +14,14 @@ from scipy.stats import norm
 
 pal = sns.color_palette()
 COLORMAP = {
-    "full": pal[1],
-    "indep": pal[3],
-    "ase": pal[2],
-    "acav": pal[5],
-    "eqtl": pal[0],
-    "cav": pal[7],
-    "rasq": pal[6],
-    "fmb": pal[8],
+    "full": pal[6],
+    "indep": pal[0],
+    "ase": pal[4],
+    "acav": pal[2],
+    "eqtl": pal[7],
+    "cav": pal[5],
+    "rasq": pal[1],
+    "fmb": pal[3],
 }
 NAMEMAP = {
     "full": "PLASMA-JC",

@@ -8,6 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd 
 import pickle
+import hail as hl
 
 pal = sns.color_palette()
 COLORMAP = {
@@ -45,15 +46,17 @@ NAMEMAP_PRES = {
 }
 
 def fisher_enr(arg1, arg2, arg3, arg4):
-	table = np.array([[arg1, arg2-arg1],[arg3-arg1, arg4-arg2-arg3+arg1]])
-	return scipy.stats.fisher_exact(table)
+	# table = np.array([[arg1, arg2-arg1],[arg3-arg1, arg4-arg2-arg3+arg1]])
+	fisher = hl.eval(hl.fisher_exact_test(arg1, arg2-arg1, arg3-arg1, arg4-arg2-arg3+arg1))
+	return fisher.odds_ratio, fisher.p_value, fisher.ci_95_lower, fisher.ci_95_upper
+	# return scipy.stats.fisher_exact(table)
 
 def parse_output(s_out, lst_out, model_name):
 	lines = s_out.decode("utf-8").strip().split("\n")
 	for l in lines:
 		cols = l.split("\t")
-		odds, pval = fisher_enr(float(cols[2]), float(cols[3]), float(cols[4]), float(cols[5]))
-		entry = [model_name, float(cols[1]), odds, -np.log10(pval)]
+		odds, pval, ci_l, ci_u = fisher_enr(float(cols[2]), float(cols[3]), float(cols[4]), float(cols[5]))
+		entry = [model_name, float(cols[1]), odds, -np.log10(pval), ci_l, ci_u]
 		lst_out.append(entry)
 
 def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors, presentation):
@@ -76,7 +79,9 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 		"Model", 
 		"Minimum Posterior Probability", 
 		"Odds Ratio", 
-		"-log10 p-Value"
+		"-log10 p-Value",
+		"95% Confidence Interval, Lower",
+		"95% Confidence Interval, Upper"
 	]
 
 	df_out = pd.DataFrame(lst_out, columns=cols_out)

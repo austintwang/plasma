@@ -47,7 +47,7 @@ NAMEMAP_PRES = {
 
 def fisher_enr(arg1, arg2, arg3, arg4):
 	# table = np.array([[arg1, arg2-arg1],[arg3-arg1, arg4-arg2-arg3+arg1]])
-	fisher = hl.eval(hl.fisher_exact_test(arg1, arg2-arg1, arg3-arg1, arg4-arg2-arg3+arg1))
+	fisher = hl.eval(hl.fisher_exact_test(int(arg1), int(arg2-arg1), int(arg3-arg1), int(arg4-arg2-arg3+arg1)))
 	return fisher.odds_ratio, fisher.p_value, fisher.ci_95_lower, fisher.ci_95_upper
 	# return scipy.stats.fisher_exact(table)
 

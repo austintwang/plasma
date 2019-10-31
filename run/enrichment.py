@@ -120,12 +120,14 @@ def plot_enrichment(out_dir, df_out, df_out_odds, title, model_flavors, presenta
 		data=df_out_odds,
 		palette=palette,
 		hue_order=names,
-		ci=1.,
+		ci=100,
 		estimator=np.median
 	)
 	if title is not None:
 		plt.title(title + "\nOdds Ratios")
-	plt.ylim(bottom=1)
+	max_odds = df_out["Odds Ratio"].max()
+	max_odds_upper = df_out_odds["Odds Ratio"].max()
+	plt.ylim(1, min(max_odds_upper * 1.1, max_odds * 1.4))
 	plt.savefig(os.path.join(out_dir, "enrichment_odds.svg"), bbox_inches="tight")
 	plt.clf()
 

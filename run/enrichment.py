@@ -51,13 +51,19 @@ def fisher_enr(arg1, arg2, arg3, arg4):
 	return fisher.odds_ratio, fisher.p_value, fisher.ci_95_lower, fisher.ci_95_upper
 	# return scipy.stats.fisher_exact(table)
 
-def parse_output(s_out, lst_out, model_name):
+def parse_output(s_out, lst_out, lst_out_odds, model_name):
 	lines = s_out.decode("utf-8").strip().split("\n")
 	for l in lines:
 		cols = l.split("\t")
 		odds, pval, ci_l, ci_u = fisher_enr(float(cols[2]), float(cols[3]), float(cols[4]), float(cols[5]))
 		entry = [model_name, float(cols[1]), odds, -np.log10(pval), ci_l, ci_u]
 		lst_out.append(entry)
+		odds_data = [
+			[model_name, float(cols[1]), odds],
+			[model_name, float(cols[1]), ci_l],
+			[model_name, float(cols[1]), ci_u]
+		]
+		lst_out_odds.extend(odds_data)
 
 def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors, presentation):
 	if model_flavors == "all":
@@ -69,11 +75,12 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 		namemap = NAMEMAP
 
 	lst_out = []
+	lst_out_odds = []
 	for m in model_flavors:
 		bed_path = bed_path_base.format(m)
 		s_args = [script_path, bed_path, annot_path, ctrl_path]
 		s_out = subprocess.check_output(s_args)
-		parse_output(s_out, lst_out, namemap[m])
+		parse_output(s_out, lst_out, lst_out_odds, namemap[m])
 
 	cols_out = [
 		"Model", 
@@ -86,9 +93,17 @@ def run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flav
 
 	df_out = pd.DataFrame(lst_out, columns=cols_out)
 
-	return df_out
+	cols_out_odds = [
+		"Model", 
+		"Minimum Posterior Probability", 
+		"Odds Ratio", 
+	]
 
-def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
+	df_out_odds = pd.DataFrame(lst_out_odds, columns=cols_out_odds)
+
+	return df_out, df_out_odds
+
+def plot_enrichment(out_dir, df_out, df_out_odds, title, model_flavors, presentation):
 	sns.set(style="whitegrid", font="Roboto", rc={'figure.figsize':(6,4)})
 
 	if presentation:
@@ -102,12 +117,15 @@ def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
 		x="Minimum Posterior Probability", 
 		y="Odds Ratio",
 		hue="Model",
-		data=df_out,
+		data=df_out_odds,
 		palette=palette,
-		hue_order=names
+		hue_order=names,
+		ci=1.,
+		estimator=np.median
 	)
 	if title is not None:
 		plt.title(title + "\nOdds Ratios")
+	plt.ylim(bottom=0)
 	plt.savefig(os.path.join(out_dir, "enrichment_odds.svg"), bbox_inches="tight")
 	plt.clf()
 
@@ -125,11 +143,11 @@ def plot_enrichment(out_dir, df_out, title, model_flavors, presentation):
 	plt.clf()
 
 def enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors, presentation=False):
-	df_out = run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors, presentation)
+	df_out, df_out_odds = run_enrichment(bed_path_base, annot_path, script_path, ctrl_path, model_flavors, presentation)
 	data_path = os.path.join(out_dir, "enrichment_data.txt")
 	df_out.to_csv(data_path, sep=str("\t"))
 	df_out.replace(np.inf, 100, inplace=True)
-	plot_enrichment(out_dir, df_out, title, model_flavors, presentation)
+	plot_enrichment(out_dir, df_out, df_out_odds, title, model_flavors, presentation)
 
 
 if __name__ == '__main__':

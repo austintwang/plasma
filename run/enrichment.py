@@ -125,7 +125,7 @@ def plot_enrichment(out_dir, df_out, df_out_odds, title, model_flavors, presenta
 	)
 	if title is not None:
 		plt.title(title + "\nOdds Ratios")
-	plt.ylim(bottom=0)
+	plt.ylim(bottom=1)
 	plt.savefig(os.path.join(out_dir, "enrichment_odds.svg"), bbox_inches="tight")
 	plt.clf()
 

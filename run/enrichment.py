@@ -127,7 +127,7 @@ def plot_enrichment(out_dir, df_out, df_out_odds, title, model_flavors, presenta
 		plt.title(title + "\nOdds Ratios")
 	max_odds = df_out["Odds Ratio"].max()
 	max_odds_upper = df_out_odds["Odds Ratio"].max()
-	plt.ylim(1, min(max_odds_upper * 1.1, max_odds * 1.4))
+	plt.ylim(1, min(max_odds_upper * 1.05, max_odds * 1.4))
 	plt.savefig(os.path.join(out_dir, "enrichment_odds.svg"), bbox_inches="tight")
 	plt.clf()
 
@@ -160,57 +160,57 @@ if __name__ == '__main__':
 	annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")
 	model_flavors = ["indep", "ase", "acav", "fmb"]
 
-	# Normal
-	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
-	ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ctrl.bed"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_enrichment"
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
-	title = "Kidney RNA-Seq, Open Chromatin Enrichment, Normal Samples"
-
-	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
-
-	# Tumor
-	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
-	ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment"
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
-	title = "Kidney RNA-Seq, Open Chromatin Enrichment, Tumor Samples"
-
-	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
-
-	# # Tumor, Presentation
-	# model_flavors_pres = ["indep", "acav", "fmb"]
-	# bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
-	# ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
-	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment_pres"
+	# # Normal
+	# bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
+	# ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_normal_all/ctrl.bed"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_normal_enrichment"
 	# if not os.path.exists(out_dir):
 	# 	os.makedirs(out_dir)
-	# title = None
+	# title = "Kidney RNA-Seq, Open Chromatin Enrichment, Normal Samples"
 
-	# enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors_pres, presentation=True)
+	# enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
 
-	# Prostate Data
-	annot_path = os.path.join(enrichment_path, "PRCA_HICHIP.MERGED_Annotated_FDR0.01_ncounts10.E.bed")
-	model_flavors = ["indep", "ase", "acav", "fmb"]
+	# # Tumor
+	# bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
+	# ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment"
+	# if not os.path.exists(out_dir):
+	# 	os.makedirs(out_dir)
+	# title = "Kidney RNA-Seq, Open Chromatin Enrichment, Tumor Samples"
 
-	# Normal
-	bed_path_base = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
-	ctrl_path = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ctrl.bed"
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_enrichment"
+	# enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
+
+	# Tumor, Presentation
+	model_flavors_pres = ["indep", "acav", "fmb"]
+	bed_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
+	ctrl_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/ldsr_beds/1cv_tumor_all/ctrl.bed"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/1cv_tumor_enrichment_pres"
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
-	title = "Prostate ChIP-Seq, Chromatin Looping Enrichment, Normal Samples"
+	title = None
 
-	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
+	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors_pres, presentation=True)
 
-	# Tumor
-	bed_path_base = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
-	ctrl_path = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all/ctrl.bed"
-	out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_enrichment"
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
-	title = "Prostate ChIP-Seq, Chromatin Looping Enrichment, Tumor Samples"
+	# # Prostate Data
+	# annot_path = os.path.join(enrichment_path, "PRCA_HICHIP.MERGED_Annotated_FDR0.01_ncounts10.E.bed")
+	# model_flavors = ["indep", "ase", "acav", "fmb"]
 
-	enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
+	# # Normal
+	# bed_path_base = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ldsr_{0}.bed"
+	# ctrl_path = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_normal_all/ctrl.bed"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_normal_enrichment"
+	# if not os.path.exists(out_dir):
+	# 	os.makedirs(out_dir)
+	# title = "Prostate ChIP-Seq, Chromatin Looping Enrichment, Normal Samples"
+
+	# enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)
+
+	# # Tumor
+	# bed_path_base = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all/ldsr_{0}.bed"
+	# ctrl_path = "/agusevlab/awang/job_data/prostate_chipseq/ldsr_beds/1cv_tumor_all/ctrl.bed"
+	# out_dir = "/agusevlab/awang/ase_finemap_results/prostate_chipseq/1cv_tumor_enrichment"
+	# if not os.path.exists(out_dir):
+	# 	os.makedirs(out_dir)
+	# title = "Prostate ChIP-Seq, Chromatin Looping Enrichment, Tumor Samples"
+
+	# enrichment(bed_path_base, annot_path, script_path, ctrl_path, out_dir, title, model_flavors)

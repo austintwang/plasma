@@ -197,7 +197,7 @@ def analyze_list(res_path_base, list_path, annot_path, out_dir):
     ]
     markers_df = pd.DataFrame(markers_list, columns=markers_cols)
     out_path = os.path.join(out_dir, "markers.txt")
-    markers_df.to_csv(path_or_buf=, index=False, sep="\t")
+    markers_df.to_csv(path_or_buf=out_path, index=False, sep="\t")
 
 
 if __name__ == '__main__':

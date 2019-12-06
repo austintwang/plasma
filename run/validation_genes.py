@@ -107,11 +107,6 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     ppas_plasma = result["ppas_indep"]
     ppas_finemap = result["ppas_fmb"]
 
-    # print(len(cset_plasma)) ####
-    # print(len(ppas_plasma)) ####
-    # print(len(result["informative_snps"])) ####
-    # print(len(inputs["snp_ids"])) ####
-
     informative_snps = result["informative_snps"]
 
     print(len(informative_snps))
@@ -128,7 +123,7 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     np.put(z_phi, informative_snps, result["z_phi"])
     for i, z in enumerate(z_phi):
         l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-        if all([cset_plasma[i] == 1, ppas_plasma[i] != np.nan, z > 0.]):
+        if all([cset_plasma[i] == 1, ppas_plasma[i] != np.nan, z != 0.]):
             causal = 1
         else:
             causal = 0
@@ -140,7 +135,7 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     np.put(z_beta, informative_snps, result["z_beta"])
     for i, z in enumerate(z_beta):
         l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-        if all([cset_finemap[i] == 1, ppas_finemap[i] != np.nan, z > 0.]):
+        if all([cset_finemap[i] == 1, ppas_finemap[i] != np.nan, z != 0.]):
             causal = 1
         else:
             causal = 0
@@ -180,6 +175,7 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
             marker_data = [
                 gene_name,
                 chromosome,
+                snp_pos[ind],
                 snp_ids[ind],
                 ppas_plasma[ind],
                 z_phi[ind],
@@ -224,6 +220,7 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
     markers_cols = [
         "Gene_Name",
         "Chromosome",
+        "Position",
         "RSID",
         "PLASMA_PIP",
         "AS_Z",

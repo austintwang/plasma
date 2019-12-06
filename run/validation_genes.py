@@ -77,10 +77,10 @@ def read_genes(list_path):
     return gene_list
 
 def analyze_locus(res_path, gene_name, annot_path, out_dir):
-    with open(os.path.join(res_path, "output.pickle"), encoding='latin1') as res_file:
-        result = pickle.load(res_file)
-    with open(os.path.join(res_path, "in_data.pickle"), encoding='latin1') as inp_file:
-        inputs = pickle.load(inp_file)
+    with open(os.path.join(res_path, "output.pickle"), "rb") as res_file:
+        result = pickle.load(res_file, encoding='latin1')
+    with open(os.path.join(res_path, "in_data.pickle"), "rb") as inp_file:
+        inputs = pickle.load(inp_file, encoding='latin1')
 
     pp_lst = []
 

@@ -73,7 +73,7 @@ def read_genes(list_path):
     with open(list_path) as list_file:
         for l in list_file:
             entries = l.strip().split()
-            gene_list.append(entries[0], entries[2])
+            gene_list.append([entries[0], entries[2]])
     return gene_list
 
 def analyze_locus(res_path, gene_name, annot_path, out_dir):

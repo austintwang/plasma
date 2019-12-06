@@ -123,7 +123,7 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     np.put(z_beta, informative_snps, result["z_beta"])
     for i, z in enumerate(z_beta):
         l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-        if all([cset_eqtl[i] == 1, ppas_finemap[i] != np.nan, z > 0.]):
+        if all([cset_finemap[i] == 1, ppas_finemap[i] != np.nan, z > 0.]):
             causal = 1
         else:
             causal = 0

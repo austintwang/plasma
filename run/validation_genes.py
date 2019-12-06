@@ -76,7 +76,7 @@ def read_genes(list_path):
             gene_list.append([entries[0], entries[2]])
     return gene_list
 
-def analyze_locus(res_path, gene_name, annot_path, out_dir):
+def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     with open(os.path.join(res_path, "output.pickle"), "rb") as res_file:
         result = pickle.load(res_file, encoding='latin1')
     with open(os.path.join(res_path, "in_data.pickle"), "rb") as inp_file:
@@ -84,8 +84,9 @@ def analyze_locus(res_path, gene_name, annot_path, out_dir):
 
     pp_lst = []
 
-    snp_ids = inputs["snp_ids"]
-    snp_pos = inputs["snp_pos"]
+    snps_in_filter = [ind for ind, val in enumerate(inputs["snp_ids"]) if val in snp_filter]
+    snp_ids = inputs["snp_ids"][snps_in_filter]
+    snp_pos = inputs["snp_pos"][snps_in_filter]
 
     llim = snp_pos[0]
     ulim = snp_pos[-1]
@@ -96,14 +97,17 @@ def analyze_locus(res_path, gene_name, annot_path, out_dir):
     ppas_plasma = result["ppas_indep"]
     ppas_finemap = result["ppas_fmb"]
 
-    print(len(cset_plasma)) ####
-    print(len(ppas_plasma)) ####
-    print(len(result["informative_snps"])) ####
-    print(len(inputs["snp_ids"])) ####
+    # print(len(cset_plasma)) ####
+    # print(len(ppas_plasma)) ####
+    # print(len(result["informative_snps"])) ####
+    # print(len(inputs["snp_ids"])) ####
 
     informative_snps = result["informative_snps"]
 
-    z_phi = np.full(np.shape(inputs["snp_ids"]), 0.)
+    print(len(informative_snps))
+    print(len(snp_ids))
+
+    z_phi = np.full(np.shape(informative_snps), 0.)
     np.put(z_phi, informative_snps, result["z_phi"])
     for i, z in enumerate(z_phi):
         l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
@@ -115,7 +119,7 @@ def analyze_locus(res_path, gene_name, annot_path, out_dir):
             info = [snp_pos[i], l, "PLASMA", causal]
             pp_lst.append(info)
 
-    z_beta = np.full(np.shape(inputs["snp_ids"]), 0.)
+    z_beta = np.full(np.shape(informative_snps), 0.)
     np.put(z_beta, informative_snps, result["z_beta"])
     for i, z in enumerate(z_beta):
         l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
@@ -169,9 +173,12 @@ def analyze_locus(res_path, gene_name, annot_path, out_dir):
 
     return marker_data
 
-def analyze_list(res_path_base, list_path, annot_path, out_dir):
+def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
+
+    with open(filter_path, "rb") as filter_file:
+        snp_filter = pickle.load(filter_file)
 
     markers_list = []
 
@@ -184,7 +191,7 @@ def analyze_list(res_path_base, list_path, annot_path, out_dir):
             print(res_path_matches)
             continue
         res_path = res_path_matches[0]
-        locus_data = analyze_locus(res_path, gene_name, annot_path, out_dir)
+        locus_data = analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir)
         markers_list.extend(locus_data)
 
     markers_cols = [
@@ -208,7 +215,7 @@ if __name__ == '__main__':
     list_path = os.path.join(val_path, "RCC.dep1.genes")
     out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/validation"
 
-    analyze_list(res_path_base, list_path, annot_path, out_dir)
+    analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir)
 
 
 

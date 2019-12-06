@@ -12,7 +12,7 @@ import scipy.stats
 
 import pybedtools
 
-class SnpMismatchError(Exception):
+class SnpError(Exception):
     pass
 
 def region_plotter(regions, bounds):
@@ -70,6 +70,7 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
     g.fig.suptitle("Association Statistics for {0}".format(gene_name))
     plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
     plt.clf()
+    plt.close()
 
 def read_genes(list_path):
     gene_list = []
@@ -91,6 +92,9 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     snp_ids = inputs["snp_ids"][snps_in_filter]
     snp_pos = inputs["snp_pos"][snps_in_filter]
 
+    if len(snp_ids) == 0:
+        raise SnpError
+
     llim = snp_pos[0]
     ulim = snp_pos[-1]
 
@@ -109,9 +113,10 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
 
     print(len(informative_snps))
     print(len(snp_ids))
+    print(np.count_nonzero(cset_plasma))
 
     if len(informative_snps) != len(snp_ids):
-        raise SnpMismatchError
+        raise SnpError
 
     z_phi = np.full(np.shape(informative_snps), 0.)
     np.put(z_phi, informative_snps, result["z_phi"])
@@ -201,7 +206,7 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
         res_path = res_path_matches[0]
         try:
             locus_data = analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir)
-        except SnpMismatchError:
+        except SnpError:
             err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error"))
             continue
         markers_list.extend(locus_data)

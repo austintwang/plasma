@@ -66,9 +66,9 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
         ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
         ax.xaxis.set_major_formatter(x_formatter)
     
-    plt.subplots_adjust(top=0.9, bottom = 0.13, right = 0.96)
-    g.fig.suptitle("Association Statistics for {0}".format(gene_name))
-    plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
+    # plt.subplots_adjust(top=0.9, bottom = 0.13, right = 0.96)
+    g.fig.suptitle(gene_name)
+    plt.savefig(os.path.join(out_dir, "{0}.svg".format(gene_name)))
     plt.clf()
     plt.close()
 
@@ -114,6 +114,9 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     print(len(informative_snps))
     print(len(snp_ids))
     print(np.count_nonzero(cset_plasma))
+
+    if np.count_nonzero(cset_plasma) > 10:
+        return None
 
     if len(informative_snps) != len(snp_ids):
         raise SnpError
@@ -201,7 +204,7 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
         if len(res_path_matches) != 1:
             print(gene_name, gene_id)
             print(res_path_matches)
-            err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, len(res_path_matches)))
+            err_list.append("{0}\t{1}\t{2}_matches\n".format(gene_name, gene_id, len(res_path_matches)))
             continue
         res_path = res_path_matches[0]
         try:
@@ -209,6 +212,10 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
         except SnpError:
             err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error"))
             continue
+        if locus_data is None:
+            err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, ">10_CV"))
+            continue
+
         markers_list.extend(locus_data)
 
     markers_cols = [

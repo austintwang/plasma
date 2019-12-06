@@ -12,6 +12,9 @@ import scipy.stats
 
 import pybedtools
 
+class SnpMismatchError(Exception):
+    pass
+
 def region_plotter(regions, bounds):
     def region_plot(*args, **kwargs):
         for p, q in regions:
@@ -107,6 +110,9 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     print(len(informative_snps))
     print(len(snp_ids))
 
+    if len(informative_snps) != len(snp_ids):
+        raise SnpMismatchError
+
     z_phi = np.full(np.shape(informative_snps), 0.)
     np.put(z_phi, informative_snps, result["z_phi"])
     for i, z in enumerate(z_phi):
@@ -193,7 +199,10 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
             err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, len(res_path_matches)))
             continue
         res_path = res_path_matches[0]
-        locus_data = analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir)
+        try:
+            locus_data = analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir)
+        except SnpMismatchError:
+            err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error")
         markers_list.extend(locus_data)
 
     markers_cols = [

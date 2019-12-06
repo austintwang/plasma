@@ -171,7 +171,7 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
             ]
             markers.append(marker_data)
 
-    return marker_data
+    return markers
 
 def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
     if not os.path.exists(out_dir):
@@ -181,6 +181,7 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
         snp_filter = pickle.load(filter_file)
 
     markers_list = []
+    err_list = []
 
     gene_list = read_genes(list_path)
     for gene_name, gene_id in gene_list:
@@ -189,6 +190,7 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
         if len(res_path_matches) != 1:
             print(gene_name, gene_id)
             print(res_path_matches)
+            err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, len(res_path_matches)))
             continue
         res_path = res_path_matches[0]
         locus_data = analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir)
@@ -206,6 +208,10 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
     markers_df = pd.DataFrame(markers_list, columns=markers_cols)
     out_path = os.path.join(out_dir, "markers.txt")
     markers_df.to_csv(path_or_buf=out_path, index=False, sep="\t")
+
+    err_path = os.path.join(out_dir, "not_found.txt")
+    with open(err_path, "w") as err_file:
+        err_file.writelines(err_list)
 
 
 if __name__ == '__main__':

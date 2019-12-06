@@ -88,7 +88,7 @@ def analyze_locus(res_path, gene_name, annot_path, out_dir):
     snp_pos = inputs["snp_pos"]
 
     llim = snp_pos[0]
-    ulim = snp_pos[-1] + 1
+    ulim = snp_pos[-1]
 
     cset_plasma = result["causal_set_indep"]
     cset_finemap = result["causal_set_fmb"]

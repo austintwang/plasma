@@ -202,10 +202,10 @@ def analyze_list(res_path_base, list_path, annot_path, out_dir):
 
 if __name__ == '__main__':
     res_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
-    val_path = "/bcb/agusevlab/awang/job_data/validation"
+    val_path = "/agusevlab/awang/job_data/validation"
     annot_path = os.path.join(val_path, "786O_H3k27ac_merged_hg19.bed")
     list_path = os.path.join(val_path, "RCC.dep1.genes")
-    out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/validation"
+    out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/validation"
 
     analyze_list(res_path_base, list_path, annot_path, out_dir)
 

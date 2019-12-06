@@ -214,6 +214,7 @@ if __name__ == '__main__':
     annot_path = os.path.join(val_path, "786O_H3k27ac_merged_hg19.bed")
     list_path = os.path.join(val_path, "RCC.dep1.genes")
     out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/validation"
+    filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
 
     analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir)
 

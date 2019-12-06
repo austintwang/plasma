@@ -92,6 +92,10 @@ def analyze_locus(res_path, gene_name, annot_path, out_dir):
 
     cset_plasma = result["causal_set_indep"]
     cset_finemap = result["causal_set_fmb"]
+    print(len(cset_plasma)) ####
+    print(len(ppas_plasma)) ####
+    print(len(result["informative_snps"])) ####
+    print(len(inputs["snp_ids"])) ####
 
     ppas_plasma = result["ppas_indep"]
     ppas_finemap = result["ppas_fmb"]

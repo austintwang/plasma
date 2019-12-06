@@ -87,10 +87,6 @@ def analyze_locus(res_path, gene_name, annot_path, out_dir):
     snp_ids = inputs["snp_ids"]
     snp_pos = inputs["snp_pos"]
 
-    num_true = len(causal_snps)
-
-    causal_inds = set([i for i, v in enumerate(inputs["snp_ids"]) if v in causal_snps])
-    causal_pos = [snp_pos[i] for i in causal_inds]
     llim = snp_pos[0]
     ulim = snp_pos[-1] + 1
 

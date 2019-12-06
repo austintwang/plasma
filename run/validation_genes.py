@@ -202,7 +202,8 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
         try:
             locus_data = analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir)
         except SnpMismatchError:
-            err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error")
+            err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error"))
+            continue
         markers_list.extend(locus_data)
 
     markers_cols = [

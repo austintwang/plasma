@@ -98,6 +98,9 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
     llim = snp_pos[0]
     ulim = snp_pos[-1]
 
+    if "causal_set_fmb" not in result:
+        raise SnpError
+
     cset_plasma = result["causal_set_indep"]
     cset_finemap = result["causal_set_fmb"]
 

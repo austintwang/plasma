@@ -72,7 +72,7 @@ def read_genes(list_path):
     gene_list = []
     with open(list_path) as list_file:
         for l in list_file:
-            entries = l.strip()split()
+            entries = l.strip().split()
             gene_list.append(entries[0], entries[2])
     return gene_list
 

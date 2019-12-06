@@ -178,7 +178,7 @@ def analyze_list(res_path_base, list_path, annot_path, out_dir):
     for gene_name, gene_id in gene_list:
         res_path_wildcard = os.path.join(res_path_base, gene_id + ".*")
         res_path_matches = glob.glob(res_path_wildcard)
-        if len(res_path_matches != 1):
+        if len(res_path_matches) != 1:
             print(gene_name, gene_id)
             print(res_path_matches)
             continue

@@ -15,7 +15,7 @@ import pybedtools
 class SnpError(Exception):
     pass
 
-def region_plotter(regions, bounds):
+def region_plotter(regions, bounds, color):
     def region_plot(*args, **kwargs):
         for p, q in regions:
             if p < bounds[0]:
@@ -26,11 +26,11 @@ def region_plotter(regions, bounds):
                 end = bounds[1]
             else:
                 end = q
-            plt.axvspan(start, end, facecolor='k', linewidth=0, alpha=0.1)
+            plt.axvspan(start, end, facecolor=color, linewidth=0, alpha=0.1)
 
     return region_plot
 
-def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
+def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, annot_colormap):
     sns.set(style="ticks", font="Roboto")
 
     pal = sns.xkcd_palette(["silver", "slate", "blood red"])
@@ -46,7 +46,8 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds):
         aspect=3
     )
 
-    g.map(region_plotter(regions, bounds))
+    for k, v in regions.items():
+        g.map(region_plotter(v, bounds, annot_colormap[k]))
 
     g.map(
         sns.scatterplot, 
@@ -80,7 +81,7 @@ def read_genes(list_path):
             gene_list.append([entries[0], entries[2]])
     return gene_list
 
-def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
+def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, out_dir):
     with open(os.path.join(res_path, "output.pickle"), "rb") as res_file:
         result = pickle.load(res_file, encoding='latin1')
     with open(os.path.join(res_path, "in_data.pickle"), "rb") as inp_file:
@@ -160,38 +161,50 @@ def analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir):
 
     reg = "{0}\t{1}\t{2}".format(chromosome, llim, ulim)
     reg = pybedtools.BedTool(reg, from_string=True)
-    ann = pybedtools.BedTool(annot_path)
-    features = ann.intersect(reg)
 
-    regions = []
-    for f in features:
-        regions.append((f.start, f.stop,))
+    regions = {}
+    for name, ann in annotations.items():
+        features = ann.intersect(reg)
+        regions_ann = []
+        for f in features:
+            regions_ann.append((f.start, f.stop),)
+        regions[ann] = regions_ann
 
-    plot_manhattan(pp_df, gene_name, out_dir, regions, bounds)
+    plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, annot_colormap)
 
     markers = []
     for ind, val in enumerate(cset_plasma):
-        if val == 1 and any([(f.start <= snp_pos[ind] <= f.end) for f in features]):
-            marker_data = [
-                gene_name,
-                chromosome,
-                snp_pos[ind],
-                snp_ids[ind],
-                ppas_plasma[ind],
-                z_phi[ind],
-                ppas_finemap[ind],
-                z_beta[ind]
-            ]
-            markers.append(marker_data)
+        if val == 1:
+            intersects = tuple([
+                name for name, features in regions.items() 
+                if any([(f.start <= snp_pos[ind] <= f.end) for f in features])
+            ])
+            if len(intersects) > 0:
+                marker_data = [
+                    gene_name,
+                    chromosome,
+                    snp_pos[ind],
+                    snp_ids[ind],
+                    intersects,
+                    ppas_plasma[ind],
+                    z_phi[ind],
+                    ppas_finemap[ind],
+                    z_beta[ind]
+                ]
+                markers.append(marker_data)
 
     return markers
 
-def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
+def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_path, out_dir):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
     with open(filter_path, "rb") as filter_file:
         snp_filter = pickle.load(filter_file)
+
+    annotations = {}
+    for name, path in annot_paths.items():
+        annotations[name] = pybedtools.BedTool(path)
 
     markers_list = []
     err_list = []
@@ -207,7 +220,7 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
             continue
         res_path = res_path_matches[0]
         try:
-            locus_data = analyze_locus(res_path, gene_name, annot_path, snp_filter, out_dir)
+            locus_data = analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, out_dir)
         except SnpError:
             err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error"))
             continue
@@ -222,6 +235,7 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
         "Chromosome",
         "Position",
         "RSID",
+        "Intersections",
         "PLASMA_PIP",
         "AS_Z",
         "FINEMAP_PIP",
@@ -239,12 +253,21 @@ def analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir):
 if __name__ == '__main__':
     res_path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_all"
     val_path = "/agusevlab/awang/job_data/validation"
-    annot_path = os.path.join(val_path, "786O_H3k27ac_merged_hg19.bed")
+    annot_paths = {
+        "H3k27ac": os.path.join(val_path, "786O_H3k27ac_merged_hg19.bed"),
+        "HIF1B":  os.path.join(val_path, "GSM856791_5472_HIF1B_hg19_peaks.broadPeak"),
+        "HIF2A":  os.path.join(val_path, "GSM856790_5180_HIF2A_hg19_peaks.broadPeak"),
+    }
+    annot_colormap = {
+        "H3k27ac": "k",
+        "HIF1B":  "b",
+        "HIF2A":  "r",
+    }
     list_path = os.path.join(val_path, "RCC.dep1.genes")
     out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/validation"
     filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
 
-    analyze_list(res_path_base, list_path, annot_path, filter_path, out_dir)
+    analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_path, out_dir)
 
 
 

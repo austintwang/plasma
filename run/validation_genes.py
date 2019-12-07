@@ -168,7 +168,7 @@ def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, 
         regions_ann = []
         for f in features:
             regions_ann.append((f.start, f.stop),)
-        regions[ann] = regions_ann
+        regions[name] = regions_ann
 
     plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, annot_colormap)
 

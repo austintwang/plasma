@@ -177,7 +177,7 @@ def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, 
         if val == 1:
             intersects = tuple([
                 name for name, features in regions.items() 
-                if any([(f.start <= snp_pos[ind] <= f.end) for f in features])
+                if any([(f[0] <= snp_pos[ind] <= f[1]) for f in features])
             ])
             if len(intersects) > 0:
                 marker_data = [

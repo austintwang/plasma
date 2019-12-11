@@ -96,10 +96,10 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 
 	pp_lst = []
 	for ind, val in enumerate(res_paths):
-		with open(os.path.join(val, "output.pickle")) as res_file:
-			result = pickle.load(res_file)
-		with open(os.path.join(val, "in_data.pickle")) as inp_file:
-			inputs = pickle.load(inp_file)
+		with open(os.path.join(val, "output.pickle"), "rb") as res_file:
+			result = pickle.load(res_file, encoding='latin1')
+		with open(os.path.join(val, "in_data.pickle"), "rb") as inp_file:
+			inputs = pickle.load(inp_file, encoding='latin1')
 
 		snp_ids = inputs["snp_ids"]
 		snp_pos = inputs["snp_pos"]

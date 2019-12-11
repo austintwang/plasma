@@ -12,211 +12,211 @@ import scipy.stats
 import pybedtools
 
 def region_plotter(regions, bounds):
-	def region_plot(*args, **kwargs):
-		for p, q in regions:
-			if p < bounds[0]:
-				start = bounds[0]
-			else:
-				start = p
-			if q > bounds[1]:
-				end = bounds[1]
-			else:
-				end = q
-			plt.axvspan(start, end, facecolor='k', linewidth=0, alpha=0.1)
+    def region_plot(*args, **kwargs):
+        for p, q in regions:
+            if p < bounds[0]:
+                start = bounds[0]
+            else:
+                start = p
+            if q > bounds[1]:
+                end = bounds[1]
+            else:
+                end = q
+            plt.axvspan(start, end, facecolor='k', linewidth=0, alpha=0.1)
 
-	return region_plot
+    return region_plot
 
 def cset_sizes(*args, **kwargs):
-	# print(args) ####
-	# print(kwargs) ####
-	# print(kwargs["data"]["Causal"]) ####
-	if kwargs["label"] == "1":
-		cset_size = np.count_nonzero(args[0]) + int(kwargs["num_true"])
-		# print(cset_size) ####
-		ax = plt.gca()
-		ax.text(0.9, 0.8, cset_size, transform=ax.transAxes)
+    # print(args) ####
+    # print(kwargs) ####
+    # print(kwargs["data"]["Causal"]) ####
+    if kwargs["label"] == "1":
+        cset_size = np.count_nonzero(args[0]) + int(kwargs["num_true"])
+        # print(cset_size) ####
+        ax = plt.gca()
+        ax.text(0.9, 0.8, cset_size, transform=ax.transAxes)
 
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true):
-	sns.set(style="ticks", font="Roboto")
+    sns.set(style="ticks", font="Roboto")
 
-	pal = sns.xkcd_palette(["cool grey", "dark slate blue", "blood red"])
+    pal = sns.xkcd_palette(["cool grey", "dark slate blue", "blood red"])
 
-	g = sns.FacetGrid(
-		pp_df, 
-		row="Samples", 
-		col="Model", 
-		hue="Causal",
-		hue_kws={"marker":["o", "o", "D"]},
-		palette=pal,
-		margin_titles=True, 
-		height=1.7, 
-		aspect=3
-	)
-	# g.set(xticklabels=[])
+    g = sns.FacetGrid(
+        pp_df, 
+        row="Samples", 
+        col="Model", 
+        hue="Causal",
+        hue_kws={"marker":["o", "o", "D"]},
+        palette=pal,
+        margin_titles=True, 
+        height=1.7, 
+        aspect=3
+    )
+    # g.set(xticklabels=[])
 
-	# pal = [
-	# 	(0.23529411764705882, 0.23529411764705882, 0.23529411764705882),
-	# 	(0.5490196078431373, 0.03137254901960784, 0.0)
-	# ]
-	
-	g.map(region_plotter(regions, bounds))
-	g.map(cset_sizes, "Causal", num_true=num_true)
+    # pal = [
+    #   (0.23529411764705882, 0.23529411764705882, 0.23529411764705882),
+    #   (0.5490196078431373, 0.03137254901960784, 0.0)
+    # ]
+    
+    g.map(region_plotter(regions, bounds))
+    g.map(cset_sizes, "Causal", num_true=num_true)
 
-	# print(pp_df) ####
-	g.map(
-		sns.scatterplot, 
-		"Position", 
-		"-log10 p-Value",
-		# size="Causal", 
-		legend=False,
-		# color=".3", 
-		linewidth=0,
-		hue_order=[2, 1, 0],
-		# sizes={0:9, 1:12},
-		s=9
-	)
+    # print(pp_df) ####
+    g.map(
+        sns.scatterplot, 
+        "Position", 
+        "-log10 p-Value",
+        # size="Causal", 
+        legend=False,
+        # color=".3", 
+        linewidth=0,
+        hue_order=[2, 1, 0],
+        # sizes={0:9, 1:12},
+        s=9
+    )
 
-	x_formatter = matplotlib.ticker.ScalarFormatter()
-	for i, ax in enumerate(g.fig.axes): 
-		ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
-		ax.xaxis.set_major_formatter(x_formatter)
+    x_formatter = matplotlib.ticker.ScalarFormatter()
+    for i, ax in enumerate(g.fig.axes): 
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
+        ax.xaxis.set_major_formatter(x_formatter)
 
-	# for ax in g.axes.flat:
-	# 	labels = ["" for i in ax.get_xticklabels()] 
-	# 	ax.set_xticklabels(labels) 
-	
-	plt.subplots_adjust(top=0.9, bottom = 0.13, right = 0.96)
-	g.fig.suptitle("Association Statistics for {0}".format(gene_name))
-	plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
-	plt.clf()
+    # for ax in g.axes.flat:
+    #   labels = ["" for i in ax.get_xticklabels()] 
+    #   ax.set_xticklabels(labels) 
+    
+    plt.subplots_adjust(top=0.9, bottom = 0.13, right = 0.96)
+    g.fig.suptitle("Association Statistics for {0}".format(gene_name))
+    plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
+    plt.clf()
 
 def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir):
-	if not os.path.exists(out_dir):
-		os.makedirs(out_dir)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
-	with open(filter_path, "rb") as filter_file:
+    with open(filter_path, "rb") as filter_file:
         snp_filter = pickle.load(filter_file)
 
-	pp_lst = []
-	for ind, val in enumerate(res_paths):
-		with open(os.path.join(val, "output.pickle"), "rb") as res_file:
-			result = pickle.load(res_file, encoding='latin1')
-		with open(os.path.join(val, "in_data.pickle"), "rb") as inp_file:
-			inputs = pickle.load(inp_file, encoding='latin1')
+    pp_lst = []
+    for ind, val in enumerate(res_paths):
+        with open(os.path.join(val, "output.pickle"), "rb") as res_file:
+            result = pickle.load(res_file, encoding='latin1')
+        with open(os.path.join(val, "in_data.pickle"), "rb") as inp_file:
+            inputs = pickle.load(inp_file, encoding='latin1')
 
-		snps_in_filter = [ind for ind, val in enumerate(inputs["snp_ids"]) if val in snp_filter]
-	    snp_ids = inputs["snp_ids"][snps_in_filter]
-	    snp_pos = inputs["snp_pos"][snps_in_filter]
+        snps_in_filter = [ind for ind, val in enumerate(inputs["snp_ids"]) if val in snp_filter]
+        snp_ids = inputs["snp_ids"][snps_in_filter]
+        snp_pos = inputs["snp_pos"][snps_in_filter]
 
-		num_true = len(causal_snps)
+        num_true = len(causal_snps)
 
-		causal_inds = set([i for i, v in enumerate(inputs["snp_ids"]) if v in causal_snps])
-		causal_pos = [snp_pos[i] for i in causal_inds]
-		llim = min(causal_pos) - span
-		ulim = max(causal_pos) + span
-		# print(causal_inds) ####
+        causal_inds = set([i for i, v in enumerate(inputs["snp_ids"]) if v in causal_snps])
+        causal_pos = [snp_pos[i] for i in causal_inds]
+        llim = min(causal_pos) - span
+        ulim = max(causal_pos) + span
+        # print(causal_inds) ####
 
-		cset_ase = result["causal_set_ase"]
-		cset_eqtl = result["causal_set_eqtl"]
+        cset_ase = result["causal_set_ase"]
+        cset_eqtl = result["causal_set_eqtl"]
 
-		ppas_ase = result["ppas_ase"]
-		ppas_eqtl = result["ppas_eqtl"]
+        ppas_ase = result["ppas_ase"]
+        ppas_eqtl = result["ppas_eqtl"]
 
-		informative_snps = result["informative_snps"]
+        informative_snps = result["informative_snps"]
 
-		z_phi = np.full(np.shape(inputs["snp_ids"]), 0.)
-		np.put(z_phi, informative_snps, result["z_phi"])
-		# print(len(z_phi), len(informative_snps), len(snp_ids), len(snp_pos)) ####
-		for i, z in enumerate(z_phi):
-			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-			if i in causal_inds:
-				causal = 2
-			elif all([cset_ase[i] == 1, ppas_ase[i] != np.nan, z != 0.]):
-				causal = 1
-			else:
-				causal = 0
-			# print(snp_pos[i]) ####
-			# print(l) ####
-			# # print(sample_sizes[ind]) ####
-			# print(ind) ####
-			# print(sample_sizes) ####
-			# print(causal) ####
-			if llim <= snp_pos[i] <= ulim:
-				info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
-				pp_lst.append(info)
+        z_phi = np.full(np.shape(inputs["snp_ids"]), 0.)
+        np.put(z_phi, informative_snps, result["z_phi"])
+        # print(len(z_phi), len(informative_snps), len(snp_ids), len(snp_pos)) ####
+        for i, z in enumerate(z_phi):
+            l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
+            if i in causal_inds:
+                causal = 2
+            elif all([cset_ase[i] == 1, ppas_ase[i] != np.nan, z != 0.]):
+                causal = 1
+            else:
+                causal = 0
+            # print(snp_pos[i]) ####
+            # print(l) ####
+            # # print(sample_sizes[ind]) ####
+            # print(ind) ####
+            # print(sample_sizes) ####
+            # print(causal) ####
+            if llim <= snp_pos[i] <= ulim:
+                info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
+                pp_lst.append(info)
 
-		z_beta = np.full(np.shape(inputs["snp_ids"]), 0.)
-		np.put(z_beta, informative_snps, result["z_beta"])
-		for i, z in enumerate(z_beta):
-			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
-			if i in causal_inds:
-				causal = 2
-			elif all([cset_eqtl[i] == 1, ppas_eqtl[i] != np.nan, z != 0.]):
-				causal = 1
-			else:
-				causal = 0
-			if llim <= snp_pos[i] <= ulim:
-				info = [snp_pos[i], l, "QTL", sample_sizes[ind], causal]
-				pp_lst.append(info)
+        z_beta = np.full(np.shape(inputs["snp_ids"]), 0.)
+        np.put(z_beta, informative_snps, result["z_beta"])
+        for i, z in enumerate(z_beta):
+            l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
+            if i in causal_inds:
+                causal = 2
+            elif all([cset_eqtl[i] == 1, ppas_eqtl[i] != np.nan, z != 0.]):
+                causal = 1
+            else:
+                causal = 0
+            if llim <= snp_pos[i] <= ulim:
+                info = [snp_pos[i], l, "QTL", sample_sizes[ind], causal]
+                pp_lst.append(info)
 
-		region_start = snp_pos[0]
-		region_end = snp_pos[-1] + 1
-		chromosome = "chr{0}".format(inputs["chr"])
+        region_start = snp_pos[0]
+        region_end = snp_pos[-1] + 1
+        chromosome = "chr{0}".format(inputs["chr"])
 
-	pp_cols = [
-		"Position", 
-		"-log10 p-Value", 
-		"Model", 
-		"Samples",
-		"Causal"
-	]
+    pp_cols = [
+        "Position", 
+        "-log10 p-Value", 
+        "Model", 
+        "Samples",
+        "Causal"
+    ]
 
-	pp_df = pd.DataFrame(pp_lst, columns=pp_cols)
+    pp_df = pd.DataFrame(pp_lst, columns=pp_cols)
 
-	bounds = (llim, ulim)
+    bounds = (llim, ulim)
 
-	reg = "{0}\t{1}\t{2}".format(chromosome, llim, ulim)
-	reg = pybedtools.BedTool(reg, from_string=True)
-	ann = pybedtools.BedTool(annot_path)
-	features = ann.intersect(reg)
+    reg = "{0}\t{1}\t{2}".format(chromosome, llim, ulim)
+    reg = pybedtools.BedTool(reg, from_string=True)
+    ann = pybedtools.BedTool(annot_path)
+    features = ann.intersect(reg)
 
-	regions = []
-	for f in features:
-		# print(f) ####
-		regions.append((f.start, f.stop,))
+    regions = []
+    for f in features:
+        # print(f) ####
+        regions.append((f.start, f.stop,))
 
-	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true)
+    plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true)
 
 if __name__ == '__main__':
-	path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"
-	enrichment_path = "/agusevlab/awang/job_data/enrichment"
-	annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")
+    path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"
+    enrichment_path = "/agusevlab/awang/job_data/enrichment"
+    annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")
     filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
 
-	# SCARB1
-	res_paths = [path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50"]]
-	sample_sizes = [524, 200, 100, 50]
-	gene_name = "SCARB1"
-	span = 70000
-	causal_snps = set(["rs4765621", "rs4765623"])
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
+    # SCARB1
+    res_paths = [path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50"]]
+    sample_sizes = [524, 200, 100, 50]
+    gene_name = "SCARB1"
+    span = 70000
+    causal_snps = set(["rs4765621", "rs4765623"])
+    out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 
-	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir)
+    manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir)
 
-	# DPF3
-	res_paths = [path_base.format(i, "ENSG00000205683.7") for i in ["all", "200", "100", "50"]]
-	sample_sizes = [524, 200, 100, 50]
-	gene_name = "DPF3"
-	causal_snps = set(["rs4903064"])
-	span = 70000
-	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
-	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir)
+    # DPF3
+    res_paths = [path_base.format(i, "ENSG00000205683.7") for i in ["all", "200", "100", "50"]]
+    sample_sizes = [524, 200, 100, 50]
+    gene_name = "DPF3"
+    causal_snps = set(["rs4903064"])
+    span = 70000
+    out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
+    manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir)
 
-	# # GRAMD4
-	# res_paths = [path_base.format(i, "ENSG00000075240.12") for i in ["all", "200", "100", "50"]]
-	# sample_sizes = [524, 200, 100, 50]
-	# gene_name = "GRAMD4"
-	# causal_snps = set()
-	# out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
-	# manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir)
+    # # GRAMD4
+    # res_paths = [path_base.format(i, "ENSG00000075240.12") for i in ["all", "200", "100", "50"]]
+    # sample_sizes = [524, 200, 100, 50]
+    # gene_name = "GRAMD4"
+    # causal_snps = set()
+    # out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
+    # manhattan(res_paths, sample_sizes, gene_name, causal_snps, annot_path, out_dir)
 

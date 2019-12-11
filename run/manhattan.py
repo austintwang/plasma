@@ -101,8 +101,9 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 		with open(os.path.join(val, "in_data.pickle"), "rb") as inp_file:
 			inputs = pickle.load(inp_file, encoding='latin1')
 
-		snp_ids = inputs["snp_ids"]
-		snp_pos = inputs["snp_pos"]
+		snps_in_filter = [ind for ind, val in enumerate(inputs["snp_ids"]) if val in snp_filter]
+	    snp_ids = inputs["snp_ids"][snps_in_filter]
+	    snp_pos = inputs["snp_pos"][snps_in_filter]
 
 		num_true = len(causal_snps)
 

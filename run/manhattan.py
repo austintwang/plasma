@@ -90,9 +90,12 @@ def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true):
 	plt.savefig(os.path.join(out_dir, "manhattan_{0}.svg".format(gene_name)))
 	plt.clf()
 
-def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir):
+def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir):
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
+
+	with open(filter_path, "rb") as filter_file:
+        snp_filter = pickle.load(filter_file)
 
 	pp_lst = []
 	for ind, val in enumerate(res_paths):
@@ -188,6 +191,7 @@ if __name__ == '__main__':
 	path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"
 	enrichment_path = "/agusevlab/awang/job_data/enrichment"
 	annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")
+    filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
 
 	# SCARB1
 	res_paths = [path_base.format(i, "ENSG00000073060.11") for i in ["all", "200", "100", "50"]]
@@ -197,7 +201,7 @@ if __name__ == '__main__':
 	causal_snps = set(["rs4765621", "rs4765623"])
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 
-	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
+	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir)
 
 	# DPF3
 	res_paths = [path_base.format(i, "ENSG00000205683.7") for i in ["all", "200", "100", "50"]]
@@ -206,7 +210,7 @@ if __name__ == '__main__':
 	causal_snps = set(["rs4903064"])
 	span = 70000
 	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
-	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
+	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, filter_path, out_dir)
 
 	# # GRAMD4
 	# res_paths = [path_base.format(i, "ENSG00000075240.12") for i in ["all", "200", "100", "50"]]

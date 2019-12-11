@@ -26,14 +26,14 @@ def region_plotter(regions, bounds, color):
                 end = bounds[1]
             else:
                 end = q
-            plt.axvspan(start, end, facecolor=color, linewidth=0, alpha=0.1)
+            plt.axvspan(start, end, facecolor=color, linewidth=0, alpha=0.2)
 
     return region_plot
 
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, annot_colormap):
     sns.set(style="ticks", font="Roboto")
 
-    pal = sns.xkcd_palette(["silver", "slate", "blood red"])
+    pal = sns.xkcd_palette(["cool grey", "dark slate blue", "blood red"])
 
     g = sns.FacetGrid(
         pp_df, 
@@ -170,6 +170,8 @@ def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, 
             regions_ann.append((f.start, f.stop),)
         regions[name] = regions_ann
 
+    tss = inputs["center"]
+
     plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, annot_colormap)
 
     markers = []
@@ -185,6 +187,7 @@ def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, 
                     chromosome,
                     snp_pos[ind],
                     snp_ids[ind],
+                    np.abs(snp_pos[ind] - tss),
                     intersects,
                     ppas_plasma[ind],
                     z_phi[ind],
@@ -235,6 +238,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
         "Chromosome",
         "Position",
         "RSID",
+        "TSS_Dist",
         "Intersections",
         "PLASMA_PIP",
         "AS_Z",

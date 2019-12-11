@@ -39,7 +39,7 @@ def cset_sizes(*args, **kwargs):
 def plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true):
 	sns.set(style="ticks", font="Roboto")
 
-	pal = sns.xkcd_palette(["silver", "slate", "blood red"])
+	pal = sns.xkcd_palette(["cool grey", "dark slate blue", "blood red"])
 
 	g = sns.FacetGrid(
 		pp_df, 
@@ -127,7 +127,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			if i in causal_inds:
 				causal = 2
-			elif all([cset_ase[i] == 1, ppas_ase[i] != np.nan, z > 0.]):
+			elif all([cset_ase[i] == 1, ppas_ase[i] != np.nan, z != 0.]):
 				causal = 1
 			else:
 				causal = 0
@@ -147,7 +147,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 			l = -np.log10(scipy.stats.norm.sf(abs(z))*2)
 			if i in causal_inds:
 				causal = 2
-			elif all([cset_eqtl[i] == 1, ppas_eqtl[i] != np.nan, z > 0.]):
+			elif all([cset_eqtl[i] == 1, ppas_eqtl[i] != np.nan, z != 0.]):
 				causal = 1
 			else:
 				causal = 0
@@ -184,8 +184,8 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 	plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, num_true)
 
 if __name__ == '__main__':
-	path_base = "/bcb/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"
-	enrichment_path = "/bcb/agusevlab/awang/job_data/enrichment"
+	path_base = "/agusevlab/awang/job_data/KIRC_RNASEQ/outs/1cv_tumor_{0}/{1}"
+	enrichment_path = "/agusevlab/awang/job_data/enrichment"
 	annot_path = os.path.join(enrichment_path, "KIDNEY_DNASE.E086-DNase.imputed.narrowPeak.bed")
 
 	# SCARB1
@@ -194,7 +194,7 @@ if __name__ == '__main__':
 	gene_name = "SCARB1"
 	span = 70000
 	causal_snps = set(["rs4765621", "rs4765623"])
-	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 
 	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
 
@@ -204,7 +204,7 @@ if __name__ == '__main__':
 	gene_name = "DPF3"
 	causal_snps = set(["rs4903064"])
 	span = 70000
-	out_dir = "/bcb/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
+	out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/manhattan"
 	manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path, out_dir)
 
 	# # GRAMD4

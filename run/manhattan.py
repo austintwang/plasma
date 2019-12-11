@@ -110,7 +110,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 
         num_true = len(causal_snps)
 
-        causal_inds = set([i for i, v in enumerate(inputs["snp_ids"]) if v in causal_snps])
+        causal_inds = set([i for i, v in enumerate(snp_ids) if v in causal_snps])
         causal_pos = [snp_pos[i] for i in causal_inds]
         llim = min(causal_pos) - span
         ulim = max(causal_pos) + span

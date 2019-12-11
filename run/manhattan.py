@@ -124,7 +124,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
 
         informative_snps = result["informative_snps"]
 
-        z_phi = np.full(np.shape(inputs["snp_ids"]), 0.)
+        z_phi = np.full(np.shape(snp_ids), 0.)
         np.put(z_phi, informative_snps, result["z_phi"])
         # print(len(z_phi), len(informative_snps), len(snp_ids), len(snp_pos)) ####
         for i, z in enumerate(z_phi):
@@ -145,7 +145,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
                 info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
                 pp_lst.append(info)
 
-        z_beta = np.full(np.shape(inputs["snp_ids"]), 0.)
+        z_beta = np.full(np.shape(snp_ids), 0.)
         np.put(z_beta, informative_snps, result["z_beta"])
         for i, z in enumerate(z_beta):
             l = -np.log10(scipy.stats.norm.sf(abs(z))*2)

@@ -117,10 +117,10 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
         # print(causal_inds) ####
 
         cset_ase = result["causal_set_ase"]
-        cset_eqtl = result["causal_set_eqtl"]
+        cset_eqtl = result["causal_set_fmb"]
 
         ppas_ase = result["ppas_ase"]
-        ppas_eqtl = result["ppas_eqtl"]
+        ppas_eqtl = result["ppas_fmb"]
 
         informative_snps = result["informative_snps"]
 
@@ -142,7 +142,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
             # print(sample_sizes) ####
             # print(causal) ####
             if llim <= snp_pos[i] <= ulim:
-                info = [snp_pos[i], l, "AS", sample_sizes[ind], causal]
+                info = [snp_pos[i], l, "PLASMA-AS", sample_sizes[ind], causal]
                 pp_lst.append(info)
 
         z_beta = np.full(np.shape(snp_ids), 0.)
@@ -156,7 +156,7 @@ def manhattan(res_paths, sample_sizes, gene_name, causal_snps, span, annot_path,
             else:
                 causal = 0
             if llim <= snp_pos[i] <= ulim:
-                info = [snp_pos[i], l, "QTL", sample_sizes[ind], causal]
+                info = [snp_pos[i], l, "FINEMAP", sample_sizes[ind], causal]
                 pp_lst.append(info)
 
         region_start = snp_pos[0]

@@ -138,7 +138,7 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 
 	with open(params_path, "rb") as params_file:
 		# print(input_path) ####
-		params = pickle.load(params_file)
+		params = pickle.load(params_file, encoding='latin1')
 
 	with open(io_path, "rb") as io_file:
 		# print(input_path) ####

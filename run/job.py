@@ -282,19 +282,19 @@ def main(io_path, params_path, selection_path, filter_path, overdispersion_path)
 				)
 				result["ldsr_data_ase"] = get_ldsr_data(inputs, result["causal_set_ase"], result["ppas_ase"])
 
-			if "acav" in model_flavors:
-				updates_acav = {"num_ppl": None}
-				result["causal_set_acav"], result["ppas_acav"], result["size_probs_acav"] = run_model(
-					CaviarASE, inputs, updates_acav, informative_snps
-				)
-				result["ldsr_data_acav"] = get_ldsr_data(inputs, result["causal_set_acav"], result["ppas_acav"])
+			# if "acav" in model_flavors:
+			# 	updates_acav = {"num_ppl": None}
+			# 	result["causal_set_acav"], result["ppas_acav"], result["size_probs_acav"] = run_model(
+			# 		CaviarASE, inputs, updates_acav, informative_snps
+			# 	)
+			# 	result["ldsr_data_acav"] = get_ldsr_data(inputs, result["causal_set_acav"], result["ppas_acav"])
 
-			if "cav" in model_flavors:
-				updates_cav = {"qtl_only": True, "num_ppl": None}
-				result["causal_set_cav"], result["ppas_cav"], result["size_probs_cav"] = run_model(
-					Caviar, inputs, updates_cav, informative_snps
-				)
-				result["ldsr_data_cav"] = get_ldsr_data(inputs, result["causal_set_cav"], result["ppas_cav"])
+			# if "cav" in model_flavors:
+			# 	updates_cav = {"qtl_only": True, "num_ppl": None}
+			# 	result["causal_set_cav"], result["ppas_cav"], result["size_probs_cav"] = run_model(
+			# 		Caviar, inputs, updates_cav, informative_snps
+			# 	)
+			# 	result["ldsr_data_cav"] = get_ldsr_data(inputs, result["causal_set_cav"], result["ppas_cav"])
 
 			if "fmb" in model_flavors:
 				updates_fmb = {"qtl_only": True, "num_ppl": None}

@@ -56,7 +56,7 @@ def dispatch(
 
 	timeout = "sbatch: error: Batch job submission failed: Socket timed out on send/recv operation"
 	# print(" ".join(job_args)) ####
-	# raise Exception ####
+	raise Exception ####
 	while True:
 		try:
 			submission = subprocess.run(job_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -106,7 +106,7 @@ def run(
 		with open(list_path, "rb") as list_file:
 			targets = pickle.load(list_file)
 
-	# targets = ["ENSG00000134575.5"] ####
+	targets = ["ENSG00000205683.7"] ####
 
 	num_targets = len(targets)
 	num_padding = (-num_targets) % batch_size

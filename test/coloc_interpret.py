@@ -337,7 +337,7 @@ def interpret_corr(
 
     var_row = "GWAS Sample Size"
     var_col = "QTL Sample Size"
-    response = "Colocalization Score (PP4)"
+    response = "Area Under ROC"
     title_base = "Mean {0} for Unshared Causal Markers\n{1} Model, LD Threshold = {2:.0E}"
 
     sns.set(font="Roboto")
@@ -369,7 +369,7 @@ def interpret_corr(
                 inplace=True
             )
             df_model = calc_rocs(df_neg, df_pos, var_row, var_col, "h4")
-            title = title_base.format(response, model_name, l)
+            title = title_base.format(response, NAMEMAP[m], l)
             result_path = os.path.join(res_dir, "full_h=l_{0}.svg".format(l))
             make_heatmap(
                 df_model, 

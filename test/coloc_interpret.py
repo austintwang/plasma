@@ -12,26 +12,23 @@ try:
 except ImportError:
     import pickle
 
-COLORMAP = {
-    "full": pal[6],
-    "indep": pal[0],
-    "ase": pal[4],
-    "acav": pal[2],
-    "eqtl": pal[7],
-    "cav": pal[5],
-    "rasq": pal[1],
-    "fmb": pal[3],
-}
+# COLORMAP = {
+#     "full": pal[6],
+#     "indep": pal[0],
+#     "ase": pal[4],
+#     "acav": pal[2],
+#     "eqtl": pal[7],
+#     "cav": pal[5],
+#     "rasq": pal[1],
+#     "fmb": pal[3],
+# }
 
 NAMEMAP = {
-    "full": "PLASMA-JC",
-    "indep": "PLASMA-J",
-    "ase": "PLASMA-AS",
-    "acav": "AS-Meta",
+    "full": "PLASMA/C-JC",
+    "indep": "PLASMA/C-J",
+    "ase": "PLASMA/C-AS",
     "eqtl": "QTL-Only",
-    "cav": "CAVIAR",
-    "rasq": "RASQUAL+",
-    "fmb": "FINEMAP",
+    "ecav": "eCAVIAR",
 }
 
 def load_data(data_dir):

@@ -313,8 +313,8 @@ def calc_rocs(df_neg, df_pos, var_row, var_col, response):
                 (df_neg[var_row] == r) & (df_neg[var_col] == c),
                 [response]
             ].values.flatten()
-            # print(ppt) ####
-            # print(ppf) ####
+            print(ppt) ####
+            print(ppf) ####
 
             auroc = roc(ppt, ppf)
             struct.loc[r, c] = auroc

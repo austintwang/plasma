@@ -316,6 +316,7 @@ def calc_rocs(df_neg, df_pos, var_row, var_col, response):
 
             auroc = roc(ppt, ppf)
             struct.loc[r, c] = auroc
+            print(auroc) ####
 
     return struct
 
@@ -370,7 +371,7 @@ def interpret_corr(
             )
             df_model = calc_rocs(df_neg, df_pos, var_row, var_col, "h4")
             title = title_base.format(response, NAMEMAP[m], l)
-            result_path = os.path.join(res_dir, "full_h=l_{0}.svg".format(l))
+            result_path = os.path.join(res_dir, "{0}_h=l_{1}.svg".format(m, l))
             make_heatmap(
                 df_model, 
                 var_row, 

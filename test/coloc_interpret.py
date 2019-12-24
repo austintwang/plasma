@@ -49,6 +49,7 @@ def roc(ppt, ppf):
     pp = [(i, True) for i in ppt]
     pp.extend([(i, False) for i in ppf])
     pp.sort(reverse=True)
+    # print(pp) ####
 
     t_tot = np.size(ppt)
     f_tot = np.size(ppf)
@@ -63,6 +64,7 @@ def roc(ppt, ppf):
             f_num += 1
     coord = (t_num / t_tot, f_num / f_tot)
     coords.append(coord)
+    print(coords) ####
 
     x, y = zip(*coords)
     auroc = np.trapz(y, x=x)
@@ -313,8 +315,8 @@ def calc_rocs(df_neg, df_pos, var_row, var_col, response):
                 (df_neg[var_row] == r) & (df_neg[var_col] == c),
                 [response]
             ].values.flatten()
-            print(ppt) ####
-            print(ppf) ####
+            # print(ppt) ####
+            # print(ppf) ####
 
             auroc = roc(ppt, ppf)
             struct.loc[r, c] = auroc

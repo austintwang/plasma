@@ -49,7 +49,7 @@ def roc(ppt, ppf):
     pp = [(i, True) for i in ppt]
     pp.extend([(i, False) for i in ppf])
     pp.sort(reverse=True)
-    print(pp) ####
+    # print(pp) ####
 
     t_tot = np.size(ppt)
     f_tot = np.size(ppf)
@@ -62,7 +62,7 @@ def roc(ppt, ppf):
             t_num += 1
         else:
             f_num += 1
-    coord = (t_num / t_tot, f_num / f_tot)
+        coord = (t_num / t_tot, f_num / f_tot)
     coords.append(coord)
     # print(coords) ####
 

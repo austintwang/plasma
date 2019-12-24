@@ -63,7 +63,7 @@ def roc(ppt, ppf):
         else:
             f_num += 1
         coord = (t_num / t_tot, f_num / f_tot)
-    coords.append(coord)
+        coords.append(coord)
     # print(coords) ####
 
     x, y = zip(*coords)

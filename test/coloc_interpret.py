@@ -380,7 +380,7 @@ def interpret_corr(
                 title, 
                 result_path, 
                 fmt='.2g',
-                convert_wide=True
+                convert_wide=False
             )
 
 if __name__ == '__main__':

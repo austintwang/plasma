@@ -69,6 +69,9 @@ def roc(ppt, ppf):
     x, y = zip(*coords)
     auroc = np.trapz(y, x=x)
 
+    if auroc == 1:
+        print(pp) ####
+
     return auroc
 
 def make_heatmap(

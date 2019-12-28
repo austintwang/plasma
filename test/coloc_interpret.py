@@ -46,8 +46,8 @@ def load_data(data_dir):
     return data_df
 
 def roc(ppt, ppf):
-    pp = [(i, True) for i in ppt]
-    pp.extend([(i, False) for i in ppf])
+    pp = [(i, True) for i in np.nan_to_num(ppt)]
+    pp.extend([(i, False) for i in np.nan_to_num(ppf)])
     pp.sort(reverse=True)
     # print(pp) ####
 
@@ -69,8 +69,8 @@ def roc(ppt, ppf):
     x, y = zip(*coords)
     auroc = np.trapz(y, x=x)
 
-    if auroc == 1:
-        print(pp) ####
+    # if auroc == 1:
+    #     print(pp) ####
 
     return auroc
 

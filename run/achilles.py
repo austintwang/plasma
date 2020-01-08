@@ -8,6 +8,11 @@ def entrez_to_ensembl(entrez):
     mg = mygene.MyGeneInfo()
     # print(mg.getgenes(entrez[:2], fields="ensembl.gene")) ####
     gene_info = mg.getgenes(entrez, fields="ensembl.gene")
+    for i in gene_info: ####
+        try:
+            i["ensembl"]["gene"]
+        except Exception:
+            print(i)
     return [i["ensembl"]["gene"] for i in gene_info]
 
 def get_essential(effect_path, output_path):

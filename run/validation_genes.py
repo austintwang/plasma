@@ -81,13 +81,13 @@ def read_genes(list_path):
             gene_list.append([entries[0], entries[2]])
     return gene_list
 
-def analyze_locus(res_path, gene_name, essential_scores, annotations, annot_colormap, snp_filter, out_dir):
+def analyze_locus(res_path, gene_name, gene_id, essential_scores, annotations, annot_colormap, snp_filter, out_dir):
     with open(os.path.join(res_path, "output.pickle"), "rb") as res_file:
         result = pickle.load(res_file, encoding='latin1')
     with open(os.path.join(res_path, "in_data.pickle"), "rb") as inp_file:
         inputs = pickle.load(inp_file, encoding='latin1')
 
-    gene_score = essential_scores.get(gene_name, None)
+    gene_score = essential_scores.get(gene_id, None)
 
     pp_lst = []
 
@@ -230,7 +230,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
             continue
         res_path = res_path_matches[0]
         try:
-            locus_data = analyze_locus(res_path, gene_name, essential_scores, annotations, annot_colormap, snp_filter, out_dir)
+            locus_data = analyze_locus(res_path, gene_name, gene_id, essential_scores, annotations, annot_colormap, snp_filter, out_dir)
         except SnpError:
             err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error"))
             continue

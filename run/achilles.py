@@ -25,7 +25,7 @@ def get_essential(effect_path, output_path):
         try:
             gene_info[ids["gene"]] = essential[ind]
         except(AttributeError, TypeError):
-            for i in gene_info:
+            for i in ids:
                 gene_info[i["gene"]] = essential[ind]
 
     with open(output_path, "rb") as output_file:

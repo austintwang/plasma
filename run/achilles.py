@@ -1,6 +1,5 @@
 import os
 import pickle
-import glob
 import numpy as np
 import pandas as pd 
 import mygene
@@ -13,7 +12,7 @@ def entrez_to_ensembl(entrez):
 def get_essential(effect_path, output_path):
     effects = pd.read_csv(effect_path, index_col=0)
     essential = effects.loc["ACH-000649",:].to_numpy() - np.mean(effects.to_numpy(), axis=0) 
-    entrez = [i.split[1].strip("()") for i in effects.columns]
+    entrez = [i.split()[1].strip("()") for i in effects.columns]
     gene_ids = entrez_to_ensembl(entrez)
 
     with open(output_path, "rb") as output_file:

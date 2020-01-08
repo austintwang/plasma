@@ -8,12 +8,12 @@ def entrez_to_ensembl(entrez):
     mg = mygene.MyGeneInfo()
     # print(mg.getgenes(entrez[:2], fields="ensembl.gene")) ####
     gene_info = mg.getgenes(entrez, fields="ensembl.gene")
-    for i in gene_info: ####
-        try:
-            i["ensembl"]
-        except Exception:
-            print(i)
-    return [i["ensembl"] for i in gene_info]
+    # for i in gene_info: ####
+    #     try:
+    #         i["ensembl"]
+    #     except Exception:
+    #         print(i)
+    return [i.get("ensembl", []) for i in gene_info]
 
 def get_essential(effect_path, output_path):
     effects = pd.read_csv(effect_path, index_col=0)

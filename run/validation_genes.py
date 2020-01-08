@@ -81,11 +81,13 @@ def read_genes(list_path):
             gene_list.append([entries[0], entries[2]])
     return gene_list
 
-def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, out_dir):
+def analyze_locus(res_path, gene_name, essential_scores, annotations, annot_colormap, snp_filter, out_dir):
     with open(os.path.join(res_path, "output.pickle"), "rb") as res_file:
         result = pickle.load(res_file, encoding='latin1')
     with open(os.path.join(res_path, "in_data.pickle"), "rb") as inp_file:
         inputs = pickle.load(inp_file, encoding='latin1')
+
+    gene_score = essential_scores.get(gene_name, None)
 
     pp_lst = []
 
@@ -177,17 +179,19 @@ def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, 
     markers = []
     for ind, val in enumerate(cset_plasma):
         if val == 1:
-            intersects = tuple([
-                name for name, features in regions.items() 
-                if any([(f[0] <= snp_pos[ind] <= f[1]) for f in features])
-            ])
-            if len(intersects) > 0:
+            # intersects = tuple([
+            #     name for name, features in regions.items() 
+            #     if any([(f[0] <= snp_pos[ind] <= f[1]) for f in features])
+            # ])
+            # if len(intersects) > 0:
+            if gene_score is not None:
                 marker_data = [
                     gene_name,
                     chromosome,
                     snp_pos[ind],
                     snp_ids[ind],
                     np.abs(snp_pos[ind] - tss),
+                    gene_score,
                     intersects,
                     ppas_plasma[ind],
                     z_phi[ind],
@@ -198,12 +202,15 @@ def analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, 
 
     return markers
 
-def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_path, out_dir):
+def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_path, score_path, out_dir):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
     with open(filter_path, "rb") as filter_file:
         snp_filter = pickle.load(filter_file)
+
+    with open(score_path, "rb") as score_file:
+        essential_scores = pickle.load(score_file)
 
     annotations = {}
     for name, path in annot_paths.items():
@@ -223,7 +230,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
             continue
         res_path = res_path_matches[0]
         try:
-            locus_data = analyze_locus(res_path, gene_name, annotations, annot_colormap, snp_filter, out_dir)
+            locus_data = analyze_locus(res_path, gene_name, essential_scores, annotations, annot_colormap, snp_filter, out_dir)
         except SnpError:
             err_list.append("{0}\t{1}\t{2}\n".format(gene_name, gene_id, "data_error"))
             continue
@@ -239,6 +246,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
         "Position",
         "RSID",
         "TSS_Dist",
+        "Essential_Score",
         "Intersections",
         "PLASMA_PIP",
         "AS_Z",
@@ -246,6 +254,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
         "QTL_Z"
     ]
     markers_df = pd.DataFrame(markers_list, columns=markers_cols)
+    markers_df.sort_values(by=["Essential_Score"])
     out_path = os.path.join(out_dir, "markers.txt")
     markers_df.to_csv(path_or_buf=out_path, index=False, sep="\t")
 
@@ -270,8 +279,9 @@ if __name__ == '__main__':
     list_path = os.path.join(val_path, "RCC.dep1.genes")
     out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/validation"
     filter_path = "/agusevlab/awang/job_data/KIRC_RNASEQ/snp_filters/1KG_SNPs.pickle"
+    score_path = os.path.join(val_path, "essential.pickle")
 
-    analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_path, out_dir)
+    analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_path, score_path, out_dir)
 
 
 

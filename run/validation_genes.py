@@ -179,10 +179,10 @@ def analyze_locus(res_path, gene_name, gene_id, essential_scores, annotations, a
     markers = []
     for ind, val in enumerate(cset_plasma):
         if val == 1:
-            # intersects = tuple([
-            #     name for name, features in regions.items() 
-            #     if any([(f[0] <= snp_pos[ind] <= f[1]) for f in features])
-            # ])
+            intersects = tuple([
+                name for name, features in regions.items() 
+                if any([(f[0] <= snp_pos[ind] <= f[1]) for f in features])
+            ])
             # if len(intersects) > 0:
             if gene_score is not None:
                 marker_data = [

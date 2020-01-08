@@ -28,7 +28,7 @@ def get_essential(effect_path, output_path):
             for i in ids:
                 gene_info[i["gene"]] = essential[ind]
 
-    with open(output_path, "rb") as output_file:
+    with open(output_path, "wb") as output_file:
         pickle.dump(gene_info, output_file)
 
 if __name__ == '__main__':

@@ -172,7 +172,7 @@ def analyze_locus(res_path, gene_name, essential_scores, annotations, annot_colo
             regions_ann.append((f.start, f.stop),)
         regions[name] = regions_ann
 
-    tss = inputs["center"]
+    tss = inputs.get("center", None)
 
     plot_manhattan(pp_df, gene_name, out_dir, regions, bounds, annot_colormap)
 

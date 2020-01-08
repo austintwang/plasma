@@ -254,7 +254,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
         "QTL_Z"
     ]
     markers_df = pd.DataFrame(markers_list, columns=markers_cols)
-    markers_df.sort_values(by=["Essential_Score"])
+    markers_df.sort_values(by=["Essential_Score"], inplace=True)
     out_path = os.path.join(out_dir, "markers.txt")
     markers_df.to_csv(path_or_buf=out_path, index=False, sep="\t")
 

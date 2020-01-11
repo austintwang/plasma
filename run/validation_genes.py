@@ -87,7 +87,8 @@ def analyze_locus(res_path, gene_name, gene_id, essential_scores, annotations, a
     with open(os.path.join(res_path, "in_data.pickle"), "rb") as inp_file:
         inputs = pickle.load(inp_file, encoding='latin1')
 
-    gene_score = essential_scores.get(gene_id, None)
+    pref_score = essential_scores["pref"].get(gene_id, None)
+    total_score = essential_scores["total"].get(gene_id, None)
 
     pp_lst = []
 
@@ -184,14 +185,15 @@ def analyze_locus(res_path, gene_name, gene_id, essential_scores, annotations, a
                 if any([(f[0] <= snp_pos[ind] <= f[1]) for f in features])
             ])
             # if len(intersects) > 0:
-            if gene_score is not None:
+            if pref_score is not None:
                 marker_data = [
                     gene_name,
                     chromosome,
                     snp_pos[ind],
                     snp_ids[ind],
-                    np.abs(snp_pos[ind] - tss),
-                    gene_score,
+                    # np.abs(snp_pos[ind] - tss),
+                    pref_score,
+                    total_score,
                     intersects,
                     ppas_plasma[ind],
                     z_phi[ind],
@@ -246,7 +248,8 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
         "Position",
         "RSID",
         "TSS_Dist",
-        "Essential_Score",
+        "Essential_Pref",
+        "Essential_Total",
         "Intersections",
         "PLASMA_PIP",
         "AS_Z",

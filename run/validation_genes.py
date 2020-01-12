@@ -247,7 +247,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
         "Chromosome",
         "Position",
         "RSID",
-        "TSS_Dist",
+        # "TSS_Dist",
         "Essential_Pref",
         "Essential_Total",
         "Intersections",

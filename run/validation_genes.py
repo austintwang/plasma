@@ -260,6 +260,7 @@ def analyze_list(res_path_base, list_path, annot_paths, annot_colormap, filter_p
     markers_df.sort_values(by="Essential_Score", inplace=True)
     out_path = os.path.join(out_dir, "markers.txt")
     markers_df.to_csv(path_or_buf=out_path, index=False, sep="\t")
+    print("Done") ####
 
     err_path = os.path.join(out_dir, "not_found.txt")
     with open(err_path, "w") as err_file:

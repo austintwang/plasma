@@ -283,7 +283,7 @@ if __name__ == '__main__':
         "HIF2A_T25D45SN": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T25D45SN.rep1_sorted_peaks.narrowPeak.bed"),
         "HIF2A_T35D30SA": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T35D30SA.rep1_sorted_peaks.narrowPeak.bed"),
         "HIF2A_T35D45SA": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T35D45SA.rep1_sorted_peaks.narrowPeak.bed"),
-        "HIF2A_T35D45SN": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T35D45SN.rep1_sorted_peaks.narrowPeak.bed")
+        "HIF2A_T35D45SN_2": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T35D45SN_2.rep1_sorted_peaks.narrowPeak.bed")
 
     }
     annot_colormap = {
@@ -298,7 +298,7 @@ if __name__ == '__main__':
         "HIF2A_T25D45SN": "r",
         "HIF2A_T35D30SA": "r",
         "HIF2A_T35D45SA": "r",
-        "HIF2A_T35D45SN": "r",
+        "HIF2A_T35D45SN_2": "r",
     }
     list_path = os.path.join(val_path, "RCC.dep1.genes")
     out_dir = "/agusevlab/awang/ase_finemap_results/KIRC_RNASEQ/validation"

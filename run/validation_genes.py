@@ -273,17 +273,17 @@ if __name__ == '__main__':
     val_path = "/agusevlab/awang/job_data/validation"
     annot_paths = {
         "H3k27ac": os.path.join(val_path, "786O_H3k27ac_merged_hg19.bed"),
-        "H3K27ac_MF": os.path.join(val_path, "786O_Freedman/CELL_LINE_768_O_H3K27ac.rep1_sorted_peaks.narrowPeak.bed"),
-        "H3K4me2_MF": os.path.join(val_path, "786O_Freedman/CELL_LINE_768_O_H3K4me2.rep1_sorted_peaks.narrowPeak.bed"),
-        "H3K4me3_MF": os.path.join(val_path, "786O_Freedman/CELL_LINE_768_O_H3K4me3.rep1_sorted_peaks.narrowPeak.bed"),
+        "H3K27ac_MF": os.path.join(val_path, "peaks/786O_Freedman/CELL_LINE_768_O_H3K27ac.rep1_sorted_peaks.narrowPeak.bed"),
+        "H3K4me2_MF": os.path.join(val_path, "peaks/786O_Freedman/CELL_LINE_768_O_H3K4me2.rep1_sorted_peaks.narrowPeak.bed"),
+        "H3K4me3_MF": os.path.join(val_path, "peaks/786O_Freedman/CELL_LINE_768_O_H3K4me3.rep1_sorted_peaks.narrowPeak.bed"),
         "HIF1B":  os.path.join(val_path, "GSM856791_5472_HIF1B_hg19_peaks.broadPeak"),
         "HIF2A":  os.path.join(val_path, "GSM856790_5180_HIF2A_hg19_peaks.broadPeak"),
-        "HIF2A_T25D30SA": os.path.join(val_path, "786O_Freedman/786O_HIF2a/T25D30SA.rep1_sorted_peaks.narrowPeak.bed"),
-        "HIF2A_T25D45SA": os.path.join(val_path, "786O_Freedman/786O_HIF2a/T25D45SA.rep1_sorted_peaks.narrowPeak.bed"),
-        "HIF2A_T25D45SN": os.path.join(val_path, "786O_Freedman/786O_HIF2a/T25D45SN.rep1_sorted_peaks.narrowPeak.bed"),
-        "HIF2A_T35D30SA": os.path.join(val_path, "786O_Freedman/786O_HIF2a/T35D30SA.rep1_sorted_peaks.narrowPeak.bed"),
-        "HIF2A_T35D45SA": os.path.join(val_path, "786O_Freedman/786O_HIF2a/T35D45SA.rep1_sorted_peaks.narrowPeak.bed"),
-        "HIF2A_T35D45SN": os.path.join(val_path, "786O_Freedman/786O_HIF2a/T35D45SN.rep1_sorted_peaks.narrowPeak.bed")
+        "HIF2A_T25D30SA": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T25D30SA.rep1_sorted_peaks.narrowPeak.bed"),
+        "HIF2A_T25D45SA": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T25D45SA.rep1_sorted_peaks.narrowPeak.bed"),
+        "HIF2A_T25D45SN": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T25D45SN.rep1_sorted_peaks.narrowPeak.bed"),
+        "HIF2A_T35D30SA": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T35D30SA.rep1_sorted_peaks.narrowPeak.bed"),
+        "HIF2A_T35D45SA": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T35D45SA.rep1_sorted_peaks.narrowPeak.bed"),
+        "HIF2A_T35D45SN": os.path.join(val_path, "peaks/786O_Freedman/786O_HIF2a/T35D45SN.rep1_sorted_peaks.narrowPeak.bed")
 
     }
     annot_colormap = {

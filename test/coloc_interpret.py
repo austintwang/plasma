@@ -122,7 +122,7 @@ def make_heatmap(
     # )
     # print(df) ####
     # print(heat_data) ####
-    sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True)
+    sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1.)
     plt.title(title)
     plt.savefig(result_path)
     plt.clf()
@@ -143,7 +143,7 @@ def interpret_shared(
     var_row = "GWAS Sample Size"
     var_col = "QTL Sample Size"
     response = "Colocalization Score (PP4)"
-    title_base = "Mean {0}\n{1} Model, GWAS Heritability = {2:.0E}"
+    title_base = "{1}, GWAS Heritability = {2:.0E}"
 
     sns.set(font="Roboto")
 
@@ -346,7 +346,7 @@ def interpret_corr(
     var_row = "GWAS Sample Size"
     var_col = "QTL Sample Size"
     response = "Area Under ROC"
-    title_base = "Mean {0} for Unshared Causal Markers\n{1} Model, LD Threshold = {2:.0E}"
+    title_base = "{1}, LD Threshold = {2:.0E}"
 
     sns.set(font="Roboto")
 
@@ -378,7 +378,7 @@ def interpret_corr(
             )
             df_model = calc_rocs(df_neg, df_pos, var_row, var_col, "h4")
             title = title_base.format(response, NAMEMAP[m], l)
-            result_path = os.path.join(res_dir, "{0}_h=l_{1}.svg".format(m, l))
+            result_path = os.path.join(res_dir, "{0}_l_{1}.svg".format(m, l))
             make_heatmap(
                 df_model, 
                 var_row, 

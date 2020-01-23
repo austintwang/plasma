@@ -123,7 +123,8 @@ def make_heatmap(
     # print(df) ####
     # print(heat_data) ####
     ax = sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1.)
-    ax.locator_params(integer=True)
+    ax.set_xticklabels(map(int, ax.get_xticklabels()))
+    ax.set_yticklabels(map(int, ax.get_yticklabels()))
     plt.yticks(rotation=0) 
     plt.title(title)
     plt.savefig(result_path)

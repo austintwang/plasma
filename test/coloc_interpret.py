@@ -122,7 +122,9 @@ def make_heatmap(
     # )
     # print(df) ####
     # print(heat_data) ####
-    sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1.)
+    ax = sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1.)
+    ax.locator_params(integer=True)
+    plt.yticks(rotation=0) 
     plt.title(title)
     plt.savefig(result_path)
     plt.clf()
@@ -143,7 +145,7 @@ def interpret_shared(
     var_row = "GWAS Sample Size"
     var_col = "QTL Sample Size"
     response = "Colocalization Score (PP4)"
-    title_base = "{1}, GWAS Heritability = {2:.0E}"
+    title_base = "{1}, GWAS Heritability = {2:.1E}"
 
     sns.set(font="Roboto")
 
@@ -346,7 +348,7 @@ def interpret_corr(
     var_row = "GWAS Sample Size"
     var_col = "QTL Sample Size"
     response = "Area Under ROC"
-    title_base = "{1}, LD Threshold = {2:.0E}"
+    title_base = "{1}, LD Threshold = {2}"
 
     sns.set(font="Roboto")
 
@@ -397,7 +399,7 @@ if __name__ == '__main__':
     model_flavors = set(["indep", "eqtl", "ase", "ecav"])
 
     gwas_herits = [0.001, 0.0001]
-    # interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)
+    interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)
 
     ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
     interpret_corr(data_dir_base, ld_thresh, model_flavors, res_dir_base)

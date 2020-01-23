@@ -87,7 +87,8 @@ def make_heatmap(
         result_path, 
         aggfunc="mean",
         fmt='.2g',
-        convert_wide=True
+        convert_wide=True,
+        heatmap_kwargs={}
     ):
     if convert_wide:
         heat_data_main = pd.pivot_table(
@@ -123,7 +124,7 @@ def make_heatmap(
     # print(df) ####
     # print(heat_data) ####
     plt.subplots(figsize=(5.1,4.3))
-    ax = sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1.)
+    ax = sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1., **heatmap_kwargs)
     ax.set_xticklabels([int(float(i.get_text())) for i in ax.get_xticklabels()])
     ax.set_yticklabels([int(float(i.get_text())) for i in ax.get_yticklabels()])
     plt.yticks(rotation=0) 
@@ -392,7 +393,8 @@ def interpret_corr(
                 title, 
                 result_path, 
                 fmt='.2g',
-                convert_wide=False
+                convert_wide=False,
+                heatmap_kwargs={"center": 0.5}
             )
 
 if __name__ == '__main__':

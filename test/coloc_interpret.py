@@ -123,8 +123,8 @@ def make_heatmap(
     # print(df) ####
     # print(heat_data) ####
     ax = sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1.)
-    ax.set_xticklabels([int(i.get_text()) for i in ax.get_xticklabels()])
-    ax.set_yticklabels([int(i.get_text()) for i in ax.get_yticklabels()])
+    ax.set_xticklabels([int(float(i.get_text())) for i in ax.get_xticklabels()])
+    ax.set_yticklabels([int(float(i.get_text())) for i in ax.get_yticklabels()])
     plt.yticks(rotation=0) 
     plt.title(title)
     plt.savefig(result_path)

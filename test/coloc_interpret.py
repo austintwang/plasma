@@ -122,7 +122,7 @@ def make_heatmap(
     # )
     # print(df) ####
     # print(heat_data) ####
-    plt.subplots(figsize=(5,4.2))
+    plt.subplots(figsize=(5.1,4.3))
     ax = sns.heatmap(heat_data_main, annot=True, fmt=fmt, square=True, cbar=False, vmin=0., vmax=1.)
     ax.set_xticklabels([int(float(i.get_text())) for i in ax.get_xticklabels()])
     ax.set_yticklabels([int(float(i.get_text())) for i in ax.get_yticklabels()])

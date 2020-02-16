@@ -19,6 +19,14 @@ if __name__ == '__main__' and __package__ is None:
 
 from . import Finemap, LocusSimulator, EvalECaviar
 
+NAMEMAP = {
+    "full": "PLASMA/C-JC",
+    "indep": "PLASMA/C-J",
+    "ase": "PLASMA/C-AS",
+    "eqtl": "QTL-Only",
+    "ecav": "eCAVIAR",
+}
+
 CHROM_LENS = [
 	248956422,
 	242193529,
@@ -79,9 +87,15 @@ def draw_region(vcf_dir, vcf_name_template):
 
 	return chrom, chrom_num, start, vcf_path
 
-def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
+def sim_shared_causal(vcf_dir, vcf_name_template, sample_filters, snp_filter, params):
 	while True:
 		try:
+			# if params.get("specify_region", False):
+			# 	chrom = params["chrom"]
+			# 	chrom_num = params["chrom_num"]
+			# 	start = params["start"]
+			# 	vcf_path = params["vcf_path"]
+			# else:
 			chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
 			# print("a") ####
 			# gc.collect()
@@ -94,7 +108,7 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 					params["num_causal"],
 					region_size=params["region_size"],
 					max_snps=params["max_snps"],
-					sample_filter=sample_filter,
+					sample_filter=sample_filters[0],
 					snp_filter=snp_filter,
 					maf_thresh=params["maf_thresh"]
 				)
@@ -122,7 +136,92 @@ def sim_shared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
-def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
+def sim_shared_causal_xpop(vcf_dir, vcf_name_template, sample_filters, snp_filter, params):
+	while True:
+		try:
+			# if params.get("specify_region", False):
+			# 	chrom = params["chrom"]
+			# 	chrom_num = params["chrom_num"]
+			# 	start = params["start"]
+			# 	vcf_path = params["vcf_path"]
+			# else:
+			chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
+			# print("a") ####
+			# gc.collect()
+			# print("b") ####
+			with time_limit(100):
+				locus_1 = LocusSimulator(
+					vcf_path, 
+					chrom_num, 
+					start, 
+					params["num_causal"],
+					region_size=params["region_size"],
+					max_snps=params["max_snps"],
+					sample_filter=sample_filters[0],
+					snp_filter=snp_filter,
+					maf_thresh=params["maf_thresh"]
+				)
+				locus_2 = LocusSimulator(
+					vcf_path, 
+					chrom_num, 
+					start, 
+					params["num_causal"],
+					region_size=params["region_size"],
+					max_snps=params["max_snps"],
+					sample_filter=sample_filters[1],
+					snp_filter=snp_filter,
+					maf_thresh=params["maf_thresh"]
+				)
+		except (ValueError, TimeoutException):
+			continue
+		if locus_1.snp_count >= 10 and locus_1.snp_count == locus_2.snp_count:
+			break
+
+	causal_inds = np.random.choice(locus_1.snp_count, params["num_causal"], replace=False)
+	causal_config = np.zeros(locus_1.snp_count)
+	np.put(causal_config, causal_inds, 1)
+
+	qtl_data_1 = locus_1.sim_asqtl(
+		params["num_samples_qtl"],
+		params["coverage"],
+		params["std_al_dev"],
+		params["herit_qtl"],
+		params["herit_as"],
+		params["overdispersion"],
+		causal_override=causal_config
+	)
+
+	gwas_data_1 = locus_1.sim_gwas(
+		params["num_samples_gwas"],
+		params["herit_gwas"],
+		causal_override=causal_config
+	)
+
+	qtl_data_2 = locus_2.sim_asqtl(
+		params["num_samples_qtl"],
+		params["coverage"],
+		params["std_al_dev"],
+		params["herit_qtl"],
+		params["herit_as"],
+		params["overdispersion"],
+		causal_override=causal_config
+	)
+
+	gwas_data_2 = locus_2.sim_gwas(
+		params["num_samples_gwas"],
+		params["herit_gwas"],
+		causal_override=causal_config
+	)
+
+	return_vals = []
+	return_vals.append((locus_1, qtl_data_1, gwas_data_2, causal_config, causal_config,),)
+	return_vals.append((locus_2, qtl_data_2, gwas_data_1, causal_config, causal_config,),)
+	return_vals.append((locus_1, qtl_data_1, gwas_data_1, causal_config, causal_config,),)
+	return_vals.append((locus_2, qtl_data_2, gwas_data_2, causal_config, causal_config,),)
+
+	return return_vals
+
+def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filters, snp_filter, params):
 	while True:
 		try:
 			chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
@@ -135,7 +234,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 					params["num_causal"],
 					region_size=params["region_size"],
 					max_snps=params["max_snps"],
-					sample_filter=sample_filter,
+					sample_filter=sample_filters[0],
 					snp_filter=snp_filter,
 					maf_thresh=params["maf_thresh"]
 				)
@@ -174,7 +273,7 @@ def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filter, snp_filter, p
 
 	return locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas
 
-def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, params):
+def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filters, snp_filter, params):
 	max_corr = -1
 	while max_corr < params["corr_thresh"]:
 		chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
@@ -188,7 +287,7 @@ def sim_unshared_corr(vcf_dir, vcf_name_template, sample_filter, snp_filter, par
 					1,
 					region_size=params["region_size"],
 					max_snps=params["max_snps"],
-					sample_filter=sample_filter,
+					sample_filter=sample_filters[0],
 					snp_filter=snp_filter,
 					maf_thresh=params["maf_thresh"]
 				)
@@ -436,165 +535,100 @@ def coloc_test(
 		usecols=["sample", "super_pop"]
 	)
 	
-	sample_filter = set(
+	sample_filter_eur = set(
 		sample_filter_data.loc[
 			sample_filter_data["super_pop"]=="EUR",
 			["sample"]
 		].to_numpy().flatten()
 	)
 
+	sample_filter_afr = set(
+		sample_filter_data.loc[
+			sample_filter_data["super_pop"]=="AFR",
+			["sample"]
+		].to_numpy().flatten()
+	)
+
+	sample_filters = [sample_filter_eur, sample_filter_afr]
+
 	with open(params["snp_filter_path"], "rb") as snp_filter_file:
 		snp_filter = pickle.load(snp_filter_file)
 	
 	sim_map = {
 		"shared": sim_shared_causal,
-		"unshared": sim_shared_causal,
-		"corr": sim_unshared_corr
+		# "unshared": sim_unshared_causal,
+		"corr": sim_unshared_corr,
+		"shared_xpop": sim_shared_causal_xpop,
 	}
+	multi_out_fns = set(["shared_xpop"])
+
 	sim_fn = sim_map[test_type]
+	multi_out = (test_type in multi_out_fns)
 
 	output = []
 	for _ in range(batch_size):
 		try:
-			locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas = sim_fn(
+			fn_out = sim_fn(
 				vcf_dir, 
 				vcf_name_template, 
-				sample_filter,
+				sample_filters,
 				snp_filter,
 				params
 			)
-			# print(qtl_data) ####
-			# print(qtl_data["counts_A"]) ####
-			# print(qtl_data["counts_B"]) ####
-			sim_data = {
-				"sim_type": test_type,
-				"chrom": locus.chrom,
-				"locus_pos": locus.start,
-				"locus_size": locus.region_size,
-				"snp_ids": locus.snp_ids,
-				"num_snps": locus.snp_count,
-				"causal_config_qtl": causal_config_qtl,
-				"causal_config_gwas": causal_config_gwas
-			}
-			sim_data.update(qtl_data)
-			sim_data.update(gwas_data)
+			for ind, l in enumerate([fn_out] if multi_out else fn_out):
+				locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas = l
+				# print(qtl_data) ####
+				# print(qtl_data["counts_A"]) ####
+				# print(qtl_data["counts_B"]) ####
+					sim_data = {
+						"sim_type": test_type,
+						"chrom": locus.chrom,
+						"locus_pos": locus.start,
+						"locus_size": locus.region_size,
+						"snp_ids": locus.snp_ids,
+						"num_snps": locus.snp_count,
+						"causal_config_qtl": causal_config_qtl,
+						"causal_config_gwas": causal_config_gwas
+					}
+					sim_data.update(qtl_data)
+					sim_data.update(gwas_data)
 
-			inputs = params.copy()
-			inputs.update(sim_data)
-			# print(inputs["hap_A"].shape()) ####
+					inputs = params.copy()
+					inputs.update(sim_data)
+					# print(inputs["hap_A"].shape()) ####
+
+					for m in model_flavors:
+						try:
+							model_qtl_updates = {}
+							result = run_model(inputs, m, model_qtl_updates)
+							result["res_set"] = ind
+						except Exception as e:
+							# raise ####
+							trace = traceback.format_exc()
+							message = repr(e)
+							result = {
+								"model": m,
+								"complete": False, 
+								"error": message, 
+								"traceback": trace,
+								"res_set": ind,
+							}
+						finally:
+							output.append(result)
 
 		except Exception as e:
 			# raise ####
 			trace = traceback.format_exc()
 			message = repr(e)
-			result = {"complete": False, "error": message, "traceback": trace}
-			if "full" in model_flavors:
-				result_full = result.copy()
-				result_full.update({"model": "full"})
-				output.append(result_full)
-			if "indep" in model_flavors:
-				result_indep = result.copy()
-				result_indep.update({"model": "indep"})
-				output.append(result_indep)
-			if "ase" in model_flavors:
-				result_ase = result.copy()
-				result_ase.update({"model": "ase"})
-				output.append(result_ase)
-			if "ecav" in model_flavors:
-				result_ecav = result.copy()
-				result_ecav.update({"model": "ecav"})
-				output.append(result_ecav)
-			if "eqtl" in model_flavors:
-				result_eqtl = result.copy()
-				result_eqtl.update({"model": "eqtl"})
-				output.append(result_eqtl)
+			result = {"complete": False, "error": message, "traceback": trace, "res_set": None}
+			for m in model_flavors:
+				result_model = result.copy()
+				result_model.update({"model": m})
+				output.append(result_model)
 
 			continue
 
-		if "full" in model_flavors:
-			try:
-				model_qtl_updates = {}
-				result_full = run_model(inputs, "full", model_qtl_updates)
-			except Exception as e:
-				# raise ####
-				trace = traceback.format_exc()
-				message = repr(e)
-				result_full = {
-					"model": "full",
-					"complete": False, 
-					"error": message, 
-					"traceback": trace
-				}
-			finally:
-				output.append(result_full)
-
-		if "indep" in model_flavors:
-			try:
-				model_qtl_updates = {"cross_corr_prior": 0.}
-				result_indep = run_model(inputs, "indep", model_qtl_updates)
-			except Exception as e:
-				# raise ####
-				trace = traceback.format_exc()
-				message = repr(e)
-				result_indep = {
-					"model": "indep",
-					"complete": False, 
-					"error": message, 
-					"traceback": trace
-				}
-			finally:
-				output.append(result_indep)
-			
-		if "ase" in model_flavors:
-			try:
-				model_qtl_updates = {"as_only": True}
-				result_ase = run_model(inputs, "ase", model_qtl_updates)
-			except Exception as e:
-				# raise ####
-				trace = traceback.format_exc()
-				message = repr(e)
-				result_ase = {
-					"model": "ase",
-					"complete": False, 
-					"error": message, 
-					"traceback": trace
-				}
-			finally:
-				output.append(result_ase)
-			
-		if "ecav" in model_flavors:
-			try:
-				model_qtl_updates = {"qtl_only": True}
-				result_ecav = run_ecav(inputs, "ecav", model_qtl_updates)
-			except Exception as e:
-				# raise ####
-				trace = traceback.format_exc()
-				message = repr(e)
-				result_ecav = {
-					"model": "ecav",
-					"complete": False, 
-					"error": message, 
-					"traceback": trace
-				}
-			finally:
-				output.append(result_ecav)
-			
-		if "eqtl" in model_flavors:
-			try:
-				model_qtl_updates = {"qtl_only": True}
-				result_eqtl = run_model(inputs, "eqtl", model_qtl_updates)
-			except Exception as e:
-				# raise ####
-				trace = traceback.format_exc()
-				message = repr(e)
-				result_eqtl = {
-					"model": "eqtl",
-					"complete": False, 
-					"error": message, 
-					"traceback": trace
-				}
-			finally:
-				output.append(result_eqtl)
+		
 			
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)

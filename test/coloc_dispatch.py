@@ -265,7 +265,7 @@ if __name__ == '__main__':
 	# 	script_path,
 	# )
 
-	test_unshared_corr(
+	test_shared_causal_xpop(
 		disp, 
 		data_info,
 		params_dir, 
@@ -279,4 +279,3 @@ if __name__ == '__main__':
 	# disp.submit()
 
 
-	

@@ -199,7 +199,7 @@ def interpret_shared_xpop(
     var_row = "GWAS Sample Size"
     var_col = "QTL Sample Size"
     response = "Colocalization Score (PP4)"
-    title_base = "{1}, GWAS Heritability = {2:.1E}"
+    title_base = "{1}, {2} QTL, {3} GWAS"
 
     sns.set(font="Roboto")
 
@@ -219,8 +219,8 @@ def interpret_shared_xpop(
                 inplace=True
             )
             model_name = NAMEMAP[m]
-            title = title_base.format(response, model_name, h)
-            result_path = os.path.join(res_dir, "{0}_h_{1}.svg".format(m, h))
+            title = title_base.format(response, model_name, p[0], p[1])
+            result_path = os.path.join(res_dir, "{0}_q_{1}_g_{2}.svg".format(m, p[0], p[1]))
             make_heatmap(
                 df_model, 
                 var_row, 
@@ -338,3 +338,10 @@ if __name__ == '__main__':
 
     ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
     interpret_corr(data_dir_base, ld_thresh, model_flavors, res_dir_base)
+
+    populations = [("EUR", "AFR"), ("AFR", "EUR"), ("EUR", "EUR"), ("AFR", "AFR")]
+    interpret_shared_xpop(data_dir_base, populations, model_flavors, res_dir_base)
+
+
+
+

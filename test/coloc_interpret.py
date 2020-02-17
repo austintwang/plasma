@@ -153,9 +153,9 @@ def interpret_shared(
     sns.set(font="Roboto")
 
     for h in gwas_herits:
-        if "full" in model_flavors:
+        for m in model_flavors:
             df_model = df.loc[
-                (df["model"] == "full")
+                (df["model"] == m)
                 & (df["herit_gwas"] == h)
                 & (df["complete"] == True)
             ]
@@ -167,9 +167,9 @@ def interpret_shared(
                 }, 
                 inplace=True
             )
-            model_name = "PLASMA/C-JC"
+            model_name = NAMEMAP[m]
             title = title_base.format(response, model_name, h)
-            result_path = os.path.join(res_dir, "full_h_{0}.svg".format(h))
+            result_path = os.path.join(res_dir, "{0}_h_{1}.svg".format(m, h))
             make_heatmap(
                 df_model, 
                 var_row, 
@@ -181,46 +181,33 @@ def interpret_shared(
                 aggfunc="mean",
                 fmt='.2g'
             )
-        if "indep" in model_flavors:
+
+
+def interpret_shared_xpop(
+        data_dir_base, 
+        populations, 
+        model_flavors,
+        res_dir_base
+    ):
+    data_dir = os.path.join(data_dir_base, "shared")
+    df = load_data(data_dir)
+
+    res_dir = os.path.join(res_dir_base, "shared")
+    if not os.path.exists(res_dir):
+        os.makedirs(res_dir)
+
+    var_row = "GWAS Sample Size"
+    var_col = "QTL Sample Size"
+    response = "Colocalization Score (PP4)"
+    title_base = "{1}, GWAS Heritability = {2:.1E}"
+
+    sns.set(font="Roboto")
+
+    for i, p in enumerate(populations):
+        for m in model_flavors:
             df_model = df.loc[
-                (df["model"] == "indep")
-                & (df["herit_gwas"] == h)
-                & (df["complete"] == True)
-            ]
-            # print(df_model.columns.values) ####
-            # print(df) ####
-            # print(df.loc[
-            #   (df["model"] == "indep")
-            #   & (df["complete"] == True)
-            # ]) ####
-            # print(df_model) ####
-            df_model.rename(
-                columns={
-                    "num_samples_gwas": var_row,
-                    "num_samples_qtl": var_col,
-                    "h4": response,
-                }, 
-                inplace=True
-            )
-            # print(df_model.columns.values) ####
-            model_name = "PLASMA/C-J"
-            title = title_base.format(response, model_name, h)
-            result_path = os.path.join(res_dir, "indep_h_{0}.svg".format(h))
-            make_heatmap(
-                df_model, 
-                var_row, 
-                var_col, 
-                response, 
-                model_name, 
-                title, 
-                result_path, 
-                aggfunc="mean",
-                fmt='.2g'
-            )
-        if "ase" in model_flavors:
-            df_model = df.loc[
-                (df["model"] == "ase")
-                & (df["herit_gwas"] == h)
+                (df["model"] == m)
+                & (df["res_set"] == i)
                 & (df["complete"] == True)
             ]
             df_model.rename(
@@ -231,65 +218,9 @@ def interpret_shared(
                 }, 
                 inplace=True
             )
-            model_name = "PLASMA/C-AS"
+            model_name = NAMEMAP[m]
             title = title_base.format(response, model_name, h)
-            result_path = os.path.join(res_dir, "ase_h_{0}.svg".format(h))
-            make_heatmap(
-                df_model, 
-                var_row, 
-                var_col, 
-                response, 
-                model_name, 
-                title, 
-                result_path, 
-                aggfunc="mean",
-                fmt='.2g'
-            )
-        if "ecav" in model_flavors:
-            df_model = df.loc[
-                (df["model"] == "ecav")
-                & (df["herit_gwas"] == h)
-                & (df["complete"] == True)
-            ]
-            df_model.rename(
-                columns={
-                    "num_samples_gwas": var_row,
-                    "num_samples_qtl": var_col,
-                    "h4": response,
-                }, 
-                inplace=True
-            )
-            model_name = "eCAVIAR"
-            title = title_base.format(response, model_name, h)
-            result_path = os.path.join(res_dir, "ecav_h_{0}.svg".format(h))
-            make_heatmap(
-                df_model, 
-                var_row, 
-                var_col, 
-                response, 
-                model_name, 
-                title, 
-                result_path, 
-                aggfunc="mean",
-                fmt='.2g'
-            )
-        if "eqtl" in model_flavors:
-            df_model = df.loc[
-                (df["model"] == "eqtl")
-                & (df["herit_gwas"] == h)
-                & (df["complete"] == True)
-            ]
-            df_model.rename(
-                columns={
-                    "num_samples_gwas": var_row,
-                    "num_samples_qtl": var_col,
-                    "h4": response,
-                }, 
-                inplace=True
-            )
-            model_name = "QTL-Only"
-            title = title_base.format(response, model_name, h)
-            result_path = os.path.join(res_dir, "eqtl_h_{0}.svg".format(h))
+            result_path = os.path.join(res_dir, "{0}_h_{1}.svg".format(m, h))
             make_heatmap(
                 df_model, 
                 var_row, 

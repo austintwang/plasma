@@ -209,6 +209,7 @@ def interpret_shared_xpop(
                 (df["model"] == m)
                 & (df["res_set"] == i)
                 & (df["complete"] == True)
+                & (df["h4"] != np.nan)
             ]
             df_model.rename(
                 columns={

@@ -333,11 +333,11 @@ if __name__ == '__main__':
     res_dir_base = "/agusevlab/awang/ase_finemap_results/sim_coloc/"
     model_flavors = set(["indep", "eqtl", "ase", "ecav"])
 
-    gwas_herits = [0.001, 0.0001]
-    interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)
+    # gwas_herits = [0.001, 0.0001]
+    # interpret_shared(data_dir_base, gwas_herits, model_flavors, res_dir_base)
 
-    ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
-    interpret_corr(data_dir_base, ld_thresh, model_flavors, res_dir_base)
+    # ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
+    # interpret_corr(data_dir_base, ld_thresh, model_flavors, res_dir_base)
 
     populations = [("EUR", "AFR"), ("AFR", "EUR"), ("EUR", "EUR"), ("AFR", "AFR")]
     interpret_shared_xpop(data_dir_base, populations, model_flavors, res_dir_base)

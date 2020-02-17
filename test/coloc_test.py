@@ -554,6 +554,16 @@ def coloc_test(
     with open(params["snp_filter_path"], "rb") as snp_filter_file:
         snp_filter = pickle.load(snp_filter_file)
     
+    
+
+    qtl_updates_map = {
+        "full": {},
+        "indep": {"cross_corr_prior": 0.},
+        "ase": {"as_only": True},
+        "ecav": {"qtl_only": True},
+        "eqtl": {"qtl_only": True}
+    }
+
     sim_map = {
         "shared": sim_shared_causal,
         # "unshared": sim_unshared_causal,
@@ -599,8 +609,11 @@ def coloc_test(
 
                 for m in model_flavors:
                     try:
-                        model_qtl_updates = {}
-                        result = run_model(inputs, m, model_qtl_updates)
+                        model_qtl_updates = qtl_updates_map[m]
+                        if m == "ecav":
+                            result = run_ecav(inputs, "ecav", model_qtl_updates)
+                        else:
+                            result = run_model(inputs, m, model_qtl_updates)
                         result["res_set"] = ind
                     except Exception as e:
                         # raise ####

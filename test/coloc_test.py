@@ -575,7 +575,7 @@ def coloc_test(
                 snp_filter,
                 params
             )
-            for ind, l in enumerate([fn_out] if multi_out else fn_out):
+            for ind, l in enumerate([fn_out] if not multi_out else fn_out):
                 locus, qtl_data, gwas_data, causal_config_qtl, causal_config_gwas = l
                 # print(qtl_data) ####
                 # print(qtl_data["counts_A"]) ####

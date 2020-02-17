@@ -605,6 +605,7 @@ def coloc_test(
                     except Exception as e:
                         # raise ####
                         trace = traceback.format_exc()
+                        print(trace) ####
                         message = repr(e)
                         result = {
                             "model": m,
@@ -619,6 +620,7 @@ def coloc_test(
         except Exception as e:
             # raise ####
             trace = traceback.format_exc()
+            print(trace) ####
             message = repr(e)
             result = {"complete": False, "error": message, "traceback": trace, "res_set": None}
             for m in model_flavors:

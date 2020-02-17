@@ -189,10 +189,10 @@ def interpret_shared_xpop(
         model_flavors,
         res_dir_base
     ):
-    data_dir = os.path.join(data_dir_base, "shared")
+    data_dir = os.path.join(data_dir_base, "shared_xpop")
     df = load_data(data_dir)
 
-    res_dir = os.path.join(res_dir_base, "shared")
+    res_dir = os.path.join(res_dir_base, "shared_xpop")
     if not os.path.exists(res_dir):
         os.makedirs(res_dir)
 

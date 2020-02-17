@@ -41,8 +41,9 @@ def load_data(data_dir):
             data = pickle.load(data_file)
         data_list.extend(data)
 
+    print(data_list[0]) ####
     data_df = pd.DataFrame.from_records(data_list)
-    # print(data_df.columns.values) ####
+    print(data_df.columns.values) ####
     return data_df
 
 def roc(ppt, ppf):

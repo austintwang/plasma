@@ -262,7 +262,7 @@ def sim_shared_causal_meta(vcf_dir, vcf_name_template, sample_filters, snp_filte
                         maf_thresh=params["maf_thresh"]
                     )
 
-        snp_counts = [loci_p1[0].snp_count, loci_p1[1].snp_count, loci_p2[0].snp_count, loci_p2[1].snp_count]
+            snp_counts = [loci_p1[0].snp_count, loci_p1[1].snp_count, loci_p2[0].snp_count, loci_p2[1].snp_count]
         except (ValueError, TimeoutException):
             continue
         if snp_counts[0] >= 10 and snp_counts.count(snp_counts[0]) == len(snp_counts):

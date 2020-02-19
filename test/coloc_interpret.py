@@ -235,6 +235,57 @@ def interpret_shared_xpop(
                 fmt='.2g'
             )
 
+def interpret_shared_meta(
+        data_dir_base, 
+        populations, 
+        model_flavors,
+        res_dir_base
+    ):
+    data_dir = os.path.join(data_dir_base, "shared_xpop")
+    df = load_data(data_dir)
+
+    res_dir = os.path.join(res_dir_base, "shared_xpop")
+    if not os.path.exists(res_dir):
+        os.makedirs(res_dir)
+
+    var_row = "GWAS Sample Size"
+    var_col = "QTL Sample Size"
+    response = "Colocalization Score (PP4)"
+    title_base = "{1}, {2} QTL, {3} GWAS"
+
+    sns.set(font="Roboto")
+
+    for i, p in enumerate(populations):
+        for m in model_flavors:
+            df_model = df.loc[
+                (df["model"] == m)
+                & (df["res_set"] == i)
+                & (df["complete"] == True)
+                & (df["h4"] != np.nan)
+            ]
+            df_model.rename(
+                columns={
+                    "num_samples_gwas": var_row,
+                    "num_samples_qtl": var_col,
+                    "h4": response,
+                }, 
+                inplace=True
+            )
+            model_name = NAMEMAP[m]
+            title = title_base.format(response, model_name, p[0], p[1])
+            result_path = os.path.join(res_dir, "{0}_q_{1}_g_{2}.svg".format(m, p[0], p[1]))
+            make_heatmap(
+                df_model, 
+                var_row, 
+                var_col, 
+                response, 
+                model_name, 
+                title, 
+                result_path, 
+                aggfunc="mean",
+                fmt='.2g'
+            )
+
 def calc_rocs(df_neg, df_pos, var_row, var_col, response):
     struct = pd.pivot_table(
         df_neg, 

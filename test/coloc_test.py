@@ -221,6 +221,102 @@ def sim_shared_causal_xpop(vcf_dir, vcf_name_template, sample_filters, snp_filte
 
     return return_vals
 
+def sim_shared_causal_meta(vcf_dir, vcf_name_template, sample_filters, snp_filter, params):
+    while True:
+        try:
+            # if params.get("specify_region", False):
+            #   chrom = params["chrom"]
+            #   chrom_num = params["chrom_num"]
+            #   start = params["start"]
+            #   vcf_path = params["vcf_path"]
+            # else:
+            chrom, chrom_num, start, vcf_path = draw_region(vcf_dir, vcf_name_template)
+            # print("a") ####
+            # gc.collect()
+            # print("b") ####
+            with time_limit(100):
+                loci_p1 = [None, None]
+                for i in range(2):
+                    loci_p1[i] = LocusSimulator(
+                        vcf_path, 
+                        chrom_num, 
+                        start, 
+                        params["num_causal"],
+                        region_size=params["region_size"],
+                        max_snps=params["max_snps"],
+                        sample_filter=sample_filters[0],
+                        snp_filter=snp_filter,
+                        maf_thresh=params["maf_thresh"]
+                    )
+                loci_p2 = [None, None]
+                for i in range(2):
+                    loci_p2[i] = LocusSimulator(
+                        vcf_path, 
+                        chrom_num, 
+                        start, 
+                        params["num_causal"],
+                        region_size=params["region_size"],
+                        max_snps=params["max_snps"],
+                        sample_filter=sample_filters[1],
+                        snp_filter=snp_filter,
+                        maf_thresh=params["maf_thresh"]
+                    )
+
+        snp_counts = [loci_p1[0].snp_count, loci_p1[1].snp_count, loci_p2[0].snp_count, loci_p2[1].snp_count]
+        except (ValueError, TimeoutException):
+            continue
+        if snp_counts[0] >= 10 and snp_counts.count(snp_counts[0]) == len(snp_counts):
+            break
+
+    causal_inds = np.random.choice(locus_1.snp_count, params["num_causal"], replace=False)
+    causal_config = np.zeros(locus_1.snp_count)
+    np.put(causal_config, causal_inds, 1)
+
+    qtl_data_p1 = [None, None]
+    gwas_data_p1 = [None, None]
+    for i in range(2):
+        qtl_data_p1[i] = loci_p1[i].sim_asqtl(
+            params["num_samples_qtl"],
+            params["coverage"],
+            params["std_al_dev"],
+            params["herit_qtl"],
+            params["herit_as"],
+            params["overdispersion"],
+            causal_override=causal_config
+        )
+        gwas_data_p1[i] = loci_p1[i].sim_gwas(
+            params["num_samples_gwas"],
+            params["herit_gwas"],
+            causal_override=causal_config
+        )
+
+    qtl_data_p1 = [None, None]
+    gwas_data_p1 = [None, None]
+    for i in range(2):
+        qtl_data_p2[i] = loci_p2[i].sim_asqtl(
+            params["num_samples_qtl"],
+            params["coverage"],
+            params["std_al_dev"],
+            params["herit_qtl"],
+            params["herit_as"],
+            params["overdispersion"],
+            causal_override=causal_config
+        )
+        gwas_data_p2[i] = loci_p2[i].sim_gwas(
+            params["num_samples_gwas"],
+            params["herit_gwas"],
+            causal_override=causal_config
+        )
+
+    return_vals = [
+        (loci_p1[0], qtl_data_p1[0], gwas_data_p1[0], causal_config, causal_config,),
+        (loci_p1[1], qtl_data_p1[1], gwas_data_p1[1], causal_config, causal_config,),
+        (loci_p2[0], qtl_data_p2[0], gwas_data_p2[0], causal_config, causal_config,),
+        (loci_p2[1], qtl_data_p2[1], gwas_data_p2[1], causal_config, causal_config,),
+    ]
+
+    return return_vals
+
 def sim_unshared_causal(vcf_dir, vcf_name_template, sample_filters, snp_filter, params):
     while True:
         try:

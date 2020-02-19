@@ -213,6 +213,56 @@ def test_shared_causal_xpop(
 			params_path = os.path.join(params_dir, test_name + ".pickle")
 			disp.add_job(out_dir, params_path, params, num_trials)
 
+def test_shared_causal_meta(
+	disp, 
+	data_info,
+	params_dir, 
+	out_dir_base, 
+	qtl_sizes, 
+	gwas_sizes, 
+	num_trials,
+	script_path,
+):
+	params_base = {
+		"test_type": "shared_xpop",
+		"region_size": 200000,
+		"max_snps": 1000,
+		"num_samples_qtl": None,
+		"num_samples_gwas": None,
+		"maf_thresh": 0.,
+		"overdispersion": 0.05,
+		"herit_qtl": 0.05,
+		"herit_as": 0.4,
+		"herit_gwas": 0.001,
+		"corr_thresh": None,
+		"std_al_dev": 0.7,
+		"num_causal": 1,
+		"coverage": 100,
+		"search_mode": "exhaustive",
+		"min_causal": 0,
+		"max_causal": 1,
+		"test_name": None,
+		"confidence": 0.95,
+		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
+	}
+	out_dir = os.path.join(out_dir_base, "shared_xpop")
+	if not os.path.exists(out_dir):
+		os.makedirs(out_dir)
+
+	for i in qtl_sizes:
+		for j in gwas_sizes:
+			test_name = "q_{0}_g_{1}_xpop".format(i, j)
+			param_updates = {
+				"test_name": test_name,
+				"num_samples_qtl": i,
+				"num_samples_gwas": j,
+			}
+			params = params_base.copy()
+			params.update(param_updates)
+			params.update(data_info)
+			params_path = os.path.join(params_dir, test_name + ".pickle")
+			disp.add_job(out_dir, params_path, params, num_trials)
+
 if __name__ == '__main__':
 	curr_path = os.path.abspath(os.path.dirname(__file__))
 
@@ -267,7 +317,18 @@ if __name__ == '__main__':
 	# 	script_path,
 	# )
 
-	test_shared_causal_xpop(
+	# test_shared_causal_xpop(
+	# 	disp, 
+	# 	data_info,
+	# 	params_dir, 
+	# 	out_dir_base, 
+	# 	qtl_sizes, 
+	# 	gwas_sizes, 
+	# 	num_trials,
+	# 	script_path,
+	# )
+
+	test_shared_causal_meta(
 		disp, 
 		data_info,
 		params_dir, 
@@ -278,6 +339,6 @@ if __name__ == '__main__':
 		script_path,
 	)
 
-	disp.submit()
+	# disp.submit()
 
 

@@ -224,7 +224,7 @@ def test_shared_causal_meta(
 	script_path,
 ):
 	params_base = {
-		"test_type": "shared_xpop",
+		"test_type": "shared_meta",
 		"region_size": 200000,
 		"max_snps": 1000,
 		"num_samples_qtl": None,
@@ -245,13 +245,13 @@ def test_shared_causal_meta(
 		"confidence": 0.95,
 		"model_flavors": set(["indep", "eqtl", "ase", "ecav"])
 	}
-	out_dir = os.path.join(out_dir_base, "shared_xpop")
+	out_dir = os.path.join(out_dir_base, "shared_meta")
 	if not os.path.exists(out_dir):
 		os.makedirs(out_dir)
 
 	for i in qtl_sizes:
 		for j in gwas_sizes:
-			test_name = "q_{0}_g_{1}_xpop".format(i, j)
+			test_name = "q_{0}_g_{1}_meta".format(i, j)
 			param_updates = {
 				"test_name": test_name,
 				"num_samples_qtl": i,

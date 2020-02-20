@@ -237,7 +237,7 @@ def interpret_shared_xpop(
 
 def interpret_shared_meta(
         data_dir_base, 
-        populations, 
+        comparisons, 
         model_flavors,
         res_dir_base
     ):
@@ -250,41 +250,81 @@ def interpret_shared_meta(
 
     var_row = "GWAS Sample Size"
     var_col = "QTL Sample Size"
-    response = "Colocalization Score (PP4)"
-    title_base = "{1}, {2} QTL, {3} GWAS"
+    response = "Meta-Colocalization Score"
+    title_base = "{1}, {2} and {3} Meta-Analysis"
 
     sns.set(font="Roboto")
 
-    for i, p in enumerate(populations):
+    for i, p in comparisons:
         for m in model_flavors:
-            df_model = df.loc[
+            df_1 = df.loc[
                 (df["model"] == m)
-                & (df["res_set"] == i)
+                & (df["res_set"] == i[0])
                 & (df["complete"] == True)
-                & (df["h4"] != np.nan)
             ]
-            df_model.rename(
+            df_1.rename(
                 columns={
                     "num_samples_gwas": var_row,
                     "num_samples_qtl": var_col,
-                    "h4": response,
                 }, 
                 inplace=True
             )
-            model_name = NAMEMAP[m]
+            df_2 = df.loc[
+                (df["model"] == m)
+                & (df["res_set"] == i[1])
+                & (df["complete"] == True)
+            ]
+            df_2.rename(
+                columns={
+                    "num_samples_gwas": var_row,
+                    "num_samples_qtl": var_col,
+                }, 
+                inplace=True
+            )
+            df_model = calc_meta(df_1, df_2, var_row, var_col)
             title = title_base.format(response, model_name, p[0], p[1])
-            result_path = os.path.join(res_dir, "{0}_q_{1}_g_{2}.svg".format(m, p[0], p[1]))
+            result_path = os.path.join(res_dir, "{0}_m_{1}_{2}.svg".format(m, p[0], p[1]))
             make_heatmap(
                 df_model, 
                 var_row, 
                 var_col, 
-                response, 
-                model_name, 
+                response,
+                NAMEMAP[m], 
                 title, 
                 result_path, 
-                aggfunc="mean",
-                fmt='.2g'
+                fmt='.2g',
+                convert_wide=False,
+                heatmap_kwargs={"center": 0.5}
             )
+
+def calc_meta(df_1, df_2, var_row, var_col):
+    struct = pd.pivot_table(
+        df_1, 
+        values="h4", 
+        index=var_row, 
+        columns=var_col, 
+    )
+
+    cols = struct.columns.values
+    rows = struct.index.values
+
+    for r in rows:
+        for c in cols:
+            clpp_1 = df_1.loc[
+                (df_1[var_row] == r) & (df_1[var_col] == c),
+                ["clpps", "locus_pos"]
+            ].sort_values("locus_pos").loc[:, "clpps"].values().flatten()
+            clpp_2 = df_2.loc[
+                (df_2[var_row] == r) & (df_2[var_col] == c),
+                ["clpps", "locus_pos"]
+            ].sort_values("locus_pos").loc[:, "clpps"].values().flatten()
+
+            clpp_meta = np.mean([i.dot(j) for i, j in zip(clpp_1, clpp_2)])
+            struct.loc[r, c] = clpp_meta
+            print(clpp_meta) ####
+
+    return struct
+
 
 def calc_rocs(df_neg, df_pos, var_row, var_col, response):
     struct = pd.pivot_table(
@@ -392,8 +432,12 @@ if __name__ == '__main__':
     # ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
     # interpret_corr(data_dir_base, ld_thresh, model_flavors, res_dir_base)
 
-    populations = [("EUR", "AFR"), ("AFR", "EUR"), ("EUR", "EUR"), ("AFR", "AFR")]
-    interpret_shared_xpop(data_dir_base, populations, model_flavors, res_dir_base)
+    # populations = [("EUR", "AFR"), ("AFR", "EUR"), ("EUR", "EUR"), ("AFR", "AFR")]
+    # interpret_shared_xpop(data_dir_base, populations, model_flavors, res_dir_base)
+
+    comparisons = [((0, 1), ("AFR", "EUR")), ((0, 2), ("EUR", "EUR")), ((1, 3), ("AFR", "AFR"))]
+    interpret_shared_xpop(data_dir_base, comparisons, model_flavors, res_dir_base)
+
 
 
 

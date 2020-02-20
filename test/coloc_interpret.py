@@ -130,7 +130,7 @@ def make_heatmap(
     ax.set_yticklabels([int(float(i.get_text())) for i in ax.get_yticklabels()])
     plt.yticks(rotation=0) 
     plt.title(title)
-    # plt.savefig(result_path)
+    plt.savefig(result_path)
     plt.clf()
 
 def interpret_shared(
@@ -437,7 +437,7 @@ if __name__ == '__main__':
     # interpret_shared_xpop(data_dir_base, populations, model_flavors, res_dir_base)
 
     comparisons = [((0, 1), ("AFR", "EUR")), ((0, 2), ("EUR", "EUR")), ((1, 3), ("AFR", "AFR"))]
-    interpret_shared_xpop(data_dir_base, comparisons, model_flavors, res_dir_base)
+    interpret_shared_meta(data_dir_base, comparisons, model_flavors, res_dir_base)
 
 
 

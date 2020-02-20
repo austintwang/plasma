@@ -130,7 +130,7 @@ def make_heatmap(
     ax.set_yticklabels([int(float(i.get_text())) for i in ax.get_yticklabels()])
     plt.yticks(rotation=0) 
     plt.title(title)
-    plt.savefig(result_path)
+    # plt.savefig(result_path)
     plt.clf()
 
 def interpret_shared(
@@ -241,10 +241,10 @@ def interpret_shared_meta(
         model_flavors,
         res_dir_base
     ):
-    data_dir = os.path.join(data_dir_base, "shared_xpop")
+    data_dir = os.path.join(data_dir_base, "shared_meta")
     df = load_data(data_dir)
 
-    res_dir = os.path.join(res_dir_base, "shared_xpop")
+    res_dir = os.path.join(res_dir_base, "shared_meta")
     if not os.path.exists(res_dir):
         os.makedirs(res_dir)
 
@@ -256,6 +256,7 @@ def interpret_shared_meta(
     sns.set(font="Roboto")
 
     for i, p in comparisons:
+        print(i, p) ####
         for m in model_flavors:
             df_1 = df.loc[
                 (df["model"] == m)

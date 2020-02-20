@@ -314,11 +314,11 @@ def calc_meta(df_1, df_2, var_row, var_col):
             clpp_1 = df_1.loc[
                 (df_1[var_row] == r) & (df_1[var_col] == c),
                 ["clpps", "locus_pos"]
-            ].sort_values("locus_pos").loc[:, "clpps"].values().flatten()
+            ].sort_values("locus_pos").loc[:, "clpps"].values.flatten()
             clpp_2 = df_2.loc[
                 (df_2[var_row] == r) & (df_2[var_col] == c),
                 ["clpps", "locus_pos"]
-            ].sort_values("locus_pos").loc[:, "clpps"].values().flatten()
+            ].sort_values("locus_pos").loc[:, "clpps"].values.flatten()
 
             clpp_meta = np.mean([i.dot(j) for i, j in zip(clpp_1, clpp_2)])
             struct.loc[r, c] = clpp_meta

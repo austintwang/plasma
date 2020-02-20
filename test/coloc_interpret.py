@@ -283,6 +283,7 @@ def interpret_shared_meta(
                 inplace=True
             )
             df_model = calc_meta(df_1, df_2, var_row, var_col)
+            model_name = NAMEMAP[m]
             title = title_base.format(response, model_name, p[0], p[1])
             result_path = os.path.join(res_dir, "{0}_m_{1}_{2}.svg".format(m, p[0], p[1]))
             make_heatmap(

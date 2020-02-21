@@ -290,8 +290,8 @@ def sim_shared_causal_meta(vcf_dir, vcf_name_template, sample_filters, snp_filte
             causal_override=causal_config
         )
 
-    qtl_data_p1 = [None, None]
-    gwas_data_p1 = [None, None]
+    qtl_data_p2 = [None, None]
+    gwas_data_p2 = [None, None]
     for i in range(2):
         qtl_data_p2[i] = loci_p2[i].sim_asqtl(
             params["num_samples_qtl"],

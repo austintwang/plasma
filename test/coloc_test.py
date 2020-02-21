@@ -268,8 +268,8 @@ def sim_shared_causal_meta(vcf_dir, vcf_name_template, sample_filters, snp_filte
         if snp_counts[0] >= 10 and snp_counts.count(snp_counts[0]) == len(snp_counts):
             break
 
-    causal_inds = np.random.choice(locus_1.snp_count, params["num_causal"], replace=False)
-    causal_config = np.zeros(locus_1.snp_count)
+    causal_inds = np.random.choice(locus_p1[0].snp_count, params["num_causal"], replace=False)
+    causal_config = np.zeros(locus_p1[0].snp_count)
     np.put(causal_config, causal_inds, 1)
 
     qtl_data_p1 = [None, None]

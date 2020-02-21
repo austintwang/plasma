@@ -665,8 +665,9 @@ def coloc_test(
         # "unshared": sim_unshared_causal,
         "corr": sim_unshared_corr,
         "shared_xpop": sim_shared_causal_xpop,
+        "shared_meta": sim_shared_causal_meta
     }
-    multi_out_fns = set(["shared_xpop"])
+    multi_out_fns = set(["shared_xpop", "shared_meta"])
 
     sim_fn = sim_map[test_type]
     multi_out = (test_type in multi_out_fns)

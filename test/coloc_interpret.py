@@ -241,7 +241,7 @@ def interpret_shared_meta(
         model_flavors,
         res_dir_base
     ):
-    data_dir = os.path.join(data_dir_base, "shared_xpop")
+    data_dir = os.path.join(data_dir_base, "shared_meta")
     df = load_data(data_dir)
 
     res_dir = os.path.join(res_dir_base, "shared_meta")

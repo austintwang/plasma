@@ -296,7 +296,6 @@ def interpret_shared_meta(
                 result_path, 
                 fmt='.2g',
                 convert_wide=False,
-                heatmap_kwargs={"center": 0.5}
             )
 
 def calc_meta(df_1, df_2, var_row, var_col):
@@ -434,8 +433,8 @@ if __name__ == '__main__':
     # ld_thresh = [0., 0.2, 0.4, 0.8, 0.95]
     # interpret_corr(data_dir_base, ld_thresh, model_flavors, res_dir_base)
 
-    # populations = [("EUR", "AFR"), ("AFR", "EUR"), ("EUR", "EUR"), ("AFR", "AFR")]
-    # interpret_shared_xpop(data_dir_base, populations, model_flavors, res_dir_base)
+    populations = [("EUR", "AFR"), ("AFR", "EUR"), ("EUR", "EUR"), ("AFR", "AFR")]
+    interpret_shared_xpop(data_dir_base, populations, model_flavors, res_dir_base)
 
     comparisons = [((0, 1), ("AFR", "EUR")), ((0, 2), ("EUR", "EUR")), ((1, 3), ("AFR", "AFR"))]
     interpret_shared_meta(data_dir_base, comparisons, model_flavors, res_dir_base)

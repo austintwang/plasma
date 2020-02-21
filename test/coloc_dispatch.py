@@ -27,7 +27,7 @@ class Dispatcher(object):
 				"-e",
 				err_name,
 				"--mem",
-				"1000",
+				"2000",
 				self.script_path,
 				out_dir,
 				str(val),

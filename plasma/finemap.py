@@ -481,8 +481,7 @@ class Finemap(object):
         """
         if self.cross_corr is not None:
             return
-        
-        self._calc_corr_stats()
+         
         self._calc_num_snps()
 
         if not self.qtl_only:
@@ -494,6 +493,9 @@ class Finemap(object):
             self._calc_total_exp_stats()
             self._calc_total_exp_corr()
             self._calc_total_exp_var_prior()
+
+        if not (self.qtl_only or self.as_only):
+            self._calc_corr_stats()
 
         if self.qtl_only:
             self.cross_corr = np.empty(shape=(self.num_snps,0))

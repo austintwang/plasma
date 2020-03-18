@@ -394,6 +394,7 @@ class Finemap(object):
 
         if self.qtl_only:
             self.imbalance_var_prior = np.nan
+            return
 
         self._calc_num_ppl()
 
@@ -443,6 +444,7 @@ class Finemap(object):
 
         if self.as_only:
             self.total_exp_var_prior = np.nan
+            return
 
         self._calc_num_ppl()
 

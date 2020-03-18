@@ -441,7 +441,7 @@ class Finemap(object):
         if self.total_exp_var_prior is not None:
             return
 
-         if self.as_only:
+        if self.as_only:
             self.total_exp_var_prior = np.nan
 
         self._calc_num_ppl()

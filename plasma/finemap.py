@@ -392,6 +392,9 @@ class Finemap(object):
         if self.imbalance_var_prior is not None:
             return
 
+        if self.qtl_only:
+            self.imbalance_var_prior = np.nan
+
         self._calc_num_ppl()
 
         coverage = np.mean(self.counts_A + self.counts_B)
@@ -438,6 +441,9 @@ class Finemap(object):
         if self.total_exp_var_prior is not None:
             return
 
+         if self.as_only:
+            self.total_exp_var_prior = np.nan
+
         self._calc_num_ppl()
 
         self.total_exp_var_prior = (
@@ -483,16 +489,16 @@ class Finemap(object):
             return
          
         self._calc_num_snps()
+        self._calc_imbalance_var_prior()
+        self._calc_total_exp_var_prior()
 
         if not self.qtl_only:
             self._calc_imbalance_stats()
             self._calc_imbalance_corr()
-            self._calc_imbalance_var_prior()
 
         if not self.as_only:
             self._calc_total_exp_stats()
             self._calc_total_exp_corr()
-            self._calc_total_exp_var_prior()
 
         if not (self.qtl_only or self.as_only):
             self._calc_corr_stats()

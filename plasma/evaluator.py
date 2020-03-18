@@ -29,10 +29,10 @@ class Evaluator(object):
         self.imbalance_var_prior = fm.imbalance_var_prior
         self.total_exp_var_prior = fm.total_exp_var_prior
         self.cross_corr_prior = fm.cross_corr_prior
-        self.cross_cov_prior = (
-            self.cross_corr_prior 
-            * np.sqrt(fm.imbalance_var_prior * fm.total_exp_var_prior)
-        )
+        # self.cross_cov_prior = (
+        #     self.cross_corr_prior 
+        #     * np.sqrt(fm.imbalance_var_prior * fm.total_exp_var_prior)
+        # )
 
         self.imbalance_var_inv = (
             1 / (fm.imbalance_var_prior * (1 - fm.cross_corr_prior ** 2))

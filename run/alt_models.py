@@ -445,12 +445,12 @@ class FmBenner(Finemap):
 		with open(self.log_path + "_sss") as log_file:
 			log_data = log_file.readlines()
 
-		print("".join(log_data)) ####
+		# print("".join(log_data)) ####
 
 		for i in self.get_probs_sorted()[:5]: ####
 			print(i) ####
 
-		print(self.get_ppas()) ####
+		# print(self.get_ppas()) ####
 
 		num_causal_region = False
 		for l in log_data:

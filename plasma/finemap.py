@@ -243,6 +243,7 @@ class Finemap(object):
             * (1 + np.cosh(imbalance_adj))
             * (1 + self.overdispersion * (counts - 1))
         )
+        print(np.cosh(imbalance_adj)[self.mask_imbalance]) ####
 
     def _calc_phi(self):
         """
@@ -263,7 +264,7 @@ class Finemap(object):
         weights = 1 / self.imbalance_errors[self.mask_imbalance]
         denominator = 1 / (phases.T * weights * phases.T).sum(1) 
         self.phi = denominator * np.matmul(phases.T, (weights * self.imbalance[self.mask_imbalance])) 
-        print(denominator) ####
+        # print(denominator) ####
 
     def _calc_imbalance_stats(self):
         """

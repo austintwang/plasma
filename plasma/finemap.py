@@ -263,6 +263,7 @@ class Finemap(object):
         weights = 1 / self.imbalance_errors[self.mask_imbalance]
         denominator = 1 / (phases.T * weights * phases.T).sum(1) 
         self.phi = denominator * np.matmul(phases.T, (weights * self.imbalance[self.mask_imbalance])) 
+        print(self.imbalance[self.mask_imbalance]) ####
 
     def _calc_imbalance_stats(self):
         """
@@ -286,7 +287,7 @@ class Finemap(object):
         weights = 1 / self.imbalance_errors[self.mask_imbalance]
         denominator = 1 / (phases.T * weights * phases.T).sum(1) 
         phi = self.phi
-        print(phi) ####
+        # print(phi) ####
 
         sqrt_weights = np.sqrt(weights)
         sum_weights = np.sum(weights)

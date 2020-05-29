@@ -290,7 +290,7 @@ class Finemap(object):
         sum_weights = np.sum(weights)
         sum_weights_sq = np.sum(weights ** 2)
         sum_weights_sqrt = np.sum(sqrt_weights)
-        residuals = (sqrt_weights * self.imbalance[self.mask_imbalance] - sqrt_weights * (self.phases * phi).T).T
+        residuals = (sqrt_weights * self.imbalance[self.mask_imbalance] - sqrt_weights * (phases * phi).T).T
         remaining_errors = (
             np.sum(
                 residuals * residuals - 1, 

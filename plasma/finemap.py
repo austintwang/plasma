@@ -66,6 +66,9 @@ class Finemap(object):
         self.phi = kwargs.get("phi", None)
         self.beta = kwargs.get("beta", None)
 
+        self.mask_imbalance = kwargs.get("mask_imbalance", None)
+        self.mask_total_exp = kwargs.get("mask_total_exp", None)
+
         self._mean = None
         self._beta_normalizer = None
 
@@ -117,6 +120,26 @@ class Finemap(object):
 
     #   haps_pooled = np.append(self.hap_A, self.hap_B, axis=0)
     #   self.hap_vars = np.var(haps_pooled, axis=0)
+
+    def _calc_mask_imbalance(self):
+        """
+        Default AS sample mask to include all samples
+        If already specified, defer to specified value
+        """
+        if self.mask_imbalance is not None:
+            return
+
+        self.mask_imbalance = np.full(np.size(self.counts_A, True))
+
+    def _calc_mask_total_exp(self):
+        """
+        Default QTL sample mask to include all samples
+        If already specified, defer to specified value
+        """
+        if self.mask_total_exp is not None:
+            return
+
+        self.mask_total_exp = np.full(np.size(self.counts_A, True))
 
     def _calc_imbalance(self):
         """
@@ -229,12 +252,13 @@ class Finemap(object):
         if self.phi is not None:
             return
 
+        self._calc_mask_imbalance()
         self._calc_imbalance_errors()
         self._calc_phases()
         self._calc_imbalance()
 
-        phases = self.phases
-        weights = 1 / self.imbalance_errors
+        phases = self.phases[self.mask_imbalance, :]
+        weights = 1 / self.imbalance_errors[self.mask_imbalance]
         denominator = 1 / (phases.T * weights * phases.T).sum(1) 
         self.phi = denominator * np.matmul(phases.T, (weights * self.imbalance)) 
 
@@ -250,13 +274,14 @@ class Finemap(object):
             self.imbalance_stats = np.empty(0)
             return
 
+        self._calc_mask_imbalance()
         self._calc_imbalance_errors()
         self._calc_phases()
         self._calc_imbalance()
         self._calc_phi()
 
-        phases = self.phases
-        weights = 1 / self.imbalance_errors
+        phases = self.phases[self.mask_imbalance, :]
+        weights = 1 / self.imbalance_errors[self.mask_imbalance]
         denominator = 1 / (phases.T * weights * phases.T).sum(1) 
         phi = self.phi
 
@@ -265,7 +290,7 @@ class Finemap(object):
         sum_weights = np.sum(weights)
         sum_weights_sq = np.sum(weights ** 2)
         sum_weights_sqrt = np.sum(sqrt_weights)
-        residuals = (sqrt_weights * self.imbalance - sqrt_weights * (self.phases * phi).T).T
+        residuals = (sqrt_weights * self.imbalance[self.mask_imbalance] - sqrt_weights * (self.phases * phi).T).T
         remaining_errors = (
             np.sum(
                 residuals * residuals - 1, 
@@ -309,17 +334,19 @@ class Finemap(object):
         if self.beta is not None:
             return
 
+        self._calc_mask_total_exp()
         self._calc_genotypes_comb()
         self._calc_total_exp()
         self._calc_num_snps()
 
-        genotypes_comb = self.genotypes_comb
+        genotypes_comb = self.genotypes_comb[self.mask_total_exp, :]
         genotype_means = np.mean(genotypes_comb, axis=0)
-        exp_mean = np.mean(self.total_exp)
+        total_exp = self.total_exp[self.mask_total_exp]
+        exp_mean = np.mean(total_exp)
         genotypes_ctrd = genotypes_comb - genotype_means
         denominator = 1 / (genotypes_ctrd * genotypes_ctrd).sum(0)
         
-        self.beta = denominator * genotypes_ctrd.T.dot(self.total_exp - exp_mean)
+        self.beta = denominator * genotypes_ctrd.T.dot(total_exp - exp_mean)
         self._mean = exp_mean
         self._beta_normalizer = denominator 
 
@@ -331,10 +358,15 @@ class Finemap(object):
         if self.exp_errors is not None:
             return
 
+        self._calc_mask_total_exp()
         self._calc_beta()
         self._calc_num_ppl()
 
-        residuals = (self.total_exp - self._mean - (self.genotypes_comb * self.beta).T).T
+        residuals = (
+            self.total_exp[self.mask_total_exp] 
+            - self._mean 
+            - (self.genotypes_comb[self.mask_total_exp, :] * self.beta).T
+        ).T
         self.exp_errors = np.sum(
             residuals * residuals, 
             axis=0

@@ -156,8 +156,7 @@ class Evaluator(object):
                 self.cumu_lposts = res + np.log(1 + np.exp(self.cumu_lposts - res))
         else:
             self.results_unsaved[key] = res
-            
-        print(res) ####
+
         return res
 
     def get_probs(self):

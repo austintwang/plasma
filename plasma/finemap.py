@@ -243,7 +243,7 @@ class Finemap(object):
             * (1 + np.cosh(imbalance_adj))
             * (1 + self.overdispersion * (counts - 1))
         )
-        print(np.cosh(imbalance_adj)[self.mask_imbalance]) ####
+        print(self.overdispersion[self.mask_imbalance]) ####
 
     def _calc_phi(self):
         """

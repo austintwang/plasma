@@ -129,7 +129,7 @@ class Finemap(object):
         if self.mask_imbalance is not None:
             return
 
-        print(mask_imbalance) ####
+        print(self.mask_imbalance) ####
         self.mask_imbalance = np.full(np.size(self.counts_A, True))
 
     def _calc_mask_total_exp(self):

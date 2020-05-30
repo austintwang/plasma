@@ -349,7 +349,7 @@ class Finemap(object):
         exp_mean = np.mean(total_exp)
         genotypes_ctrd = genotypes_comb - genotype_means
         denominator = 1 / (genotypes_ctrd * genotypes_ctrd).sum(0)
-        print(total_exp) ####
+        print(self.total_exp) ####
         
         self.beta = denominator * genotypes_ctrd.T.dot(total_exp - exp_mean)
         self._mean = exp_mean

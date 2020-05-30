@@ -264,7 +264,7 @@ class Finemap(object):
         denominator = 1 / (phases.T * weights * phases.T).sum(1) 
         self.phi = denominator * np.matmul(phases.T, (weights * self.imbalance[self.mask_imbalance])) 
         # print((phases.T * phases.T).sum(1)) ####
-        print(self.phi) ####
+        # print(self.phi) ####
 
     def _calc_imbalance_stats(self):
         """
@@ -364,7 +364,7 @@ class Finemap(object):
 
         self._calc_mask_total_exp()
         self._calc_beta()
-        self._calc_num_ppl()
+        # self._calc_num_ppl()
 
         residuals = (
             self.total_exp[self.mask_total_exp] 
@@ -374,7 +374,7 @@ class Finemap(object):
         self.exp_errors = np.sum(
             residuals * residuals, 
             axis=0
-        ) / (self.num_ppl - 1)
+        ) / (np.count_nonzero(self.mask_total_exp) - 1)
 
     def _calc_total_exp_stats(self):
         """
@@ -405,6 +405,7 @@ class Finemap(object):
         # )
         varbeta = denominator * self.exp_errors
         self.total_exp_stats = self.beta / np.sqrt(varbeta)
+        print(self.total_exp_stats) ####
 
     def _calc_total_exp_corr(self):
         """
@@ -432,11 +433,13 @@ class Finemap(object):
             self.imbalance_var_prior = np.nan
             return
 
-        self._calc_num_ppl()
+        # self._calc_num_ppl()
+        self._calc_mask_imbalance()
 
-        coverage = np.mean(self.counts_A + self.counts_B)
-        overdispersion = np.mean(self.overdispersion)
-        imbalance = np.log(self.counts_A) - np.log(self.counts_B)
+        num_ppl = np.count_nonzero(self.mask_imbalance)
+        coverage = np.mean((self.counts_A + self.counts_B)[self.mask_imbalance])
+        overdispersion = np.mean(self.overdispersion[self.mask_imbalance])
+        imbalance = (np.log(self.counts_A) - np.log(self.counts_B))[self.mask_imbalance]
         ase_inherent_var = np.var(imbalance)
 
         ase_count_var = (
@@ -464,7 +467,7 @@ class Finemap(object):
         # print(self.num_causal_prior) ####
         # print(self._imb_herit_adj) ####
         self.imbalance_var_prior = (
-            self.num_ppl 
+            num_ppl 
             / self.num_causal_prior 
             * self._imb_herit_adj
             / (1 - self._imb_herit_adj)
@@ -482,10 +485,12 @@ class Finemap(object):
             self.total_exp_var_prior = np.nan
             return
 
-        self._calc_num_ppl()
+        # self._calc_num_ppl()
+        self._calc_mask_total_exp()
 
+        num_ppl = np.count_nonzero(self.mask_total_exp)
         self.total_exp_var_prior = (
-            self.num_ppl 
+            num_ppl 
             / self.num_causal_prior 
             * self.total_exp_herit_prior 
             / (1 - self.total_exp_herit_prior)

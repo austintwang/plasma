@@ -405,7 +405,7 @@ class Finemap(object):
         # )
         varbeta = denominator * self.exp_errors
         self.total_exp_stats = self.beta / np.sqrt(varbeta)
-        print(self.total_exp_stats) ####
+        print(self.beta) ####
 
     def _calc_total_exp_corr(self):
         """

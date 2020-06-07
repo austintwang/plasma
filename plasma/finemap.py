@@ -16,6 +16,8 @@ class Finemap(object):
     def __init__(self, **kwargs):
         self.num_snps = kwargs.get("num_snps", None)
         self.num_ppl = kwargs.get("num_ppl", None)
+        self.num_ppl_total_exp = kwargs.get("num_ppl_total_exp", None)
+        self.num_ppl_imbalance = kwargs.get("num_ppl_imbalance", None)
         self.as_only = kwargs.get("as_only", False)
         self.qtl_only = kwargs.get("qtl_only", False)
         self.force_defaults = kwargs.get("force_defaults", False)
@@ -140,6 +142,30 @@ class Finemap(object):
             return
 
         self.mask_total_exp = np.full(np.size(self.counts_A), True)
+
+    def _calc_num_ppl_imbalance(self):
+        """
+        Infer effective sample size for imbalance phenotype from sample mask
+        If already specified, defer to specified value
+        """
+        if self.num_ppl_imbalance is not None:
+            return
+
+        self._calc_mask_imbalance()
+
+        self.num_ppl_imbalance = np.count_nonzero(self.mask_imbalance)
+
+    def _calc_num_ppl_total_exp(self):
+        """
+        Infer effective sample size for total expression phenotype from sample mask
+        If already specified, defer to specified value
+        """
+        if self.num_ppl_total_exp is not None:
+            return
+
+        self._calc_mask_total_exp()
+
+        self.num_ppl_total_exp = np.count_nonzero(self.mask_total_exp)
 
     def _calc_imbalance(self):
         """
@@ -437,8 +463,9 @@ class Finemap(object):
 
         # self._calc_num_ppl()
         self._calc_mask_imbalance()
+        self._calc_num_ppl_imbalance()
 
-        num_ppl = np.count_nonzero(self.mask_imbalance)
+        num_ppl = self.num_ppl_imbalance
         coverage = np.mean((self.counts_A + self.counts_B)[self.mask_imbalance])
         overdispersion = np.mean(self.overdispersion[self.mask_imbalance])
         imbalance = (np.log(self.counts_A) - np.log(self.counts_B))[self.mask_imbalance]
@@ -489,8 +516,9 @@ class Finemap(object):
 
         # self._calc_num_ppl()
         self._calc_mask_total_exp()
+        self._calc_num_ppl_total_exp()
 
-        num_ppl = np.count_nonzero(self.mask_total_exp)
+        num_ppl = self.num_ppl_total_exp
         self.total_exp_var_prior = (
             num_ppl 
             / self.num_causal_prior 

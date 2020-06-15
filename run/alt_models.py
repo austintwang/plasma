@@ -356,8 +356,12 @@ class FmBenner(Finemap):
 		self.maf = np.fmin(freq, 1 - freq)
 		np.place(self.maf, self.maf == 0, 0.0001)
 		np.place(self.maf, self.maf == 0.5, 0.4999)
-		self.betas = self.beta.tolist()
-		self.se = (self.beta / self.total_exp_stats).tolist()
+		if self.betas is None:
+			self.betas = self.total_exp_stats.tolist()
+			self.se = np.ones(self.num_snps).tolist()
+		else:
+			self.betas = self.beta.tolist()
+			self.se = (self.beta / self.total_exp_stats).tolist()
 		self.ld =(self.total_exp_corr * 0.999).tolist()
 		if not self.force_defaults:
 			self.prior_std = np.sqrt(self.total_exp_var_prior)

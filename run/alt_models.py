@@ -356,7 +356,7 @@ class FmBenner(Finemap):
 		self.maf = np.fmin(freq, 1 - freq)
 		np.place(self.maf, self.maf == 0, 0.0001)
 		np.place(self.maf, self.maf == 0.5, 0.4999)
-		if self.betas is None:
+		if self.beta is None:
 			self.betas = self.total_exp_stats.tolist()
 			self.se = np.ones(self.num_snps).tolist()
 		else:

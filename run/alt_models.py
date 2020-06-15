@@ -409,7 +409,7 @@ class FmBenner(Finemap):
 				self.config_path,
 				self.set_path,
 				self.log_path,
-				str(self.num_ppl_total_exp)
+				str(int(self.num_ppl_total_exp))
 			)
 			master_content = ";".join(master_info) + "\n"
 			with open(self.master_path, "w") as masterfile:

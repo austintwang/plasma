@@ -349,7 +349,10 @@ class FmBenner(Finemap):
 		self.post_probs = np.zeros(self.num_snps)
 		self.size_probs = np.zeros(self.num_snps)
 
-		freq = (np.mean(self.hap_A, axis=0) + np.mean(self.hap_B, axis=0)) / 2.
+		try:
+			freq = (np.mean(self.hap_A, axis=0) + np.mean(self.hap_B, axis=0)) / 2.
+		except IndexError:
+			freq = np.full(self.num_snps, 0.1)
 		self.maf = np.fmin(freq, 1 - freq)
 		np.place(self.maf, self.maf == 0, 0.0001)
 		np.place(self.maf, self.maf == 0.5, 0.4999)

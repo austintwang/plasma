@@ -317,7 +317,8 @@ class ECaviar(object):
 class FmBenner(Finemap):
 	fm_dir_path = "/agusevlab/awang/finemap"
 	fm_path = "finemap"
-	temp_path = os.path.join(fm_dir_path, "temp")
+	# temp_path = os.path.join(fm_dir_path, "temp")
+	temp_path = "/tmp"
 	
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
@@ -392,79 +393,81 @@ class FmBenner(Finemap):
 		self._run_fm(command_params)
 
 	def _run_fm(self, command_params):
-		master_header = "z;ld;snp;config;cred;log;n_samples\n"
-		master_info = (
-			self.z_path,
-			self.ld_path,
-			self.post_path,
-			self.config_path,
-			self.set_path,
-			self.log_path,
-			str(self.num_ppl)
-		)
-		master_content = ";".join(master_info) + "\n"
-		with open(self.master_path, "w") as masterfile:
-			masterfile.writelines([master_header, master_content])
+		try:
+			master_header = "z;ld;snp;config;cred;log;n_samples\n"
+			master_info = (
+				self.z_path,
+				self.ld_path,
+				self.post_path,
+				self.config_path,
+				self.set_path,
+				self.log_path,
+				str(self.num_ppl_total_exp)
+			)
+			master_content = ";".join(master_info) + "\n"
+			with open(self.master_path, "w") as masterfile:
+				masterfile.writelines([master_header, master_content])
 
-		z_header = "rsid chromosome position allele1 allele2 maf beta se\n"
-		z_template = "{0} 1 1 A T {1} {2} {3}\n"
-		with open(self.z_path, "w") as zfile:
-			zlines = [z_header]
-			zlines.extend([z_template.format(*i) for i in zip(self.rsids, self.maf, self.betas, self.se)])
-			zfile.writelines(zlines)
+			z_header = "rsid chromosome position allele1 allele2 maf beta se\n"
+			z_template = "{0} 1 1 A T {1} {2} {3}\n"
+			with open(self.z_path, "w") as zfile:
+				zlines = [z_header]
+				zlines.extend([z_template.format(*i) for i in zip(self.rsids, self.maf, self.betas, self.se)])
+				zfile.writelines(zlines)
 
-		with open(self.ld_path, "w") as ldfile:
-			ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
-			ldfile.write(ldstr)
+			with open(self.ld_path, "w") as ldfile:
+				ldstr = "\n".join(" ".join(str(j) for j in i)for i in self.ld) + "\n"
+				ldfile.write(ldstr)
 
-		# print(" ".join(command_params)) ####
+			# print(" ".join(command_params)) ####
 
-		out = subprocess.check_output(command_params)
-		# print(out) ####
+			out = subprocess.check_output(command_params)
+			# print(out) ####
 
-		# with open(self.set_path) as setfile:
-		# 	setdata = setfile.read()
-		# print(setdata) ####
-		# ids = setdata.splitlines()[1].split()
+			# with open(self.set_path) as setfile:
+			# 	setdata = setfile.read()
+			# print(setdata) ####
+			# ids = setdata.splitlines()[1].split()
 
-		post_df = pd.read_csv(self.post_path, sep=" ")
-		# print(post_df) ####
-		# print(post_df.columns) ####
-		post_ids = post_df.loc[:,["rsid", "prob"]]
-		for i in post_ids.itertuples():
-			self.post_probs[self.rsid_map[i.rsid]] = i.prob
+			post_df = pd.read_csv(self.post_path, sep=" ")
+			# print(post_df) ####
+			# print(post_df.columns) ####
+			post_ids = post_df.loc[:,["rsid", "prob"]]
+			for i in post_ids.itertuples():
+				self.post_probs[self.rsid_map[i.rsid]] = i.prob
 
-		config_df = pd.read_csv(self.config_path, sep=" ")
-		configs = config_df.loc[:,["config", "prob"]]
-		for i in configs.itertuples():
-			config_key = [0] * self.num_snps
-			for s in i.config.split(","):
-				config_key[self.rsid_map[s]] = 1
-			self.results[tuple(config_key)] = i.prob
+			config_df = pd.read_csv(self.config_path, sep=" ")
+			configs = config_df.loc[:,["config", "prob"]]
+			for i in configs.itertuples():
+				config_key = [0] * self.num_snps
+				for s in i.config.split(","):
+					config_key[self.rsid_map[s]] = 1
+				self.results[tuple(config_key)] = i.prob
 
-		with open(self.log_path + "_sss") as log_file:
-			log_data = log_file.readlines()
+			with open(self.log_path + "_sss") as log_file:
+				log_data = log_file.readlines()
 
-		# print("".join(log_data)) ####
+			# print("".join(log_data)) ####
 
-		for i in self.get_probs_sorted()[:5]: ####
-			print(i) ####
+			for i in self.get_probs_sorted()[:5]: ####
+				print(i) ####
 
-		# print(self.get_ppas()) ####
+			# print(self.get_ppas()) ####
 
-		num_causal_region = False
-		for l in log_data:
-			if num_causal_region and l.startswith("-"):
-				num_causal_region = False
-			if num_causal_region:
-				size, prob = l.split("->")
-				size = int(size.strip("() \n"))
-				prob = float(prob.strip("() \n"))
-				self.size_probs[size] = prob
-			if l.startswith("- Post-Pr(# of causal SNPs is k)"):
-				num_causal_region = True
+			num_causal_region = False
+			for l in log_data:
+				if num_causal_region and l.startswith("-"):
+					num_causal_region = False
+				if num_causal_region:
+					size, prob = l.split("->")
+					size = int(size.strip("() \n"))
+					prob = float(prob.strip("() \n"))
+					self.size_probs[size] = prob
+				if l.startswith("- Post-Pr(# of causal SNPs is k)"):
+					num_causal_region = True
 
-		shutil.rmtree(self.output_path)
+		finally:
+			shutil.rmtree(self.output_path)
 
 	# def get_causal_set(self, confidence):
 	# 	return self.causal_set
